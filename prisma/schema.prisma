@@ -1,0 +1,81 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id                  String      @id @default(uuid())
+  nome                String
+  meta_ads_account_id String
+  campanhas           Campanha[]
+  relatorios          Relatorio[]
+  criado_em           DateTime    @default(now())
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  nome      String
+  role      String   @default("analista") // admin ou analista
+  criado_em DateTime @default(now())
+}
+
+model Campanha {
+  id             String            @id @default(uuid())
+  cliente_id     String
+  cliente        Cliente           @relation(fields: [cliente_id], references: [id])
+  nome_gerado    String            // Ex: [03][KrM][CBO][Message]
+  objetivo       String
+  tipo_orcamento String
+  conjuntos      ConjuntoAnuncio[]
+  metricas       MetricaCampanha[]
+  criado_em      DateTime          @default(now())
+}
+
+model ConjuntoAnuncio {
+  id            String     @id @default(uuid())
+  campanha_id   String
+  campanha      Campanha   @relation(fields: [campanha_id], references: [id])
+  nome_gerado   String     // Ex: [03][KrM][LAL 1%][Feed]
+  publico_alvo  String
+  formato_midia String
+  criativos     Criativo[]
+}
+
+model Criativo {
+  id              String          @id @default(uuid())
+  adset_id        String
+  conjunto        ConjuntoAnuncio @relation(fields: [adset_id], references: [id])
+  url_midia       String?         // Link do S3
+  texto_principal String?         // Copy gerada pelo Gemini
+  call_to_action  String?
+}
+
+model MetricaCampanha {
+  id                 String   @id @default(uuid())
+  campanha_id        String
+  campanha           Campanha @relation(fields: [campanha_id], references: [id])
+  data               DateTime
+  impressoes         Int      @default(0)
+  conversas_leads    Int      @default(0)
+  valor_investido    Decimal  @default(0.0)
+  faturamento_manual Decimal? @default(0.0) // Inserido no painel
+  cac                Decimal?
+  roas               Decimal?
+}
+
+model Relatorio {
+  id                        String   @id @default(uuid())
+  cliente_id                String
+  cliente                   Cliente  @relation(fields: [cliente_id], references: [id])
+  url_pdf                   String?
+  diagnostico_performance   String?  // Gerado pelo Gemini
+  desenvolvimento_algoritmo String?  // Gerado pelo Gemini
+  proximos_passos           String?  // Gerado pelo Gemini
+  criado_em                 DateTime @default(now())
+}
