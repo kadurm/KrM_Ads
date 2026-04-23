@@ -97,7 +97,27 @@ export async function POST(request) {
       Nunca termine com uma afirmação. O vendedor/gestor deve manter o controle da conversa.
     `;
 
-    const result = await model.generateContent(prompt);
+    let result;
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      try {
+        result = await model.generateContent(prompt);
+        break;
+      } catch (e) {
+        attempts++;
+        const isServiceUnavailable = e.message.includes('503') || e.message.includes('Service Unavailable');
+        
+        if (isServiceUnavailable && attempts < maxAttempts) {
+          console.log(`Tentativa ${attempts} falhou (503). Aguardando para tentar novamente...`);
+          await new Promise(resolve => setTimeout(resolve, 3000 * attempts));
+          continue;
+        }
+        throw e;
+      }
+    }
+
     const analise = result.response.text();
 
     return NextResponse.json({ success: true, analise });
