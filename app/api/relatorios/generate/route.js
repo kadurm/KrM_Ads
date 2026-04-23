@@ -38,64 +38,38 @@ export async function POST(request) {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `
-      Atue como um Especialista Sênior em Tráfego Pago e Gestor de Estratégia da KrM Ads. 
-      Sua missão é gerar um Diagnóstico Estratégico completo para o cliente "${nomeProjeto}".
-      Período analisado: ${periodo?.de || 'N/A'} até ${periodo?.ate || 'N/A'}.
+      Atue como um Especialista Sênior em Tráfego Pago da KrM Ads. 
+      Gere um Diagnóstico Estratégico para o cliente "${nomeProjeto}" (${periodo?.de} a ${periodo?.ate}).
 
-      ═══════════════════════════════════
-      DADOS GLOBAIS DO PERÍODO
-      ═══════════════════════════════════
-      - Investimento Total: R$ ${metricas.investimento}
-      - Faturamento Informado: R$ ${metricas.faturamento}
-      - Leads/Conversas Totais: ${metricas.totalLeads}
-      - CAC Médio: R$ ${(metricas.investimento / (metricas.totalLeads || 1)).toFixed(2)}
+      DADOS DO PERÍODO:
+      - Investimento: R$ ${metricas.investimento}
+      - Faturamento: R$ ${metricas.faturamento}
+      - Leads: ${metricas.totalLeads}
+      - CAC: R$ ${(metricas.investimento / (metricas.totalLeads || 1)).toFixed(2)}
       - ROAS: ${(metricas.faturamento / (metricas.investimento || 1)).toFixed(2)}x
 
-      ═══════════════════════════════════
-      FUNIL DE JORNADA DO CLIENTE
-      ═══════════════════════════════════
-      Topo (Impressões): ${funil?.impressoes?.toLocaleString() || 0}
-      Meio (Engajamento/Cliques): ${funil?.engajamento?.toLocaleString() || 0} → Taxa: ${funil?.taxaEngajamento || '0%'}
-      Fundo (Leads): ${funil?.leads || 0} → Taxa de conversão do engajamento: ${funil?.taxaLeads || '0%'}
-      Conversão Final (Compras): ${funil?.conversoes || 0}
+      FUNIL:
+      - Impressões: ${funil?.impressoes}
+      - Cliques: ${funil?.engajamento} (Taxa: ${funil?.taxaEngajamento})
+      - Leads: ${funil?.leads} (Taxa: ${funil?.taxaLeads})
+      - Compras: ${funil?.conversoes}
 
-      ═══════════════════════════════════
-      RANKING DE CRIATIVOS (Ordenado por CPA — menor = melhor)
-      ═══════════════════════════════════
-      ${criativosRanking?.map((c, i) => `${i+1}. "${c.nome}" → Gasto: R$ ${c.gasto} | Leads: ${c.leads} | CPA: ${c.cpa} | CTR: ${c.ctr}% | Impressões: ${c.impressoes}`).join('\n      ') || 'Nenhum criativo disponível.'}
+      CRIATIVOS (Ranking por CPA):
+      ${criativosRanking?.map((c, i) => `${i+1}. ${c.nome}: R$ ${c.gasto} gasto, ${c.leads} leads, CPA R$ ${c.cpa}`).join('\n')}
 
-      ═══════════════════════════════════
-      REFERÊNCIAS DE TOM DE VOZ (COPIE RIGOROSAMENTE)
-      ═══════════════════════════════════
-      ${historicoRelatorios || "Siga um tom profissional, direto, focado em ROI e extremamente estratégico."}
+      REFERÊNCIA DE ESTILO:
+      ${historicoRelatorios || "Tom profissional, direto e estratégico focado em ROI."}
 
-      ═══════════════════════════════════
-      INSTRUÇÕES DE GERAÇÃO
-      ═══════════════════════════════════
-      Gere o relatório exatamente nesta estrutura:
+      ESTRUTURA DO RELATÓRIO:
+      1. O QUE ESTÁ ACONTECENDO (Diagnóstico com números reais)
+      2. POR QUE ESTÁ ACONTECENDO (Gargalos do funil)
+      3. PLANO DE AÇÃO (Escalar ou pausar criativos)
 
-      **1. O QUE ESTÁ ACONTECENDO (Diagnóstico)**
-      Explique os números de forma clara e direta. Cite os valores reais. O cliente precisa entender:
-      - Quanto investiu e quantos leads gerou
-      - Qual é o custo por lead atual
-      - Como está o funil: onde está o gargalo? (muita impressão e pouco clique? muito clique e pouco lead?)
-
-      **2. POR QUE ESTÁ ACONTECENDO (Análise do Funil)**
-      Explique a lógica do funil de forma educativa:
-      - Se a taxa de engajamento está baixa, os criativos não estão capturando atenção
-      - Se a taxa de leads está baixa, o público está interessado mas a oferta não converte
-      - Relacione os criativos vencedores com o que eles têm de diferente (tipo de conteúdo, abordagem)
-
-      **3. PLANO DE AÇÃO (Baseado nos Criativos Vencedores)**
-      Com base no ranking de criativos:
-      - Quais criativos devem ser ESCALADOS (aumentar verba)
-      - Quais devem ser PAUSADOS (CPA muito alto ou sem resultado)
-      - Que TIPO de conteúdo produzir mais (baseado no padrão dos vencedores)
-      - Ações concretas para a próxima semana
-
-      REGRA DE OURO (NUNCA QUEBRE): O relatório deve ser finalizado obrigatoriamente com uma pergunta estratégica. 
-      Nunca termine com uma afirmação. O vendedor/gestor deve manter o controle da conversa.
+      REGRA: Termine obrigatoriamente com uma pergunta estratégica.
     `;
+
+    console.log("Gerando relatório para:", nomeProjeto);
+    console.log("Tamanho do prompt:", prompt.length);
 
     let result;
     let attempts = 0;
