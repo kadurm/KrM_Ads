@@ -35,7 +35,7 @@ export async function POST(request) {
     const projectPath = path.join(process.cwd(), 'ref', nomeProjeto);
     const historicoRelatorios = lerArquivosReferencia(projectPath);
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `
       Atue como um Especialista Sênior em Tráfego Pago e Gestor de Estratégia da KrM Ads. 
