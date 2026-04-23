@@ -65,7 +65,9 @@ export async function POST(request) {
       2. POR QUE ESTÁ ACONTECENDO (Gargalos do funil)
       3. PLANO DE AÇÃO (Escalar ou pausar criativos)
 
-      REGRA: Termine obrigatoriamente com uma pergunta estratégica.
+      REGRAS CRUCIAS:
+      - Tamanho máximo do texto: 1000 caracteres. Seja extremamente conciso.
+      - Termine obrigatoriamente com uma pergunta estratégica.
     `;
 
     console.log("Gerando relatório para:", nomeProjeto);
@@ -77,7 +79,11 @@ export async function POST(request) {
 
     while (attempts < maxAttempts) {
       try {
-        result = await model.generateContent(prompt);
+        // Limita a geração no nível da API para garantir concisão
+        result = await model.generateContent({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 400 }
+        });
         break;
       } catch (e) {
         attempts++;
