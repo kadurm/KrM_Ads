@@ -1459,9 +1459,9 @@ export default function App() {
                                    </td>
                                    <td className="p-8">
                                       <div className="flex items-center gap-5">
-                                         {campaignsLevel === 'ad' && item.creative?.thumbnail_url && (
+                                         {campaignsLevel === 'ad' && (item.creative?.image_url || item.creative?.thumbnail_url) && (
                                             <div className="w-14 h-14 rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shadow-2xl flex-shrink-0">
-                                               <img src={item.creative.thumbnail_url} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Thumb" />
+                                               <img src={item.creative.image_url || item.creative.thumbnail_url} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Thumb" />
                                             </div>
                                          )}
                                          <div className="flex flex-col gap-1">

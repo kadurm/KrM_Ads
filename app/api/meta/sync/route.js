@@ -242,25 +242,52 @@ export async function POST(request) {
       commonQuery.time_range = JSON.stringify({ since, until });
     }
 
-    const [metaCampsRes, campaignRes, adInsightRes, adsMetaRes] = await Promise.all([
+    const [metaCampsRes, campaignRes, adInsightRes] = await Promise.all([
       fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' })),
       fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'ad', time_increment: '1' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'ad', time_increment: '1' }))
     ]);
-
-    const [metaCampsData, campaignData, adInsightData, adsMetaData] = await Promise.all([ 
-      metaCampsRes.json(), campaignRes.json(), adInsightRes.json(), adsMetaRes.json() 
+    
+    const [metaCampsData, campaignData, adInsightData] = await Promise.all([ 
+      metaCampsRes.json(), campaignRes.json(), adInsightRes.json() 
     ]);
     console.timeEnd('Meta-API-Calls');
 
     if (campaignData.error) throw new Error(`Meta API Error: ${campaignData.error.message}`);
 
     const objectiveMap = new Map(metaCampsData.data?.map(c => [c.id, c.objective]) || []);
-    const creativeMetaMap = new Map(adsMetaData.data?.map(m => [String(m.id), m]) || []);
+    
+    // Busca Criativos Especificamente para os Anúncios nos Insights (Garante HD para qualquer período)
+    const adIds = [...new Set(adInsightData.data?.map(i => i.ad_id).filter(id => !!id) || [])];
+    const creativeMetaMap = new Map();
+    const adToCreativeMap = new Map();
+
+    if (adIds.length > 0) {
+      console.time('Meta-Targeted-Creatives');
+      const idChunks = [];
+      for (let i = 0; i < adIds.length; i += 50) idChunks.push(adIds.slice(i, i + 50));
+      
+      await Promise.all(idChunks.map(async (chunk) => {
+        const res = await fetch(graphUrl(``, { 
+          ids: chunk.join(','), 
+          fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id}', 
+          access_token: ACCESS_TOKEN,
+          thumbnail_width: 800,
+          thumbnail_height: 800
+        }));
+        const data = await res.json();
+        Object.values(data).forEach((ad: any) => {
+          if (ad.creative) {
+            creativeMetaMap.set(String(ad.creative.id), ad.creative);
+            adToCreativeMap.set(String(ad.id), String(ad.creative.id));
+          }
+        });
+      }));
+      console.timeEnd('Meta-Targeted-Creatives');
+    }
     
     // Busca HD Supremo (Posts) em lotes
-    const storyIds = adsMetaData.data?.map(m => m.effective_object_story_id).filter(id => !!id) || [];
+    const storyIds = Array.from(creativeMetaMap.values()).map(m => m.effective_object_story_id).filter(id => !!id);
     const storyMetaMap = new Map();
     if (storyIds.length > 0) {
        console.time('Meta-HD-Images');
@@ -276,7 +303,7 @@ export async function POST(request) {
 
      // Busca HD via Biblioteca de Imagens da Conta (adimages) usando image_hash
      const imageHashMap = new Map();
-     const uniqueHashes = [...new Set(adsMetaData.data?.map(m => m.image_hash).filter(h => !!h) || [])];
+     const uniqueHashes = [...new Set(Array.from(creativeMetaMap.values()).map(m => m.image_hash).filter(h => !!h))];
      if (uniqueHashes.length > 0) {
        console.time('Meta-AdImages-HD');
        const hashChunks = [];
@@ -348,9 +375,7 @@ export async function POST(request) {
 
     if (adInsightData.data) {
       console.time('DB-Write-Creatives');
-      const adsListRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/ads`, { access_token: ACCESS_TOKEN, fields: 'id,creative{id}', limit: '1000' }));
-      const adsListData = await adsListRes.json();
-      const adToCreativeMap = new Map(adsListData.data?.map(a => [a.id, a.creative.id]) || []);
+      // adToCreativeMap já foi populado na fase de busca direcionada
 
       const existingCreatives = await prisma.criativo.findMany({ where: { campanha: { cliente_id: dbCliente.id } } });
       const localCreativeMap = new Map(existingCreatives.map(c => [c.meta_ad_id, c]));
