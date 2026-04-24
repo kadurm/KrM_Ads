@@ -12,7 +12,10 @@ export async function GET(request) {
 
     const leads = await prisma.lead.findMany({
       where: {
-        cliente: { nome: cliente }
+        OR: [
+          { cliente: { slug: cliente } },
+          { cliente: { nome: cliente } }
+        ]
       },
       include: {
         notas: { orderBy: { criado_em: 'desc' } }
@@ -33,7 +36,14 @@ export async function POST(request) {
 
     if (!cliente || !nome) return NextResponse.json({ success: false, error: 'Dados incompletos' }, { status: 400 });
 
-    const clienteDb = await prisma.cliente.findFirst({ where: { nome: cliente } });
+    const clienteDb = await prisma.cliente.findFirst({ 
+      where: { 
+        OR: [
+          { slug: cliente },
+          { nome: cliente }
+        ]
+      } 
+    });
     if (!clienteDb) return NextResponse.json({ success: false, error: 'Cliente não encontrado' }, { status: 404 });
 
     const lead = await prisma.lead.create({

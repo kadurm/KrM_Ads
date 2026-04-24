@@ -13,6 +13,7 @@ datasource db {
 model Cliente {
   id                  String      @id @default(uuid())
   nome                String
+  slug                String?     @unique // Ex: solutionplace
   meta_ads_account_id String
   insights            String?     @default("")
   campanhas           Campanha[]
