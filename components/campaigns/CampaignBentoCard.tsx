@@ -4,7 +4,7 @@ import React from 'react';
 import { 
   Play, Pause, ShieldCheck, Zap, Activity, AlertTriangle, Fingerprint, ChevronRight 
 } from 'lucide-react';
-import { MetaCampaign } from '@/types/meta-campaigns';
+import { MetaCampaign } from '../../types/meta-campaigns';
 
 /**
  * Meta Ads 2026 - Campaign Bento Card
