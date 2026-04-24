@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { MetaCampaign } from '../types/meta-campaigns';
+import { MetaCampaign } from '@/types/meta-campaigns';
 
 /**
  * Meta Ads 2026 - Centralized Campaign API

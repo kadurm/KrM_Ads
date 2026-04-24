@@ -4,8 +4,8 @@ import React, { useMemo } from 'react';
 import { 
   Loader2, RefreshCw, Search, Database, LayoutGrid, Filter, ArrowUpDown
 } from 'lucide-react';
-import { CampaignBentoCard } from '../components/campaigns/CampaignBentoCard';
-import { MetaCampaign } from '../types/meta-campaigns';
+import { CampaignBentoCard } from '@/components/campaigns/CampaignBentoCard';
+import { MetaCampaign } from '@/types/meta-campaigns';
 
 /**
  * Meta Ads 2026 - Campaigns Board View
