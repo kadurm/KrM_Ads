@@ -27,7 +27,10 @@ import {
   Pencil,
   Check,
   X,
-  Loader2
+  Loader2,
+  Users,
+  Trash2,
+  Info
 } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
@@ -45,6 +48,8 @@ export default function App() {
   const [clientesDisponiveis, setClientesDisponiveis] = useState([]);
   const [novoCliente, setNovoCliente] = useState({ nome: '', accountId: '' });
   const [isAddingCliente, setIsAddingCliente] = useState(false);
+  const [editingCliente, setEditingCliente] = useState(null);
+  const [perfilCliente, setPerfilCliente] = useState(null);
   
   const [analiseIA, setAnaliseIA] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
@@ -100,7 +105,7 @@ export default function App() {
       if (data.success) {
         setNovoCliente({ nome: '', accountId: '' });
         await loadClientes();
-        setActiveTab('relatorios');
+        setActiveTab('clientes');
         setMensagemPainel({ tipo: 'sucesso', texto: 'Cliente vinculado com sucesso!' });
       } else {
         setMensagemPainel({ tipo: 'erro', texto: data.error });
@@ -109,6 +114,43 @@ export default function App() {
       setMensagemPainel({ tipo: 'erro', texto: 'Falha ao vincular cliente.' });
     } finally {
       setIsAddingCliente(false);
+    }
+  };
+
+  const handleUpdateCliente = async (clienteData) => {
+    try {
+      const res = await fetch('/api/clientes', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(clienteData),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEditingCliente(null);
+        setPerfilCliente(null);
+        await loadClientes();
+        setMensagemPainel({ tipo: 'sucesso', texto: 'Cliente atualizado com sucesso!' });
+      } else {
+        setMensagemPainel({ tipo: 'erro', texto: data.error });
+      }
+    } catch (e) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Erro ao atualizar cliente.' });
+    }
+  };
+
+  const handleDeleteCliente = async (id) => {
+    if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
+    try {
+      const res = await fetch(`/api/clientes?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        await loadClientes();
+        setMensagemPainel({ tipo: 'sucesso', texto: 'Cliente removido.' });
+      } else {
+        setMensagemPainel({ tipo: 'erro', texto: data.error });
+      }
+    } catch (e) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Erro ao remover cliente.' });
     }
   };
 
@@ -367,6 +409,7 @@ export default function App() {
         </div>
         <nav className="flex-1 p-4 space-y-2">
           <button onClick={() => setActiveTab('relatorios')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'relatorios' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><FileText size={18} /> Relatórios</button>
+          <button onClick={() => setActiveTab('clientes')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'clientes' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Users size={18} /> Administrar Clientes</button>
           <button onClick={() => setActiveTab('vincular')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'vincular' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Plus size={18} /> Vincular Conta</button>
           <button onClick={() => setActiveTab('entrada')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'entrada' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Database size={18} /> Entrada de Dados</button>
           <button onClick={() => setActiveTab('ativos')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'ativos' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><ImageIcon size={18} /> Criativos</button>
@@ -583,6 +626,125 @@ export default function App() {
             </div>
           )}
 
+          {activeTab === 'clientes' && (
+            <div className="max-w-5xl mx-auto py-6 space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-100">Gestão de Clientes</h1>
+                  <p className="text-slate-500 text-sm mt-1">Administre as contas vinculadas e seus contextos estratégicos.</p>
+                </div>
+                <button onClick={() => setActiveTab('vincular')} className="p-2 px-4 bg-blue-600 text-white rounded-lg font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-900/20 hover:bg-blue-700 transition-all">
+                  <Plus size={14} /> Novo Cliente
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {clientesDisponiveis.map(cliente => (
+                  <div key={cliente.id} className="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex items-center justify-between group hover:border-slate-600 transition-all shadow-xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-500 font-bold text-xl">
+                        {cliente.nome.charAt(0)}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-100">{cliente.nome}</h3>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Conta: {cliente.meta_ads_account_id}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setPerfilCliente(cliente)} className="p-2 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold flex items-center gap-2 transition-all">
+                        <Info size={14} /> Perfil e Contexto
+                      </button>
+                      <button onClick={() => setEditingCliente(cliente)} className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-lg transition-all">
+                        <Pencil size={14} />
+                      </button>
+                      <button onClick={() => handleDeleteCliente(cliente.id)} className="p-2 bg-red-600/10 hover:bg-red-600/20 text-red-500 rounded-lg transition-all">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {editingCliente && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                  <div className="bg-slate-900 w-full max-w-md rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
+                    <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+                      <h3 className="font-bold">Editar Dados: {editingCliente.nome}</h3>
+                      <button onClick={() => setEditingCliente(null)}><X size={20}/></button>
+                    </div>
+                    <div className="p-6 space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-2">Nome</label>
+                        <input type="text" value={editingCliente.nome} onChange={e => setEditingCliente({...editingCliente, nome: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm outline-none focus:border-blue-500" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-2">Account ID</label>
+                        <input type="text" value={editingCliente.meta_ads_account_id} onChange={e => setEditingCliente({...editingCliente, meta_ads_account_id: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm outline-none focus:border-blue-500" />
+                      </div>
+                      <button onClick={() => handleUpdateCliente(editingCliente)} className="w-full bg-blue-600 p-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition-all">Salvar Alterações</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {perfilCliente && (
+                <div className="fixed inset-0 bg-slate-950 z-50 flex flex-col">
+                   <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8">
+                      <div className="flex items-center gap-4">
+                        <button onClick={() => setPerfilCliente(null)} className="p-2 hover:bg-slate-800 rounded-lg transition-all"><X size={20}/></button>
+                        <div>
+                          <h2 className="font-bold text-lg">{perfilCliente.nome}</h2>
+                          <p className="text-[10px] text-slate-500 font-bold uppercase">Perfil Estratégico e Contexto da IA</p>
+                        </div>
+                      </div>
+                      <button onClick={() => handleUpdateCliente(perfilCliente)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2 px-6 rounded-lg text-sm transition-all flex items-center gap-2">
+                        <Check size={16} /> Salvar Contexto
+                      </button>
+                   </header>
+                   <div className="flex-1 overflow-hidden flex">
+                      <div className="w-1/3 border-r border-slate-800 p-8 space-y-8 overflow-y-auto">
+                        <div>
+                          <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Informações do Cliente</h4>
+                          <div className="grid grid-cols-1 gap-4">
+                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                               <p className="text-[9px] text-slate-500 font-bold uppercase">ID da Conta Meta</p>
+                               <p className="text-sm font-mono text-blue-400 mt-1">{perfilCliente.meta_ads_account_id}</p>
+                            </div>
+                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                               <p className="text-[9px] text-slate-500 font-bold uppercase">Cadastrado em</p>
+                               <p className="text-sm text-slate-300 mt-1">{new Date(perfilCliente.criado_em).toLocaleDateString('pt-BR')}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-blue-600/10 p-6 rounded-2xl border border-blue-500/20">
+                          <h4 className="text-xs font-bold text-blue-400 mb-2 flex items-center gap-2"><Sparkles size={14}/> Instruções de Contexto</h4>
+                          <p className="text-[11px] text-blue-300/80 leading-relaxed">
+                            O texto ao lado é o <strong>agent.md</strong> deste cliente. Ele é enviado ao Gemini 2.5 Flash em cada relatório gerado.
+                            <br/><br/>
+                            Use este espaço para definir as metas do cliente, o tom de voz desejado e quaisquer observações que a IA deve ignorar ou focar.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex-1 bg-slate-950 p-8">
+                        <div className="h-full flex flex-col">
+                          <div className="flex items-center gap-2 mb-4 text-slate-500">
+                            <FileText size={14} />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Editor de Contexto Estratégico (Markdown)</span>
+                          </div>
+                          <textarea 
+                            value={perfilCliente.insights || ''} 
+                            onChange={e => setPerfilCliente({...perfilCliente, insights: e.target.value})}
+                            className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 text-sm text-slate-300 font-mono resize-none outline-none focus:border-blue-500/50 shadow-inner"
+                            placeholder="# Contexto Estratégico..."
+                          />
+                        </div>
+                      </div>
+                   </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === 'vincular' && (
             <div className="max-w-2xl mx-auto py-10">
               <h1 className="text-3xl font-bold mb-2 text-slate-100">Vincular Nova Conta</h1>
@@ -600,7 +762,7 @@ export default function App() {
                 
                 <div className="bg-blue-600/10 p-4 rounded-xl border border-blue-500/20 mb-6">
                    <p className="text-xs text-blue-400 leading-relaxed">
-                     <Sparkles size={12} className="inline mr-1" /> Ao vincular uma nova conta, o sistema criará automaticamente um diretório <strong>ref/{novoCliente.nome || 'Empresa'}</strong> com um arquivo <strong>agent.md</strong> para você adicionar o contexto estratégico.
+                     <Sparkles size={12} className="inline mr-1" /> Ao vincular uma nova conta, o sistema salvará automaticamente um template estratégico que poderá ser editado na aba <strong>Administrar Clientes</strong>.
                    </p>
                 </div>
 

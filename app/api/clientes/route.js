@@ -38,16 +38,14 @@ export async function POST(request) {
 - Foco de Análise: [ROI / Escala / Reconhecimento]
 `;
 
-    // Criar o cliente no banco com o template de insights
     const cliente = await prisma.cliente.create({
       data: { 
         nome, 
         meta_ads_account_id,
-        insights: agentTemplate // Agora o contexto principal fica no BANCO DE DADOS
+        insights: agentTemplate
       }
     });
 
-    // Tentativa segura de criar diretório de referências (funcionará local, mas falhará em produção sem derrubar a API)
     try {
       const refDir = path.join(process.cwd(), 'ref', nome);
       if (!fs.existsSync(refDir)) {
@@ -55,10 +53,44 @@ export async function POST(request) {
         fs.writeFileSync(path.join(refDir, 'agent.md'), agentTemplate);
       }
     } catch (fsError) {
-      console.warn("Aviso: Não foi possível criar pasta física (Ambiente Read-only). O contexto está salvo no banco.");
+      console.warn("Aviso: Não foi possível criar pasta física.");
     }
 
     return NextResponse.json({ success: true, cliente });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function PATCH(request) {
+  try {
+    const { id, nome, meta_ads_account_id, insights } = await request.json();
+    if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
+
+    const cliente = await prisma.cliente.update({
+      where: { id },
+      data: { nome, meta_ads_account_id, insights }
+    });
+
+    return NextResponse.json({ success: true, cliente });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
+
+    // Nota: Em um sistema real, você pode querer deletar em cascata ou apenas desativar.
+    // Aqui deletamos as métricas relacionadas antes do cliente para evitar erro de FK (se não configurado cascata no BD)
+    // No schema atual, Campanhas dependem de Clientes.
+    
+    await prisma.cliente.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
