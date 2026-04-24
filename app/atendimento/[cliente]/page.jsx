@@ -43,6 +43,7 @@ export default function AtendimentoPage() {
       const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteUrl)}`);
       const data = await res.json();
       if (data.success) setLeads(data.leads);
+      else console.error('Erro API:', data.error);
     } catch (e) {
       console.error('Erro ao carregar leads:', e);
     } finally {
@@ -272,7 +273,7 @@ export default function AtendimentoPage() {
                          placeholder="Descreva o atendimento aqui..."
                          className="w-full bg-slate-950 border border-slate-800 rounded-[2rem] p-6 pr-16 text-sm text-white outline-none focus:border-blue-600/50 min-h-[120px] resize-none shadow-inner"
                        />
-                       <button className="absolute right-4 bottom-4 w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-xl hover:bg-blue-500 active:scale-90 transition-all">
+                       <button className="absolute right-4 bottom-4 w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-xl hover:bg-blue-500 active:scale-90 transition-all">
                          <Send size={20}/>
                        </button>
                     </form>
