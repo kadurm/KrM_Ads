@@ -92,13 +92,23 @@ export async function GET(request) {
       if (camp.nome_gerado.includes('[01]')) {
         finalVal = total.impressoes;
         finalLabel = 'Impressões';
+        // Calcula o custo por MIL impressões (CPM)
+        const cpm = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
+        return {
+          ...total,
+          objetivo: finalLabel,
+          resultadoBruto: finalVal,
+          roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
+          cpr: cpm, // Aqui enviamos o CPM
+          isCPM: true,
+          campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
+        };
       } else if (camp.nome_gerado.includes('[02]') || label === 'Engajamentos') {
         finalVal = total.visitas_perfil; 
         finalLabel = 'Engajamentos';
       } else if (camp.nome_gerado.includes('[05]')) {
-        // Prioriza visitas ao perfil reais da Meta
-        finalVal = getMetric(camp.metricas.flatMap(m => m.actions || []), 'link_click') || total.visitas_perfil;
-        // Se ainda estiver muito alto, vamos usar o valor exato reportado como 'link_click' que costuma bater com visitas em campanhas de tráfego de perfil
+        // Para visitas ao perfil, usamos estritamente os cliques no link reportados para este objetivo
+        finalVal = total.cliques; 
         finalLabel = 'Visitas';
       } else if (label === 'Vendas') {
         finalVal = total.compras;
