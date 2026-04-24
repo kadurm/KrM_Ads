@@ -44,9 +44,11 @@ export async function GET(request: Request) {
     }
 
     const insightsFields = 'spend,impressions,actions,inline_link_click_ctr,video_p25_watched_actions';
+    const historicalFields = 'spend,purchase_roas,actions';
+    
     const url = graphUrl(endpoint, {
       access_token: accessToken,
-      fields: `${fields},insights.level(${level}){${insightsFields}}`,
+      fields: `${fields},insights.level(${level}){${insightsFields}},historical_insights:insights.date_preset(last_7d).time_increment(1){${historicalFields}}`,
       limit: '50'
     });
 
@@ -63,6 +65,20 @@ export async function GET(request: Request) {
       const spend = parseFloat(insights.spend || 0);
       const impressions = parseInt(insights.impressions || 0);
       const hook_rate = impressions > 0 ? (parseFloat(insights.video_p25_watched_actions?.[0]?.value || 0) / impressions * 100) : 0;
+
+      // Map Historical Insights
+      const historical_insights = (item.historical_insights?.data || []).map((h: any) => {
+        const hActions = h.actions || [];
+        const hResults = parseInt(hActions.find((a: any) => a.action_type === 'onsite_conversion.messaging_conversation_started_7d')?.value || 0) +
+                         parseInt(hActions.find((a: any) => a.action_type === 'lead')?.value || 0);
+        
+        return {
+          date: h.date_start,
+          spend: parseFloat(h.spend || 0),
+          purchase_roas: parseFloat(h.purchase_roas?.[0]?.value || 0),
+          results: hResults
+        };
+      });
 
       // Safe Mapping with Fallbacks for Legacy Support
       return {
@@ -90,7 +106,8 @@ export async function GET(request: Request) {
         
         campaign_id: item.campaign_id,
         adset_id: item.adset_id,
-        creative: item.creative
+        creative: item.creative,
+        historical_insights
       };
     });
 

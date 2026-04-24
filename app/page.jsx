@@ -538,6 +538,41 @@ export default function App() {
       .sort((a, b) => b.rawValor - a.rawValor);
   }, [relatorioDados]);
 
+  const calculateAndromedaFlow = (campaigns) => {
+    if (!campaigns || campaigns.length === 0) return [];
+    const dateMap = {};
+    campaigns.forEach(campaign => {
+      if (!campaign.historical_insights) return;
+      campaign.historical_insights.forEach(h => {
+        if (!dateMap[h.date]) {
+          dateMap[h.date] = { date: h.date, roas_sum: 0, roas_count: 0, prob_sum: 0, count: 0 };
+        }
+        const d = dateMap[h.date];
+        if (h.purchase_roas > 0) { d.roas_sum += h.purchase_roas; d.roas_count++; }
+        
+        const fatigue = campaign.creative_fatigue_score || 0;
+        const hook = campaign.hook_rate || 0;
+        const avgCpa = campaign.results > 0 ? (campaign.spend / campaign.results) : 10;
+        const dailyCpa = h.results > 0 ? (h.spend / h.results) : avgCpa * 1.2;
+        const cpaFactor = dailyCpa > 0 ? (avgCpa / dailyCpa) : 0.5;
+
+        let prob = (100 - fatigue) * (hook / 100) * cpaFactor;
+        if (!campaign.creative_fatigue_score || !campaign.hook_rate) {
+          prob = dailyCpa > 0 ? (avgCpa / dailyCpa) * 50 : 25;
+        }
+        d.prob_sum += Math.min(100, Math.max(0, prob));
+        d.count++;
+      });
+    });
+    return Object.keys(dateMap).sort().map(date => ({
+      date: date.split('-').reverse().slice(0, 2).join('/'),
+      roas: dateMap[date].roas_count > 0 ? dateMap[date].roas_sum / dateMap[date].roas_count : 0,
+      probability: dateMap[date].count > 0 ? dateMap[date].prob_sum / dateMap[date].count : 0
+    }));
+  };
+
+  const andromedaFlow = React.useMemo(() => calculateAndromedaFlow(campaignsList), [campaignsList]);
+
   const handleGerarIA = async () => {
     setIsGenerating(true); setAnaliseIA("Gerando análise estratégica...");
     try {
@@ -1256,10 +1291,10 @@ export default function App() {
                       </div>
                    </div>
                    
-                   <div className="h-64 w-full">
-                      {isMounted && (
+                   <div className="h-64 w-full min-h-[250px]">
+                      {isMounted && andromedaFlow.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
-                           <LineChart data={dailyData.length > 0 ? dailyData : [{date:'-', investimento:0, leads:0}, {date:'-', investimento:20, leads:10}, {date:'-', investimento:10, leads:5}]}>
+                           <LineChart data={andromedaFlow}>
                               <defs>
                                  <linearGradient id="colorProb" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
@@ -1272,10 +1307,16 @@ export default function App() {
                                  contentStyle={{backgroundColor:'#0f172a', borderRadius:'20px', border:'1px solid #1e293b', fontSize:'10px'}}
                                  itemStyle={{fontWeight:'bold'}}
                               />
-                              <Line type="monotone" dataKey="investimento" stroke="#3b82f6" strokeWidth={4} dot={false} tension={0.4} />
-                              <Line type="monotone" dataKey="leads" stroke="#a855f7" strokeWidth={4} dot={false} tension={0.4} />
+                              <Line name="Probabilidade" type="monotone" dataKey="probability" stroke="#3b82f6" strokeWidth={4} dot={false} tension={0.4} />
+                              <Line name="ROAS" type="monotone" dataKey="roas" stroke="#a855f7" strokeWidth={4} dot={false} tension={0.4} />
                            </LineChart>
                         </ResponsiveContainer>
+                      ) : (
+                         <div className="flex items-center justify-center h-full">
+                            <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] text-center max-w-[200px]">
+                               Aguardando acúmulo de impressões reais para cálculo preditivo.
+                            </p>
+                         </div>
                       )}
                    </div>
                 </div>

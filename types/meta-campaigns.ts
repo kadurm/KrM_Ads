@@ -48,6 +48,14 @@ export interface MetaCampaign {
   results?: number;
   ctr?: number;
   impressions?: number;
+
+  // Andromeda Historical Data
+  historical_insights?: {
+    date: string;
+    spend: number;
+    purchase_roas: number;
+    results: number;
+  }[];
 }
 
 export interface MetaAPIResponse {
