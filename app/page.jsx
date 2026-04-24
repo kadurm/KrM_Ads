@@ -668,54 +668,57 @@ export default function App() {
             <div ref={reportRef} className="space-y-6">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Performance Global</h1>
-                  <p className="text-slate-500 text-sm mt-1">Dados auditados: <strong>{clienteSelecionado}</strong></p>
+                  <h1 className="text-xl font-black text-white tracking-tighter uppercase">Andromeda Engine</h1>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Audit: {clienteSelecionado}</p>
                 </div>
-                <div className="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-sm flex-wrap">
-                  <div className="flex gap-1 bg-slate-800 p-1 rounded-lg">
+                <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-md">
+                  <div className="flex gap-1 bg-slate-950/50 p-1 rounded-xl border border-slate-800">
                     {[
-                      { id: 'hoje', label: 'Hoje' },
-                      { id: 'ontem', label: 'Ontem' },
-                      { id: '7d', label: '7 Dias' },
-                      { id: 'este_mes', label: 'Este Mês' },
-                      { id: 'mes_passado', label: 'Mês Passado' },
+                      { id: 'hoje', label: 'H' },
+                      { id: 'ontem', label: 'O' },
+                      { id: '7d', label: '7D' },
+                      { id: 'este_mes', label: 'MÊS' },
                     ].map(s => (
-                      <button key={s.id} onClick={() => handleShortcut(s.id)} className={getShortcutClass(s.id)}>{s.label}</button>
+                      <button 
+                        key={s.id} 
+                        onClick={() => handleShortcut(s.id)} 
+                        className={`px-3 py-1.5 text-[9px] font-black rounded-lg transition-all ${activeShortcut === s.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                      >
+                        {s.label}
+                      </button>
                     ))}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[11px] font-bold text-slate-300 p-1.5 rounded-lg border border-slate-700 outline-none" />
-                    <span className="text-slate-600 text-xs">→</span>
-                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[11px] font-bold text-slate-300 p-1.5 rounded-lg border border-slate-700 outline-none" />
+                  <div className="flex items-center gap-1.5 px-3">
+                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-24" />
+                    <div className="w-1.5 h-px bg-slate-700" />
+                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-24" />
                   </div>
-                  <button onClick={handleSync} disabled={isSyncing} title={isSyncing ? 'Sincronizando...' : 'Sincronizar Dados'} className="p-2 px-3 bg-blue-600/20 text-blue-400 rounded-lg font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all">
+                  <button onClick={handleSync} disabled={isSyncing} className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-900/20">
                     <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
                   </button>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
-                  <div className="text-xl font-black mt-1 text-slate-100">R$ {investimento}</div>
+                <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><Target size={10}/> Investimento</span>
+                  <div className="text-lg font-black mt-1 text-white">R$ {investimento}</div>
                 </div>
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
-                  <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento</span>
-                  <div className="flex items-center gap-1 mt-1">
-                    <span className="text-xl font-black text-slate-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
-                  </div>
+                <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl shadow-xl border-l-4 border-l-emerald-500/50">
+                  <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2"><DollarSign size={10}/> Faturamento</span>
+                  <div className="text-lg font-black mt-1 text-white">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</div>
                 </div>
-                <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
-                  <span className="text-[10px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
-                  <div className="text-2xl font-black mt-1">{roas}x</div>
+                <div className="bg-blue-600 p-5 rounded-2xl shadow-2xl shadow-blue-900/20 text-white">
+                  <span className="text-[8px] font-black text-blue-100 uppercase tracking-widest flex items-center gap-2"><TrendingUp size={10}/> ROAS Real</span>
+                  <div className="text-xl font-black mt-1">{roas}x</div>
                 </div>
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
-                  <div className="text-xl font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
+                <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><MessageCircle size={10}/> Leads</span>
+                  <div className="text-lg font-black mt-1 text-white">{totalLeads}</div>
                 </div>
-                <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
-                  <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
-                  <div className="text-2xl font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
+                <div className="bg-emerald-600 p-5 rounded-2xl shadow-2xl shadow-emerald-900/40 text-white">
+                  <span className="text-[8px] font-black text-emerald-100 uppercase tracking-widest flex items-center gap-2"><Target size={10}/> CAC</span>
+                  <div className="text-xl font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
                 </div>
               </div>
 
