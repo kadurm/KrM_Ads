@@ -250,10 +250,16 @@ export default function App() {
     return activeShortcut === id ? `${base} bg-slate-700 text-blue-400 shadow-md border border-blue-500/20` : `${base} text-slate-400 hover:bg-slate-700/50`;
   };
 
-  const dadosGrafico = relatorioDados.map(item => ({
-    nome: item.nome.split('][')[3]?.replace(']','') || item.nome,
-    rawValor: item.rawValor
-  }));
+  const dadosGrafico = React.useMemo(() => {
+    const map = new Map();
+    relatorioDados.forEach(item => {
+      const nomeSimples = item.nome.split('][')[3]?.replace(']', '') || item.nome;
+      const atual = map.get(nomeSimples) || 0;
+      map.set(nomeSimples, atual + item.rawValor);
+    });
+    return Array.from(map.entries()).map(([nome, valor]) => ({ nome, rawValor: valor }))
+      .sort((a, b) => b.rawValor - a.rawValor);
+  }, [relatorioDados]);
 
   const handleGerarIA = async () => {
     setIsGenerating(true); setAnaliseIA("Gerando análise estratégica...");
@@ -400,16 +406,18 @@ export default function App() {
                     })}
                   </div>
                 </div>
-                <div className="lg:col-span-2 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl">
+                <div className="lg:col-span-2 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl flex flex-col">
                   <h3 className="text-xs font-bold uppercase text-slate-500 mb-8 text-center">Distribuição de verba</h3>
-                  <ResponsiveContainer width="100%" height={280}>
-                    <BarChart data={dadosGrafico} layout="vertical" margin={{left:-20}}>
-                      <XAxis type="number" hide/>
-                      <YAxis dataKey="nome" type="category" tick={{fontSize:9, fill:'#64748b'}} width={90} />
-                      <Tooltip cursor={{fill:'#1e293b'}} contentStyle={{backgroundColor:'#0f172a', border:'none', borderRadius:'8px'}} formatter={(v) => [`R$ ${parseFloat(v).toFixed(2)}`, 'Gasto']} />
-                      <Bar dataKey="rawValor" fill="#3b82f6" radius={[0,4,4,0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div className="flex-1 flex items-center justify-center">
+                    <ResponsiveContainer width="100%" height={280}>
+                      <BarChart data={dadosGrafico} layout="vertical" margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
+                        <XAxis type="number" hide/>
+                        <YAxis dataKey="nome" type="category" tick={{fontSize:9, fill:'#64748b'}} width={100} />
+                        <Tooltip cursor={{fill:'#1e293b'}} contentStyle={{backgroundColor:'#0f172a', border:'none', borderRadius:'8px'}} formatter={(v) => [`R$ ${parseFloat(v).toFixed(2)}`, 'Gasto']} />
+                        <Bar dataKey="rawValor" fill="#3b82f6" radius={[0,4,4,0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
 
