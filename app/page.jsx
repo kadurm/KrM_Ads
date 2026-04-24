@@ -622,30 +622,36 @@ export default function App() {
               )}
 
               <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-slate-100"><ImageIcon className="text-blue-500" /> Ranking de Criativos — Melhores Resultados</h3>
-              <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado.</p>
+              <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado. Os criativos no topo são os que devem ser replicados e escalados.</p>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[...criativosDados]
                   .map(c => ({ ...c, _cpa: segmento === 'inside_sales' ? (c.leads > 0 ? c.valor_investido / c.leads : Infinity) : (c.compras > 0 ? c.valor_investido / c.compras : Infinity) }))
                   .sort((a, b) => a._cpa - b._cpa)
                   .map((c, idx) => {
                    const cpa = c._cpa === Infinity ? 0 : c._cpa;
+                   const medals = ['🥇', '🥈', '🥉'];
+                   const medal = idx < 3 && cpa > 0 ? medals[idx] : null;
+                   const borderHighlight = idx === 0 && cpa > 0 ? 'border-yellow-500/60 shadow-yellow-900/10' : idx === 1 && cpa > 0 ? 'border-slate-400/40' : idx === 2 && cpa > 0 ? 'border-amber-700/40' : 'border-slate-800';
                    return (
-                     <div key={c.id} className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden flex flex-col h-full shadow-2xl">
+                     <div key={c.id} className={`bg-slate-900 rounded-2xl border ${borderHighlight} overflow-hidden group hover:border-blue-500/50 transition-all flex flex-col h-full shadow-2xl`}>
                        <div className="h-64 bg-slate-950 flex items-center justify-center relative overflow-hidden">
                          {c.url_midia ? (
-                            <img src={c.url_midia} alt={c.nome_anuncio} className="h-full w-full object-cover" />
+                            <img src={c.url_midia} alt={c.nome_anuncio} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                          ) : (
                             <ImageIcon className="text-slate-800" size={48} />
                          )}
+                         {medal && <div className="absolute top-2 left-2 text-2xl drop-shadow-lg">{medal}</div>}
                          <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-[10px] font-bold text-white uppercase border border-white/10 backdrop-blur-sm">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
                        </div>
                        <div className="p-5 flex-1 flex flex-col">
-                         <div className="text-[12px] font-bold text-slate-100 line-clamp-1 mb-4 uppercase tracking-tight">{c.nome_anuncio}</div>
+                         <div className="text-[12px] font-bold text-slate-100 line-clamp-1 mb-4 uppercase tracking-tight">{medal ? `${medal} ` : ''}{c.nome_anuncio}</div>
                          <div className="grid grid-cols-2 gap-3 mb-4">
+                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Alcance</div><div className="text-xs font-bold text-slate-100 text-center">{c.alcance?.toLocaleString()}</div></div>
+                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Impressões</div><div className="text-xs font-bold text-slate-100 text-center">{c.impressoes?.toLocaleString()}</div></div>
                            <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Gasto</div><div className="text-xs font-bold text-slate-100 text-center">R$ {parseFloat(c.valor_investido).toFixed(2)}</div></div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Leads</div><div className="text-xs font-bold text-slate-100 text-center">{c.leads}</div></div>
+                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">{segmento === 'inside_sales' ? 'Leads' : 'Vendas'}</div><div className="text-xs font-bold text-slate-100 text-center">{segmento === 'inside_sales' ? c.leads : c.compras}</div></div>
                          </div>
-                         <div className={`w-full py-2.5 bg-blue-600 border border-blue-500 shadow-lg text-white rounded-xl text-center text-xs font-black uppercase tracking-widest mt-auto`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
+                         <div className={`w-full py-2.5 ${cpa > 0 && idx < 3 ? 'bg-emerald-600 border-emerald-500' : 'bg-blue-600 border-blue-500'} shadow-lg text-white rounded-xl text-center text-xs font-black uppercase tracking-widest mt-auto border`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
                        </div>
                      </div>
                    );
