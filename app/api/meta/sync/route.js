@@ -171,7 +171,7 @@ export async function GET(request) {
       .map(d => ({
         ...d,
         investimento: parseFloat(d.investimentoTotal.toFixed(2)),
-        cac: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
+        cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
     return NextResponse.json({ success: true, metrics, criativos, dailyMetrics });
