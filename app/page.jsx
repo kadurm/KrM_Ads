@@ -87,8 +87,6 @@ export default function App() {
   const [editingCampaign, setEditingCampaign] = useState(null);
   const [editBudget, setEditBudget] = useState('');
   const [dailyData, setDailyData] = useState([]);
-  const [campaignsLevel, setCampaignsLevel] = useState('campaign'); // 'campaign', 'adset', 'ad'
-  const [campaignsParentId, setCampaignsParentId] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, ACTIVE, PAUSED
@@ -96,6 +94,11 @@ export default function App() {
   const [showColumnMenu, setShowColumnMenu] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newObject, setNewObject] = useState({ name: '', objective: 'OUTCOME_TRAFFIC', budget: '20' });
+  const [leadsList, setLeadsList] = useState([]);
+  const [leadsLoading, setLeadsLoading] = useState(false);
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [editingLead, setEditingLead] = useState(null);
+  const [newLead, setNewLead] = useState({ nome: '', contato: '', status: 'NOVO', valor: '0', origem: '' });
   const reportRef = useRef(null);
 
   const loadClientes = async () => {
@@ -272,9 +275,66 @@ export default function App() {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const toggleSelectAll = () => {
-    if (selectedIds.length === campaignsList.length) setSelectedIds([]);
-    else setSelectedIds(campaignsList.map(item => item.id));
+  const loadLeads = async () => {
+    if (!clienteSelecionado) return;
+    setLeadsLoading(true);
+    try {
+      const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteSelecionado)}`);
+      const data = await res.json();
+      if (data.success) setLeadsList(data.leads);
+      else setMensagemPainel({ tipo: 'erro', texto: data.error });
+    } catch (e) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Erro ao carregar leads.' });
+    } finally {
+      setLeadsLoading(false);
+    }
+  };
+
+  const handleSaveLead = async (e) => {
+    e.preventDefault();
+    setLeadsLoading(true);
+    try {
+      const method = editingLead ? 'PATCH' : 'POST';
+      const body = editingLead 
+        ? { id: editingLead.id, ...newLead }
+        : { cliente: clienteSelecionado, ...newLead };
+
+      const res = await fetch('/api/crm', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowLeadModal(false);
+        setEditingLead(null);
+        await loadLeads();
+        setMensagemPainel({ tipo: 'sucesso', texto: 'Registro salvo com sucesso!' });
+      } else {
+        setMensagemPainel({ tipo: 'erro', texto: data.error });
+      }
+    } catch (e) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Erro ao salvar registro.' });
+    } finally {
+      setLeadsLoading(false);
+    }
+  };
+
+  const handleDeleteLead = async (id) => {
+    if (!window.confirm('Excluir este registro permanentemente?')) return;
+    setLeadsLoading(true);
+    try {
+      const res = await fetch(`/api/crm?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        await loadLeads();
+        setMensagemPainel({ tipo: 'sucesso', texto: 'Registro excluído.' });
+      }
+    } catch (e) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Falha ao excluir.' });
+    } finally {
+      setLeadsLoading(false);
+    }
   };
 
   const handleCreateObject = async (e) => {
@@ -539,8 +599,8 @@ export default function App() {
               <button onClick={() => { setActiveTab('campanhas'); loadCampaigns(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'campanhas' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Megaphone size={16} /> Campanhas (Meta)
               </button>
-              <button onClick={() => setActiveTab('entrada')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'entrada' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                <Database size={16} /> Dados Adicionais (ROI)
+              <button onClick={() => { setActiveTab('crm'); loadLeads(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'crm' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <Database size={16} /> CRM / Extrato
               </button>
             </nav>
           </div>
@@ -963,16 +1023,141 @@ export default function App() {
             </div>
           )}
 
-          {activeTab === 'entrada' && (
-            <div className="max-w-4xl mx-auto py-10">
-               <h1 className="text-3xl font-black mb-2 text-slate-100 tracking-tighter">Métricas de Faturamento</h1>
-               <p className="text-slate-500 mb-8 font-medium">Faturamento e ROI Real — Workspace: <strong>{clienteSelecionado}</strong></p>
-               <div className="bg-slate-900 p-16 rounded-[3rem] border border-slate-800 text-center py-32 shadow-2xl relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-600 to-transparent opacity-50" />
-                  <Database size={80} className="mx-auto text-slate-800 mb-8" />
-                  <p className="text-slate-400 font-black text-xl uppercase tracking-tighter">Integração Financeira KrM</p>
-                  <p className="text-slate-500 text-sm mt-4 max-w-md mx-auto font-medium opacity-80 leading-relaxed">Este módulo permitirá o cálculo do ROI Real cruzando dados do Meta Ads com o seu faturamento efetivado.</p>
+          {activeTab === 'crm' && (
+            <div className="max-w-6xl mx-auto py-10 space-y-8">
+               <div className="flex justify-between items-end">
+                 <div>
+                    <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Extrato CRM</h1>
+                    <p className="text-slate-500 font-medium mt-1 uppercase text-[10px] tracking-widest">Gestão de Leads e Vendas Reais — Workspace: {clienteSelecionado}</p>
+                 </div>
+                 <button onClick={() => { setEditingLead(null); setNewLead({ nome: '', contato: '', status: 'NOVO', valor: '0', origem: '' }); setShowLeadModal(true); }} className="p-3 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 border border-blue-500/20">
+                   <Plus size={16} /> Novo Registro
+                 </button>
                </div>
+
+               {/* RESUMO CRM */}
+               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                 {[
+                   { label: 'Total de Leads', value: leadsList.length, icon: Users, color: 'blue' },
+                   { label: 'Negociações', value: leadsList.filter(l => l.status === 'NEGOCIACAO').length, icon: TrendingUp, color: 'amber' },
+                   { label: 'Fechamentos', value: leadsList.filter(l => l.status === 'FECHADO').length, icon: Check, color: 'emerald' },
+                   { label: 'Valor em Pipeline', value: `R$ ${leadsList.reduce((acc, curr) => acc + parseFloat(curr.valor), 0).toLocaleString()}`, icon: DollarSign, color: 'blue' },
+                 ].map((stat, i) => (
+                   <div key={i} className="bg-slate-900 p-6 rounded-[2rem] border border-slate-800 shadow-xl flex items-center gap-4">
+                     <div className={`p-4 rounded-2xl bg-${stat.color}-600/10 text-${stat.color}-400 shadow-inner`}>
+                       <stat.icon size={24} />
+                     </div>
+                     <div>
+                       <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{stat.label}</p>
+                       <p className="text-xl font-black text-white">{stat.value}</p>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+
+               {leadsLoading ? (
+                 <div className="flex items-center justify-center py-32 flex-col gap-6">
+                   <Loader2 className="animate-spin text-blue-600" size={48} />
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">Acessando Banco de Dados KrM...</p>
+                 </div>
+               ) : (
+                 <div className="bg-slate-900 rounded-[2.5rem] border border-slate-800 overflow-hidden shadow-2xl">
+                   <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
+                          <th className="p-6">Lead</th>
+                          <th className="p-6">Contato</th>
+                          <th className="p-6">Status</th>
+                          <th className="p-6">Origem</th>
+                          <th className="p-6 text-right">Valor</th>
+                          <th className="p-6 text-right">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/50">
+                        {leadsList.map(lead => (
+                          <tr key={lead.id} className="hover:bg-slate-800/30 transition-all group">
+                            <td className="p-6">
+                              <p className="text-sm font-bold text-slate-200">{lead.nome}</p>
+                              <p className="text-[9px] text-slate-600 font-bold uppercase">{new Date(lead.data).toLocaleDateString()}</p>
+                            </td>
+                            <td className="p-6 text-xs text-slate-400 font-medium">{lead.contato || '-'}</td>
+                            <td className="p-6">
+                              <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                                lead.status === 'FECHADO' ? 'bg-emerald-600/10 text-emerald-400' :
+                                lead.status === 'PERDIDO' ? 'bg-red-600/10 text-red-400' :
+                                lead.status === 'NEGOCIACAO' ? 'bg-amber-600/10 text-amber-400' :
+                                'bg-blue-600/10 text-blue-400'
+                              }`}>
+                                {lead.status}
+                              </span>
+                            </td>
+                            <td className="p-6 text-xs text-slate-500 italic">{lead.origem || 'Direto'}</td>
+                            <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {parseFloat(lead.valor).toFixed(2)}</td>
+                            <td className="p-6 text-right">
+                               <button onClick={() => { setEditingLead(lead); setNewLead({...lead, valor: lead.valor.toString()}); setShowLeadModal(true); }} className="p-3 text-slate-600 hover:text-blue-400 transition-all"><Pencil size={16} /></button>
+                               <button onClick={() => handleDeleteLead(lead.id)} className="p-3 text-slate-600 hover:text-red-400 transition-all"><Trash2 size={16} /></button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                   </table>
+                 </div>
+               )}
+
+               {/* MODAL LEAD */}
+               {showLeadModal && (
+                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="bg-slate-900 w-full max-w-lg rounded-[3rem] border border-slate-800 shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden">
+                       <div className="p-10 border-b border-slate-800 flex justify-between items-center bg-slate-950/30">
+                         <div>
+                           <h3 className="text-xl font-black text-white tracking-tighter uppercase">{editingLead ? 'Editar Registro' : 'Novo Lead / Venda'}</h3>
+                           <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">Gestão de Relacionamento e Receita</p>
+                         </div>
+                         <button onClick={() => setShowLeadModal(false)} className="p-3 hover:bg-slate-800 rounded-2xl text-slate-500 transition-all"><X size={20}/></button>
+                       </div>
+                       <form onSubmit={handleSaveLead} className="p-10 space-y-6">
+                         <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nome do Cliente</label>
+                              <input required type="text" value={newLead.nome} onChange={e => setNewLead({...newLead, nome: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all" />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Contato</label>
+                              <input type="text" value={newLead.contato} onChange={e => setNewLead({...newLead, contato: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all" placeholder="Tel ou Email" />
+                            </div>
+                         </div>
+                         <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Status</label>
+                              <select value={newLead.status} onChange={e => setNewLead({...newLead, status: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all appearance-none">
+                                <option value="NOVO">Novo Lead</option>
+                                <option value="CONTATO">Em Contato</option>
+                                <option value="NEGOCIACAO">Em Negociação</option>
+                                <option value="FECHADO">Venda Fechada</option>
+                                <option value="PERDIDO">Perdido</option>
+                              </select>
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Valor do Negócio (R$)</label>
+                              <input type="number" value={newLead.valor} onChange={e => setNewLead({...newLead, valor: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-blue-400 font-bold outline-none focus:border-blue-600/50 transition-all" />
+                            </div>
+                         </div>
+                         <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Origem / Campanha</label>
+                            <input type="text" value={newLead.origem} onChange={e => setNewLead({...newLead, origem: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all" placeholder="Ex: Campanha de Abril" />
+                         </div>
+                         <div className="pt-4 flex gap-4">
+                           <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-900/20">
+                             {editingLead ? 'Salvar Alterações' : 'Criar Registro'}
+                           </button>
+                           <button type="button" onClick={() => setShowLeadModal(false)} className="px-8 bg-slate-800 text-slate-400 font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-slate-700 transition-all">
+                             Cancelar
+                           </button>
+                         </div>
+                       </form>
+                    </div>
+                 </div>
+               )}
             </div>
           )}
 
