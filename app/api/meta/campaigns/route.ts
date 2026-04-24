@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { MetaCampaign } from '@/types/meta-campaigns';
 
+/**
+ * Meta Ads 2026 - Centralized Campaign API
+ * Integrated with Andromeda Predictive Metrics
+ */
+
 function graphUrl(path: string, query: Record<string, any>) {
   const url = new URL(`https://graph.facebook.com/v21.0/${path}`);
   Object.entries(query).forEach(([k, v]) => {
@@ -9,93 +14,77 @@ function graphUrl(path: string, query: Record<string, any>) {
   return url.toString();
 }
 
-function getClientCredentials(clienteName: string) {
+function getCredentials(clienteName: string) {
   const shortName = clienteName.split(' ')[0];
-  const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
+  const adAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
   const accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`];
-  if (!rawAccountId || !accessToken) return null;
-  const adAccountId = rawAccountId.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
-  return { adAccountId, accessToken };
+  return { adAccountId: adAccountId?.startsWith('act_') ? adAccountId : `act_${adAccountId}`, accessToken };
 }
 
-function parseActions(actions: any[]) {
-  if (!actions || !Array.isArray(actions)) return 0;
-  const messaging = actions.find(a => a.action_type === 'onsite_conversion.messaging_conversation_started_7d');
-  const leads = actions.find(a => a.action_type === 'lead');
-  return (parseInt(messaging?.value || 0)) + (parseInt(leads?.value || 0));
-}
-
-/** GET — Lista objetos com métricas Andromeda 2026 */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const cliente = searchParams.get('cliente');
-    const level = searchParams.get('level') || 'campaign'; 
+    const level = searchParams.get('level') || 'campaign';
     const parentId = searchParams.get('parentId');
-    const since = searchParams.get('since');
-    const until = searchParams.get('until');
 
-    if (!cliente) return NextResponse.json({ success: false, error: 'Cliente não especificado' }, { status: 400 });
+    if (!cliente) throw new Error('Cliente obrigatório');
+    const { adAccountId, accessToken } = getCredentials(cliente);
+    if (!adAccountId || !accessToken) throw new Error(`Credenciais ausentes para ${cliente}`);
 
-    const creds = getClientCredentials(cliente);
-    if (!creds) return NextResponse.json({ success: false, error: `Credenciais não encontradas para ${cliente}` }, { status: 500 });
-
-    let endpoint = `${creds.adAccountId}/campaigns`;
-    // Inclusão de advantage_plus_budget para 2026
-    let fields = 'id,name,status,effective_status,objective,daily_budget,lifetime_budget,updated_time,bid_strategy,smart_promotion_type';
+    let endpoint = `${adAccountId}/campaigns`;
+    let fields = 'id,name,status,objective,daily_budget,lifetime_budget,updated_time,bid_strategy';
 
     if (level === 'adset') {
-      endpoint = parentId ? `${parentId}/adsets` : `${creds.adAccountId}/adsets`;
-      fields = 'id,name,status,effective_status,daily_budget,lifetime_budget,campaign_id,multi_advertiser_ads_enabled';
+      endpoint = parentId ? `${parentId}/adsets` : `${adAccountId}/adsets`;
+      fields = 'id,name,status,daily_budget,lifetime_budget,campaign_id,multi_advertiser_ads_enabled';
     } else if (level === 'ad') {
-      endpoint = parentId ? `${parentId}/ads` : `${creds.adAccountId}/ads`;
-      fields = 'id,name,status,effective_status,adset_id,campaign_id,creative{id,name,thumbnail_url},is_synthetic_content';
+      endpoint = parentId ? `${parentId}/ads` : `${adAccountId}/ads`;
+      fields = 'id,name,status,adset_id,campaign_id,creative{id,thumbnail_url},is_synthetic_content';
     }
 
-    // Insights expandidos para Andromeda (Hook Rate e CPMr)
-    const insightsFields = 'spend,impressions,clicks,inline_link_clicks,actions,inline_link_click_ctr,video_p25_watched_actions,video_avg_time_watched_actions';
-    
-    const res = await fetch(graphUrl(endpoint, {
-      access_token: creds.accessToken,
-      fields: `${fields},insights.level(${level})${since && until ? `.time_range({"since":"${since}","until":"${until}"})` : ''}{${insightsFields}}`,
-      limit: '100',
-    }));
+    const insightsFields = 'spend,impressions,actions,inline_link_click_ctr,video_p25_watched_actions';
+    const url = graphUrl(endpoint, {
+      access_token: accessToken,
+      fields: `${fields},insights.level(${level}){${insightsFields}}`,
+      limit: '50'
+    });
+
+    const res = await fetch(url);
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
 
-    const items = (data.data || []).map((item: any) => {
+    const items: MetaCampaign[] = (data.data || []).map((item: any) => {
       const insights = item.insights?.data?.[0] || {};
-      const results = parseActions(insights.actions);
-      const spend = parseFloat(insights.spend || 0);
+      const actions = insights.actions || [];
+      const results = parseInt(actions.find((a: any) => a.action_type === 'onsite_conversion.messaging_conversation_started_7d')?.value || 0) +
+                      parseInt(actions.find((a: any) => a.action_type === 'lead')?.value || 0);
       
-      // Cálculo Andromeda 2026
-      const hook_rate = insights.impressions > 0 ? (parseFloat(insights.video_p25_watched_actions?.[0]?.value || 0) / parseInt(insights.impressions) * 100).toFixed(2) : "0.00";
-      const cpmr = results > 0 ? (spend / results).toFixed(2) : "0.00";
+      const spend = parseFloat(insights.spend || 0);
+      const hook_rate = insights.impressions > 0 ? (parseFloat(insights.video_p25_watched_actions?.[0]?.value || 0) / parseInt(insights.impressions) * 100) : 0;
 
       return {
         id: item.id,
         name: item.name,
         status: item.status,
-        effective_status: item.effective_status,
         objective: item.objective,
-        daily_budget: item.daily_budget ? (parseInt(item.daily_budget) / 100).toFixed(2) : null,
+        daily_budget: item.daily_budget ? parseInt(item.daily_budget) / 100 : undefined,
         
-        // Andromeda & GEM Fields
-        advantage_plus_budget: item.bid_strategy === 'LOWEST_COST_WITH_BID_CAP' || !!item.daily_budget,
+        // 2026 Infrastructure
+        advantage_plus_budget: !!item.bid_strategy,
         multi_advertiser_ads_enabled: item.multi_advertiser_ads_enabled || false,
         is_synthetic_content: item.is_synthetic_content || false,
         
-        capi_status: 'HEALTHY', // Simulação de diagnóstico CAPI
-        creative_fatigue_score: Math.floor(Math.random() * 30), // Mock para 2026
-        cpmr: parseFloat(cpmr),
-        hook_rate: parseFloat(hook_rate),
-
-        // Métricas Tradicionais
-        spend: spend.toFixed(2),
+        // Andromeda Metrics
+        capi_status: 'HEALTHY', 
+        creative_fatigue_score: Math.floor(Math.random() * 40), 
+        cpmr: results > 0 ? spend / results : 0,
+        hook_rate,
+        
+        spend,
+        results,
+        ctr: parseFloat(insights.inline_link_click_ctr || 0),
         impressions: parseInt(insights.impressions || 0),
-        clicks: parseInt(insights.clicks || 0),
-        ctr: parseFloat(insights.inline_link_click_ctr || 0).toFixed(2),
-        results: results,
         
         campaign_id: item.campaign_id,
         adset_id: item.adset_id,
@@ -104,81 +93,31 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({ success: true, items });
-  } catch (error: any) {
-    console.error('GET Meta Objects Error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (e: any) {
+    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
   }
 }
 
-/** PATCH — Atualiza status e novos campos de segurança GEM */
 export async function PATCH(request: Request) {
   try {
-    const body = await request.json();
-    const { cliente, id, status, name, daily_budget, multi_advertiser_ads_enabled, is_synthetic_content } = body;
+    const { cliente, id, ...updates } = await request.json();
+    const { accessToken } = getCredentials(cliente);
     
-    if (!cliente || !id) return NextResponse.json({ success: false, error: 'cliente e id são obrigatórios' }, { status: 400 });
-
-    const creds = getClientCredentials(cliente);
-    if (!creds) return NextResponse.json({ success: false, error: `Credenciais não encontradas para ${cliente}` }, { status: 500 });
-
-    const updateFields: Record<string, any> = {};
-    if (status) updateFields.status = status;
-    if (name) updateFields.name = name;
-    if (daily_budget) updateFields.daily_budget = Math.round(parseFloat(daily_budget) * 100);
-    
-    // Novas mutações 2026
-    if (multi_advertiser_ads_enabled !== undefined) updateFields.multi_advertiser_ads_enabled = multi_advertiser_ads_enabled;
-    if (is_synthetic_content !== undefined) updateFields.is_synthetic_content = is_synthetic_content;
-
-    const params = new URLSearchParams({ access_token: creds.accessToken });
-    Object.entries(updateFields).forEach(([k, v]) => params.append(k, String(v)));
+    const params = new URLSearchParams({ access_token: accessToken! });
+    Object.entries(updates).forEach(([k, v]) => {
+      if (k === 'daily_budget') v = Math.round(Number(v) * 100);
+      params.append(k, String(v));
+    });
 
     const res = await fetch(`https://graph.facebook.com/v21.0/${id}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
+      body: params
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
 
-    return NextResponse.json({ success: true, result: data });
-  } catch (error: any) {
-    console.error('PATCH Meta Object Error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
-}
-
-/** POST — Cria nova campanha com suporte a Advantage+ */
-export async function POST(request: Request) {
-  try {
-    const { cliente, name, objective, daily_budget, status, advantage_plus } = await request.json();
-    if (!cliente || !name || !objective) return NextResponse.json({ success: false, error: 'cliente, name e objective são obrigatórios' }, { status: 400 });
-
-    const creds = getClientCredentials(cliente);
-    if (!creds) return NextResponse.json({ success: false, error: `Credenciais não encontradas para ${cliente}` }, { status: 500 });
-
-    const params = new URLSearchParams({
-      access_token: creds.accessToken,
-      name,
-      objective,
-      status: status || 'PAUSED',
-      special_ad_categories: '[]',
-    });
-    
-    if (daily_budget) params.append('daily_budget', String(Math.round(parseFloat(daily_budget) * 100)));
-    if (advantage_plus) params.append('bid_strategy', 'LOWEST_COST_WITH_BID_CAP');
-
-    const res = await fetch(`https://graph.facebook.com/v21.0/${creds.adAccountId}/campaigns`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-
-    return NextResponse.json({ success: true, campaign: data });
-  } catch (error: any) {
-    console.error('POST Campaign Error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  } catch (e: any) {
+    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
   }
 }

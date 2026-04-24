@@ -1,45 +1,53 @@
 /**
- * Meta Ads 2026 - Campaign Typing
- * Andromeda & Meta GEM Integration
+ * Meta Ads 2026 - Type definitions for Andromeda & GEM ecosystem
  */
+
+export type MetaStatus = 'ACTIVE' | 'PAUSED' | 'ARCHIVED' | 'DELETED';
+export type CapiStatus = 'HEALTHY' | 'WARNING' | 'CRITICAL' | 'DISCONNECTED';
 
 export interface MetaCampaign {
   id: string;
   name: string;
-  status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+  status: MetaStatus;
+  effective_status?: string;
   objective: string;
   daily_budget?: number;
   lifetime_budget?: number;
-  spend: number;
-  results: number;
+  updated_time?: string;
   
-  // 2026 Core Infrastructure
-  advantage_plus_budget: boolean; // CBO Evolution
+  // 2026 Infrastructure Fields
+  advantage_plus_budget: boolean;
   multi_advertiser_ads_enabled: boolean;
-  is_synthetic_content: boolean; // Meta GEM Flag
+  is_synthetic_content: boolean;
   
-  // Advanced Andromeda Metrics
-  capi_status: 'HEALTHY' | 'WARNING' | 'CRITICAL';
+  // Andromeda Metrics
+  capi_status: CapiStatus;
   creative_fatigue_score: number; // 0-100
   cpmr: number; // Cost Per Meaningful Result
   hook_rate: number; // Percentage
   
-  // Predictive Andromeda Layer
+  // Predictive Analytics
   predictive_roas?: number;
   conversion_probability?: number;
-  ad_quality_index?: number;
-
+  
+  // Relationships
+  campaign_id?: string;
+  adset_id?: string;
   creative?: {
     id: string;
+    name?: string;
     thumbnail_url?: string;
-    is_gem_generated?: boolean;
   };
+  
+  // Real-time Insights
+  spend: number;
+  results: number;
+  ctr: number;
+  impressions: number;
 }
 
-export interface MetaAdSet extends MetaCampaign {
-  campaign_id: string;
-}
-
-export interface MetaAd extends MetaCampaign {
-  adset_id: string;
+export interface MetaAPIResponse {
+  success: boolean;
+  items?: MetaCampaign[];
+  error?: string;
 }
