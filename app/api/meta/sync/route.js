@@ -276,7 +276,7 @@ export async function POST(request) {
           thumbnail_height: 800
         }));
         const data = await res.json();
-        Object.values(data).forEach((ad: any) => {
+        Object.values(data).forEach((ad) => {
           if (ad.creative) {
             creativeMetaMap.set(String(ad.creative.id), ad.creative);
             adToCreativeMap.set(String(ad.id), String(ad.creative.id));
