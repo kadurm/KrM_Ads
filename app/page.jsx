@@ -564,7 +564,7 @@ export default function App() {
                            <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Gasto</div><div className="text-xs font-bold text-slate-100 text-center">R$ {parseFloat(c.valor_investido).toFixed(2)}</div></div>
                            <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">{segmento === 'inside_sales' ? 'Leads' : 'Vendas'}</div><div className="text-xs font-bold text-slate-100 text-center">{segmento === 'inside_sales' ? c.leads : c.compras}</div></div>
                          </div>
-                         <div className={`w-full py-2.5 ${cpa > 0 && idx < 3 ? 'bg-emerald-600 border-emerald-500' : 'bg-blue-600 border-blue-500'} shadow-lg text-white rounded-xl text-center text-xs font-black uppercase tracking-widest mt-auto border`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : 'Sem resultado'}</div>
+                         <div className={`w-full py-2.5 ${cpa > 0 && idx < 3 ? 'bg-emerald-600 border-emerald-500' : 'bg-blue-600 border-blue-500'} shadow-lg text-white rounded-xl text-center text-xs font-black uppercase tracking-widest mt-auto border`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
                        </div>
                      </div>
                    );
