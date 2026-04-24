@@ -165,7 +165,14 @@ export async function GET(request) {
         existing.compras += stats.compras;
         existing.totalCtr += stats.totalCtr;
         existing.count += stats.count;
-        if (!existing.url_midia) existing.url_midia = c.url_midia;
+
+        // Estratégia de Preferência por Imagem de Alta Resolução (HD)
+        const isNewHd = c.url_midia?.includes('adimages') || c.url_midia?.includes('video') || c.url_midia?.includes('full_picture');
+        const isExistingHd = existing.url_midia?.includes('adimages') || existing.url_midia?.includes('video') || existing.url_midia?.includes('full_picture');
+        
+        if (c.url_midia && (!existing.url_midia || (isNewHd && !isExistingHd))) {
+          existing.url_midia = c.url_midia;
+        }
       }
     }
 
