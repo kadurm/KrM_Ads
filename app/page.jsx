@@ -88,6 +88,12 @@ export default function App() {
   const [campaignsLevel, setCampaignsLevel] = useState('campaign'); // 'campaign', 'adset', 'ad'
   const [campaignsParentId, setCampaignsParentId] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, ACTIVE, PAUSED
+  const [visibleColumns, setVisibleColumns] = useState(['spend', 'results', 'cpa']); // spend, results, cpa, impressions, ctr, clicks
+  const [showColumnMenu, setShowColumnMenu] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newObject, setNewObject] = useState({ name: '', objective: 'OUTCOME_TRAFFIC', budget: '20' });
   const reportRef = useRef(null);
 
   const loadClientes = async () => {
@@ -267,6 +273,53 @@ export default function App() {
   const toggleSelectAll = () => {
     if (selectedIds.length === campaignsList.length) setSelectedIds([]);
     else setSelectedIds(campaignsList.map(item => item.id));
+  };
+
+  const handleCreateObject = async (e) => {
+    e.preventDefault();
+    setCampaignsLoading(true);
+    try {
+      const payload = {
+        cliente: clienteSelecionado,
+        type: campaignsLevel,
+        data: {
+          name: newObject.name,
+          status: 'PAUSED',
+        }
+      };
+
+      if (campaignsLevel === 'campaign') {
+        payload.data.objective = newObject.objective;
+        payload.data.daily_budget = newObject.budget;
+      } else if (campaignsLevel === 'adset') {
+        payload.data.campaign_id = campaignsParentId;
+        payload.data.daily_budget = newObject.budget;
+      } else if (campaignsLevel === 'ad') {
+        payload.data.adset_id = campaignsParentId;
+        // Para anúncio, precisaríamos de um creative_id real. 
+        // Aqui usaremos um placeholder ou o usuário precisará vincular depois.
+        payload.data.creative_id = 'PLACEHOLDER'; 
+      }
+
+      const res = await fetch('/api/meta/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowCreateModal(false);
+        setNewObject({ name: '', objective: 'OUTCOME_TRAFFIC', budget: '20' });
+        await loadCampaigns(campaignsLevel, campaignsParentId);
+        setMensagemPainel({ tipo: 'sucesso', texto: 'Item criado com sucesso (Pausado por segurança).' });
+      } else {
+        setMensagemPainel({ tipo: 'erro', texto: data.error });
+      }
+    } catch (e) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Erro ao criar objeto na Meta.' });
+    } finally {
+      setCampaignsLoading(false);
+    }
   };
 
   const loadMetrics = useCallback(async () => {
@@ -947,17 +1000,148 @@ export default function App() {
                   <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Gerenciador KrM</h1>
                 </div>
                 <div className="flex items-center gap-3">
-                  {selectedIds.length > 0 && (
-                    <div className="flex items-center gap-2 bg-slate-900 p-2 px-4 rounded-2xl border border-blue-500/30 animate-in fade-in zoom-in duration-300 shadow-2xl">
-                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mr-4">{selectedIds.length} selecionados</span>
-                      <button onClick={() => handleBulkUpdate('ACTIVE')} className="p-2 px-4 bg-emerald-600/20 text-emerald-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all">Ativar</button>
-                      <button onClick={() => handleBulkUpdate('PAUSED')} className="p-2 px-4 bg-red-600/20 text-red-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Pausar</button>
-                    </div>
-                  )}
+                  <button 
+                    onClick={() => setShowCreateModal(true)}
+                    className="p-3 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 border border-blue-500/20"
+                  >
+                    <Plus size={16} /> Criar {campaignsLevel === 'campaign' ? 'Campanha' : campaignsLevel === 'adset' ? 'Conjunto' : 'Anúncio'}
+                  </button>
                   <button onClick={() => loadCampaigns(campaignsLevel, campaignsParentId)} disabled={campaignsLoading} className="p-3 px-6 bg-slate-900 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:text-white transition-all border border-slate-800 shadow-xl">
                     <RefreshCw size={14} className={campaignsLoading ? 'animate-spin' : ''} /> Sincronizar Agora
                   </button>
                 </div>
+              </div>
+
+              {/* MODAL DE CRIAÇÃO */}
+              {showCreateModal && (
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                   <div className="bg-slate-900 w-full max-w-lg rounded-[3rem] border border-slate-800 shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden">
+                      <div className="p-10 border-b border-slate-800 flex justify-between items-center bg-slate-950/30">
+                        <div>
+                          <h3 className="text-xl font-black text-white tracking-tighter uppercase">Novo {campaignsLevel === 'campaign' ? 'Campanha' : campaignsLevel === 'adset' ? 'Conjunto' : 'Anúncio'}</h3>
+                          <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">Setup Operacional Meta Ads</p>
+                        </div>
+                        <button onClick={() => setShowCreateModal(false)} className="p-3 hover:bg-slate-800 rounded-2xl text-slate-500 transition-all"><X size={20}/></button>
+                      </div>
+                      <form onSubmit={handleCreateObject} className="p-10 space-y-8">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nome Identificador</label>
+                           <input 
+                             required
+                             type="text" 
+                             value={newObject.name}
+                             onChange={e => setNewObject({...newObject, name: e.target.value})}
+                             className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all"
+                             placeholder="Ex: [01][FRIO][MENSAGENS][ABRIL]"
+                           />
+                        </div>
+
+                        {campaignsLevel === 'campaign' && (
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Objetivo da Campanha</label>
+                            <select 
+                              value={newObject.objective}
+                              onChange={e => setNewObject({...newObject, objective: e.target.value})}
+                              className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all appearance-none"
+                            >
+                              <option value="OUTCOME_TRAFFIC">Tráfego</option>
+                              <option value="OUTCOME_AWARENESS">Reconhecimento</option>
+                              <option value="OUTCOME_ENGAGEMENT">Engajamento / Mensagens</option>
+                              <option value="OUTCOME_LEADS">Cadastros (Leads)</option>
+                              <option value="OUTCOME_SALES">Vendas / Conversão</option>
+                            </select>
+                          </div>
+                        )}
+
+                        {(campaignsLevel === 'campaign' || campaignsLevel === 'adset') && (
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Orçamento Diário (R$)</label>
+                            <input 
+                              type="number" 
+                              value={newObject.budget}
+                              onChange={e => setNewObject({...newObject, budget: e.target.value})}
+                              className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-blue-400 font-bold outline-none focus:border-blue-600/50 transition-all"
+                            />
+                          </div>
+                        )}
+
+                        <div className="pt-4 flex gap-4">
+                          <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-900/20">
+                            Confirmar Criação
+                          </button>
+                          <button type="button" onClick={() => setShowCreateModal(false)} className="px-8 bg-slate-800 text-slate-400 font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-slate-700 transition-all">
+                            Cancelar
+                          </button>
+                        </div>
+                      </form>
+                   </div>
+                </div>
+              )}
+
+              {/* BARRA DE FERRAMENTAS E FILTROS */}
+              <div className="bg-slate-900/50 p-4 rounded-[2rem] border border-slate-800/50 flex flex-wrap items-center gap-4 shadow-xl">
+                <div className="flex-1 min-w-[300px] relative group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors" size={16} />
+                  <input 
+                    type="text" 
+                    placeholder={`Pesquisar por nome de ${campaignsLevel === 'campaign' ? 'campanha' : campaignsLevel === 'adset' ? 'conjunto' : 'anúncio'}...`}
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-2xl py-3 pl-12 pr-4 text-xs text-slate-200 outline-none focus:border-blue-600/50 transition-all font-medium"
+                  />
+                </div>
+                <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+                  {['ALL', 'ACTIVE', 'PAUSED'].map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setStatusFilter(f)}
+                      className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${statusFilter === f ? 'bg-slate-800 text-blue-400 shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                      {f === 'ALL' ? 'Todos' : f === 'ACTIVE' ? 'Ativos' : 'Pausados'}
+                    </button>
+                  ))}
+                </div>
+                <div className="h-8 w-px bg-slate-800 mx-2" />
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowColumnMenu(!showColumnMenu)}
+                    className={`p-3 px-5 rounded-xl font-black text-[9px] uppercase tracking-widest flex items-center gap-2 transition-all border ${showColumnMenu ? 'bg-blue-600 text-white border-blue-500' : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'}`}
+                  >
+                    <Settings2 size={14} /> Colunas
+                  </button>
+                  {showColumnMenu && (
+                    <div className="absolute right-0 top-full mt-3 w-64 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 animate-in fade-in zoom-in duration-200">
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Personalizar Métricas</p>
+                      <div className="space-y-3">
+                        {[
+                          { id: 'spend', label: 'Investimento' },
+                          { id: 'results', label: 'Resultados' },
+                          { id: 'cpa', label: 'CPA' },
+                          { id: 'impressions', label: 'Impressões' },
+                          { id: 'ctr', label: 'CTR (%)' },
+                          { id: 'clicks', label: 'Cliques' }
+                        ].map(col => (
+                          <label key={col.id} className="flex items-center gap-3 cursor-pointer group">
+                            <input 
+                              type="checkbox" 
+                              checked={visibleColumns.includes(col.id)}
+                              onChange={() => setVisibleColumns(prev => prev.includes(col.id) ? prev.filter(c => c !== col.id) : [...prev, col.id])}
+                              className="w-4 h-4 rounded border-slate-700 bg-slate-950 checked:bg-blue-600 focus:ring-0"
+                            />
+                            <span className="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">{col.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {selectedIds.length > 0 && (
+                  <div className="flex items-center gap-2 bg-blue-600/10 p-1 px-3 rounded-xl border border-blue-500/20 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <span className="text-[9px] font-black text-blue-400 uppercase mr-2">{selectedIds.length} selecionados</span>
+                    <button onClick={() => handleBulkUpdate('ACTIVE')} className="p-2 px-3 bg-emerald-600/20 text-emerald-400 rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all">Ativar</button>
+                    <button onClick={() => handleBulkUpdate('PAUSED')} className="p-2 px-3 bg-red-600/20 text-red-400 rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Pausar</button>
+                  </div>
+                )}
               </div>
 
               {campaignsLoading ? (
@@ -986,14 +1170,23 @@ export default function App() {
                           </th>
                           <th className="p-6 w-16">Status</th>
                           <th className="p-6 min-w-[300px]">Nome do {campaignsLevel === 'campaign' ? 'Campanha' : campaignsLevel === 'adset' ? 'Conjunto' : 'Anúncio'}</th>
-                          <th className="p-6 text-right">Investimento</th>
-                          <th className="p-6 text-right">Resultados</th>
-                          <th className="p-6 text-right">CPA</th>
+                          {visibleColumns.includes('spend') && <th className="p-6 text-right">Investimento</th>}
+                          {visibleColumns.includes('results') && <th className="p-6 text-right">Resultados</th>}
+                          {visibleColumns.includes('cpa') && <th className="p-6 text-right">CPA</th>}
+                          {visibleColumns.includes('impressions') && <th className="p-6 text-right">Impressões</th>}
+                          {visibleColumns.includes('ctr') && <th className="p-6 text-right">CTR</th>}
+                          {visibleColumns.includes('clicks') && <th className="p-6 text-right">Cliques</th>}
                           <th className="p-6 text-right">Ações</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800/50">
-                        {campaignsList.map(item => {
+                        {campaignsList
+                          .filter(item => {
+                            const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+                            const matchStatus = statusFilter === 'ALL' || item.status === statusFilter;
+                            return matchSearch && matchStatus;
+                          })
+                          .map(item => {
                           const cpa = item.results > 0 ? (item.spend / item.results) : 0;
                           return (
                             <tr key={item.id} className={`hover:bg-slate-800/30 transition-all group ${selectedIds.includes(item.id) ? 'bg-blue-600/5' : ''}`}>
@@ -1052,14 +1245,21 @@ export default function App() {
                                   </div>
                                 </div>
                               </td>
-                              <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {item.spend}</td>
-                              <td className="p-6 text-right">
-                                <span className="text-sm font-black text-white">{item.results || 0}</span>
-                                <div className="text-[9px] text-slate-600 font-bold uppercase tracking-tighter">Conversas/Leads</div>
-                              </td>
-                              <td className="p-6 text-right">
-                                <span className={`text-sm font-black ${cpa > 0 ? 'text-blue-400' : 'text-slate-600'}`}>{cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</span>
-                              </td>
+                              {visibleColumns.includes('spend') && <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {item.spend}</td>}
+                              {visibleColumns.includes('results') && (
+                                <td className="p-6 text-right">
+                                  <span className="text-sm font-black text-white">{item.results || 0}</span>
+                                  <div className="text-[9px] text-slate-600 font-bold uppercase tracking-tighter">Conversas/Leads</div>
+                                </td>
+                              )}
+                              {visibleColumns.includes('cpa') && (
+                                <td className="p-6 text-right">
+                                  <span className={`text-sm font-black ${cpa > 0 ? 'text-blue-400' : 'text-slate-600'}`}>{cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</span>
+                                </td>
+                              )}
+                              {visibleColumns.includes('impressions') && <td className="p-6 text-right font-mono text-sm font-bold text-slate-300">{item.impressions?.toLocaleString()}</td>}
+                              {visibleColumns.includes('ctr') && <td className="p-6 text-right font-mono text-sm font-bold text-blue-400/80">{item.ctr}%</td>}
+                              {visibleColumns.includes('clicks') && <td className="p-6 text-right font-mono text-sm font-bold text-slate-400">{item.clicks?.toLocaleString()}</td>}
                               <td className="p-6 text-right">
                                 <button 
                                   onClick={() => setEditingCampaign(item.id)}
