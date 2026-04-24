@@ -39,14 +39,14 @@ export async function GET(request) {
     if (!creds) return NextResponse.json({ success: false, error: `Credenciais não encontradas para ${cliente}` }, { status: 500 });
 
     let endpoint = `${creds.adAccountId}/campaigns`;
-    let fields = 'id,name,status,objective,daily_budget,lifetime_budget,start_time,updated_time';
+    let fields = 'id,name,status,effective_status,objective,daily_budget,lifetime_budget,start_time,updated_time';
 
     if (level === 'adset') {
       endpoint = parentId ? `${parentId}/adsets` : `${creds.adAccountId}/adsets`;
-      fields = 'id,name,status,daily_budget,lifetime_budget,billing_event,bid_amount,campaign_id';
+      fields = 'id,name,status,effective_status,daily_budget,lifetime_budget,billing_event,bid_amount,campaign_id';
     } else if (level === 'ad') {
       endpoint = parentId ? `${parentId}/ads` : `${creds.adAccountId}/ads`;
-      fields = 'id,name,status,adset_id,campaign_id,creative{id,name,image_url,thumbnail_url}';
+      fields = 'id,name,status,effective_status,adset_id,campaign_id,creative{id,name,image_url,thumbnail_url}';
     }
 
     // Adiciona insights aos campos
@@ -67,6 +67,7 @@ export async function GET(request) {
         id: item.id,
         name: item.name,
         status: item.status,
+        effective_status: item.effective_status,
         objective: item.objective,
         daily_budget: item.daily_budget ? (parseInt(item.daily_budget) / 100).toFixed(2) : null,
         lifetime_budget: item.lifetime_budget ? (parseInt(item.lifetime_budget) / 100).toFixed(2) : null,

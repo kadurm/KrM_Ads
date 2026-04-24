@@ -87,6 +87,7 @@ export default function App() {
   const [dailyData, setDailyData] = useState([]);
   const [campaignsLevel, setCampaignsLevel] = useState('campaign'); // 'campaign', 'adset', 'ad'
   const [campaignsParentId, setCampaignsParentId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
   const reportRef = useRef(null);
 
   const loadClientes = async () => {
@@ -201,6 +202,7 @@ export default function App() {
     setCampaignsLoading(true);
     setCampaignsLevel(level);
     setCampaignsParentId(parentId);
+    setSelectedIds([]); // Reseta seleção ao mudar de nível
     try {
       let url = `/api/meta/campaigns?cliente=${encodeURIComponent(clienteSelecionado)}&level=${level}`;
       if (parentId) url += `&parentId=${parentId}`;
@@ -233,6 +235,38 @@ export default function App() {
     } catch (e) {
       setMensagemPainel({ tipo: 'erro', texto: 'Falha ao atualizar objeto na Meta.' });
     }
+  };
+
+  const handleBulkUpdate = async (status) => {
+    if (selectedIds.length === 0) return;
+    const confirm = window.confirm(`Deseja ${status === 'ACTIVE' ? 'ativar' : 'pausar'} os ${selectedIds.length} itens selecionados?`);
+    if (!confirm) return;
+    
+    setCampaignsLoading(true);
+    try {
+      await Promise.all(selectedIds.map(id => 
+        fetch('/api/meta/campaigns', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cliente: clienteSelecionado, id, status }),
+        })
+      ));
+      await loadCampaigns(campaignsLevel, campaignsParentId);
+      setMensagemPainel({ tipo: 'sucesso', texto: 'Ação em lote realizada com sucesso!' });
+    } catch (e) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Falha em algumas atualizações em lote.' });
+    } finally {
+      setCampaignsLoading(false);
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === campaignsList.length) setSelectedIds([]);
+    else setSelectedIds(campaignsList.map(item => item.id));
   };
 
   const loadMetrics = useCallback(async () => {
@@ -886,7 +920,7 @@ export default function App() {
           {activeTab === 'campanhas' && (
             <div className="max-w-6xl mx-auto py-6 space-y-8">
               <div className="flex justify-between items-end">
-                <div>
+                <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <button 
                       onClick={() => loadCampaigns('campaign')}
@@ -913,6 +947,13 @@ export default function App() {
                   <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Gerenciador KrM</h1>
                 </div>
                 <div className="flex items-center gap-3">
+                  {selectedIds.length > 0 && (
+                    <div className="flex items-center gap-2 bg-slate-900 p-2 px-4 rounded-2xl border border-blue-500/30 animate-in fade-in zoom-in duration-300 shadow-2xl">
+                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mr-4">{selectedIds.length} selecionados</span>
+                      <button onClick={() => handleBulkUpdate('ACTIVE')} className="p-2 px-4 bg-emerald-600/20 text-emerald-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all">Ativar</button>
+                      <button onClick={() => handleBulkUpdate('PAUSED')} className="p-2 px-4 bg-red-600/20 text-red-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Pausar</button>
+                    </div>
+                  )}
                   <button onClick={() => loadCampaigns(campaignsLevel, campaignsParentId)} disabled={campaignsLoading} className="p-3 px-6 bg-slate-900 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:text-white transition-all border border-slate-800 shadow-xl">
                     <RefreshCw size={14} className={campaignsLoading ? 'animate-spin' : ''} /> Sincronizar Agora
                   </button>
@@ -935,6 +976,14 @@ export default function App() {
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
+                          <th className="p-6 w-12">
+                            <input 
+                              type="checkbox" 
+                              className="w-4 h-4 rounded border-slate-700 bg-slate-800 checked:bg-blue-600 focus:ring-0" 
+                              checked={selectedIds.length === campaignsList.length && campaignsList.length > 0}
+                              onChange={toggleSelectAll}
+                            />
+                          </th>
                           <th className="p-6 w-16">Status</th>
                           <th className="p-6 min-w-[300px]">Nome do {campaignsLevel === 'campaign' ? 'Campanha' : campaignsLevel === 'adset' ? 'Conjunto' : 'Anúncio'}</th>
                           <th className="p-6 text-right">Investimento</th>
@@ -947,44 +996,61 @@ export default function App() {
                         {campaignsList.map(item => {
                           const cpa = item.results > 0 ? (item.spend / item.results) : 0;
                           return (
-                            <tr key={item.id} className="hover:bg-slate-800/30 transition-all group">
+                            <tr key={item.id} className={`hover:bg-slate-800/30 transition-all group ${selectedIds.includes(item.id) ? 'bg-blue-600/5' : ''}`}>
+                              <td className="p-6">
+                                <input 
+                                  type="checkbox" 
+                                  className="w-4 h-4 rounded border-slate-700 bg-slate-800 checked:bg-blue-600 focus:ring-0" 
+                                  checked={selectedIds.includes(item.id)}
+                                  onChange={() => toggleSelect(item.id)}
+                                />
+                              </td>
                               <td className="p-6">
                                 <button 
                                   onClick={() => handleUpdateCampaign(item.id, { status: item.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE' })}
                                   className={`w-10 h-6 rounded-full relative transition-all ${item.status === 'ACTIVE' ? 'bg-blue-600' : 'bg-slate-800'}`}
+                                  title={item.effective_status}
                                 >
                                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${item.status === 'ACTIVE' ? 'right-1' : 'left-1'}`} />
                                 </button>
                               </td>
                               <td className="p-6">
-                                {editingCampaign === item.id ? (
-                                  <div className="flex items-center gap-2">
-                                    <input 
-                                      autoFocus
-                                      type="text" 
-                                      defaultValue={item.name}
-                                      onBlur={(e) => handleUpdateCampaign(item.id, { name: e.target.value })}
-                                      onKeyDown={(e) => e.key === 'Enter' && handleUpdateCampaign(item.id, { name: e.target.value })}
-                                      className="bg-slate-950 border border-blue-500/50 rounded-lg p-2 text-xs text-white outline-none w-full"
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="flex flex-col">
-                                    <div 
-                                      onClick={() => {
-                                        if (campaignsLevel === 'campaign') loadCampaigns('adset', item.id);
-                                        else if (campaignsLevel === 'adset') loadCampaigns('ad', item.id);
-                                      }}
-                                      className={`text-sm font-bold text-slate-200 cursor-pointer hover:text-blue-400 transition-colors ${campaignsLevel !== 'ad' ? 'underline decoration-blue-500/30 underline-offset-4' : ''}`}
-                                    >
-                                      {item.name}
+                                <div className="flex items-center gap-4">
+                                  {campaignsLevel === 'ad' && item.creative?.thumbnail_url && (
+                                    <div className="w-12 h-12 rounded-lg bg-slate-950 border border-slate-800 overflow-hidden flex-shrink-0 shadow-lg">
+                                      <img src={item.creative.thumbnail_url} className="w-full h-full object-cover" alt="Thumb" />
                                     </div>
-                                    <div className="flex items-center gap-3 mt-1.5">
-                                      <span className="text-[9px] font-black uppercase text-slate-600 tracking-tighter">{item.objective?.replace('OUTCOME_', '') || 'ID: ' + item.id.substring(0,8)}</span>
-                                      {item.daily_budget && <span className="text-[9px] font-bold text-emerald-500/70">Orçamento: R$ {item.daily_budget}</span>}
-                                    </div>
+                                  )}
+                                  <div className="flex-1">
+                                    {editingCampaign === item.id ? (
+                                      <input 
+                                        autoFocus
+                                        type="text" 
+                                        defaultValue={item.name}
+                                        onBlur={(e) => handleUpdateCampaign(item.id, { name: e.target.value })}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleUpdateCampaign(item.id, { name: e.target.value })}
+                                        className="bg-slate-950 border border-blue-500/50 rounded-lg p-2 text-xs text-white outline-none w-full"
+                                      />
+                                    ) : (
+                                      <div className="flex flex-col">
+                                        <div 
+                                          onClick={() => {
+                                            if (campaignsLevel === 'campaign') loadCampaigns('adset', item.id);
+                                            else if (campaignsLevel === 'adset') loadCampaigns('ad', item.id);
+                                          }}
+                                          className={`text-sm font-bold text-slate-200 cursor-pointer hover:text-blue-400 transition-colors ${campaignsLevel !== 'ad' ? 'underline decoration-blue-500/30 underline-offset-4' : ''}`}
+                                        >
+                                          {item.name}
+                                        </div>
+                                        <div className="flex items-center gap-3 mt-1.5">
+                                          <span className={`text-[9px] font-black uppercase tracking-tighter ${item.status === 'ACTIVE' ? 'text-blue-500/60' : 'text-slate-600'}`}>{item.effective_status || item.status}</span>
+                                          {item.objective && <span className="text-[9px] font-black uppercase text-slate-700 tracking-tighter">• {item.objective.replace('OUTCOME_', '')}</span>}
+                                          {item.daily_budget && <span className="text-[9px] font-bold text-emerald-500/70">R$ {item.daily_budget} / dia</span>}
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
-                                )}
+                                </div>
                               </td>
                               <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {item.spend}</td>
                               <td className="p-6 text-right">
@@ -1010,6 +1076,8 @@ export default function App() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
             </div>
           )}
 
