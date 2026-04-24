@@ -1,5 +1,6 @@
 // KrM Ads - Sistema de Gestao Profissional (Build v2)
 "use client";
+// Force rebuild: 2026-04-24T06:54:00
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import html2canvas from 'html2canvas';
