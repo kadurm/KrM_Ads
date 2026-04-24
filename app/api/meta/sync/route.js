@@ -170,9 +170,10 @@ export async function GET(request) {
         const getScore = (url) => {
           if (!url) return 0;
           if (url.includes('adimages')) return 100; // Original HD
-          if (url.includes('video') || url.includes('picture')) return 90; // Video/Post HD
+          if (url.includes('thumbnails.data') || url.includes('video')) return 95; // Video HD (Thumbnails reais)
+          if (url.includes('picture')) return 90; // Video/Post Picture
           if (url.includes('full_picture')) return 80; // Post HD
-          if (url.length > 200) return 50; // Provável URL HD ou com muitos parâmetros
+          if (url.length > 250) return 60; // Provável URL HD complexa
           return 10; // Thumbnail básica
         };
 
@@ -286,7 +287,7 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,thumbnail_url,creative{id,image_url,thumbnail_url,picture,image_hash,body,effective_object_story_id,video_id,video_data,object_story_spec}', 
+          fields: 'id,thumbnail_url,creative{id,image_url,thumbnail_url,picture,image_hash,body,effective_object_story_id,video_id,video_data,object_story_spec,asset_feed_spec}', 
           access_token: ACCESS_TOKEN,
           thumbnail_width: '800',
           thumbnail_height: '800'
@@ -294,10 +295,16 @@ export async function POST(request) {
         const data = await res.json();
         Object.values(data).forEach((ad) => {
           if (ad.creative) {
-            // Extração Robusta de IDs de Mídia
             const creative = ad.creative;
-            const extractedVideoId = creative.video_id || creative.video_data?.video_id || creative.object_story_spec?.video_data?.video_id;
-            const extractedStoryId = creative.effective_object_story_id || (creative.object_story_spec?.link_data?.post_id ? `${creative.object_story_spec.instagram_actor_id}_${creative.object_story_spec.link_data.post_id}` : null);
+            // Extração Ultra-Robusta de IDs de Mídia (Suporte a Dynamic Ads e Asset Feed)
+            const extractedVideoId = creative.video_id || 
+                                    creative.video_data?.video_id || 
+                                    creative.object_story_spec?.video_data?.video_id ||
+                                    creative.asset_feed_spec?.videos?.[0]?.video_id;
+
+            const extractedStoryId = creative.effective_object_story_id || 
+                                    (creative.object_story_spec?.link_data?.post_id ? `${creative.object_story_spec.instagram_actor_id}_${creative.object_story_spec.link_data.post_id}` : null) ||
+                                    creative.asset_feed_spec?.ad_formats?.[0]?.post_id;
             
             creativeMetaMap.set(String(creative.id), { 
               ...creative, 
@@ -327,7 +334,7 @@ export async function POST(request) {
        console.timeEnd('Meta-HD-Images');
      }
 
-     // Busca HD para Vídeos em lotes
+     // Busca HD para Vídeos em lotes (Capta a MAIOR miniatura disponível)
      const videoIds = Array.from(creativeMetaMap.values()).map(m => m.extracted_video_id).filter(id => !!id);
      const videoPictureMap = new Map();
      if (videoIds.length > 0) {
@@ -335,9 +342,14 @@ export async function POST(request) {
         const idChunks = [];
         for (let i = 0; i < videoIds.length; i += 50) idChunks.push(videoIds.slice(i, i + 50));
         await Promise.all(idChunks.map(async (chunk) => {
-          const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,picture', access_token: ACCESS_TOKEN }));
+          const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,picture,thumbnails{uri,width,height}', access_token: ACCESS_TOKEN }));
           const data = await res.json();
-          if (data) Object.values(data).forEach(video => videoPictureMap.set(video.id, video.picture));
+          if (data) {
+            Object.values(data).forEach((video) => {
+              const largestThumb = video.thumbnails?.data?.sort((a, b) => b.width - a.width)[0]?.uri;
+              videoPictureMap.set(video.id, largestThumb || video.picture);
+            });
+          }
         }));
         console.timeEnd('Meta-Video-HD');
      }
