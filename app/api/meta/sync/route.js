@@ -86,22 +86,27 @@ export async function GET(request) {
 
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
       let finalVal = total.conversas_leads;
+      let finalLabel = label;
 
       // Lógica de Resultado por Objetivo
-      if (camp.nome_gerado.includes('[01]') || label === 'Alcance' || label === 'Impressões') {
+      if (camp.nome_gerado.includes('[01]')) {
         finalVal = total.impressoes;
+        finalLabel = 'Impressões';
       } else if (camp.nome_gerado.includes('[02]') || label === 'Engajamentos') {
-        // Usa a mesma métrica de engajamento do funil
-        finalVal = total.visitas_perfil; // visitas_perfil já contém a soma exaustiva no nosso sync
-      } else if (camp.nome_gerado.includes('[05]') || label === 'Visitas') {
-        finalVal = total.visitas_perfil || total.cliques;
+        finalVal = total.visitas_perfil; 
+        finalLabel = 'Engajamentos';
+      } else if (camp.nome_gerado.includes('[05]')) {
+        // Prioriza visitas ao perfil reais da Meta
+        finalVal = getMetric(camp.metricas.flatMap(m => m.actions || []), 'link_click') || total.visitas_perfil;
+        // Se ainda estiver muito alto, vamos usar o valor exato reportado como 'link_click' que costuma bater com visitas em campanhas de tráfego de perfil
+        finalLabel = 'Visitas';
       } else if (label === 'Vendas') {
         finalVal = total.compras;
       }
 
       return {
         ...total,
-        objetivo: label,
+        objetivo: finalLabel,
         resultadoBruto: finalVal,
         roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
         cpr: finalVal > 0 ? (total.valor_investido / finalVal) : 0,
