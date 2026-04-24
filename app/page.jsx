@@ -85,6 +85,8 @@ export default function App() {
   const [editingCampaign, setEditingCampaign] = useState(null);
   const [editBudget, setEditBudget] = useState('');
   const [dailyData, setDailyData] = useState([]);
+  const [campaignsLevel, setCampaignsLevel] = useState('campaign'); // 'campaign', 'adset', 'ad'
+  const [campaignsParentId, setCampaignsParentId] = useState(null);
   const reportRef = useRef(null);
 
   const loadClientes = async () => {
@@ -194,37 +196,42 @@ export default function App() {
     }
   };
 
-  const loadCampaigns = async () => {
+  const loadCampaigns = async (level = 'campaign', parentId = null) => {
     if (!clienteSelecionado) return;
     setCampaignsLoading(true);
+    setCampaignsLevel(level);
+    setCampaignsParentId(parentId);
     try {
-      const res = await fetch(`/api/meta/campaigns?cliente=${encodeURIComponent(clienteSelecionado)}`);
+      let url = `/api/meta/campaigns?cliente=${encodeURIComponent(clienteSelecionado)}&level=${level}`;
+      if (parentId) url += `&parentId=${parentId}`;
+      
+      const res = await fetch(url);
       const data = await res.json();
-      if (data.success) setCampaignsList(data.campaigns || []);
+      if (data.success) setCampaignsList(data.items || []);
       else setMensagemPainel({ tipo: 'erro', texto: data.error });
     } catch (e) {
-      setMensagemPainel({ tipo: 'erro', texto: 'Falha ao carregar campanhas.' });
+      setMensagemPainel({ tipo: 'erro', texto: 'Falha ao carregar dados da Meta.' });
     } finally {
       setCampaignsLoading(false);
     }
   };
 
-  const handleUpdateCampaign = async (campaignId, updates) => {
+  const handleUpdateCampaign = async (id, updates) => {
     try {
       const res = await fetch('/api/meta/campaigns', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cliente: clienteSelecionado, campaignId, ...updates }),
+        body: JSON.stringify({ cliente: clienteSelecionado, id, ...updates }),
       });
       const data = await res.json();
       if (data.success) {
         setEditingCampaign(null);
-        await loadCampaigns();
+        await loadCampaigns(campaignsLevel, campaignsParentId);
       } else {
         setMensagemPainel({ tipo: 'erro', texto: data.error });
       }
     } catch (e) {
-      setMensagemPainel({ tipo: 'erro', texto: 'Falha ao atualizar campanha.' });
+      setMensagemPainel({ tipo: 'erro', texto: 'Falha ao atualizar objeto na Meta.' });
     }
   };
 
@@ -877,77 +884,130 @@ export default function App() {
           )}
 
           {activeTab === 'campanhas' && (
-            <div className="max-w-5xl mx-auto py-6 space-y-8">
-              <div className="flex justify-between items-center">
+            <div className="max-w-6xl mx-auto py-6 space-y-8">
+              <div className="flex justify-between items-end">
                 <div>
-                  <h1 className="text-4xl font-black text-white tracking-tighter">Gestão de Campanhas</h1>
-                  <p className="text-slate-500 text-sm mt-1 flex items-center gap-2">
-                     <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                     Sincronizado via Marketing API — {clienteSelecionado}
-                  </p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <button 
+                      onClick={() => loadCampaigns('campaign')}
+                      className={`text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-xl transition-all ${campaignsLevel === 'campaign' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                      Campanhas
+                    </button>
+                    <ChevronRight size={14} className="text-slate-800" />
+                    <button 
+                      disabled={campaignsLevel === 'campaign'}
+                      onClick={() => loadCampaigns('adset', campaignsParentId)}
+                      className={`text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-xl transition-all ${campaignsLevel === 'adset' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-500 hover:text-slate-300 disabled:opacity-30'}`}
+                    >
+                      Conjuntos
+                    </button>
+                    <ChevronRight size={14} className="text-slate-800" />
+                    <button 
+                      disabled={campaignsLevel !== 'ad'}
+                      className={`text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-xl transition-all ${campaignsLevel === 'ad' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-500 disabled:opacity-30'}`}
+                    >
+                      Anúncios
+                    </button>
+                  </div>
+                  <h1 className="text-4xl font-black text-white tracking-tighter">Gerenciador KrM</h1>
                 </div>
-                <button onClick={loadCampaigns} disabled={campaignsLoading} className="p-4 px-8 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-3 hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 border border-blue-500/20">
-                  <RefreshCw size={18} className={campaignsLoading ? 'animate-spin' : ''} /> Atualizar Status
-                </button>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => loadCampaigns(campaignsLevel, campaignsParentId)} disabled={campaignsLoading} className="p-3 px-6 bg-slate-900 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:text-white transition-all border border-slate-800 shadow-xl">
+                    <RefreshCw size={14} className={campaignsLoading ? 'animate-spin' : ''} /> Sincronizar Agora
+                  </button>
+                </div>
               </div>
 
-              {campaignsLoading && (
-                <div className="flex items-center justify-center py-32 flex-col gap-6 text-slate-500">
-                   <div className="relative">
-                      <div className="w-16 h-16 border-4 border-blue-600/20 rounded-full animate-ping absolute inset-0" />
-                      <Loader2 className="animate-spin text-blue-600" size={64} />
-                   </div>
-                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 animate-pulse">Estabelecendo conexão segura com Meta...</p>
+              {campaignsLoading ? (
+                <div className="flex items-center justify-center py-32 flex-col gap-6">
+                   <Loader2 className="animate-spin text-blue-600" size={48} />
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">Acessando Meta Ads API...</p>
                 </div>
-              )}
-
-              {!campaignsLoading && campaignsList.length === 0 && (
+              ) : campaignsList.length === 0 ? (
                 <div className="bg-slate-900 p-20 rounded-[3rem] border border-slate-800 text-center shadow-2xl">
-                  <Megaphone size={80} className="mx-auto text-slate-800 mb-8" />
-                  <p className="text-slate-400 font-black text-xl uppercase tracking-tight">Nenhuma Campanha Ativa</p>
-                  <p className="text-slate-500 text-sm mt-4 font-medium opacity-70">Sincronize com a Meta para visualizar e gerenciar as campanhas deste cliente.</p>
+                  <Megaphone size={60} className="mx-auto text-slate-800 mb-8" />
+                  <p className="text-slate-400 font-black text-xl uppercase tracking-tight">Nenhum item encontrado</p>
                 </div>
-              )}
-
-              {!campaignsLoading && campaignsList.length > 0 && (
-                <div className="space-y-4">
-                  {campaignsList.map(camp => (
-                    <div key={camp.id} className={`bg-slate-900 rounded-[2rem] border ${camp.status === 'ACTIVE' ? 'border-blue-500/20' : 'border-slate-800'} p-8 shadow-xl transition-all hover:border-blue-500/40 group`}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 min-w-0">
-                          {editingCampaign === camp.id ? (
-                            <div className="flex items-center gap-4">
-                              <span className="text-sm font-black text-white truncate uppercase tracking-tight">{camp.name}</span>
-                              <div className="flex items-center gap-3 ml-4 bg-slate-950 p-2 rounded-2xl border border-slate-800">
-                                <span className="text-[10px] text-slate-500 font-black uppercase px-3">Orçamento</span>
-                                <input type="number" value={editBudget} onChange={e => setEditBudget(e.target.value)} className="bg-slate-900 text-sm font-black text-blue-400 p-3 rounded-xl border border-slate-800 w-32 outline-none focus:border-blue-600 transition-all" placeholder="R$" />
-                                <button onClick={() => handleUpdateCampaign(camp.id, { daily_budget: editBudget })} className="p-3 bg-emerald-600 rounded-xl text-white hover:bg-emerald-700 transition-all shadow-lg"><Check size={18} /></button>
-                                <button onClick={() => setEditingCampaign(null)} className="p-3 bg-slate-800 rounded-xl text-slate-400 hover:bg-slate-700 transition-all"><X size={18} /></button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div>
-                              <div className="text-lg font-black text-white group-hover:text-blue-500 transition-colors truncate uppercase tracking-tight">{camp.name}</div>
-                              <div className="flex items-center gap-6 mt-3">
-                                <span className="text-[9px] bg-slate-950 p-2 px-4 rounded-xl text-slate-500 font-black uppercase tracking-[0.2em] border border-slate-800">{camp.objective?.replace('OUTCOME_', '') || 'N/A'}</span>
-                                {camp.daily_budget && <div className="flex items-center gap-2"><DollarSign size={14} className="text-emerald-500"/><span className="text-sm text-emerald-400 font-black tracking-tight">R$ {parseFloat(camp.daily_budget).toLocaleString()} / dia</span></div>}
-                                {camp.lifetime_budget && <div className="flex items-center gap-2"><CalendarDays size={14} className="text-purple-500"/><span className="text-sm text-purple-400 font-black tracking-tight">R$ {parseFloat(camp.lifetime_budget).toLocaleString()} total</span></div>}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-4 flex-shrink-0 ml-8">
-                          <button onClick={() => { setEditingCampaign(camp.id); setEditBudget(camp.daily_budget || ''); }} className="p-4 bg-slate-800 rounded-2xl text-slate-400 hover:text-white hover:bg-blue-600/20 hover:border-blue-500/20 border border-transparent transition-all shadow-lg" title="Editar orçamento"><Pencil size={20} /></button>
-                          <button
-                            onClick={() => handleUpdateCampaign(camp.id, { status: camp.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE' })}
-                            className={`p-4 px-10 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-2xl ${camp.status === 'ACTIVE' ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 hover:bg-red-600/20 hover:text-red-400 hover:border-red-500/20' : 'bg-slate-800 text-slate-500 border border-slate-700 hover:bg-emerald-600/20 hover:text-emerald-400 hover:border-emerald-500/20'}`}
-                          >
-                            {camp.status === 'ACTIVE' ? <><Pause size={18} /> Ativa</> : <><Play size={18} /> Pausada</>}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+              ) : (
+                <div className="bg-slate-900 rounded-[2.5rem] border border-slate-800 overflow-hidden shadow-2xl">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
+                          <th className="p-6 w-16">Status</th>
+                          <th className="p-6 min-w-[300px]">Nome do {campaignsLevel === 'campaign' ? 'Campanha' : campaignsLevel === 'adset' ? 'Conjunto' : 'Anúncio'}</th>
+                          <th className="p-6 text-right">Investimento</th>
+                          <th className="p-6 text-right">Resultados</th>
+                          <th className="p-6 text-right">CPA</th>
+                          <th className="p-6 text-right">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/50">
+                        {campaignsList.map(item => {
+                          const cpa = item.results > 0 ? (item.spend / item.results) : 0;
+                          return (
+                            <tr key={item.id} className="hover:bg-slate-800/30 transition-all group">
+                              <td className="p-6">
+                                <button 
+                                  onClick={() => handleUpdateCampaign(item.id, { status: item.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE' })}
+                                  className={`w-10 h-6 rounded-full relative transition-all ${item.status === 'ACTIVE' ? 'bg-blue-600' : 'bg-slate-800'}`}
+                                >
+                                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${item.status === 'ACTIVE' ? 'right-1' : 'left-1'}`} />
+                                </button>
+                              </td>
+                              <td className="p-6">
+                                {editingCampaign === item.id ? (
+                                  <div className="flex items-center gap-2">
+                                    <input 
+                                      autoFocus
+                                      type="text" 
+                                      defaultValue={item.name}
+                                      onBlur={(e) => handleUpdateCampaign(item.id, { name: e.target.value })}
+                                      onKeyDown={(e) => e.key === 'Enter' && handleUpdateCampaign(item.id, { name: e.target.value })}
+                                      className="bg-slate-950 border border-blue-500/50 rounded-lg p-2 text-xs text-white outline-none w-full"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-col">
+                                    <div 
+                                      onClick={() => {
+                                        if (campaignsLevel === 'campaign') loadCampaigns('adset', item.id);
+                                        else if (campaignsLevel === 'adset') loadCampaigns('ad', item.id);
+                                      }}
+                                      className={`text-sm font-bold text-slate-200 cursor-pointer hover:text-blue-400 transition-colors ${campaignsLevel !== 'ad' ? 'underline decoration-blue-500/30 underline-offset-4' : ''}`}
+                                    >
+                                      {item.name}
+                                    </div>
+                                    <div className="flex items-center gap-3 mt-1.5">
+                                      <span className="text-[9px] font-black uppercase text-slate-600 tracking-tighter">{item.objective?.replace('OUTCOME_', '') || 'ID: ' + item.id.substring(0,8)}</span>
+                                      {item.daily_budget && <span className="text-[9px] font-bold text-emerald-500/70">Orçamento: R$ {item.daily_budget}</span>}
+                                    </div>
+                                  </div>
+                                )}
+                              </td>
+                              <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {item.spend}</td>
+                              <td className="p-6 text-right">
+                                <span className="text-sm font-black text-white">{item.results || 0}</span>
+                                <div className="text-[9px] text-slate-600 font-bold uppercase tracking-tighter">Conversas/Leads</div>
+                              </td>
+                              <td className="p-6 text-right">
+                                <span className={`text-sm font-black ${cpa > 0 ? 'text-blue-400' : 'text-slate-600'}`}>{cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</span>
+                              </td>
+                              <td className="p-6 text-right">
+                                <button 
+                                  onClick={() => setEditingCampaign(item.id)}
+                                  className="p-3 text-slate-600 hover:text-blue-400 hover:bg-blue-400/5 rounded-xl transition-all"
+                                >
+                                  <Pencil size={16} />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
