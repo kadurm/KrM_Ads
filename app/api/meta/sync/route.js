@@ -341,17 +341,30 @@ export async function POST(request) {
 
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
+        
+        // Estratégia de Imagem HD: 
+        // 1. full_picture do Post 
+        // 2. image_url do Criativo (geralmente alta resolução)
+        // 3. thumbnail_url (fallback)
         const highResImage = storyMetaMap.get(adMeta.effective_object_story_id) || adMeta.image_url || adMeta.thumbnail_url;
 
-        let criativo = localCreativeMap.get(String(row.ad_id));
-        if (!criativo || criativo.nome_anuncio !== row.ad_name) {
-          criativo = await prisma.criativo.upsert({
-            where: { meta_ad_id: String(row.ad_id) },
-            update: { nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body },
-            create: { meta_ad_id: String(row.ad_id), campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body }
-          });
-          localCreativeMap.set(criativo.meta_ad_id, criativo);
-        }
+        // Forçamos o upsert para atualizar NOME e IMAGEM sempre
+        const criativo = await prisma.criativo.upsert({
+          where: { meta_ad_id: String(row.ad_id) },
+          update: { 
+            nome_anuncio: row.ad_name, 
+            url_midia: highResImage, 
+            texto_principal: adMeta.body 
+          },
+          create: { 
+            meta_ad_id: String(row.ad_id), 
+            campanha_id: camp.id, 
+            nome_anuncio: row.ad_name, 
+            url_midia: highResImage, 
+            texto_principal: adMeta.body 
+          }
+        });
+        localCreativeMap.set(criativo.meta_ad_id, criativo);
 
         const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
         return prisma.metricaCriativo.upsert({
