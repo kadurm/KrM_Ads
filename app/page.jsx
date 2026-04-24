@@ -666,14 +666,22 @@ export default function App() {
                        </div>
                        <div className="p-6 flex-1 flex flex-col">
                          <div className="text-[12px] font-black text-slate-100 line-clamp-1 mb-4 uppercase tracking-tighter group-hover:text-blue-400 transition-colors">{c.nome_anuncio}</div>
-                         <div className="grid grid-cols-2 gap-3 mb-5">
-                           <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800 flex flex-col items-center">
-                             <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Alcance</span>
-                             <span className="text-xs font-bold text-slate-100">{c.alcance?.toLocaleString()}</span>
+                         <div className="grid grid-cols-2 gap-2 mb-5">
+                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center">
+                             <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Alcance</span>
+                             <span className="text-[10px] font-bold text-slate-100">{c.alcance?.toLocaleString()}</span>
                            </div>
-                           <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800 flex flex-col items-center">
-                             <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Gasto</span>
-                             <span className="text-xs font-bold text-slate-100">R$ {parseFloat(c.valor_investido).toFixed(2)}</span>
+                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center">
+                             <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Impressões</span>
+                             <span className="text-[10px] font-bold text-slate-100">{c.impressoes?.toLocaleString()}</span>
+                           </div>
+                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center">
+                             <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Gasto</span>
+                             <span className="text-[10px] font-bold text-slate-100">R$ {parseFloat(c.valor_investido).toFixed(2)}</span>
+                           </div>
+                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center">
+                             <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">{segmento === 'inside_sales' ? 'Leads' : 'Vendas'}</span>
+                             <span className="text-[10px] font-bold text-emerald-400">{segmento === 'inside_sales' ? c.leads : c.compras}</span>
                            </div>
                          </div>
                          <div className={`w-full py-3 ${cpa > 0 && idx < 3 ? 'bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.3)]' : 'bg-slate-800'} text-white rounded-2xl text-center text-[10px] font-black uppercase tracking-[0.2em] mt-auto border border-white/10`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
