@@ -33,9 +33,10 @@ import {
   Info,
   Briefcase,
   CalendarDays,
-  ChevronRight
+  ChevronRight,
+  Trophy,
+  Medal
   } from 'lucide-react';
-
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
 /** YYYY-MM-DD no fuso local. */
@@ -629,29 +630,53 @@ export default function App() {
                   .sort((a, b) => a._cpa - b._cpa)
                   .map((c, idx) => {
                    const cpa = c._cpa === Infinity ? 0 : c._cpa;
-                   const medals = ['🥇', '🥈', '🥉'];
-                   const medal = idx < 3 && cpa > 0 ? medals[idx] : null;
-                   const borderHighlight = idx === 0 && cpa > 0 ? 'border-yellow-500/60 shadow-yellow-900/10' : idx === 1 && cpa > 0 ? 'border-slate-400/40' : idx === 2 && cpa > 0 ? 'border-amber-700/40' : 'border-slate-800';
+                   
+                   // Estilo moderno para medalhas
+                   const getRankBadge = (rank) => {
+                     if (rank === 0 && cpa > 0) return (
+                       <div className="absolute top-3 left-3 bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 p-2 rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.4)] border border-yellow-200/50 z-10 flex items-center justify-center animate-pulse">
+                         <Trophy size={18} className="text-white drop-shadow-md" />
+                       </div>
+                     );
+                     if (rank === 1 && cpa > 0) return (
+                       <div className="absolute top-3 left-3 bg-gradient-to-br from-slate-200 via-slate-400 to-slate-500 p-2 rounded-xl shadow-[0_0_20px_rgba(148,163,184,0.3)] border border-slate-100/50 z-10 flex items-center justify-center">
+                         <Medal size={18} className="text-white drop-shadow-md" />
+                       </div>
+                     );
+                     if (rank === 2 && cpa > 0) return (
+                       <div className="absolute top-3 left-3 bg-gradient-to-br from-orange-300 via-orange-500 to-orange-700 p-2 rounded-xl shadow-[0_0_20px_rgba(249,115,22,0.3)] border border-orange-200/50 z-10 flex items-center justify-center">
+                         <Medal size={18} className="text-white drop-shadow-md" />
+                       </div>
+                     );
+                     return null;
+                   };
+
+                   const borderHighlight = idx === 0 && cpa > 0 ? 'border-yellow-500/40 shadow-yellow-900/10' : idx === 1 && cpa > 0 ? 'border-slate-400/30' : idx === 2 && cpa > 0 ? 'border-orange-500/30' : 'border-slate-800';
+                   
                    return (
-                     <div key={c.id} className={`bg-slate-900 rounded-2xl border ${borderHighlight} overflow-hidden group hover:border-blue-500/50 transition-all flex flex-col h-full shadow-2xl`}>
+                     <div key={c.id} className={`bg-slate-900 rounded-3xl border ${borderHighlight} overflow-hidden group hover:border-blue-500/50 transition-all flex flex-col h-full shadow-2xl relative`}>
                        <div className="h-64 bg-slate-950 flex items-center justify-center relative overflow-hidden">
                          {c.url_midia ? (
-                            <img src={c.url_midia} alt={c.nome_anuncio} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <img src={c.url_midia} alt={c.nome_anuncio} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                          ) : (
                             <ImageIcon className="text-slate-800" size={48} />
                          )}
-                         {medal && <div className="absolute top-2 left-2 text-2xl drop-shadow-lg">{medal}</div>}
-                         <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-[10px] font-bold text-white uppercase border border-white/10 backdrop-blur-sm">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
+                         {getRankBadge(idx)}
+                         <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-black text-white uppercase border border-white/10 tracking-widest">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
                        </div>
-                       <div className="p-5 flex-1 flex flex-col">
-                         <div className="text-[12px] font-bold text-slate-100 line-clamp-1 mb-4 uppercase tracking-tight">{medal ? `${medal} ` : ''}{c.nome_anuncio}</div>
-                         <div className="grid grid-cols-2 gap-3 mb-4">
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Alcance</div><div className="text-xs font-bold text-slate-100 text-center">{c.alcance?.toLocaleString()}</div></div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Impressões</div><div className="text-xs font-bold text-slate-100 text-center">{c.impressoes?.toLocaleString()}</div></div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Gasto</div><div className="text-xs font-bold text-slate-100 text-center">R$ {parseFloat(c.valor_investido).toFixed(2)}</div></div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">{segmento === 'inside_sales' ? 'Leads' : 'Vendas'}</div><div className="text-xs font-bold text-slate-100 text-center">{segmento === 'inside_sales' ? c.leads : c.compras}</div></div>
+                       <div className="p-6 flex-1 flex flex-col">
+                         <div className="text-[12px] font-black text-slate-100 line-clamp-1 mb-4 uppercase tracking-tighter group-hover:text-blue-400 transition-colors">{c.nome_anuncio}</div>
+                         <div className="grid grid-cols-2 gap-3 mb-5">
+                           <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800 flex flex-col items-center">
+                             <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Alcance</span>
+                             <span className="text-xs font-bold text-slate-100">{c.alcance?.toLocaleString()}</span>
+                           </div>
+                           <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800 flex flex-col items-center">
+                             <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Gasto</span>
+                             <span className="text-xs font-bold text-slate-100">R$ {parseFloat(c.valor_investido).toFixed(2)}</span>
+                           </div>
                          </div>
-                         <div className={`w-full py-2.5 ${cpa > 0 && idx < 3 ? 'bg-emerald-600 border-emerald-500' : 'bg-blue-600 border-blue-500'} shadow-lg text-white rounded-xl text-center text-xs font-black uppercase tracking-widest mt-auto border`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
+                         <div className={`w-full py-3 ${cpa > 0 && idx < 3 ? 'bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.3)]' : 'bg-slate-800'} text-white rounded-2xl text-center text-[10px] font-black uppercase tracking-[0.2em] mt-auto border border-white/10`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
                        </div>
                      </div>
                    );
