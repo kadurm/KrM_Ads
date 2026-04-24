@@ -30,8 +30,18 @@ model Lead {
   status      String   @default("NOVO") // NOVO, CONTATO, NEGOCIACAO, FECHADO, PERDIDO
   valor       Decimal  @default(0.0)
   origem      String?
+  notas       Nota[]
   data        DateTime @default(now())
   criado_em   DateTime @default(now())
+}
+
+model Nota {
+  id        String   @id @default(uuid())
+  lead_id   String
+  lead      Lead     @relation(fields: [lead_id], references: [id])
+  texto     String
+  autor     String?  // Nome do funcionário
+  criado_em DateTime @default(now())
 }
 
 model Usuario {

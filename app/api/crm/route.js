@@ -14,6 +14,9 @@ export async function GET(request) {
       where: {
         cliente: { nome: cliente }
       },
+      include: {
+        notas: { orderBy: { criado_em: 'desc' } }
+      },
       orderBy: { data: 'desc' }
     });
 
