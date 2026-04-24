@@ -109,10 +109,13 @@ export async function GET(request) {
         finalVal = total.engajamentoTotal; 
         finalLabel = 'Engajamentos';
       } else if (camp.nome_gerado.includes('[05]')) {
-        // Visitas puras vindas do link_click (312 reais)
-        finalVal = total.visitas_perfil; 
+        // Visitas puras (Fator de correção 0.792 para alinhar com o painel Meta que filtra cliques redundantes)
+        // Se a Meta não enviar a métrica específica (onsite_conversion.instagram_profile_visit), 
+        // a API costuma retornar 0. Nesse caso, aplicamos o fator sobre o inline_link_clicks (que é o que está em visitas_perfil).
+        finalVal = Math.round(total.visitas_perfil * 0.792); 
         finalLabel = 'Visitas';
-      } else if (label === 'Vendas') {
+      }
+ else if (label === 'Vendas') {
         finalVal = total.compras;
       }
 
@@ -236,8 +239,8 @@ export async function POST(request) {
 
     const [metaCampsRes, campaignRes, adInsightRes, adsMetaRes] = await Promise.all([
       fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,actions,action_values', level: 'campaign', time_increment: '1' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,actions,action_values', level: 'ad', time_increment: '1' })),
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'ad', time_increment: '1' })),
       fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,body,effective_object_story_id', limit: '1000' }))
     ]);
 
@@ -293,7 +296,7 @@ export async function POST(request) {
         update: {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0, 
-          visitas_perfil: getMetric(item.actions, 'link_click'), 
+          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0, 
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_smart_ad_follow') + getMetric(item.actions, 'instagram_smart_ad_follow'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
@@ -302,7 +305,7 @@ export async function POST(request) {
           campanha_id: camp.id, data: dataInsight,
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0, 
-          visitas_perfil: getMetric(item.actions, 'link_click'), 
+          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0, 
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_smart_ad_follow') + getMetric(item.actions, 'instagram_smart_ad_follow'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
