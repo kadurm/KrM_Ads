@@ -5,6 +5,7 @@ import {
   Play, Pause, ShieldCheck, Zap, Activity, AlertTriangle, Fingerprint 
 } from 'lucide-react';
 import { MetaCampaign } from '@/types/meta-campaigns';
+import AndromedaPredictiveChart from './AndromedaPredictiveChart';
 
 /**
  * Meta Ads 2026 - Campaign Bento Card
@@ -87,6 +88,9 @@ export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavig
             </div>
           </div>
         </div>
+        
+        {/* PREDICTIVE FLOW CHART */}
+        <AndromedaPredictiveChart campaign={campaign} />
 
         {/* CPMR ALERT PANEL */}
         <div className={`p-4 rounded-2xl border flex items-center justify-between ${isCritical ? 'bg-amber-500/5 border-amber-500/20' : 'bg-slate-950/40 border-slate-800'}`}>
