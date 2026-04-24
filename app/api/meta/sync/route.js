@@ -287,6 +287,13 @@ export async function POST(request) {
           create: { meta_id: String(item.campaign_id), nome_gerado: item.campaign_name, cliente_id: dbCliente.id, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN', tipo_orcamento: 'UNKNOWN' }
         });
         localCampMap.set(camp.meta_id, camp);
+      } else if (camp.nome_gerado !== item.campaign_name) {
+        // Atualiza nome se mudou na Meta
+        camp = await prisma.campanha.update({
+          where: { id: camp.id },
+          data: { nome_gerado: item.campaign_name }
+        });
+        localCampMap.set(camp.meta_id, camp);
       }
 
       const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
@@ -337,7 +344,7 @@ export async function POST(request) {
         const highResImage = storyMetaMap.get(adMeta.effective_object_story_id) || adMeta.image_url || adMeta.thumbnail_url;
 
         let criativo = localCreativeMap.get(String(row.ad_id));
-        if (!criativo) {
+        if (!criativo || criativo.nome_anuncio !== row.ad_name) {
           criativo = await prisma.criativo.upsert({
             where: { meta_ad_id: String(row.ad_id) },
             update: { nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body },
