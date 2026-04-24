@@ -1209,7 +1209,7 @@ export default function App() {
                       <button 
                         key={s.id} 
                         onClick={() => handleShortcut(s.id)} 
-                        className={getShortcutClass(s.id).replace('text-[11px]', 'text-[9px]')}
+                        className={`px-3 py-1.5 text-[9px] font-black rounded-lg transition-all ${activeShortcut === s.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
                       >
                         {s.label}
                       </button>
@@ -1322,7 +1322,7 @@ export default function App() {
                 <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
                    <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Predictive ROAS</p>
                    <div className="flex items-center gap-2">
-                      <h4 className="text-2xl font-black text-white">{andromedaMetrics.predictive_roas.toFixed(1)}x</h4>
+                      <h4 className="text-2xl font-black text-white">{(andromedaMetrics?.predictive_roas || 0).toFixed(1)}x</h4>
                       <div className="text-emerald-500 text-[8px] font-black">+12%</div>
                    </div>
                 </div>
@@ -1330,7 +1330,7 @@ export default function App() {
                 <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
                    <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Probability</p>
                    <div className="flex items-center gap-2">
-                      <h4 className="text-2xl font-black text-white">{andromedaMetrics.conversion_prob}%</h4>
+                      <h4 className="text-2xl font-black text-white">{andromedaMetrics?.conversion_prob || 0}%</h4>
                       <div className="text-blue-400 text-[8px] font-black uppercase tracking-tighter">High</div>
                    </div>
                 </div>
@@ -1338,7 +1338,7 @@ export default function App() {
                 <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
                    <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Ad Quality</p>
                    <div className="flex items-center gap-2">
-                      <h4 className="text-2xl font-black text-white">{andromedaMetrics.ad_quality.toFixed(1)}</h4>
+                      <h4 className="text-2xl font-black text-white">{(andromedaMetrics?.ad_quality || 0).toFixed(1)}</h4>
                       <div className="text-emerald-500 text-[8px] font-black uppercase tracking-tighter">Top</div>
                    </div>
                 </div>
@@ -1346,7 +1346,7 @@ export default function App() {
                 <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
                    <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Active Budget</p>
                    <div className="flex items-center gap-2">
-                      <h4 className="text-xl font-black text-white">R$ {investimento}</h4>
+                      <h4 className="text-xl font-black text-white">R$ {investimento || 0}</h4>
                    </div>
                 </div>
 
