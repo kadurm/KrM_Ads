@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
 
+const prisma = new PrismaClient();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 function lerArquivosReferencia(dirPath) {
@@ -31,14 +33,17 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: 'nomeProjeto é obrigatório' }, { status: 400 });
     }
 
+    // Prioridade total para Contexto do Banco de Dados (Insights)
+    const clienteDB = await prisma.cliente.findFirst({ where: { nome: nomeProjeto } });
+    let contextoEmpresa = clienteDB?.insights || "Focar em ROI e Escala Estratégica.";
+
     // Busca referências de estilo para o Gemini copiar o tom de voz
     const projectPath = path.join(process.cwd(), 'ref', nomeProjeto);
     
-    // Suporte prioritário ao agent.md (Contexto da Empresa)
+    // Suporte ao agent.md (Contexto da Empresa) como fallback/complemento
     const agentMdPath = path.join(projectPath, 'agent.md');
-    let contextoEmpresa = "Focar em ROI e Escala Estratégica.";
     if (fs.existsSync(agentMdPath)) {
-      contextoEmpresa = fs.readFileSync(agentMdPath, 'utf8');
+      contextoEmpresa += "\n\n" + fs.readFileSync(agentMdPath, 'utf8');
     }
 
     const historicoRelatorios = lerArquivosReferencia(projectPath);
