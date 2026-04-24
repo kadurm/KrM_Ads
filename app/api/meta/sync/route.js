@@ -33,12 +33,14 @@ function getTrueLeads(actions) {
   // Soma exaustiva de tipos de conversas e leads para bater com o Meta Ads Manager
   const msgConn = getMetric(actions, 'onsite_conversion.total_messaging_connection');
   const msgReply = getMetric(actions, 'onsite_conversion.messaging_first_reply');
-  const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
+  const msgStarted7d = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
+  const msgStarted28d = getMetric(actions, 'onsite_conversion.messaging_conversation_started_28d');
   const standardLead = getMetric(actions, 'lead');
+  const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
   
   // Usamos o maior valor entre as métricas de mensagem para evitar sobreposição,
   // mas incluímos leads de formulário na conta se existirem.
-  return Math.max(msgConn, msgReply, msgStarted) + standardLead;
+  return Math.max(msgConn, msgReply, msgStarted7d, msgStarted28d) + standardLead + leadGen;
 }
 
 /** Traduz objetivos e define o rótulo de resultado principal fiel. */
