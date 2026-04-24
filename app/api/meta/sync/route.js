@@ -167,10 +167,19 @@ export async function GET(request) {
         existing.count += stats.count;
 
         // Estratégia de Preferência por Imagem de Alta Resolução (HD)
-        const isNewHd = c.url_midia?.includes('adimages') || c.url_midia?.includes('video') || c.url_midia?.includes('full_picture');
-        const isExistingHd = existing.url_midia?.includes('adimages') || existing.url_midia?.includes('video') || existing.url_midia?.includes('full_picture');
+        const getScore = (url) => {
+          if (!url) return 0;
+          if (url.includes('adimages')) return 100; // Original HD
+          if (url.includes('video') || url.includes('picture')) return 90; // Video/Post HD
+          if (url.includes('full_picture')) return 80; // Post HD
+          if (url.length > 200) return 50; // Provável URL HD ou com muitos parâmetros
+          return 10; // Thumbnail básica
+        };
+
+        const newScore = getScore(c.url_midia);
+        const existingScore = getScore(existing.url_midia);
         
-        if (c.url_midia && (!existing.url_midia || (isNewHd && !isExistingHd))) {
+        if (c.url_midia && newScore >= existingScore) {
           existing.url_midia = c.url_midia;
         }
       }
@@ -279,12 +288,13 @@ export async function POST(request) {
           ids: chunk.join(','), 
           fields: 'id,thumbnail_url,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id}', 
           access_token: ACCESS_TOKEN,
-          thumbnail_width: 800,
-          thumbnail_height: 800
+          thumbnail_width: '800',
+          thumbnail_height: '800'
         }));
         const data = await res.json();
         Object.values(data).forEach((ad) => {
           if (ad.creative) {
+            // Se a Meta retornar a thumbnail de 800px no nível do ad, ela vira prioridade alta
             creativeMetaMap.set(String(ad.creative.id), { ...ad.creative, ad_thumbnail: ad.thumbnail_url });
             adToCreativeMap.set(String(ad.id), String(ad.creative.id));
           }
