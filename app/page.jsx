@@ -289,6 +289,11 @@ export default function App() {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
+  const toggleSelectAll = () => {
+    if (selectedIds.length === campaignsList.length) setSelectedIds([]);
+    else setSelectedIds(campaignsList.map(item => item.id));
+  };
+
   const loadLeads = async () => {
     if (!clienteSelecionado) return;
     setLeadsLoading(true);
