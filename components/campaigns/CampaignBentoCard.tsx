@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { 
-  Play, Pause, ShieldCheck, Zap, Activity, AlertTriangle, Fingerprint, ChevronRight 
+  Play, Pause, ShieldCheck, Zap, Activity, AlertTriangle, Fingerprint 
 } from 'lucide-react';
 import { MetaCampaign } from '@/types/meta-campaigns';
 
 /**
  * Meta Ads 2026 - Campaign Bento Card
- * Premium Aesthetic with Dynamic Alerts
+ * Updated with Graceful Degradation & Optional Chaining
  */
 
 interface Props {
@@ -18,7 +18,11 @@ interface Props {
 }
 
 export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavigate }) => {
-  const isCritical = campaign.cpmr > 30; // Threshold para borda dinâmica
+  // Safe Metrics with Fallbacks
+  const cpmr = campaign.cpmr ?? 0;
+  const hookRate = campaign.hook_rate ?? 0;
+  const fatigueScore = campaign.creative_fatigue_score ?? 0;
+  const isCritical = cpmr > 30;
 
   return (
     <div className={`
@@ -37,10 +41,10 @@ export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavig
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <span className="px-3 py-1 bg-slate-950 rounded-full text-[8px] font-black text-slate-500 uppercase tracking-widest border border-slate-800">
-                {campaign.objective}
+                {campaign.objective || 'TRAFFIC'}
               </span>
               <div className="flex items-center gap-1.5">
-                <div className={`w-1.5 h-1.5 rounded-full ${campaign.capi_status === 'HEALTHY' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500'}`} />
+                <div className={`w-1.5 h-1.5 rounded-full ${campaign.capi_status === 'HEALTHY' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-slate-700'}`} />
                 <span className="text-[8px] font-bold text-slate-600 uppercase tracking-widest">CAPI</span>
               </div>
             </div>
@@ -48,7 +52,7 @@ export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavig
               onClick={() => onNavigate?.(campaign.id)}
               className="text-xl font-black text-white tracking-tighter uppercase leading-tight cursor-pointer hover:text-blue-400 transition-colors"
             >
-              {campaign.name}
+              {campaign.name || 'Untitled Campaign'}
             </h3>
           </div>
 
@@ -60,24 +64,26 @@ export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavig
           </button>
         </div>
 
-        {/* 2026 METRICS */}
+        {/* 2026 METRICS (With Placeholders) */}
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-500">
               <span>Hook Rate</span>
-              <span className="text-blue-400">{campaign.hook_rate.toFixed(1)}%</span>
+              <span className="text-blue-400">{campaign.hook_rate !== undefined ? `${hookRate.toFixed(1)}%` : '—'}</span>
             </div>
             <div className="h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-              <div className="h-full bg-blue-500 transition-all duration-1000" style={{ width: `${campaign.hook_rate}%` }} />
+              <div className="h-full bg-blue-500 transition-all duration-1000" style={{ width: `${hookRate}%` }} />
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-500">
               <span>Ad Fatigue</span>
-              <span className={campaign.creative_fatigue_score > 70 ? 'text-red-500' : 'text-emerald-500'}>{campaign.creative_fatigue_score}%</span>
+              <span className={fatigueScore > 70 ? 'text-red-500' : 'text-emerald-500'}>
+                {campaign.creative_fatigue_score !== undefined ? `${fatigueScore}%` : 'N/A'}
+              </span>
             </div>
             <div className="h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-              <div className={`h-full transition-all duration-1000 ${campaign.creative_fatigue_score > 70 ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${campaign.creative_fatigue_score}%` }} />
+              <div className={`h-full transition-all duration-1000 ${fatigueScore > 70 ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${fatigueScore}%` }} />
             </div>
           </div>
         </div>
@@ -90,13 +96,15 @@ export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavig
             </div>
             <div>
               <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">CPMr Andromeda</p>
-              <p className={`text-lg font-black ${isCritical ? 'text-amber-500' : 'text-white'}`}>R$ {campaign.cpmr.toFixed(2)}</p>
+              <p className={`text-lg font-black ${isCritical ? 'text-amber-500' : 'text-white'}`}>
+                {campaign.cpmr !== undefined ? `R$ ${cpmr.toFixed(2)}` : 'R$ 0.00'}
+              </p>
             </div>
           </div>
           {isCritical && <div className="w-2 h-2 bg-amber-500 rounded-full animate-ping" />}
         </div>
 
-        {/* GEM CONTROLS */}
+        {/* GEM CONTROLS (Safety Guaranteed) */}
         <div className="pt-4 grid grid-cols-2 gap-4 border-t border-slate-800/50">
           <div className="flex items-center justify-between p-3 bg-slate-950/60 rounded-2xl border border-slate-800">
              <ShieldCheck size={14} className={campaign.multi_advertiser_ads_enabled ? 'text-blue-500' : 'text-slate-700'} />
@@ -111,7 +119,7 @@ export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavig
              <Fingerprint size={14} className={campaign.is_synthetic_content ? 'text-purple-500' : 'text-slate-700'} />
              <input 
                type="checkbox"
-               checked={campaign.is_synthetic_content}
+               checked={!!campaign.is_synthetic_content}
                onChange={() => onUpdate(campaign.id, { is_synthetic_content: !campaign.is_synthetic_content })}
                className="w-4 h-4 rounded border-slate-800 bg-slate-900 checked:bg-purple-600 focus:ring-0 transition-all cursor-pointer"
              />
@@ -123,8 +131,8 @@ export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavig
           <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 font-black text-xs">R$</span>
           <input 
             type="number" 
-            defaultValue={campaign.daily_budget}
-            onBlur={(e) => onUpdate(campaign.id, { daily_budget: Number(e.target.value) })}
+            value={campaign.daily_budget || 0}
+            onChange={(e) => onUpdate(campaign.id, { daily_budget: Number(e.target.value) })}
             className="w-full bg-slate-950 border border-slate-800 rounded-3xl p-4 pl-12 text-xs font-black text-blue-400 outline-none focus:border-blue-500/50 transition-all"
           />
           <Zap size={14} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-800 group-hover/input:text-blue-500" />

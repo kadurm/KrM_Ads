@@ -3,7 +3,7 @@ import { MetaCampaign } from '@/types/meta-campaigns';
 
 /**
  * Meta Ads 2026 - Centralized Campaign API
- * Integrated with Andromeda Predictive Metrics
+ * Updated with Legacy Fallbacks (Graceful Degradation)
  */
 
 function graphUrl(path: string, query: Record<string, any>) {
@@ -61,30 +61,32 @@ export async function GET(request: Request) {
                       parseInt(actions.find((a: any) => a.action_type === 'lead')?.value || 0);
       
       const spend = parseFloat(insights.spend || 0);
-      const hook_rate = insights.impressions > 0 ? (parseFloat(insights.video_p25_watched_actions?.[0]?.value || 0) / parseInt(insights.impressions) * 100) : 0;
+      const impressions = parseInt(insights.impressions || 0);
+      const hook_rate = impressions > 0 ? (parseFloat(insights.video_p25_watched_actions?.[0]?.value || 0) / impressions * 100) : 0;
 
+      // Safe Mapping with Fallbacks for Legacy Support
       return {
         id: item.id,
-        name: item.name,
-        status: item.status,
-        objective: item.objective,
+        name: item.name || 'Sem Nome',
+        status: item.status || 'PAUSED',
+        objective: item.objective || 'OUTCOME_TRAFFIC',
         daily_budget: item.daily_budget ? parseInt(item.daily_budget) / 100 : undefined,
         
-        // 2026 Infrastructure
+        // 2026 Infrastructure - Defaults for legacy
         advantage_plus_budget: !!item.bid_strategy,
-        multi_advertiser_ads_enabled: item.multi_advertiser_ads_enabled || false,
-        is_synthetic_content: item.is_synthetic_content || false,
+        multi_advertiser_ads_enabled: item.multi_advertiser_ads_enabled ?? false,
+        is_synthetic_content: item.is_synthetic_content ?? false,
         
-        // Andromeda Metrics
+        // Andromeda Metrics - Initialized safely
         capi_status: 'HEALTHY', 
-        creative_fatigue_score: Math.floor(Math.random() * 40), 
+        creative_fatigue_score: 0, // Fallback safe
         cpmr: results > 0 ? spend / results : 0,
-        hook_rate,
+        hook_rate: hook_rate,
         
         spend,
         results,
         ctr: parseFloat(insights.inline_link_click_ctr || 0),
-        impressions: parseInt(insights.impressions || 0),
+        impressions,
         
         campaign_id: item.campaign_id,
         adset_id: item.adset_id,
@@ -94,6 +96,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ success: true, items });
   } catch (e: any) {
+    console.error('API Sync Error:', e.message);
     return NextResponse.json({ success: false, error: e.message }, { status: 500 });
   }
 }
@@ -102,11 +105,12 @@ export async function PATCH(request: Request) {
   try {
     const { cliente, id, ...updates } = await request.json();
     const { accessToken } = getCredentials(cliente);
+    if (!accessToken) throw new Error('Token de acesso não encontrado');
     
-    const params = new URLSearchParams({ access_token: accessToken! });
+    const params = new URLSearchParams({ access_token: accessToken });
     Object.entries(updates).forEach(([k, v]) => {
       if (k === 'daily_budget') v = Math.round(Number(v) * 100);
-      params.append(k, String(v));
+      if (v !== undefined && v !== null) params.append(k, String(v));
     });
 
     const res = await fetch(`https://graph.facebook.com/v21.0/${id}`, {
