@@ -1,4 +1,4 @@
-// KrM Ads - Sistema de Gestão de Tráfego Pago
+// KrM Ads - Sistema de Gestao Profissional (Build v2)
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
