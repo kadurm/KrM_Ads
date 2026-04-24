@@ -30,17 +30,14 @@ function getMetric(actions, type, isValue = false) {
 
 function getTrueLeads(actions) {
   if (!Array.isArray(actions)) return 0;
-  // Soma exaustiva de tipos de conversas e leads para bater com o Meta Ads Manager
-  const msgConn = getMetric(actions, 'onsite_conversion.total_messaging_connection');
+  // Foca na métrica de conversa iniciada padrão da Meta (First Reply)
   const msgReply = getMetric(actions, 'onsite_conversion.messaging_first_reply');
-  const msgStarted7d = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
-  const msgStarted28d = getMetric(actions, 'onsite_conversion.messaging_conversation_started_28d');
+  const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
   
-  // Usamos o maior valor entre as métricas de mensagem para evitar sobreposição,
-  // mas incluímos leads de formulário na conta se existirem.
-  return Math.max(msgConn, msgReply, msgStarted7d, msgStarted28d) + standardLead + leadGen;
+  // Retorna o valor de mensagens (usando o maior entre reply e started para evitar duplicidade interna) + leads de formulário
+  return Math.max(msgReply, msgStarted) + standardLead + leadGen;
 }
 
 /** Traduz objetivos e define o rótulo de resultado principal fiel. */
@@ -89,17 +86,25 @@ export async function GET(request) {
 
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
       let finalVal = total.conversas_leads;
-      if (label === 'Visitas') finalVal = total.visitas_perfil || total.cliques;
-      else if (label === 'Alcance') finalVal = total.alcance;
-      else if (label === 'Impressões') finalVal = total.impressoes;
-      else if (label === 'Vendas') finalVal = total.compras;
-      else if (label === 'Engajamentos') finalVal = total.cliques;
+
+      // Lógica de Resultado por Objetivo
+      if (camp.nome_gerado.includes('[01]') || label === 'Alcance' || label === 'Impressões') {
+        finalVal = total.impressoes;
+      } else if (camp.nome_gerado.includes('[02]') || label === 'Engajamentos') {
+        // Usa a mesma métrica de engajamento do funil
+        finalVal = total.visitas_perfil; // visitas_perfil já contém a soma exaustiva no nosso sync
+      } else if (camp.nome_gerado.includes('[05]') || label === 'Visitas') {
+        finalVal = total.visitas_perfil || total.cliques;
+      } else if (label === 'Vendas') {
+        finalVal = total.compras;
+      }
 
       return {
         ...total,
         objetivo: label,
         resultadoBruto: finalVal,
         roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
+        cpr: finalVal > 0 ? (total.valor_investido / finalVal) : 0,
         campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
       };
     }).filter(m => m.impressoes > 0 || m.valor_investido > 0);

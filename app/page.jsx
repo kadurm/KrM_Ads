@@ -173,7 +173,7 @@ export default function App() {
           leads: m.conversas_leads || 0,
           compras: m.compras || 0,
           valor_compras: parseFloat(m.valor_compras) || 0,
-          cpr: m.resultadoBruto > 0 ? `R$ ${(valorInv / m.resultadoBruto).toFixed(2)}` : '-',
+          cpr: m.cpr > 0 ? `R$ ${m.cpr.toFixed(2)}` : '-',
           valor: `R$ ${valorInv.toFixed(2)}`,
           rawValor: valorInv,
           roas: parseFloat(m.roas) || 0
