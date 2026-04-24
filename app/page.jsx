@@ -910,7 +910,7 @@ export default function App() {
                       Anúncios
                     </button>
                   </div>
-                  <h1 className="text-4xl font-black text-white tracking-tighter">Gerenciador KrM</h1>
+                  <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Gerenciador KrM</h1>
                 </div>
                 <div className="flex items-center gap-3">
                   <button onClick={() => loadCampaigns(campaignsLevel, campaignsParentId)} disabled={campaignsLoading} className="p-3 px-6 bg-slate-900 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:text-white transition-all border border-slate-800 shadow-xl">
