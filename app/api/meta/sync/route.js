@@ -169,12 +169,20 @@ export async function GET(request) {
         // Estratégia de Preferência por Imagem de Alta Resolução (HD)
         const getScore = (url) => {
           if (!url) return 0;
-          if (url.includes('adimages')) return 100; // Original HD
-          if (url.includes('thumbnails.data') || url.includes('video')) return 95; // Video HD (Thumbnails reais)
-          if (url.includes('picture')) return 90; // Video/Post Picture
-          if (url.includes('full_picture')) return 80; // Post HD
-          if (url.length > 250) return 60; // Provável URL HD complexa
-          return 10; // Thumbnail básica
+          let score = 10;
+          
+          if (url.includes('adimages')) score = 100; 
+          else if (url.includes('thumbnails.data') || url.includes('video')) score = 95;
+          else if (url.includes('picture')) score = 90;
+          else if (url.includes('full_picture')) score = 85;
+          else if (url.length > 250) score = 60;
+
+          // Multiplicador de Resolução (Fator Decisivo)
+          if (url.includes('p800x800')) score += 100; // Prioridade máxima absoluta
+          if (url.includes('p480x480')) score += 50;
+          if (url.includes('p64x64') || url.includes('p130x130')) score -= 150; // Penalidade pesada para baixa res
+
+          return score;
         };
 
         const newScore = getScore(c.url_midia);
@@ -447,13 +455,18 @@ export async function POST(request) {
         // 4. picture do criativo (fallback de alta resolução)
         // 5. ad_thumbnail (800px via ad level)
         // 6. thumbnail_url / image_url (fallbacks)
-        const highResImage = imageHashMap.get(adMeta.image_hash)
+        let highResImage = imageHashMap.get(adMeta.image_hash)
                           || videoPictureMap.get(adMeta.extracted_video_id)
                           || storyMetaMap.get(adMeta.extracted_story_id)
                           || adMeta.picture
                           || adMeta.ad_thumbnail
                           || adMeta.thumbnail_url
                           || adMeta.image_url;
+
+        // Limpeza de URL: Forçar 800px se for miniatura do CDN da Meta
+        if (highResImage && highResImage.includes('fbcdn.net')) {
+          highResImage = highResImage.replace(/p\d+x\d+/, 'p800x800');
+        }
 
         // Log de depuração refinado
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
