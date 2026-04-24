@@ -261,7 +261,7 @@ export async function POST(request) {
         update: {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0, 
-          visitas_perfil: getMetric(item.actions, 'link_click') || getMetric(item.actions, 'onsite_conversion.post_save'), 
+          visitas_perfil: getMetric(item.actions, 'link_click') + getMetric(item.actions, 'onsite_conversion.post_save') + getMetric(item.actions, 'post_reaction') + getMetric(item.actions, 'comment') + getMetric(item.actions, 'post') + getMetric(item.actions, 'onsite_conversion.messaging_first_reply'), 
           seguidores: getMetric(item.actions, 'page_like') || getMetric(item.actions, 'onsite_conversion.post_save'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
@@ -270,7 +270,7 @@ export async function POST(request) {
           campanha_id: camp.id, data: dataInsight,
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0, 
-          visitas_perfil: getMetric(item.actions, 'link_click') || getMetric(item.actions, 'onsite_conversion.post_save'), 
+          visitas_perfil: getMetric(item.actions, 'link_click') + getMetric(item.actions, 'onsite_conversion.post_save') + getMetric(item.actions, 'post_reaction') + getMetric(item.actions, 'comment') + getMetric(item.actions, 'post') + getMetric(item.actions, 'onsite_conversion.messaging_first_reply'), 
           seguidores: getMetric(item.actions, 'page_like') || getMetric(item.actions, 'onsite_conversion.post_save'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)

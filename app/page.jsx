@@ -380,7 +380,7 @@ export default function App() {
                     {[
                       { label: 'Impressões (Topo)', val: relatorioDados.reduce((a,c)=>a+c.rawImpressoes,0), color: 'bg-blue-600', icon: <Eye size={14}/> },
                       { label: 'Alcance', val: relatorioDados.reduce((a,c)=>a+c.rawAlcance,0), color: 'bg-sky-500', icon: <Target size={14}/> },
-                      { label: 'Cliques e Engajamento', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
+                      { label: 'Engajamento (Meio)', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
                       { label: 'Interesse (Leads/Seg)', val: relatorioDados.reduce((a,c)=>a+c.rawSeguidores+c.leads,0), color: 'bg-purple-500', icon: <Plus size={14}/> },
                       { label: 'Conversão (Fundo)', val: relatorioDados.reduce((a,c)=>a+c.compras,0), color: 'bg-emerald-500', icon: <ShoppingCart size={14}/> }
                     ].map((s, i, arr) => {
