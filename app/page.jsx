@@ -671,27 +671,28 @@ export default function App() {
                   <h1 className="text-xl font-black text-white tracking-tighter uppercase">Andromeda Engine</h1>
                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Audit: {clienteSelecionado}</p>
                 </div>
-                <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-md">
+                <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-md flex-wrap lg:flex-nowrap">
                   <div className="flex gap-1 bg-slate-950/50 p-1 rounded-xl border border-slate-800">
                     {[
                       { id: 'hoje', label: 'H' },
                       { id: 'ontem', label: 'O' },
                       { id: '7d', label: '7D' },
                       { id: 'este_mes', label: 'MÊS' },
+                      { id: 'mes_passado', label: 'ANT' },
                     ].map(s => (
                       <button 
                         key={s.id} 
                         onClick={() => handleShortcut(s.id)} 
-                        className={`px-3 py-1.5 text-[9px] font-black rounded-lg transition-all ${activeShortcut === s.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                        className={getShortcutClass(s.id).replace('text-[11px]', 'text-[9px]')}
                       >
                         {s.label}
                       </button>
                     ))}
                   </div>
                   <div className="flex items-center gap-1.5 px-3">
-                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-24" />
-                    <div className="w-1.5 h-px bg-slate-700" />
-                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-24" />
+                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-28" />
+                    <div className="w-2 h-px bg-slate-700" />
+                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-28" />
                   </div>
                   <button onClick={handleSync} disabled={isSyncing} className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-900/20">
                     <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
