@@ -668,58 +668,54 @@ export default function App() {
             <div ref={reportRef} className="space-y-6">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4">
                 <div>
-                  <h1 className="text-xl font-black text-white tracking-tighter uppercase">Andromeda Engine</h1>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Audit: {clienteSelecionado}</p>
+                  <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Performance Global</h1>
+                  <p className="text-slate-500 text-sm mt-1">Dados auditados: <strong>{clienteSelecionado}</strong></p>
                 </div>
-                <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-md flex-wrap lg:flex-nowrap">
-                  <div className="flex gap-1 bg-slate-950/50 p-1 rounded-xl border border-slate-800">
+                <div className="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-sm flex-wrap">
+                  <div className="flex gap-1 bg-slate-800 p-1 rounded-lg">
                     {[
-                      { id: 'hoje', label: 'H' },
-                      { id: 'ontem', label: 'O' },
-                      { id: '7d', label: '7D' },
-                      { id: 'este_mes', label: 'MÊS' },
-                      { id: 'mes_passado', label: 'ANT' },
+                      { id: 'hoje', label: 'Hoje' },
+                      { id: 'ontem', label: 'Ontem' },
+                      { id: '7d', label: '7 Dias' },
+                      { id: 'este_mes', label: 'Este Mês' },
+                      { id: 'mes_passado', label: 'Mês Passado' },
                     ].map(s => (
-                      <button 
-                        key={s.id} 
-                        onClick={() => handleShortcut(s.id)} 
-                        className={getShortcutClass(s.id).replace('text-[11px]', 'text-[9px]')}
-                      >
-                        {s.label}
-                      </button>
+                      <button key={s.id} onClick={() => handleShortcut(s.id)} className={getShortcutClass(s.id)}>{s.label}</button>
                     ))}
                   </div>
-                  <div className="flex items-center gap-1.5 px-3">
-                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-28" />
-                    <div className="w-2 h-px bg-slate-700" />
-                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-28" />
+                  <div className="flex items-center gap-2">
+                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[11px] font-bold text-slate-300 p-1.5 rounded-lg border border-slate-700 outline-none" />
+                    <span className="text-slate-600 text-xs">→</span>
+                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[11px] font-bold text-slate-300 p-1.5 rounded-lg border border-slate-700 outline-none" />
                   </div>
-                  <button onClick={handleSync} disabled={isSyncing} className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-900/20">
+                  <button onClick={handleSync} disabled={isSyncing} title={isSyncing ? 'Sincronizando...' : 'Sincronizar Dados'} className="p-2 px-3 bg-blue-600/20 text-blue-400 rounded-lg font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all">
                     <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
                   </button>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-                <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><Target size={10}/> Investimento</span>
-                  <div className="text-lg font-black mt-1 text-white">R$ {investimento}</div>
+                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
+                  <div className="text-xl font-black mt-1 text-slate-100">R$ {investimento}</div>
                 </div>
-                <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl shadow-xl border-l-4 border-l-emerald-500/50">
-                  <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2"><DollarSign size={10}/> Faturamento</span>
-                  <div className="text-lg font-black mt-1 text-white">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</div>
+                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
+                  <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento</span>
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="text-xl font-black text-slate-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
+                  </div>
                 </div>
-                <div className="bg-blue-600 p-5 rounded-2xl shadow-2xl shadow-blue-900/20 text-white">
-                  <span className="text-[8px] font-black text-blue-100 uppercase tracking-widest flex items-center gap-2"><TrendingUp size={10}/> ROAS Real</span>
-                  <div className="text-xl font-black mt-1">{roas}x</div>
+                <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
+                  <span className="text-[10px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
+                  <div className="text-2xl font-black mt-1">{roas}x</div>
                 </div>
-                <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><MessageCircle size={10}/> Leads</span>
-                  <div className="text-lg font-black mt-1 text-white">{totalLeads}</div>
+                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
+                  <div className="text-xl font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
                 </div>
-                <div className="bg-emerald-600 p-5 rounded-2xl shadow-2xl shadow-emerald-900/40 text-white">
-                  <span className="text-[8px] font-black text-emerald-100 uppercase tracking-widest flex items-center gap-2"><Target size={10}/> CAC</span>
-                  <div className="text-xl font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
+                <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
+                  <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
+                  <div className="text-2xl font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
                 </div>
               </div>
 
@@ -1195,30 +1191,43 @@ export default function App() {
             <div className="max-w-[1400px] mx-auto py-10 px-8 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
               
               {/* HEADER HIGH-END */}
-              <div className="flex justify-between items-start">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                     <div className="px-3 py-1 bg-blue-600/10 border border-blue-500/20 rounded-full flex items-center gap-2">
-                        <Sparkles size={12} className="text-blue-400" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400">Andromeda v4.0 Enabled</span>
-                     </div>
-                     <div className="px-3 py-1 bg-emerald-600/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-400">Meta GEM Active</span>
-                     </div>
-                  </div>
-                  <h1 className="text-6xl font-black text-white tracking-tighter uppercase leading-none">Meta Ads Control</h1>
-                  <p className="text-sm text-slate-500 font-medium tracking-tight">Gestão preditiva e automação generativa de alta performance.</p>
+              <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-white tracking-tighter uppercase leading-none">Meta Ads Control</h1>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Andromeda v4.0 Active</p>
                 </div>
 
-                <div className="flex gap-4">
-                   <button onClick={() => setShowCreateModal(true)} className="group relative px-8 py-5 bg-white text-black rounded-[2rem] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-white/10 overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <Plus size={20} strokeWidth={3} /> Nova Estrutura
-                   </button>
-                   <button onClick={() => loadCampaigns(campaignsLevel, campaignsParentId)} className="px-8 py-5 bg-slate-900 border border-slate-800 text-slate-300 rounded-[2rem] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 hover:bg-slate-800 hover:text-white transition-all">
-                      <RefreshCw size={18} className={campaignsLoading ? 'animate-spin' : ''} /> Sync
-                   </button>
+                <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800 shadow-xl backdrop-blur-md flex-wrap lg:flex-nowrap">
+                  <div className="flex gap-1 bg-slate-950/50 p-1 rounded-xl border border-slate-800">
+                    {[
+                      { id: 'hoje', label: 'H' },
+                      { id: 'ontem', label: 'O' },
+                      { id: '7d', label: '7D' },
+                      { id: 'este_mes', label: 'MÊS' },
+                      { id: 'mes_passado', label: 'ANT' },
+                    ].map(s => (
+                      <button 
+                        key={s.id} 
+                        onClick={() => handleShortcut(s.id)} 
+                        className={getShortcutClass(s.id).replace('text-[11px]', 'text-[9px]')}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3">
+                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-28" />
+                    <div className="w-2 h-px bg-slate-700" />
+                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-28" />
+                  </div>
+                  <div className="flex gap-2 ml-2">
+                    <button onClick={() => setShowCreateModal(true)} className="w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center hover:scale-105 transition-all shadow-lg">
+                      <Plus size={16} strokeWidth={3} />
+                    </button>
+                    <button onClick={() => loadCampaigns(campaignsLevel, campaignsParentId)} className="w-10 h-10 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl flex items-center justify-center hover:bg-slate-800 transition-all">
+                      <RefreshCw size={14} className={campaignsLoading ? 'animate-spin' : ''} />
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1309,41 +1318,35 @@ export default function App() {
                    </div>
                 </div>
 
-                {/* METRICS ROW */}
-                <div className="col-span-3 bg-slate-900/60 border border-slate-800 rounded-[2.5rem] p-8 flex flex-col gap-2 shadow-xl">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Predictive ROAS</p>
-                   <div className="flex items-end gap-3">
-                      <h4 className="text-4xl font-black text-white leading-none">{andromedaMetrics.predictive_roas.toFixed(1)}x</h4>
-                      <div className="flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full text-[9px] font-black mb-1">
-                         <TrendingUp size={10} /> +12%
-                      </div>
+                {/* METRICS ROW COMPACT */}
+                <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
+                   <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Predictive ROAS</p>
+                   <div className="flex items-center gap-2">
+                      <h4 className="text-2xl font-black text-white">{andromedaMetrics.predictive_roas.toFixed(1)}x</h4>
+                      <div className="text-emerald-500 text-[8px] font-black">+12%</div>
                    </div>
                 </div>
 
-                <div className="col-span-3 bg-slate-900/60 border border-slate-800 rounded-[2.5rem] p-8 flex flex-col gap-2 shadow-xl">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Conv. Probability</p>
-                   <div className="flex items-end gap-3">
-                      <h4 className="text-4xl font-black text-white leading-none">{andromedaMetrics.conversion_prob}%</h4>
-                      <div className="flex items-center gap-1 text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-full text-[9px] font-black mb-1">
-                         High Signal
-                      </div>
+                <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
+                   <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Probability</p>
+                   <div className="flex items-center gap-2">
+                      <h4 className="text-2xl font-black text-white">{andromedaMetrics.conversion_prob}%</h4>
+                      <div className="text-blue-400 text-[8px] font-black uppercase tracking-tighter">High</div>
                    </div>
                 </div>
 
-                <div className="col-span-3 bg-slate-900/60 border border-slate-800 rounded-[2.5rem] p-8 flex flex-col gap-2 shadow-xl">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Ad Quality Index</p>
-                   <div className="flex items-end gap-3">
-                      <h4 className="text-4xl font-black text-white leading-none">{andromedaMetrics.ad_quality.toFixed(1)}</h4>
-                      <div className="flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full text-[9px] font-black mb-1">
-                         Top 5%
-                      </div>
+                <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
+                   <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Ad Quality</p>
+                   <div className="flex items-center gap-2">
+                      <h4 className="text-2xl font-black text-white">{andromedaMetrics.ad_quality.toFixed(1)}</h4>
+                      <div className="text-emerald-500 text-[8px] font-black uppercase tracking-tighter">Top</div>
                    </div>
                 </div>
 
-                <div className="col-span-3 bg-slate-900/60 border border-slate-800 rounded-[2.5rem] p-8 flex flex-col gap-2 shadow-xl">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Active Budget</p>
-                   <div className="flex items-end gap-3">
-                      <h4 className="text-3xl font-black text-white leading-none">R$ {investimento}</h4>
+                <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
+                   <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Active Budget</p>
+                   <div className="flex items-center gap-2">
+                      <h4 className="text-xl font-black text-white">R$ {investimento}</h4>
                    </div>
                 </div>
 
