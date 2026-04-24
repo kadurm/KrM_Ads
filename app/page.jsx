@@ -391,7 +391,7 @@ export default function App() {
                         <div key={i} className="w-full flex flex-col items-center" style={{ maxWidth: `${funnelWidth}%` }}>
                           <div className="w-full flex justify-between text-[10px] font-black uppercase mb-1.5 px-2">
                             <span className="flex items-center gap-1.5 text-slate-400">{s.icon} {s.label}</span>
-                            <span className="text-slate-200">{s.val.toLocaleString()} {i>0 && `(${pct}%)`}</span>
+                            <span className="text-slate-200">{s.val.toLocaleString()}</span>
                           </div>
                           <div className={`w-full h-8 ${s.color} rounded-lg shadow-lg shadow-black/40 border border-white/5 transition-all duration-500`}></div>
                           {i < arr.length -1 && <div className="h-4 w-px bg-slate-800 my-1"></div>}
