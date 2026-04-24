@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   FileText,
   Image as ImageIcon,
-  Settings,
   Plus,
   Sparkles,
   Download,
@@ -17,7 +16,6 @@ import {
   Target,
   DollarSign,
   ShoppingCart,
-  CalendarDays,
   Eye,
   MousePointerClick,
   Database,
@@ -30,7 +28,9 @@ import {
   Loader2,
   Users,
   Trash2,
-  Info
+  Info,
+  Briefcase,
+  CalendarDays
 } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
@@ -46,6 +46,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('relatorios');
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [clientesDisponiveis, setClientesDisponiveis] = useState([]);
+  
+  // Estados para Gestão de Clientes
+  const [showNovoClienteForm, setShowNovoClienteForm] = useState(false);
   const [novoCliente, setNovoCliente] = useState({ nome: '', accountId: '' });
   const [isAddingCliente, setIsAddingCliente] = useState(false);
   const [editingCliente, setEditingCliente] = useState(null);
@@ -104,8 +107,8 @@ export default function App() {
       const data = await res.json();
       if (data.success) {
         setNovoCliente({ nome: '', accountId: '' });
+        setShowNovoClienteForm(false);
         await loadClientes();
-        setActiveTab('clientes');
         setMensagemPainel({ tipo: 'sucesso', texto: 'Cliente vinculado com sucesso!' });
       } else {
         setMensagemPainel({ tipo: 'erro', texto: data.error });
@@ -401,26 +404,64 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-slate-950 font-sans text-slate-100 overflow-hidden">
+      
+      {/* SIDEBAR REORGANIZADA */}
       <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 shadow-2xl">
         <div className="p-6 border-b border-slate-800">
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <LayoutDashboard className="text-blue-500" size={24} /> KrM Ads
           </h1>
         </div>
-        <nav className="flex-1 p-4 space-y-2">
-          <button onClick={() => setActiveTab('relatorios')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'relatorios' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><FileText size={18} /> Relatórios</button>
-          <button onClick={() => setActiveTab('clientes')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'clientes' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Users size={18} /> Administrar Clientes</button>
-          <button onClick={() => setActiveTab('vincular')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'vincular' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Plus size={18} /> Vincular Conta</button>
-          <button onClick={() => setActiveTab('entrada')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'entrada' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Database size={18} /> Entrada de Dados</button>
-          <button onClick={() => setActiveTab('ativos')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'ativos' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><ImageIcon size={18} /> Criativos</button>
-          <button onClick={() => { setActiveTab('campanhas'); loadCampaigns(); }} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'campanhas' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Megaphone size={18} /> Campanhas</button>
-        </nav>
+
+        <div className="flex-1 overflow-y-auto">
+          {/* SEÇÃO GLOBAL */}
+          <div className="px-4 pt-6 pb-2">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">Administração Global</p>
+            <nav className="space-y-1">
+              <button onClick={() => setActiveTab('clientes')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'clientes' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <Users size={16} /> Gerenciar Empresas
+              </button>
+            </nav>
+          </div>
+
+          {/* SEÇÃO WORKSPACE (CLIENTE) */}
+          <div className="px-4 pt-4">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">Workspace: {clienteSelecionado || '...'}</p>
+            <nav className="space-y-1">
+              <button onClick={() => setActiveTab('relatorios')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'relatorios' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <FileText size={16} /> Auditoria de Resultados
+              </button>
+              <button onClick={() => { setActiveTab('campanhas'); loadCampaigns(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'campanhas' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <Megaphone size={16} /> Campanhas (Meta)
+              </button>
+              <button onClick={() => setActiveTab('ativos')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'ativos' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <ImageIcon size={16} /> Biblioteca de Criativos
+              </button>
+              <button onClick={() => setActiveTab('entrada')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'entrada' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <Database size={16} /> Dados Adicionais (ROI)
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-slate-800">
+           <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-xs font-black uppercase tracking-tighter">KrM</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-white truncate">Operador KrM</p>
+                <p className="text-[8px] text-slate-500 font-bold uppercase">Sessão Ativa</p>
+              </div>
+           </div>
+        </div>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8 flex-shrink-0 shadow-sm">
-          <h2 className="font-semibold uppercase tracking-widest text-sm text-slate-400">Auditoria Estratégica de Resultados</h2>
-          <select value={clienteSelecionado} onChange={(e) => setClienteSelecionado(e.target.value)} className="bg-slate-800 text-xs font-bold p-2 rounded-md outline-none cursor-pointer border border-slate-700 hover:border-slate-500 transition-colors">
+          <div className="flex items-center gap-3">
+             <Briefcase className="text-slate-600" size={16} />
+             <h2 className="font-semibold uppercase tracking-widest text-[10px] text-slate-400">Ambiente de Operação KrM Ads</h2>
+          </div>
+          <select value={clienteSelecionado} onChange={(e) => setClienteSelecionado(e.target.value)} className="bg-slate-800 text-[11px] font-black uppercase p-2 px-4 rounded-xl outline-none cursor-pointer border border-slate-700 hover:border-blue-500/50 transition-all text-blue-400 shadow-lg">
             {clientesDisponiveis.map(c => <option key={c.id} value={c.nome}>{c.nome}</option>)}
           </select>
         </header>
@@ -439,8 +480,8 @@ export default function App() {
             <div ref={reportRef} className="space-y-6">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-100">Performance Global</h1>
-                  <p className="text-slate-500 text-sm mt-1">Dados auditados e consolidados da Meta API</p>
+                  <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Performance Global</h1>
+                  <p className="text-slate-500 text-sm mt-1">Dados auditados: <strong>{clienteSelecionado}</strong></p>
                 </div>
                 <div className="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-sm flex-wrap">
                   <div className="flex gap-1 bg-slate-800 p-1 rounded-lg">
@@ -502,7 +543,6 @@ export default function App() {
                       { label: 'Conversão (Fundo)', val: relatorioDados.reduce((a,c)=>a+c.compras,0), color: 'bg-emerald-500', icon: <ShoppingCart size={14}/> }
                     ].map((s, i, arr) => {
                       const max = arr[0].val || 1;
-                      const pct = Math.min(100, (s.val / max) * 100).toFixed(1);
                       const funnelWidth = (100 - (i * 12)); 
                       return (
                         <div key={i} className="w-full flex flex-col items-center" style={{ maxWidth: `${funnelWidth}%` }}>
@@ -578,36 +618,30 @@ export default function App() {
               )}
 
               <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-slate-100"><ImageIcon className="text-blue-500" /> Ranking de Criativos — Melhores Resultados</h3>
-              <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado. Os criativos no topo são os que devem ser replicados e escalados.</p>
+              <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado.</p>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[...criativosDados]
                   .map(c => ({ ...c, _cpa: segmento === 'inside_sales' ? (c.leads > 0 ? c.valor_investido / c.leads : Infinity) : (c.compras > 0 ? c.valor_investido / c.compras : Infinity) }))
                   .sort((a, b) => a._cpa - b._cpa)
                   .map((c, idx) => {
                    const cpa = c._cpa === Infinity ? 0 : c._cpa;
-                   const medals = ['🥇', '🥈', '🥉'];
-                   const medal = idx < 3 && cpa > 0 ? medals[idx] : null;
-                   const borderHighlight = idx === 0 && cpa > 0 ? 'border-yellow-500/60 shadow-yellow-900/10' : idx === 1 && cpa > 0 ? 'border-slate-400/40' : idx === 2 && cpa > 0 ? 'border-amber-700/40' : 'border-slate-800';
                    return (
-                     <div key={c.id} className={`bg-slate-900 rounded-2xl border ${borderHighlight} overflow-hidden group hover:border-blue-500/50 transition-all flex flex-col h-full shadow-2xl`}>
+                     <div key={c.id} className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden flex flex-col h-full shadow-2xl">
                        <div className="h-64 bg-slate-950 flex items-center justify-center relative overflow-hidden">
                          {c.url_midia ? (
-                            <img src={c.url_midia} alt={c.nome_anuncio} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <img src={c.url_midia} alt={c.nome_anuncio} className="h-full w-full object-cover" />
                          ) : (
                             <ImageIcon className="text-slate-800" size={48} />
                          )}
-                         {medal && <div className="absolute top-2 left-2 text-2xl drop-shadow-lg">{medal}</div>}
                          <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-[10px] font-bold text-white uppercase border border-white/10 backdrop-blur-sm">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
                        </div>
                        <div className="p-5 flex-1 flex flex-col">
-                         <div className="text-[12px] font-bold text-slate-100 line-clamp-1 mb-4 uppercase tracking-tight">{medal ? `${medal} ` : ''}{c.nome_anuncio}</div>
+                         <div className="text-[12px] font-bold text-slate-100 line-clamp-1 mb-4 uppercase tracking-tight">{c.nome_anuncio}</div>
                          <div className="grid grid-cols-2 gap-3 mb-4">
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Alcance</div><div className="text-xs font-bold text-slate-100 text-center">{c.alcance?.toLocaleString()}</div></div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Impressões</div><div className="text-xs font-bold text-slate-100 text-center">{c.impressoes?.toLocaleString()}</div></div>
                            <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Gasto</div><div className="text-xs font-bold text-slate-100 text-center">R$ {parseFloat(c.valor_investido).toFixed(2)}</div></div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">{segmento === 'inside_sales' ? 'Leads' : 'Vendas'}</div><div className="text-xs font-bold text-slate-100 text-center">{segmento === 'inside_sales' ? c.leads : c.compras}</div></div>
+                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800"><div className="text-[9px] text-slate-500 font-black uppercase tracking-tighter text-center">Leads</div><div className="text-xs font-bold text-slate-100 text-center">{c.leads}</div></div>
                          </div>
-                         <div className={`w-full py-2.5 ${cpa > 0 && idx < 3 ? 'bg-emerald-600 border-emerald-500' : 'bg-blue-600 border-blue-500'} shadow-lg text-white rounded-xl text-center text-xs font-black uppercase tracking-widest mt-auto border`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
+                         <div className={`w-full py-2.5 bg-blue-600 border border-blue-500 shadow-lg text-white rounded-xl text-center text-xs font-black uppercase tracking-widest mt-auto`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
                        </div>
                      </div>
                    );
@@ -626,118 +660,202 @@ export default function App() {
             </div>
           )}
 
+          {activeTab === 'ativos' && (
+             <div className="space-y-6">
+                <h1 className="text-3xl font-bold text-slate-100">Biblioteca de Criativos</h1>
+                <p className="text-slate-500 text-sm">Todas as peças de anúncios sincronizadas para <strong>{clienteSelecionado}</strong>.</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                   {criativosDados.map(c => (
+                      <div key={c.id} className="bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl group hover:border-blue-500/50 transition-all flex flex-col h-full">
+                         <div className="h-72 bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                            {c.url_midia ? <img src={c.url_midia} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" alt={c.nome_anuncio} /> : <ImageIcon size={48} className="text-slate-800" />}
+                            <div className="absolute top-4 right-4 bg-blue-600 px-3 py-1.5 rounded-xl text-[10px] font-black text-white shadow-xl">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
+                         </div>
+                         <div className="p-6 flex-1 flex flex-col">
+                            <h4 className="font-bold text-slate-100 uppercase tracking-tight text-xs mb-4 line-clamp-2">{c.nome_anuncio}</h4>
+                            <div className="grid grid-cols-2 gap-3 mb-6">
+                               <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800 flex flex-col items-center">
+                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Alcance</span>
+                                  <span className="text-xs font-bold text-slate-100">{c.alcance?.toLocaleString()}</span>
+                               </div>
+                               <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800 flex flex-col items-center">
+                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Gasto</span>
+                                  <span className="text-xs font-bold text-slate-100">R$ {parseFloat(c.valor_investido).toFixed(2)}</span>
+                               </div>
+                            </div>
+                            <div className="mt-auto pt-4 border-t border-slate-800 flex items-center justify-between">
+                               <div className="flex flex-col">
+                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">CPA</span>
+                                  <span className="text-sm font-black text-blue-400">{c.leads > 0 ? `R$ ${(c.valor_investido / c.leads).toFixed(2)}` : '-'}</span>
+                               </div>
+                               <div className="flex flex-col items-end text-emerald-400">
+                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Leads</span>
+                                  <span className="text-sm font-black">{c.leads}</span>
+                               </div>
+                            </div>
+                         </div>
+                      </div>
+                   ))}
+                </div>
+             </div>
+          )}
+
           {activeTab === 'clientes' && (
             <div className="max-w-5xl mx-auto py-6 space-y-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-100">Gestão de Clientes</h1>
-                  <p className="text-slate-500 text-sm mt-1">Administre as contas vinculadas e seus contextos estratégicos.</p>
+                  <h1 className="text-3xl font-bold text-slate-100 font-sans tracking-tight">Administração de Empresas</h1>
+                  <p className="text-slate-500 text-sm mt-1">Gerenciamento global de contas e contextos estratégicos.</p>
                 </div>
-                <button onClick={() => setActiveTab('vincular')} className="p-2 px-4 bg-blue-600 text-white rounded-lg font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-900/20 hover:bg-blue-700 transition-all">
-                  <Plus size={14} /> Novo Cliente
+                <button onClick={() => setShowNovoClienteForm(true)} className="p-3 px-6 bg-blue-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-xl shadow-blue-900/20 hover:bg-blue-700 transition-all border border-blue-500/20">
+                  <Plus size={18} /> Vincular Nova Conta
                 </button>
               </div>
 
+              {/* LISTA DE CLIENTES */}
               <div className="grid grid-cols-1 gap-4">
                 {clientesDisponiveis.map(cliente => (
-                  <div key={cliente.id} className="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex items-center justify-between group hover:border-slate-600 transition-all shadow-xl">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-500 font-bold text-xl">
+                  <div key={cliente.id} className="bg-slate-900 rounded-3xl border border-slate-800 p-6 flex items-center justify-between group hover:border-slate-600 transition-all shadow-xl">
+                    <div className="flex items-center gap-5">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg">
                         {cliente.nome.charAt(0)}
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-100">{cliente.nome}</h3>
-                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Conta: {cliente.meta_ads_account_id}</p>
+                        <h3 className="font-bold text-slate-100 text-lg">{cliente.nome}</h3>
+                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1 opacity-70">Account ID: {cliente.meta_ads_account_id}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => setPerfilCliente(cliente)} className="p-2 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold flex items-center gap-2 transition-all">
-                        <Info size={14} /> Perfil e Contexto
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => setPerfilCliente(cliente)} className="p-3 px-6 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-slate-700 shadow-lg">
+                        <Settings size={16} className="text-blue-400" /> Perfil & Estratégia
                       </button>
-                      <button onClick={() => setEditingCliente(cliente)} className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-lg transition-all">
-                        <Pencil size={14} />
+                      <button onClick={() => setEditingCliente(cliente)} className="p-3 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-2xl transition-all border border-slate-700">
+                        <Pencil size={18} />
                       </button>
-                      <button onClick={() => handleDeleteCliente(cliente.id)} className="p-2 bg-red-600/10 hover:bg-red-600/20 text-red-500 rounded-lg transition-all">
-                        <Trash2 size={14} />
+                      <button onClick={() => handleDeleteCliente(cliente.id)} className="p-3 bg-red-600/10 hover:bg-red-600/20 text-red-500 rounded-2xl transition-all border border-red-500/10">
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
 
+              {/* FORMULÁRIO DE NOVO CLIENTE (MODAL) */}
+              {showNovoClienteForm && (
+                <div className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center z-50 p-4">
+                  <div className="bg-slate-900 w-full max-w-xl rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+                     <div className="p-10 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
+                        <div>
+                          <h2 className="text-3xl font-black text-white tracking-tighter">Vincular Conta</h2>
+                          <p className="text-slate-500 text-sm mt-1">Conecte o Meta Ads de uma nova empresa.</p>
+                        </div>
+                        <button onClick={() => setShowNovoClienteForm(false)} className="p-3 hover:bg-slate-800 rounded-2xl transition-all text-slate-400"><X size={28}/></button>
+                     </div>
+                     <form onSubmit={handleAddCliente} className="p-10 space-y-8">
+                        <div className="grid grid-cols-1 gap-8">
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-3 tracking-[0.2em]">Identificação da Empresa</label>
+                            <input type="text" required value={novoCliente.nome} onChange={e => setNovoCliente({...novoCliente, nome: e.target.value})} className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-100 outline-none focus:border-blue-600 transition-all shadow-inner" placeholder="Ex: Solution Place" />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-3 tracking-[0.2em]">Meta Ad Account ID</label>
+                            <input type="text" required value={novoCliente.accountId} onChange={e => setNovoCliente({...novoCliente, accountId: e.target.value})} className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-100 outline-none focus:border-blue-600 transition-all shadow-inner" placeholder="act_861875509414758" />
+                          </div>
+                        </div>
+                        <div className="bg-blue-600/5 p-6 rounded-3xl border border-blue-500/10 flex items-start gap-4">
+                           <Sparkles size={24} className="text-blue-500 flex-shrink-0 mt-1" />
+                           <p className="text-xs text-blue-400/80 leading-relaxed font-medium">
+                             O sistema criará automaticamente uma instância de inteligência (Agent) para esta conta, pronta para ser treinada com o contexto estratégico da marca.
+                           </p>
+                        </div>
+                        <button type="submit" disabled={isAddingCliente} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black p-5 rounded-2xl transition-all shadow-2xl shadow-blue-900/40 flex items-center justify-center gap-3 uppercase tracking-widest text-xs">
+                          {isAddingCliente ? <><Loader2 size={20} className="animate-spin" /> Vinculando...</> : <><Check size={20} /> Confirmar Vínculo</>}
+                        </button>
+                     </form>
+                  </div>
+                </div>
+              )}
+
+              {/* MODAL DE EDIÇÃO BÁSICA */}
               {editingCliente && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                  <div className="bg-slate-900 w-full max-w-md rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
-                    <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-                      <h3 className="font-bold">Editar Dados: {editingCliente.nome}</h3>
-                      <button onClick={() => setEditingCliente(null)}><X size={20}/></button>
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+                  <div className="bg-slate-900 w-full max-w-md rounded-[2rem] border border-slate-800 shadow-2xl overflow-hidden">
+                    <div className="p-8 border-b border-slate-800 flex justify-between items-center">
+                      <h3 className="font-black text-lg uppercase tracking-tight">Editar Dados</h3>
+                      <button onClick={() => setEditingCliente(null)} className="p-2 hover:bg-slate-800 rounded-xl transition-all"><X size={20}/></button>
                     </div>
-                    <div className="p-6 space-y-4">
+                    <div className="p-8 space-y-6">
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-2">Nome</label>
-                        <input type="text" value={editingCliente.nome} onChange={e => setEditingCliente({...editingCliente, nome: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm outline-none focus:border-blue-500" />
+                        <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Nome da Empresa</label>
+                        <input type="text" value={editingCliente.nome} onChange={e => setEditingCliente({...editingCliente, nome: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-2">Account ID</label>
-                        <input type="text" value={editingCliente.meta_ads_account_id} onChange={e => setEditingCliente({...editingCliente, meta_ads_account_id: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm outline-none focus:border-blue-500" />
+                        <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">ID da Conta</label>
+                        <input type="text" value={editingCliente.meta_ads_account_id} onChange={e => setEditingCliente({...editingCliente, meta_ads_account_id: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" />
                       </div>
-                      <button onClick={() => handleUpdateCliente(editingCliente)} className="w-full bg-blue-600 p-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition-all">Salvar Alterações</button>
+                      <button onClick={() => handleUpdateCliente(editingCliente)} className="w-full bg-blue-600 p-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20">Salvar Alterações</button>
                     </div>
                   </div>
                 </div>
               )}
 
+              {/* PERFIL E CONTEXTO ESTRATÉGICO */}
               {perfilCliente && (
-                <div className="fixed inset-0 bg-slate-950 z-50 flex flex-col">
-                   <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8">
-                      <div className="flex items-center gap-4">
-                        <button onClick={() => setPerfilCliente(null)} className="p-2 hover:bg-slate-800 rounded-lg transition-all"><X size={20}/></button>
+                <div className="fixed inset-0 bg-slate-950 z-50 flex flex-col animate-in slide-in-from-bottom duration-500">
+                   <header className="h-20 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-10">
+                      <div className="flex items-center gap-6">
+                        <button onClick={() => setPerfilCliente(null)} className="p-3 hover:bg-slate-800 rounded-2xl transition-all text-slate-400 group">
+                           <X size={24} className="group-hover:text-white transition-colors" />
+                        </button>
+                        <div className="h-10 w-px bg-slate-800" />
                         <div>
-                          <h2 className="font-bold text-lg">{perfilCliente.nome}</h2>
-                          <p className="text-[10px] text-slate-500 font-bold uppercase">Perfil Estratégico e Contexto da IA</p>
-                        </div>
-                      </div>
-                      <button onClick={() => handleUpdateCliente(perfilCliente)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2 px-6 rounded-lg text-sm transition-all flex items-center gap-2">
-                        <Check size={16} /> Salvar Contexto
-                      </button>
-                   </header>
-                   <div className="flex-1 overflow-hidden flex">
-                      <div className="w-1/3 border-r border-slate-800 p-8 space-y-8 overflow-y-auto">
-                        <div>
-                          <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Informações do Cliente</h4>
-                          <div className="grid grid-cols-1 gap-4">
-                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                               <p className="text-[9px] text-slate-500 font-bold uppercase">ID da Conta Meta</p>
-                               <p className="text-sm font-mono text-blue-400 mt-1">{perfilCliente.meta_ads_account_id}</p>
-                            </div>
-                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                               <p className="text-[9px] text-slate-500 font-bold uppercase">Cadastrado em</p>
-                               <p className="text-sm text-slate-300 mt-1">{new Date(perfilCliente.criado_em).toLocaleDateString('pt-BR')}</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="bg-blue-600/10 p-6 rounded-2xl border border-blue-500/20">
-                          <h4 className="text-xs font-bold text-blue-400 mb-2 flex items-center gap-2"><Sparkles size={14}/> Instruções de Contexto</h4>
-                          <p className="text-[11px] text-blue-300/80 leading-relaxed">
-                            O texto ao lado é o <strong>agent.md</strong> deste cliente. Ele é enviado ao Gemini 2.5 Flash em cada relatório gerado.
-                            <br/><br/>
-                            Use este espaço para definir as metas do cliente, o tom de voz desejado e quaisquer observações que a IA deve ignorar ou focar.
+                          <h2 className="font-black text-xl text-white tracking-tighter uppercase">{perfilCliente.nome}</h2>
+                          <p className="text-[10px] text-blue-500 font-black uppercase tracking-[0.2em] mt-0.5 flex items-center gap-2">
+                             <Sparkles size={12} /> Treinamento do Agent Strategist
                           </p>
                         </div>
                       </div>
-                      <div className="flex-1 bg-slate-950 p-8">
-                        <div className="h-full flex flex-col">
-                          <div className="flex items-center gap-2 mb-4 text-slate-500">
-                            <FileText size={14} />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Editor de Contexto Estratégico (Markdown)</span>
+                      <button onClick={() => handleUpdateCliente(perfilCliente)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black p-3 px-10 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center gap-3 shadow-2xl shadow-emerald-900/40 border border-emerald-500/20">
+                        <Check size={20} /> Salvar Contexto
+                      </button>
+                   </header>
+                   <div className="flex-1 overflow-hidden flex">
+                      <div className="w-[400px] border-r border-slate-800 p-12 space-y-12 overflow-y-auto bg-slate-900/30">
+                        <div>
+                          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6 opacity-60">Configurações Operacionais</h4>
+                          <div className="space-y-4">
+                            <div className="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 shadow-xl">
+                               <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-50">ID no Ecossistema Meta</p>
+                               <p className="text-sm font-mono text-blue-400 font-bold">{perfilCliente.meta_ads_account_id}</p>
+                            </div>
+                            <div className="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 shadow-xl">
+                               <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-50">Início do Auditor KrM</p>
+                               <p className="text-sm text-slate-300 font-bold">{new Date(perfilCliente.criado_em).toLocaleDateString('pt-BR', { dateStyle: 'long' })}</p>
+                            </div>
                           </div>
-                          <textarea 
-                            value={perfilCliente.insights || ''} 
-                            onChange={e => setPerfilCliente({...perfilCliente, insights: e.target.value})}
-                            className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 text-sm text-slate-300 font-mono resize-none outline-none focus:border-blue-500/50 shadow-inner"
-                            placeholder="# Contexto Estratégico..."
-                          />
                         </div>
+                        <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 p-8 rounded-[2.5rem] border border-blue-500/20 relative group">
+                          <Sparkles className="absolute -top-4 -right-4 text-blue-500/10 group-hover:scale-125 transition-transform duration-1000" size={120} />
+                          <h4 className="text-xs font-black text-white mb-4 flex items-center gap-2 uppercase tracking-widest">Guia do Agente IA</h4>
+                          <p className="text-[13px] text-slate-400 leading-relaxed relative z-10 font-medium italic">
+                            "Este conteúdo é a base do conhecimento do Gemini 2.5 Flash para este cliente. O que você escrever ao lado definirá como cada gráfico, métrica e gargalo de funil será interpretado."
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex-1 bg-slate-950 p-12 flex flex-col">
+                        <div className="flex items-center justify-between mb-8">
+                           <div className="flex items-center gap-3 text-slate-500 bg-slate-900/80 p-4 px-8 rounded-2xl border border-slate-800 shadow-xl">
+                             <FileText size={18} className="text-blue-500" />
+                             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-300">knowledge_base / agent.md</span>
+                           </div>
+                           <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest">Linguagem: Markdown — Processamento: Gemini 2.5 Flash</p>
+                        </div>
+                        <textarea 
+                          value={perfilCliente.insights || ''} 
+                          onChange={e => setPerfilCliente({...perfilCliente, insights: e.target.value})}
+                          className="flex-1 bg-slate-900/20 border-2 border-slate-800/50 rounded-[3rem] p-12 text-base text-slate-200 font-mono resize-none outline-none focus:border-blue-600/30 shadow-[0_0_100px_rgba(0,0,0,0.5)] leading-relaxed transition-all"
+                          placeholder="# Defina os objetivos estratégicos, o tom de voz e os KPIs críticos desta empresa..."
+                        />
                       </div>
                    </div>
                 </div>
@@ -745,104 +863,86 @@ export default function App() {
             </div>
           )}
 
-          {activeTab === 'vincular' && (
-            <div className="max-w-2xl mx-auto py-10">
-              <h1 className="text-3xl font-bold mb-2 text-slate-100">Vincular Nova Conta</h1>
-              <p className="text-slate-500 mb-8">Cadastre uma nova empresa e sua ID da conta de anúncios da Meta.</p>
-              
-              <form onSubmit={handleAddCliente} className="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl space-y-6">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Nome da Empresa</label>
-                  <input type="text" required value={novoCliente.nome} onChange={e => setNovoCliente({...novoCliente, nome: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-slate-100 outline-none focus:border-blue-500 transition-all" placeholder="Ex: Solution Place" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-2">ID da Conta de Anúncios (act_XXX)</label>
-                  <input type="text" required value={novoCliente.accountId} onChange={e => setNovoCliente({...novoCliente, accountId: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-slate-100 outline-none focus:border-blue-500 transition-all" placeholder="Ex: 861875509414758" />
-                </div>
-                
-                <div className="bg-blue-600/10 p-4 rounded-xl border border-blue-500/20 mb-6">
-                   <p className="text-xs text-blue-400 leading-relaxed">
-                     <Sparkles size={12} className="inline mr-1" /> Ao vincular uma nova conta, o sistema salvará automaticamente um template estratégico que poderá ser editado na aba <strong>Administrar Clientes</strong>.
-                   </p>
-                </div>
-
-                <button type="submit" disabled={isAddingCliente} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-4 rounded-xl transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
-                  {isAddingCliente ? <><Loader2 size={18} className="animate-spin" /> Vinculando...</> : <><Plus size={18} /> Vincular Empresa</>}
-                </button>
-              </form>
-            </div>
-          )}
-
           {activeTab === 'entrada' && (
             <div className="max-w-4xl mx-auto py-10">
-               <h1 className="text-3xl font-bold mb-2 text-slate-100">Entrada de Conversões Manuais</h1>
-               <p className="text-slate-500 mb-8">Vincule resultados reais de CRM e Vendas às campanhas da Meta.</p>
-               <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center py-20 shadow-2xl">
-                  <Database size={48} className="mx-auto text-slate-700 mb-4" />
-                  <p className="text-slate-400 font-bold">Módulo de Metrificação Avançada</p>
-                  <p className="text-slate-500 text-sm mt-2">Esta funcionalidade permitirá calcular o ROI Real baseado no faturamento efetivado no seu caixa.</p>
+               <h1 className="text-3xl font-black mb-2 text-slate-100 tracking-tighter">Métricas de Faturamento</h1>
+               <p className="text-slate-500 mb-8 font-medium">Faturamento e ROI Real — Workspace: <strong>{clienteSelecionado}</strong></p>
+               <div className="bg-slate-900 p-16 rounded-[3rem] border border-slate-800 text-center py-32 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-600 to-transparent opacity-50" />
+                  <Database size={80} className="mx-auto text-slate-800 mb-8" />
+                  <p className="text-slate-400 font-black text-xl uppercase tracking-tighter">Integração Financeira KrM</p>
+                  <p className="text-slate-500 text-sm mt-4 max-w-md mx-auto font-medium opacity-80 leading-relaxed">Este módulo permitirá o cálculo do ROI Real cruzando dados do Meta Ads com o seu faturamento efetivado.</p>
                </div>
             </div>
           )}
 
           {activeTab === 'campanhas' && (
-            <div className="max-w-5xl mx-auto py-6 space-y-6">
+            <div className="max-w-5xl mx-auto py-6 space-y-8">
               <div className="flex justify-between items-center">
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-100">Gestão de Campanhas</h1>
-                  <p className="text-slate-500 text-sm mt-1">Controle direto via Meta Marketing API — {clienteSelecionado}</p>
+                  <h1 className="text-4xl font-black text-white tracking-tighter">Gestão de Campanhas</h1>
+                  <p className="text-slate-500 text-sm mt-1 flex items-center gap-2">
+                     <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                     Sincronizado via Marketing API — {clienteSelecionado}
+                  </p>
                 </div>
-                <button onClick={loadCampaigns} disabled={campaignsLoading} className="p-2 px-4 bg-blue-600/20 text-blue-400 rounded-lg font-bold text-xs flex items-center gap-2 border border-blue-500/20 hover:bg-blue-600/30 transition-all">
-                  <RefreshCw size={14} className={campaignsLoading ? 'animate-spin' : ''} /> Atualizar
+                <button onClick={loadCampaigns} disabled={campaignsLoading} className="p-4 px-8 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-3 hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 border border-blue-500/20">
+                  <RefreshCw size={18} className={campaignsLoading ? 'animate-spin' : ''} /> Atualizar Status
                 </button>
               </div>
 
               {campaignsLoading && (
-                <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-blue-500" size={32} /></div>
+                <div className="flex items-center justify-center py-32 flex-col gap-6 text-slate-500">
+                   <div className="relative">
+                      <div className="w-16 h-16 border-4 border-blue-600/20 rounded-full animate-ping absolute inset-0" />
+                      <Loader2 className="animate-spin text-blue-600" size={64} />
+                   </div>
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 animate-pulse">Estabelecendo conexão segura com Meta...</p>
+                </div>
               )}
 
               {!campaignsLoading && campaignsList.length === 0 && (
-                <div className="bg-slate-900 p-12 rounded-2xl border border-slate-800 text-center shadow-2xl">
-                  <Megaphone size={48} className="mx-auto text-slate-700 mb-4" />
-                  <p className="text-slate-400 font-bold">Nenhuma campanha encontrada</p>
-                  <p className="text-slate-500 text-sm mt-2">Clique em "Atualizar" para buscar campanhas da Meta.</p>
+                <div className="bg-slate-900 p-20 rounded-[3rem] border border-slate-800 text-center shadow-2xl">
+                  <Megaphone size={80} className="mx-auto text-slate-800 mb-8" />
+                  <p className="text-slate-400 font-black text-xl uppercase tracking-tight">Nenhuma Campanha Ativa</p>
+                  <p className="text-slate-500 text-sm mt-4 font-medium opacity-70">Sincronize com a Meta para visualizar e gerenciar as campanhas deste cliente.</p>
                 </div>
               )}
 
               {!campaignsLoading && campaignsList.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {campaignsList.map(camp => (
-                    <div key={camp.id} className={`bg-slate-900 rounded-2xl border ${camp.status === 'ACTIVE' ? 'border-emerald-500/30' : 'border-slate-800'} p-5 shadow-xl transition-all hover:border-slate-600`}>
+                    <div key={camp.id} className={`bg-slate-900 rounded-[2rem] border ${camp.status === 'ACTIVE' ? 'border-blue-500/20' : 'border-slate-800'} p-8 shadow-xl transition-all hover:border-blue-500/40 group`}>
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
                           {editingCampaign === camp.id ? (
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-slate-100 truncate">{camp.name}</span>
-                              <div className="flex items-center gap-1 ml-4">
-                                <span className="text-[10px] text-slate-500 uppercase font-bold">Orçamento:</span>
-                                <input type="number" value={editBudget} onChange={e => setEditBudget(e.target.value)} className="bg-slate-800 text-xs font-bold text-slate-100 p-1.5 rounded border border-slate-700 w-24 outline-none" placeholder="R$" />
-                                <button onClick={() => handleUpdateCampaign(camp.id, { daily_budget: editBudget })} className="p-1.5 bg-emerald-600 rounded text-white hover:bg-emerald-700 transition-all"><Check size={12} /></button>
-                                <button onClick={() => setEditingCampaign(null)} className="p-1.5 bg-slate-700 rounded text-slate-300 hover:bg-slate-600 transition-all"><X size={12} /></button>
+                            <div className="flex items-center gap-4">
+                              <span className="text-sm font-black text-white truncate uppercase tracking-tight">{camp.name}</span>
+                              <div className="flex items-center gap-3 ml-4 bg-slate-950 p-2 rounded-2xl border border-slate-800">
+                                <span className="text-[10px] text-slate-500 font-black uppercase px-3">Orçamento</span>
+                                <input type="number" value={editBudget} onChange={e => setEditBudget(e.target.value)} className="bg-slate-900 text-sm font-black text-blue-400 p-3 rounded-xl border border-slate-800 w-32 outline-none focus:border-blue-600 transition-all" placeholder="R$" />
+                                <button onClick={() => handleUpdateCampaign(camp.id, { daily_budget: editBudget })} className="p-3 bg-emerald-600 rounded-xl text-white hover:bg-emerald-700 transition-all shadow-lg"><Check size={18} /></button>
+                                <button onClick={() => setEditingCampaign(null)} className="p-3 bg-slate-800 rounded-xl text-slate-400 hover:bg-slate-700 transition-all"><X size={18} /></button>
                               </div>
                             </div>
                           ) : (
                             <div>
-                              <div className="text-sm font-bold text-slate-100 truncate">{camp.name}</div>
-                              <div className="flex items-center gap-3 mt-1">
-                                <span className="text-[10px] text-slate-500 uppercase font-bold">{camp.objective?.replace('OUTCOME_', '') || 'N/A'}</span>
-                                {camp.daily_budget && <span className="text-[10px] text-blue-400 font-bold">R$ {camp.daily_budget}/dia</span>}
-                                {camp.lifetime_budget && <span className="text-[10px] text-purple-400 font-bold">R$ {camp.lifetime_budget} total</span>}
+                              <div className="text-lg font-black text-white group-hover:text-blue-500 transition-colors truncate uppercase tracking-tight">{camp.name}</div>
+                              <div className="flex items-center gap-6 mt-3">
+                                <span className="text-[9px] bg-slate-950 p-2 px-4 rounded-xl text-slate-500 font-black uppercase tracking-[0.2em] border border-slate-800">{camp.objective?.replace('OUTCOME_', '') || 'N/A'}</span>
+                                {camp.daily_budget && <div className="flex items-center gap-2"><DollarSign size={14} className="text-emerald-500"/><span className="text-sm text-emerald-400 font-black tracking-tight">R$ {parseFloat(camp.daily_budget).toLocaleString()} / dia</span></div>}
+                                {camp.lifetime_budget && <div className="flex items-center gap-2"><CalendarDays size={14} className="text-purple-500"/><span className="text-sm text-purple-400 font-black tracking-tight">R$ {parseFloat(camp.lifetime_budget).toLocaleString()} total</span></div>}
                               </div>
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                          <button onClick={() => { setEditingCampaign(camp.id); setEditBudget(camp.daily_budget || ''); }} className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-all" title="Editar orçamento"><Pencil size={14} /></button>
+                        <div className="flex items-center gap-4 flex-shrink-0 ml-8">
+                          <button onClick={() => { setEditingCampaign(camp.id); setEditBudget(camp.daily_budget || ''); }} className="p-4 bg-slate-800 rounded-2xl text-slate-400 hover:text-white hover:bg-blue-600/20 hover:border-blue-500/20 border border-transparent transition-all shadow-lg" title="Editar orçamento"><Pencil size={20} /></button>
                           <button
                             onClick={() => handleUpdateCampaign(camp.id, { status: camp.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE' })}
-                            className={`p-2 px-4 rounded-lg font-bold text-xs flex items-center gap-2 transition-all ${camp.status === 'ACTIVE' ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 hover:bg-red-600/20 hover:text-red-400 hover:border-red-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-emerald-600/20 hover:text-emerald-400 hover:border-emerald-500/20'}`}
+                            className={`p-4 px-10 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-2xl ${camp.status === 'ACTIVE' ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 hover:bg-red-600/20 hover:text-red-400 hover:border-red-500/20' : 'bg-slate-800 text-slate-500 border border-slate-700 hover:bg-emerald-600/20 hover:text-emerald-400 hover:border-emerald-500/20'}`}
                           >
-                            {camp.status === 'ACTIVE' ? <><Pause size={12} /> Ativa</> : <><Play size={12} /> Pausada</>}
+                            {camp.status === 'ACTIVE' ? <><Pause size={18} /> Ativa</> : <><Play size={18} /> Pausada</>}
                           </button>
                         </div>
                       </div>
