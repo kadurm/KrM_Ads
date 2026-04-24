@@ -459,7 +459,7 @@ export default function App() {
       <main className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8 flex-shrink-0 shadow-sm">
           <div className="flex items-center gap-3">
-             <Briefcase className="text-slate-600" size={16} />
+             <Briefcase className="text-blue-500/50" size={16} />
              <h2 className="font-semibold uppercase tracking-widest text-[10px] text-slate-400">Ambiente de Operação KrM Ads</h2>
           </div>
           <select value={clienteSelecionado} onChange={(e) => setClienteSelecionado(e.target.value)} className="bg-slate-800 text-[11px] font-black uppercase p-2 px-4 rounded-xl outline-none cursor-pointer border border-slate-700 hover:border-blue-500/50 transition-all text-blue-400 shadow-lg">
