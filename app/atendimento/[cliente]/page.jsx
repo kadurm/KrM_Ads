@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import { 
   Users, 
   MessageCircle, 
@@ -16,12 +17,14 @@ import {
   TrendingUp,
   History,
   MoreVertical,
-  Send
+  Send,
+  Building
 } from 'lucide-react';
 
 export default function AtendimentoPage() {
-  const [clientes, setClientes] = useState([]);
-  const [clienteAtivo, setClienteAtivo] = useState('');
+  const params = useParams();
+  const clienteUrl = decodeURIComponent(params.cliente || '');
+  
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,24 +33,19 @@ export default function AtendimentoPage() {
   const [showAddLead, setShowAddLead] = useState(false);
   const [newLead, setNewLead] = useState({ nome: '', contato: '', origem: 'Atendimento Direto' });
 
-  useEffect(() => {
-    fetch('/api/clientes').then(res => res.json()).then(data => {
-      setClientes(data.clientes || []);
-      if (data.clientes?.length > 0) setClienteAtivo(data.clientes[0].nome);
-    });
-  }, []);
-
   const loadLeads = useCallback(async () => {
-    if (!clienteAtivo) return;
+    if (!clienteUrl) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteAtivo)}`);
+      const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteUrl)}`);
       const data = await res.json();
       if (data.success) setLeads(data.leads);
+    } catch (e) {
+      console.error('Erro ao carregar leads:', e);
     } finally {
       setLoading(false);
     }
-  }, [clienteAtivo]);
+  }, [clienteUrl]);
 
   useEffect(() => {
     loadLeads();
@@ -100,7 +98,7 @@ export default function AtendimentoPage() {
       const res = await fetch('/api/crm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cliente: clienteAtivo, ...newLead })
+        body: JSON.stringify({ cliente: clienteUrl, ...newLead })
       });
       if (res.ok) {
         setShowAddLead(false);
@@ -119,25 +117,22 @@ export default function AtendimentoPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-20">
-      {/* HEADER MOBILE-FRIENDLY */}
+      {/* HEADER DINÂMICO POR EMPRESA */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-4 shadow-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
              <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-               <Users size={20} />
+               <Building size={20} />
              </div>
              <div>
-               <h1 className="text-lg font-black tracking-tight text-slate-800">Canal de Atendimento</h1>
-               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Powered by Solution Place</p>
+               <h1 className="text-lg font-black tracking-tight text-slate-800 uppercase">{clienteUrl}</h1>
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Canal de Atendimento Solution Place</p>
              </div>
           </div>
-          <select 
-            value={clienteAtivo} 
-            onChange={e => setClienteAtivo(e.target.value)}
-            className="bg-slate-100 border-none rounded-xl px-4 py-2 text-xs font-black uppercase text-blue-600 outline-none"
-          >
-            {clientes.map(c => <option key={c.id} value={c.nome}>{c.nome}</option>)}
-          </select>
+          <div className="hidden sm:flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full border border-emerald-100">
+             <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+             <span className="text-[9px] font-black uppercase tracking-widest">Sistema Ativo</span>
+          </div>
         </div>
       </header>
 
@@ -169,7 +164,7 @@ export default function AtendimentoPage() {
           ) : filteredLeads.length === 0 ? (
              <div className="text-center py-20 bg-white rounded-[2rem] border border-dashed border-slate-300">
                 <Users className="mx-auto text-slate-200 mb-4" size={48} />
-                <p className="text-slate-400 font-bold text-sm">Nenhum lead encontrado para este cliente.</p>
+                <p className="text-slate-400 font-bold text-sm">Nenhum lead encontrado para {clienteUrl}.</p>
              </div>
           ) : (
             filteredLeads.map(lead => (
@@ -302,7 +297,7 @@ export default function AtendimentoPage() {
            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowAddLead(false)} />
            <div className="relative bg-white w-full max-w-lg rounded-t-[3rem] sm:rounded-[3rem] p-10 shadow-2xl animate-in slide-in-from-bottom duration-300">
               <div className="flex justify-between items-center mb-8">
-                 <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">Novo Lead Solution</h2>
+                 <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">Novo Lead {clienteUrl}</h2>
                  <button onClick={() => setShowAddLead(false)} className="p-3 bg-slate-100 rounded-2xl text-slate-400"><X size={20}/></button>
               </div>
               <form onSubmit={handleAddLead} className="space-y-6">
@@ -319,7 +314,7 @@ export default function AtendimentoPage() {
                     <input value={newLead.origem} onChange={e => setNewLead({...newLead, origem: e.target.value})} type="text" className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-sm outline-none focus:ring-2 ring-blue-500/10 transition-all" placeholder="Ex: Atendimento Local" />
                  </div>
                  <button type="submit" className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-200 mt-4 active:scale-95 transition-all">
-                   Registrar Lead na Solution
+                   Registrar Lead
                  </button>
               </form>
            </div>
