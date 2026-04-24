@@ -65,9 +65,9 @@ export async function GET(request) {
     const cliente = await prisma.cliente.findFirst({ where: { nome: clienteNome } });
     if (!cliente) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
-    // Normalização rigorosa de datas para busca
-    const dateUntil = until ? new Date(until + 'T23:59:59.999Z') : new Date();
-    const dateSince = since ? new Date(since + 'T00:00:00.000Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));
+    // Normalização de datas para busca ignorando fusos horários conflitantes
+    const dateUntil = until ? new Date(until + 'T23:59:59') : new Date();
+    const dateSince = since ? new Date(since + 'T00:00:00') : new Date(new Date().setDate(dateUntil.getDate() - 30));
 
     const campanhas = await prisma.campanha.findMany({
       where: { cliente_id: cliente.id },
