@@ -1,4 +1,5 @@
 "use client";
+// Meta Ads 2026 - CampaignsBoard v1.1
 
 import React from 'react';
 import { 
