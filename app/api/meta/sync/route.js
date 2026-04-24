@@ -246,7 +246,7 @@ export async function POST(request) {
       fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' })),
       fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),
       fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'ad', time_increment: '1' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,body,effective_object_story_id', limit: '1000' }))
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', limit: '1000' }))
     ]);
 
     const [metaCampsData, campaignData, adInsightData, adsMetaData] = await Promise.all([ 
@@ -272,9 +272,26 @@ export async function POST(request) {
          Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
        }));
        console.timeEnd('Meta-HD-Images');
-    }
+     }
 
-    const existingCamps = await prisma.campanha.findMany({ where: { cliente_id: dbCliente.id } });
+     // Busca HD via Biblioteca de Imagens da Conta (adimages) usando image_hash
+     const imageHashMap = new Map();
+     const uniqueHashes = [...new Set(adsMetaData.data?.map(m => m.image_hash).filter(h => !!h) || [])];
+     if (uniqueHashes.length > 0) {
+       console.time('Meta-AdImages-HD');
+       const hashChunks = [];
+       for (let i = 0; i < uniqueHashes.length; i += 50) hashChunks.push(uniqueHashes.slice(i, i + 50));
+       await Promise.all(hashChunks.map(async (chunk) => {
+         const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'permalink_url,hash' }));
+         const data = await res.json();
+         if (data.data) {
+           data.data.forEach(img => { if (img.permalink_url) imageHashMap.set(img.hash, img.permalink_url); });
+         }
+       }));
+       console.timeEnd('Meta-AdImages-HD');
+     }
+
+     const existingCamps = await prisma.campanha.findMany({ where: { cliente_id: dbCliente.id } });
     const localCampMap = new Map(existingCamps.map(c => [c.meta_id, c]));
 
     console.time('DB-Write-Campaigns');
@@ -342,11 +359,15 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Estratégia de Imagem HD: 
-        // 1. full_picture do Post 
-        // 2. image_url do Criativo (geralmente alta resolução)
-        // 3. thumbnail_url (fallback)
-        const highResImage = storyMetaMap.get(adMeta.effective_object_story_id) || adMeta.image_url || adMeta.thumbnail_url;
+        // Estratégia de Imagem HD (4 camadas, da maior para menor qualidade):
+        // 1. permalink_url via adimages/image_hash (resolução original do upload)
+        // 2. full_picture do Post (alta resolução)
+        // 3. image_url do Criativo (resolução média)
+        // 4. thumbnail_url (fallback - baixa resolução)
+        const highResImage = imageHashMap.get(adMeta.image_hash)
+                          || storyMetaMap.get(adMeta.effective_object_story_id)
+                          || adMeta.image_url
+                          || adMeta.thumbnail_url;
 
         // Forçamos o upsert para atualizar NOME e IMAGEM sempre
         const criativo = await prisma.criativo.upsert({
