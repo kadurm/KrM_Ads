@@ -212,7 +212,7 @@ export default function App() {
     setCampaignsParentId(parentId);
     setSelectedIds([]); // Reseta seleção ao mudar de nível
     try {
-      let url = `/api/meta/campaigns?cliente=${encodeURIComponent(clienteSelecionado)}&level=${level}`;
+      let url = `/api/meta/campaigns?cliente=${encodeURIComponent(clienteSelecionado)}&level=${level}&since=${startDate}&until=${endDate}`;
       if (parentId) url += `&parentId=${parentId}`;
       
       const res = await fetch(url);
@@ -323,6 +323,10 @@ export default function App() {
       setCampaignsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (activeTab === 'campanhas') loadCampaigns(campaignsLevel, campaignsParentId);
+  }, [startDate, endDate]);
 
   const loadMetrics = useCallback(async () => {
     if (!clienteSelecionado) return;
@@ -1001,16 +1005,35 @@ export default function App() {
                   </div>
                   <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Gerenciador KrM</h1>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button 
-                    onClick={() => setShowCreateModal(true)}
-                    className="p-3 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 border border-blue-500/20"
-                  >
-                    <Plus size={16} /> Criar {campaignsLevel === 'campaign' ? 'Campanha' : campaignsLevel === 'adset' ? 'Conjunto' : 'Anúncio'}
-                  </button>
-                  <button onClick={() => loadCampaigns(campaignsLevel, campaignsParentId)} disabled={campaignsLoading} className="p-3 px-6 bg-slate-900 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:text-white transition-all border border-slate-800 shadow-xl">
-                    <RefreshCw size={14} className={campaignsLoading ? 'animate-spin' : ''} /> Sincronizar Agora
-                  </button>
+                <div className="flex flex-col items-end gap-3">
+                  <div className="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-sm flex-wrap">
+                    <div className="flex gap-1 bg-slate-800 p-1 rounded-lg">
+                      {[
+                        { id: 'hoje', label: 'Hoje' },
+                        { id: 'ontem', label: 'Ontem' },
+                        { id: '7d', label: '7 Dias' },
+                        { id: 'este_mes', label: 'Este Mês' },
+                      ].map(s => (
+                        <button key={s.id} onClick={() => handleShortcut(s.id)} className={getShortcutClass(s.id)}>{s.label}</button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[10px] font-bold text-slate-300 p-1 rounded-lg border border-slate-700 outline-none" />
+                      <span className="text-slate-600 text-[10px]">→</span>
+                      <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[10px] font-bold text-slate-300 p-1 rounded-lg border border-slate-700 outline-none" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => setShowCreateModal(true)}
+                      className="p-3 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 border border-blue-500/20"
+                    >
+                      <Plus size={16} /> Criar {campaignsLevel === 'campaign' ? 'Campanha' : campaignsLevel === 'adset' ? 'Conjunto' : 'Anúncio'}
+                    </button>
+                    <button onClick={() => loadCampaigns(campaignsLevel, campaignsParentId)} disabled={campaignsLoading} className="p-3 px-6 bg-slate-900 text-slate-400 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:text-white transition-all border border-slate-800 shadow-xl">
+                      <RefreshCw size={14} className={campaignsLoading ? 'animate-spin' : ''} /> Sincronizar Agora
+                    </button>
+                  </div>
                 </div>
               </div>
 

@@ -32,6 +32,8 @@ export async function GET(request) {
     const cliente = searchParams.get('cliente');
     const level = searchParams.get('level') || 'campaign'; // campaign, adset, ad
     const parentId = searchParams.get('parentId');
+    const since = searchParams.get('since');
+    const until = searchParams.get('until');
 
     if (!cliente) return NextResponse.json({ success: false, error: 'Cliente não especificado' }, { status: 400 });
 
@@ -55,7 +57,7 @@ export async function GET(request) {
     // Busca os objetos principais
     const res = await fetch(graphUrl(endpoint, {
       access_token: creds.accessToken,
-      fields: `${fields},insights{${insightsFields}}`,
+      fields: `${fields},insights.level(${level})${since && until ? `.time_range({"since":"${since}","until":"${until}"})` : ''}{${insightsFields}}`,
       limit: '100',
     }));
     const data = await res.json();
