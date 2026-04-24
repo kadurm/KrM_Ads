@@ -39,7 +39,8 @@ import {
   Medal,
   Search,
   Settings2,
-  Shield
+  Shield,
+  MoreVertical
   } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
