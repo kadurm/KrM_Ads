@@ -7,7 +7,8 @@ import { jsPDF } from 'jspdf';
 import {
   LayoutDashboard,
   FileText,
-  Image as ImageIcon,
+  ImageIcon,
+  Settings,
   Plus,
   Sparkles,
   Download,
@@ -31,8 +32,10 @@ import {
   Trash2,
   Info,
   Briefcase,
-  CalendarDays
-} from 'lucide-react';
+  CalendarDays,
+  ChevronRight
+  } from 'lucide-react';
+
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
 /** YYYY-MM-DD no fuso local. */
