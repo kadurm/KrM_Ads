@@ -33,6 +33,14 @@ export async function POST(request) {
 
     // Busca referências de estilo para o Gemini copiar o tom de voz
     const projectPath = path.join(process.cwd(), 'ref', nomeProjeto);
+    
+    // Suporte prioritário ao agent.md (Contexto da Empresa)
+    const agentMdPath = path.join(projectPath, 'agent.md');
+    let contextoEmpresa = "Focar em ROI e Escala Estratégica.";
+    if (fs.existsSync(agentMdPath)) {
+      contextoEmpresa = fs.readFileSync(agentMdPath, 'utf8');
+    }
+
     const historicoRelatorios = lerArquivosReferencia(projectPath);
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
@@ -40,6 +48,9 @@ export async function POST(request) {
     const prompt = `
       Atue como um Especialista Sênior em Tráfego Pago da KrM Ads. 
       Gere um Diagnóstico Estratégico para o cliente "${nomeProjeto}" (${periodo?.de} a ${periodo?.ate}).
+
+      CONTEXTO ESTRATÉGICO DA EMPRESA (AGENT.MD):
+      ${contextoEmpresa}
 
       DADOS DO PERÍODO:
       - Investimento: R$ ${metricas.investimento}
@@ -57,8 +68,8 @@ export async function POST(request) {
       CRIATIVOS (Ranking por CPA):
       ${criativosRanking?.map((c, i) => `${i+1}. ${c.nome}: R$ ${c.gasto} gasto, ${c.leads} leads, CPA R$ ${c.cpa}`).join('\n')}
 
-      REFERÊNCIA DE ESTILO:
-      ${historicoRelatorios || "Tom profissional, direto e estratégico focado em ROI."}
+      ESTILO E HISTÓRICO:
+      ${historicoRelatorios || "Tom profissional, direto e estratégico."}
 
       ESTRUTURA DO RELATÓRIO:
       1. O QUE ESTÁ ACONTECENDO (Diagnóstico com números reais)

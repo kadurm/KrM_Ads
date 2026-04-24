@@ -1,7 +1,16 @@
-# KrM Ads - Guia do Projeto
+# Regras de Desenvolvimento Gemini
 
-## Visão Geral
-O KrM Ads é um sistema SaaS fullstack desenvolvido com **Next.js 15 (App Router)** para gestão estratégica de tráfego pago. O foco principal é a sincronização fiel de dados da Meta Ads API e a geração de relatórios de performance utilizando **Google Gemini IA**.
+## Modelos de IA
+- **Modelo Principal:** `gemini-2.5-flash` (Deve ser mantido em todos os endpoints de geração).
+
+## Contexto Estratégico (agent.md)
+- Todo cliente deve possuir um arquivo `ref/[Nome]/agent.md`.
+- Este arquivo deve conter o "coração" da estratégia do cliente.
+- O endpoint `/api/relatorios/generate` prioriza o conteúdo deste arquivo para personalizar o tom de voz e os diagnósticos.
+
+## Regras de Resposta
+- Todo texto gerado para relatórios ou copywriting DEVE terminar com uma **pergunta estratégica**.
+- Manter foco absoluto em ROI e métricas reais (Meta Ads).
 
 ## Stack Tecnológica
 - **Framework:** Next.js (React 19, TypeScript)

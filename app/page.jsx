@@ -41,7 +41,11 @@ function formatDateLocal(d) {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('relatorios');
-  const [clienteSelecionado, setClienteSelecionado] = useState('Solution Place');
+  const [clienteSelecionado, setClienteSelecionado] = useState('');
+  const [clientesDisponiveis, setClientesDisponiveis] = useState([]);
+  const [novoCliente, setNovoCliente] = useState({ nome: '', accountId: '' });
+  const [isAddingCliente, setIsAddingCliente] = useState(false);
+  
   const [analiseIA, setAnaliseIA] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
   const [segmento, setSegmento] = useState('inside_sales');
@@ -70,6 +74,44 @@ export default function App() {
   const [dailyData, setDailyData] = useState([]);
   const reportRef = useRef(null);
 
+  const loadClientes = async () => {
+    try {
+      const res = await fetch('/api/clientes');
+      const data = await res.json();
+      if (data.success) {
+        setClientesDisponiveis(data.clientes);
+        if (data.clientes.length > 0 && !clienteSelecionado) {
+          setClienteSelecionado(data.clientes[0].nome);
+        }
+      }
+    } catch (e) { console.error("Erro ao carregar clientes:", e); }
+  };
+
+  const handleAddCliente = async (e) => {
+    e.preventDefault();
+    setIsAddingCliente(true);
+    try {
+      const res = await fetch('/api/clientes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome: novoCliente.nome, meta_ads_account_id: novoCliente.accountId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNovoCliente({ nome: '', accountId: '' });
+        await loadClientes();
+        setActiveTab('relatorios');
+        setMensagemPainel({ tipo: 'sucesso', texto: 'Cliente vinculado com sucesso!' });
+      } else {
+        setMensagemPainel({ tipo: 'erro', texto: data.error });
+      }
+    } catch (e) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Falha ao vincular cliente.' });
+    } finally {
+      setIsAddingCliente(false);
+    }
+  };
+
   const handleExportPDF = async () => {
     if (!reportRef.current) return;
     setMensagemPainel({ tipo: 'info', texto: 'Gerando PDF...' });
@@ -86,7 +128,6 @@ export default function App() {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       let position = 0;
       const pageHeight = pdf.internal.pageSize.getHeight();
-      // Multi-page support
       if (pdfHeight <= pageHeight) {
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       } else {
@@ -99,12 +140,12 @@ export default function App() {
       pdf.save(`Relatorio_${clienteSelecionado.replace(/\s/g, '_')}_${startDate}_${endDate}.pdf`);
       setMensagemPainel(null);
     } catch (e) {
-      console.error('Erro ao gerar PDF:', e);
       setMensagemPainel({ tipo: 'erro', texto: 'Falha ao gerar o PDF.' });
     }
   };
 
   const loadCampaigns = async () => {
+    if (!clienteSelecionado) return;
     setCampaignsLoading(true);
     try {
       const res = await fetch(`/api/meta/campaigns?cliente=${encodeURIComponent(clienteSelecionado)}`);
@@ -137,10 +178,8 @@ export default function App() {
     }
   };
 
-  const roas = investimento > 0 ? (faturamento / investimento).toFixed(2) : 0;
-  const cacReal = totalLeads > 0 ? (investimento / totalLeads).toFixed(2) : 0;
-
   const loadMetrics = useCallback(async () => {
+    if (!clienteSelecionado) return;
     try {
       const url = new URL('/api/meta/sync', window.location.origin);
       url.searchParams.set('cliente', clienteSelecionado);
@@ -194,7 +233,7 @@ export default function App() {
   }, [clienteSelecionado, startDate, endDate]);
 
   const handleSync = async () => {
-    if (isSyncing) return;
+    if (isSyncing || !clienteSelecionado) return;
     setIsSyncing(true);
     try {
       const res = await fetch('/api/meta/sync', {
@@ -216,7 +255,8 @@ export default function App() {
     }
   };
 
-  useEffect(() => { loadMetrics(); }, [loadMetrics]);
+  useEffect(() => { loadClientes(); }, []);
+  useEffect(() => { if (clienteSelecionado) loadMetrics(); }, [loadMetrics, clienteSelecionado]);
 
   const handleShortcut = (shortcut) => {
     const hojeObj = new Date();
@@ -265,7 +305,6 @@ export default function App() {
   const handleGerarIA = async () => {
     setIsGenerating(true); setAnaliseIA("Gerando análise estratégica...");
     try {
-      // Montar dados do funil
       const totalImpressoes = relatorioDados.reduce((a,c) => a + c.rawImpressoes, 0);
       const totalCliques = relatorioDados.reduce((a,c) => a + c.rawCliques, 0);
       const totalLeadsCalc = relatorioDados.reduce((a,c) => a + c.leads, 0);
@@ -280,7 +319,6 @@ export default function App() {
         taxaLeads: totalCliques > 0 ? ((totalLeadsCalc / totalCliques) * 100).toFixed(2) + '%' : '0%',
       };
 
-      // Ranking de criativos ordenado por CPA
       const criativosRanking = [...criativosDados]
         .map(c => ({
           nome: c.nome_anuncio,
@@ -317,6 +355,8 @@ export default function App() {
     }
   };
 
+  const roas = investimento > 0 ? (faturamento / investimento).toFixed(2) : 0;
+
   return (
     <div className="flex h-screen bg-slate-950 font-sans text-slate-100 overflow-hidden">
       <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 shadow-2xl">
@@ -327,6 +367,7 @@ export default function App() {
         </div>
         <nav className="flex-1 p-4 space-y-2">
           <button onClick={() => setActiveTab('relatorios')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'relatorios' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><FileText size={18} /> Relatórios</button>
+          <button onClick={() => setActiveTab('vincular')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'vincular' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Plus size={18} /> Vincular Conta</button>
           <button onClick={() => setActiveTab('entrada')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'entrada' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Database size={18} /> Entrada de Dados</button>
           <button onClick={() => setActiveTab('ativos')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'ativos' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><ImageIcon size={18} /> Criativos</button>
           <button onClick={() => { setActiveTab('campanhas'); loadCampaigns(); }} className={`w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium transition-all ${activeTab === 'campanhas' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><Megaphone size={18} /> Campanhas</button>
@@ -337,12 +378,20 @@ export default function App() {
         <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8 flex-shrink-0 shadow-sm">
           <h2 className="font-semibold uppercase tracking-widest text-sm text-slate-400">Auditoria Estratégica de Resultados</h2>
           <select value={clienteSelecionado} onChange={(e) => setClienteSelecionado(e.target.value)} className="bg-slate-800 text-xs font-bold p-2 rounded-md outline-none cursor-pointer border border-slate-700 hover:border-slate-500 transition-colors">
-            <option>Solution Place</option><option>Fulltime</option><option>Mind Sistema</option><option>Dr. Yuri Advogado</option>
+            {clientesDisponiveis.map(c => <option key={c.id} value={c.nome}>{c.nome}</option>)}
           </select>
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 space-y-6">
           
+          {mensagemPainel && (
+            <div className={`p-4 rounded-xl font-bold text-xs flex items-center gap-2 ${mensagemPainel.tipo === 'erro' ? 'bg-red-600/20 text-red-400 border border-red-500/20' : 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/20'}`}>
+              {mensagemPainel.tipo === 'erro' ? <X size={14} /> : <Check size={14} />}
+              {mensagemPainel.texto}
+              <button onClick={() => setMensagemPainel(null)} className="ml-auto opacity-50 hover:opacity-100"><X size={14}/></button>
+            </div>
+          )}
+
           {activeTab === 'relatorios' && (
             <div ref={reportRef} className="space-y-6">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4">
@@ -531,6 +580,34 @@ export default function App() {
                 <button onClick={handleExportPDF} className="p-3 px-8 bg-slate-800 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-slate-700 transition-all text-slate-300 border border-slate-700 shadow-lg shadow-black/20 flex-shrink-0"><Download size={18} /> Exportar PDF</button>
                 <button className="p-3 px-8 bg-[#25D366] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-green-900/20 flex-shrink-0"><MessageCircle size={18} /> WhatsApp</button>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'vincular' && (
+            <div className="max-w-2xl mx-auto py-10">
+              <h1 className="text-3xl font-bold mb-2 text-slate-100">Vincular Nova Conta</h1>
+              <p className="text-slate-500 mb-8">Cadastre uma nova empresa e sua ID da conta de anúncios da Meta.</p>
+              
+              <form onSubmit={handleAddCliente} className="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl space-y-6">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Nome da Empresa</label>
+                  <input type="text" required value={novoCliente.nome} onChange={e => setNovoCliente({...novoCliente, nome: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-slate-100 outline-none focus:border-blue-500 transition-all" placeholder="Ex: Solution Place" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-2">ID da Conta de Anúncios (act_XXX)</label>
+                  <input type="text" required value={novoCliente.accountId} onChange={e => setNovoCliente({...novoCliente, accountId: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-slate-100 outline-none focus:border-blue-500 transition-all" placeholder="Ex: 861875509414758" />
+                </div>
+                
+                <div className="bg-blue-600/10 p-4 rounded-xl border border-blue-500/20 mb-6">
+                   <p className="text-xs text-blue-400 leading-relaxed">
+                     <Sparkles size={12} className="inline mr-1" /> Ao vincular uma nova conta, o sistema criará automaticamente um diretório <strong>ref/{novoCliente.nome || 'Empresa'}</strong> com um arquivo <strong>agent.md</strong> para você adicionar o contexto estratégico.
+                   </p>
+                </div>
+
+                <button type="submit" disabled={isAddingCliente} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-4 rounded-xl transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+                  {isAddingCliente ? <><Loader2 size={18} className="animate-spin" /> Vinculando...</> : <><Plus size={18} /> Vincular Empresa</>}
+                </button>
+              </form>
             </div>
           )}
 
