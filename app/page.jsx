@@ -89,6 +89,8 @@ export default function App() {
   const [editBudget, setEditBudget] = useState('');
   const [dailyData, setDailyData] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [campaignsLevel, setCampaignsLevel] = useState('campaign');
+  const [campaignsParentId, setCampaignsParentId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, ACTIVE, PAUSED
   const [visibleColumns, setVisibleColumns] = useState(['spend', 'results', 'cpa']); // spend, results, cpa, impressions, ctr, clicks
