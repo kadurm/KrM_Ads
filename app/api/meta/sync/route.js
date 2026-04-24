@@ -268,7 +268,7 @@ export async function POST(request) {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0, 
           visitas_perfil: getMetric(item.actions, 'link_click') + getMetric(item.actions, 'onsite_conversion.post_save') + getMetric(item.actions, 'post_reaction') + getMetric(item.actions, 'comment') + getMetric(item.actions, 'post') + getMetric(item.actions, 'onsite_conversion.messaging_first_reply'), 
-          seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
+          seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_smart_ad_follow') + getMetric(item.actions, 'instagram_smart_ad_follow'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
         },
@@ -277,7 +277,7 @@ export async function POST(request) {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0, 
           visitas_perfil: getMetric(item.actions, 'link_click') + getMetric(item.actions, 'onsite_conversion.post_save') + getMetric(item.actions, 'post_reaction') + getMetric(item.actions, 'comment') + getMetric(item.actions, 'post') + getMetric(item.actions, 'onsite_conversion.messaging_first_reply'), 
-          seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
+          seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_smart_ad_follow') + getMetric(item.actions, 'instagram_smart_ad_follow'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
         }
