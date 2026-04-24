@@ -1205,15 +1205,18 @@ export default function App() {
                       { id: '7d', label: '7D' },
                       { id: 'este_mes', label: 'MÊS' },
                       { id: 'mes_passado', label: 'ANT' },
-                    ].map(s => (
-                      <button 
-                        key={s.id} 
-                        onClick={() => handleShortcut(s.id)} 
-                        className={`px-3 py-1.5 text-[9px] font-black rounded-lg transition-all ${activeShortcut === s.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
-                      >
-                        {s.label}
-                      </button>
-                    ))}
+                    ].map(s => {
+                      const isActive = activeShortcut === s.id;
+                      return (
+                        <button 
+                          key={s.id} 
+                          onClick={() => handleShortcut(s.id)} 
+                          className={`px-3 py-1.5 text-[9px] font-black rounded-lg transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                          {s.label}
+                        </button>
+                      );
+                    })}
                   </div>
                   <div className="flex items-center gap-1.5 px-3">
                     <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-transparent text-[10px] font-black text-blue-400 outline-none w-28" />
@@ -1322,15 +1325,15 @@ export default function App() {
                 <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
                    <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Predictive ROAS</p>
                    <div className="flex items-center gap-2">
-                      <h4 className="text-2xl font-black text-white">{(andromedaMetrics?.predictive_roas || 0).toFixed(1)}x</h4>
-                      <div className="text-emerald-500 text-[8px] font-black">+12%</div>
+                      <h4 className="text-2xl font-black text-white">{Number(andromedaMetrics?.predictive_roas || 0).toFixed(1)}x</h4>
+                      <div className="text-emerald-500 text-[8px] font-black tracking-tighter uppercase">+12% Signal</div>
                    </div>
                 </div>
 
                 <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
                    <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Probability</p>
                    <div className="flex items-center gap-2">
-                      <h4 className="text-2xl font-black text-white">{andromedaMetrics?.conversion_prob || 0}%</h4>
+                      <h4 className="text-2xl font-black text-white">{Number(andromedaMetrics?.conversion_prob || 0).toFixed(0)}%</h4>
                       <div className="text-blue-400 text-[8px] font-black uppercase tracking-tighter">High</div>
                    </div>
                 </div>
@@ -1338,15 +1341,15 @@ export default function App() {
                 <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
                    <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Ad Quality</p>
                    <div className="flex items-center gap-2">
-                      <h4 className="text-2xl font-black text-white">{(andromedaMetrics?.ad_quality || 0).toFixed(1)}</h4>
-                      <div className="text-emerald-500 text-[8px] font-black uppercase tracking-tighter">Top</div>
+                      <h4 className="text-2xl font-black text-white">{Number(andromedaMetrics?.ad_quality || 0).toFixed(1)}</h4>
+                      <div className="text-emerald-500 text-[8px] font-black uppercase tracking-tighter">Premium</div>
                    </div>
                 </div>
 
                 <div className="col-span-3 bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col gap-1 shadow-xl">
                    <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Active Budget</p>
                    <div className="flex items-center gap-2">
-                      <h4 className="text-xl font-black text-white">R$ {investimento || 0}</h4>
+                      <h4 className="text-xl font-black text-white">R$ {Number(investimento || 0).toLocaleString()}</h4>
                    </div>
                 </div>
 
