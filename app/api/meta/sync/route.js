@@ -246,7 +246,7 @@ export async function POST(request) {
       fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' })),
       fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),
       fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'ad', time_increment: '1' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', limit: '1000' }))
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
     ]);
 
     const [metaCampsData, campaignData, adInsightData, adsMetaData] = await Promise.all([ 
@@ -282,12 +282,15 @@ export async function POST(request) {
        const hashChunks = [];
        for (let i = 0; i < uniqueHashes.length; i += 50) hashChunks.push(uniqueHashes.slice(i, i + 50));
        await Promise.all(hashChunks.map(async (chunk) => {
-         const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'permalink_url,hash' }));
-         const data = await res.json();
-         if (data.data) {
-           data.data.forEach(img => { if (img.permalink_url) imageHashMap.set(img.hash, img.permalink_url); });
-         }
-       }));
+        const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }));
+        const data = await res.json();
+        if (data.data) {
+          data.data.forEach(img => { 
+            const bestUrl = img.url || img.permalink_url;
+            if (bestUrl) imageHashMap.set(img.hash, bestUrl); 
+          });
+        }
+      }));
        console.timeEnd('Meta-AdImages-HD');
      }
 
@@ -368,6 +371,14 @@ export async function POST(request) {
                           || storyMetaMap.get(adMeta.effective_object_story_id)
                           || adMeta.image_url
                           || adMeta.thumbnail_url;
+
+        // Log de depuração para entender qual fonte de imagem está sendo usada
+        const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
+                       storyMetaMap.has(adMeta.effective_object_story_id) ? 'STORY_META' :
+                       adMeta.image_url ? 'IMAGE_URL' :
+                       adMeta.thumbnail_url ? 'THUMBNAIL' : 'NONE';
+        
+        console.log(`[ImageDebug] Ad: ${row.ad_name} | Source: ${source} | URL: ${highResImage?.substring(0, 50)}...`);
 
         // Forçamos o upsert para atualizar NOME e IMAGEM sempre
         const criativo = await prisma.criativo.upsert({
