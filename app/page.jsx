@@ -373,13 +373,27 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl"><span className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2"><Target size={12}/> Investimento</span><div className="text-2xl font-black mt-1 text-slate-100">R$ {investimento}</div></div>
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl"><span className="text-xs font-bold text-emerald-500 uppercase flex items-center gap-2"><DollarSign size={12}/> Faturamento</span><input type="number" value={faturamento} onChange={e => setFaturamento(e.target.value)} className="bg-transparent text-2xl font-black mt-1 w-full outline-none text-slate-100" /></div>
-                <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white"><span className="text-xs font-bold text-blue-100 uppercase flex items-center gap-2"><TrendingUp size={12}/> ROAS Real</span><div className="text-3xl font-black mt-1">{roas}x</div></div>
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl"><span className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span><div className="text-2xl font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div></div>
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-blue-500 shadow-xl"><span className="text-xs font-bold text-blue-500 uppercase flex items-center gap-2"><ShoppingCart size={12}/> Vendas Reais</span><input type="number" value={vendasReais} onChange={e => setVendasReais(e.target.value)} className="bg-transparent text-2xl font-black mt-1 w-full outline-none text-slate-100" /></div>
-                <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white"><span className="text-xs font-bold text-emerald-100 uppercase flex items-center gap-2"><Target size={12}/> CAC Real</span><div className="text-3xl font-black mt-1">R$ {vendasReais > 0 ? (investimento / vendasReais).toFixed(2) : '0.00'}</div></div>
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
+                  <div className="text-xl font-black mt-1 text-slate-100">R$ {investimento}</div>
+                </div>
+                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
+                  <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento</span>
+                  <input type="number" value={faturamento} onChange={e => setFaturamento(e.target.value)} className="bg-transparent text-xl font-black mt-1 w-full outline-none text-slate-100" />
+                </div>
+                <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
+                  <span className="text-[10px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
+                  <div className="text-2xl font-black mt-1">{roas}x</div>
+                </div>
+                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
+                  <div className="text-xl font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
+                </div>
+                <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
+                  <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
+                  <div className="text-2xl font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
