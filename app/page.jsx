@@ -35,7 +35,9 @@ import {
   CalendarDays,
   ChevronRight,
   Trophy,
-  Medal
+  Medal,
+  Search,
+  Settings2
   } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
