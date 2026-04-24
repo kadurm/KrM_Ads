@@ -286,7 +286,7 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,thumbnail_url,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id}', 
+          fields: 'id,thumbnail_url,creative{id,image_url,thumbnail_url,picture,image_hash,body,effective_object_story_id,video_id,video_data,object_story_spec}', 
           access_token: ACCESS_TOKEN,
           thumbnail_width: '800',
           thumbnail_height: '800'
@@ -294,9 +294,18 @@ export async function POST(request) {
         const data = await res.json();
         Object.values(data).forEach((ad) => {
           if (ad.creative) {
-            // Se a Meta retornar a thumbnail de 800px no nível do ad, ela vira prioridade alta
-            creativeMetaMap.set(String(ad.creative.id), { ...ad.creative, ad_thumbnail: ad.thumbnail_url });
-            adToCreativeMap.set(String(ad.id), String(ad.creative.id));
+            // Extração Robusta de IDs de Mídia
+            const creative = ad.creative;
+            const extractedVideoId = creative.video_id || creative.video_data?.video_id || creative.object_story_spec?.video_data?.video_id;
+            const extractedStoryId = creative.effective_object_story_id || (creative.object_story_spec?.link_data?.post_id ? `${creative.object_story_spec.instagram_actor_id}_${creative.object_story_spec.link_data.post_id}` : null);
+            
+            creativeMetaMap.set(String(creative.id), { 
+              ...creative, 
+              ad_thumbnail: ad.thumbnail_url,
+              extracted_video_id: extractedVideoId,
+              extracted_story_id: extractedStoryId
+            });
+            adToCreativeMap.set(String(ad.id), String(creative.id));
           }
         });
       }));
@@ -304,7 +313,7 @@ export async function POST(request) {
     }
     
     // Busca HD Supremo (Posts) em lotes
-    const storyIds = Array.from(creativeMetaMap.values()).map(m => m.effective_object_story_id).filter(id => !!id);
+    const storyIds = Array.from(creativeMetaMap.values()).map(m => m.extracted_story_id).filter(id => !!id);
     const storyMetaMap = new Map();
     if (storyIds.length > 0) {
        console.time('Meta-HD-Images');
@@ -313,13 +322,13 @@ export async function POST(request) {
        await Promise.all(idChunks.map(async (chunk) => {
          const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN }));
          const data = await res.json();
-         Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
+         if (data) Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
        }));
        console.timeEnd('Meta-HD-Images');
      }
 
-     // Busca HD para Vídeos em lotes (Muitos criativos antigos são vídeos)
-     const videoIds = Array.from(creativeMetaMap.values()).map(m => m.video_id).filter(id => !!id);
+     // Busca HD para Vídeos em lotes
+     const videoIds = Array.from(creativeMetaMap.values()).map(m => m.extracted_video_id).filter(id => !!id);
      const videoPictureMap = new Map();
      if (videoIds.length > 0) {
         console.time('Meta-Video-HD');
@@ -328,7 +337,7 @@ export async function POST(request) {
         await Promise.all(idChunks.map(async (chunk) => {
           const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,picture', access_token: ACCESS_TOKEN }));
           const data = await res.json();
-          Object.values(data).forEach(video => videoPictureMap.set(video.id, video.picture));
+          if (data) Object.values(data).forEach(video => videoPictureMap.set(video.id, video.picture));
         }));
         console.timeEnd('Meta-Video-HD');
      }
@@ -419,23 +428,26 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Estratégia de Imagem HD Supremo (5 camadas):
+        // Estratégia de Imagem HD Supremo (6 camadas):
         // 1. permalink_url via adimages (original do upload)
         // 2. picture do vídeo (se for vídeo, alta resolução)
         // 3. full_picture do Post (alta resolução)
-        // 4. ad_thumbnail (800px via ad level)
-        // 5. thumbnail_url / image_url (fallbacks)
+        // 4. picture do criativo (fallback de alta resolução)
+        // 5. ad_thumbnail (800px via ad level)
+        // 6. thumbnail_url / image_url (fallbacks)
         const highResImage = imageHashMap.get(adMeta.image_hash)
-                          || videoPictureMap.get(adMeta.video_id)
-                          || storyMetaMap.get(adMeta.effective_object_story_id)
+                          || videoPictureMap.get(adMeta.extracted_video_id)
+                          || storyMetaMap.get(adMeta.extracted_story_id)
+                          || adMeta.picture
                           || adMeta.ad_thumbnail
                           || adMeta.thumbnail_url
                           || adMeta.image_url;
 
         // Log de depuração refinado
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
-                       videoPictureMap.has(adMeta.video_id) ? 'VIDEO_PICTURE' :
-                       storyMetaMap.has(adMeta.effective_object_story_id) ? 'STORY_META' :
+                       videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_PICTURE' :
+                       storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_META' :
+                       adMeta.picture ? 'CREATIVE_PICTURE' :
                        adMeta.ad_thumbnail ? 'AD_LEVEL_THUMB' :
                        adMeta.thumbnail_url ? 'THUMBNAIL' : 'IMAGE_URL';
         
