@@ -380,7 +380,9 @@ export default function App() {
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
                   <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento</span>
-                  <input type="number" value={faturamento} onChange={e => setFaturamento(e.target.value)} className="bg-transparent text-xl font-black mt-1 w-full outline-none text-slate-100" />
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="text-xl font-black text-slate-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
+                  </div>
                 </div>
                 <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
                   <span className="text-[10px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
