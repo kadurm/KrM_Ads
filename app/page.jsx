@@ -113,6 +113,11 @@ export default function App() {
     ad_quality: 9.2
   });
   const [isGemActive, setIsGemActive] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const reportRef = useRef(null);
 
@@ -1235,24 +1240,26 @@ export default function App() {
                    </div>
                    
                    <div className="h-64 w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                         <LineChart data={dailyData.length > 0 ? dailyData : [{date:'-', val:0}, {date:'-', val:20}, {date:'-', val:10}]}>
-                            <defs>
-                               <linearGradient id="colorProb" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                               </linearGradient>
-                            </defs>
-                            <XAxis dataKey="data" hide />
-                            <YAxis hide />
-                            <Tooltip 
-                               contentStyle={{backgroundColor:'#0f172a', borderRadius:'20px', border:'1px solid #1e293b', fontSize:'10px'}}
-                               itemStyle={{fontWeight:'bold'}}
-                            />
-                            <Line type="monotone" dataKey="investimento" stroke="#3b82f6" strokeWidth={4} dot={false} tension={0.4} />
-                            <Line type="monotone" dataKey="leads" stroke="#a855f7" strokeWidth={4} dot={false} tension={0.4} />
-                         </LineChart>
-                      </ResponsiveContainer>
+                      {isMounted && (
+                        <ResponsiveContainer width="100%" height="100%">
+                           <LineChart data={dailyData.length > 0 ? dailyData : [{date:'-', investimento:0, leads:0}, {date:'-', investimento:20, leads:10}, {date:'-', investimento:10, leads:5}]}>
+                              <defs>
+                                 <linearGradient id="colorProb" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                 </linearGradient>
+                              </defs>
+                              <XAxis dataKey="date" hide />
+                              <YAxis hide />
+                              <Tooltip 
+                                 contentStyle={{backgroundColor:'#0f172a', borderRadius:'20px', border:'1px solid #1e293b', fontSize:'10px'}}
+                                 itemStyle={{fontWeight:'bold'}}
+                              />
+                              <Line type="monotone" dataKey="investimento" stroke="#3b82f6" strokeWidth={4} dot={false} tension={0.4} />
+                              <Line type="monotone" dataKey="leads" stroke="#a855f7" strokeWidth={4} dot={false} tension={0.4} />
+                           </LineChart>
+                        </ResponsiveContainer>
+                      )}
                    </div>
                 </div>
 
