@@ -439,9 +439,6 @@ export default function App() {
               <button onClick={() => { setActiveTab('campanhas'); loadCampaigns(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'campanhas' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Megaphone size={16} /> Campanhas (Meta)
               </button>
-              <button onClick={() => setActiveTab('ativos')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'ativos' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                <ImageIcon size={16} /> Biblioteca de Criativos
-              </button>
               <button onClick={() => setActiveTab('entrada')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'entrada' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Database size={16} /> Dados Adicionais (ROI)
               </button>
@@ -701,46 +698,6 @@ export default function App() {
                 <button className="p-3 px-8 bg-[#25D366] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-green-900/20 flex-shrink-0"><MessageCircle size={18} /> WhatsApp</button>
               </div>
             </div>
-          )}
-
-          {activeTab === 'ativos' && (
-             <div className="space-y-6">
-                <h1 className="text-3xl font-bold text-slate-100">Biblioteca de Criativos</h1>
-                <p className="text-slate-500 text-sm">Todas as peças de anúncios sincronizadas para <strong>{clienteSelecionado}</strong>.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                   {criativosDados.map(c => (
-                      <div key={c.id} className="bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl group hover:border-blue-500/50 transition-all flex flex-col h-full">
-                         <div className="h-72 bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                            {c.url_midia ? <img src={c.url_midia} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" alt={c.nome_anuncio} /> : <ImageIcon size={48} className="text-slate-800" />}
-                            <div className="absolute top-4 right-4 bg-blue-600 px-3 py-1.5 rounded-xl text-[10px] font-black text-white shadow-xl">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
-                         </div>
-                         <div className="p-6 flex-1 flex flex-col">
-                            <h4 className="font-bold text-slate-100 uppercase tracking-tight text-xs mb-4 line-clamp-2">{c.nome_anuncio}</h4>
-                            <div className="grid grid-cols-2 gap-3 mb-6">
-                               <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800 flex flex-col items-center">
-                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Alcance</span>
-                                  <span className="text-xs font-bold text-slate-100">{c.alcance?.toLocaleString()}</span>
-                               </div>
-                               <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800 flex flex-col items-center">
-                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Gasto</span>
-                                  <span className="text-xs font-bold text-slate-100">R$ {parseFloat(c.valor_investido).toFixed(2)}</span>
-                               </div>
-                            </div>
-                            <div className="mt-auto pt-4 border-t border-slate-800 flex items-center justify-between">
-                               <div className="flex flex-col">
-                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">CPA</span>
-                                  <span className="text-sm font-black text-blue-400">{c.leads > 0 ? `R$ ${(c.valor_investido / c.leads).toFixed(2)}` : '-'}</span>
-                               </div>
-                               <div className="flex flex-col items-end text-emerald-400">
-                                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Leads</span>
-                                  <span className="text-sm font-black">{c.leads}</span>
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-                   ))}
-                </div>
-             </div>
           )}
 
           {activeTab === 'clientes' && (
