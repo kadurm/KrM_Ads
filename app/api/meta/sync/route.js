@@ -81,8 +81,10 @@ export async function GET(request) {
         conversas_leads: acc.conversas_leads + m.conversas_leads,
         valor_investido: acc.valor_investido + Number(m.valor_investido),
         compras: acc.compras + m.compras,
-        valor_compras: acc.valor_compras + Number(m.valor_compras || 0)
-      }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0 });
+        valor_compras: acc.valor_compras + Number(m.valor_compras || 0),
+        // Soma de engajamento total (cliques + salvamentos + reações + etc)
+        engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores) // Aproximação baseada nos campos disponíveis
+      }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0 });
 
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
       let finalVal = total.conversas_leads;
@@ -92,23 +94,23 @@ export async function GET(request) {
       if (camp.nome_gerado.includes('[01]')) {
         finalVal = total.impressoes;
         finalLabel = 'Impressões';
-        // Calcula o custo por MIL impressões (CPM)
         const cpm = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
         return {
           ...total,
           objetivo: finalLabel,
           resultadoBruto: finalVal,
           roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
-          cpr: cpm, // Aqui enviamos o CPM
+          cpr: cpm,
           isCPM: true,
           campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
         };
       } else if (camp.nome_gerado.includes('[02]') || label === 'Engajamentos') {
-        finalVal = total.visitas_perfil; 
+        // Para engajamento, usamos a soma de interações
+        finalVal = total.engajamentoTotal; 
         finalLabel = 'Engajamentos';
       } else if (camp.nome_gerado.includes('[05]')) {
-        // Para visitas ao perfil, usamos estritamente os cliques no link reportados para este objetivo
-        finalVal = total.cliques; 
+        // Visitas puras vindas do link_click (312 reais)
+        finalVal = total.visitas_perfil; 
         finalLabel = 'Visitas';
       } else if (label === 'Vendas') {
         finalVal = total.compras;
@@ -291,7 +293,7 @@ export async function POST(request) {
         update: {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0, 
-          visitas_perfil: getMetric(item.actions, 'link_click') + getMetric(item.actions, 'onsite_conversion.post_save') + getMetric(item.actions, 'post_reaction') + getMetric(item.actions, 'comment') + getMetric(item.actions, 'post') + getMetric(item.actions, 'onsite_conversion.messaging_first_reply'), 
+          visitas_perfil: getMetric(item.actions, 'link_click'), 
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_smart_ad_follow') + getMetric(item.actions, 'instagram_smart_ad_follow'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
@@ -300,7 +302,7 @@ export async function POST(request) {
           campanha_id: camp.id, data: dataInsight,
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0, 
-          visitas_perfil: getMetric(item.actions, 'link_click') + getMetric(item.actions, 'onsite_conversion.post_save') + getMetric(item.actions, 'post_reaction') + getMetric(item.actions, 'comment') + getMetric(item.actions, 'post') + getMetric(item.actions, 'onsite_conversion.messaging_first_reply'), 
+          visitas_perfil: getMetric(item.actions, 'link_click'), 
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_smart_ad_follow') + getMetric(item.actions, 'instagram_smart_ad_follow'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
