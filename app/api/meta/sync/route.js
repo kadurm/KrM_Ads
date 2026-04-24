@@ -176,7 +176,12 @@ export async function GET(request) {
     // Agregação diária para gráfico de linha
     const dailyMap = new Map();
     for (const camp of campanhas) {
-      const isConversionCamp = camp.objetivo.includes('MESSAGING') || camp.objetivo.includes('LEADS') || camp.objetivo.includes('CONVERSIONS') || camp.objetivo.includes('OUTCOME_LEADS');
+      const isConversionCamp = camp.objetivo.includes('MESSAGING') || 
+                               camp.objetivo.includes('LEADS') || 
+                               camp.objetivo.includes('CONVERSIONS') || 
+                               camp.objetivo.includes('OUTCOME_LEADS') ||
+                               camp.objetivo.includes('OUTCOME_ENGAGEMENT') ||
+                               camp.objetivo === 'MESSAGE';
       
       for (const m of camp.metricas) {
         const dateKey = m.data.toISOString().split('T')[0];
