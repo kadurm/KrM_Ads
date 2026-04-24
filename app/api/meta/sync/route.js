@@ -270,7 +270,7 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id}', 
+          fields: 'id,thumbnail_url,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id}', 
           access_token: ACCESS_TOKEN,
           thumbnail_width: 800,
           thumbnail_height: 800
@@ -278,7 +278,7 @@ export async function POST(request) {
         const data = await res.json();
         Object.values(data).forEach((ad) => {
           if (ad.creative) {
-            creativeMetaMap.set(String(ad.creative.id), ad.creative);
+            creativeMetaMap.set(String(ad.creative.id), { ...ad.creative, ad_thumbnail: ad.thumbnail_url });
             adToCreativeMap.set(String(ad.id), String(ad.creative.id));
           }
         });
@@ -299,6 +299,21 @@ export async function POST(request) {
          Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
        }));
        console.timeEnd('Meta-HD-Images');
+     }
+
+     // Busca HD para Vídeos em lotes (Muitos criativos antigos são vídeos)
+     const videoIds = Array.from(creativeMetaMap.values()).map(m => m.video_id).filter(id => !!id);
+     const videoPictureMap = new Map();
+     if (videoIds.length > 0) {
+        console.time('Meta-Video-HD');
+        const idChunks = [];
+        for (let i = 0; i < videoIds.length; i += 50) idChunks.push(videoIds.slice(i, i + 50));
+        await Promise.all(idChunks.map(async (chunk) => {
+          const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,picture', access_token: ACCESS_TOKEN }));
+          const data = await res.json();
+          Object.values(data).forEach(video => videoPictureMap.set(video.id, video.picture));
+        }));
+        console.timeEnd('Meta-Video-HD');
      }
 
      // Busca HD via Biblioteca de Imagens da Conta (adimages) usando image_hash
@@ -387,21 +402,25 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Estratégia de Imagem HD (4 camadas, da maior para menor qualidade):
-        // 1. permalink_url via adimages/image_hash (resolução original do upload)
-        // 2. full_picture do Post (alta resolução)
-        // 3. image_url do Criativo (resolução média)
-        // 4. thumbnail_url (fallback - baixa resolução)
+        // Estratégia de Imagem HD Supremo (5 camadas):
+        // 1. permalink_url via adimages (original do upload)
+        // 2. picture do vídeo (se for vídeo, alta resolução)
+        // 3. full_picture do Post (alta resolução)
+        // 4. ad_thumbnail (800px via ad level)
+        // 5. thumbnail_url / image_url (fallbacks)
         const highResImage = imageHashMap.get(adMeta.image_hash)
+                          || videoPictureMap.get(adMeta.video_id)
                           || storyMetaMap.get(adMeta.effective_object_story_id)
-                          || adMeta.image_url
-                          || adMeta.thumbnail_url;
+                          || adMeta.ad_thumbnail
+                          || adMeta.thumbnail_url
+                          || adMeta.image_url;
 
-        // Log de depuração para entender qual fonte de imagem está sendo usada
+        // Log de depuração refinado
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
+                       videoPictureMap.has(adMeta.video_id) ? 'VIDEO_PICTURE' :
                        storyMetaMap.has(adMeta.effective_object_story_id) ? 'STORY_META' :
-                       adMeta.image_url ? 'IMAGE_URL' :
-                       adMeta.thumbnail_url ? 'THUMBNAIL' : 'NONE';
+                       adMeta.ad_thumbnail ? 'AD_LEVEL_THUMB' :
+                       adMeta.thumbnail_url ? 'THUMBNAIL' : 'IMAGE_URL';
         
         console.log(`[ImageDebug] Ad: ${row.ad_name} | Source: ${source} | URL: ${highResImage?.substring(0, 50)}...`);
 
