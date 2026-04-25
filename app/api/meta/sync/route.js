@@ -463,11 +463,6 @@ export async function POST(request) {
                           || adMeta.thumbnail_url
                           || adMeta.image_url;
 
-        // Limpeza de URL: Forçar 800px se for miniatura do CDN da Meta
-        if (highResImage && highResImage.includes('fbcdn.net')) {
-          highResImage = highResImage.replace(/p\d+x\d+/, 'p800x800');
-        }
-
         // Log de depuração refinado
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_PICTURE' :
