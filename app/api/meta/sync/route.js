@@ -479,16 +479,16 @@ export async function POST(request) {
         // PRIORIDADE MÁXIMA: Se a Meta entregou 800px ou 960px nativo no thumbnail_url
         const nativeHd = (adMeta.thumbnail_url?.includes('p800x800') || adMeta.thumbnail_url?.includes('p960x960')) ? adMeta.thumbnail_url : null;
 
-        const finalImageUrl = nativeHd ||
-                              videoHd || 
-                              imageHd ||
+        // Xeque-Mate: Para vídeos, o Hash da Imagem é a capa HD original da biblioteca
+        const finalImageUrl = (profile === 'VIDEO' ? (imageHd || videoHd || nativeHd) : (nativeHd || videoHd || imageHd)) ||
                               storyMetaMap.get(adMeta.extracted_story_id) || 
                               fallbackThumb ||
                               adMeta.image_url || 
                               null;
 
         // Log de depuração refinado para rastreamento de origem HD (Mantido apenas um log essencial)
-        const source = nativeHd ? 'NATIVE_800' :
+        const source = (profile === 'VIDEO' && imageHd) ? 'VIDEO_HASH_HD' :
+                       nativeHd ? 'NATIVE_800' :
                        videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
                        imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
@@ -496,7 +496,9 @@ export async function POST(request) {
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        const resLabel = nativeHd ? '800/960px' : (videoHd || imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
+        const resLabel = (profile === 'VIDEO' && imageHd) ? 'HASH_1080px' : nativeHd ? '800/960px' : (videoHd || imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
+        
+        console.log(`[Hash-Audit] Ad: ${row.ad_name} | Hash: ${adMeta.image_hash || "NULO"}`);
         console.log(`[HD-Audit] Audit: ${row.ad_name} | Perfil: ${profile} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
 
         const criativo = await prisma.criativo.upsert({
