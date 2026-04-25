@@ -449,32 +449,34 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Estratégia de Imagem HD Supremo (6 camadas):
-        // 1. permalink_url via adimages (original do upload)
-        // 2. picture do vídeo (se for vídeo, alta resolução)
-        // 3. full_picture do Post (alta resolução)
-        // 4. picture do criativo (fallback de alta resolução)
-        // 5. ad_thumbnail (800px via ad level)
-        // 6. thumbnail_url / image_url (fallbacks)
+        // Estratégia de Imagem HD Supremo (Hierarquia de Fallback Robusta):
+        // 1. Imagem original (adimages/image_hash) - Qualidade Máxima
+        // 2. Thumbnail de Vídeo HD (largestThumb)
+        // 3. Imagem de Post HD (full_picture)
+        // 4. Picture do Criativo (creative/picture)
+        // 5. Thumbnail de 800px via Ad Level (ad/thumbnail_url com params)
+        // 6. Thumbnail básica (creative/thumbnail_url ou adMeta/image_url)
         const highResImage = imageHashMap.get(adMeta.image_hash) 
                           || videoPictureMap.get(adMeta.extracted_video_id) 
                           || storyMetaMap.get(adMeta.extracted_story_id) 
                           || adMeta.picture 
                           || adMeta.ad_thumbnail 
                           || adMeta.thumbnail_url 
+                          || adMeta.image_url 
                           || null;
 
-        // Log de depuração refinado
+        // Log de depuração refinado para rastreamento de origem
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_PICTURE' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_META' :
                        adMeta.picture ? 'CREATIVE_PICTURE' :
                        adMeta.ad_thumbnail ? 'AD_LEVEL_THUMB' :
-                       adMeta.thumbnail_url ? 'THUMBNAIL' : 'IMAGE_URL';
+                       adMeta.thumbnail_url ? 'CREATIVE_THUMB' : 
+                       adMeta.image_url ? 'CREATIVE_IMAGE' : 'NONE';
         
-        console.log(`[ImageDebug] Ad: ${row.ad_name} | Source: ${source} | URL: ${highResImage?.substring(0, 50)}...`);
+        console.log(`[SyncHD] Ad: ${row.ad_name} | Source: ${source} | ID: ${row.ad_id}`);
 
-        // Forçamos o upsert para atualizar NOME e IMAGEM sempre
+        // Forçamos o upsert para atualizar NOME e IMAGEM sempre, sobrescrevendo links mortos
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: String(row.ad_id) },
           update: { 
