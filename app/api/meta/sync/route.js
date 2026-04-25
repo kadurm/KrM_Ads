@@ -481,7 +481,7 @@ export async function POST(request) {
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        console.log(`[SyncHD] Ad: ${row.ad_name} | Source: ${source} | ID: ${row.ad_id}`);
+        console.log(`[HD-Audit] Anúncio: ${row.ad_name} | Fonte: ${source} | URL: ${finalImageUrl}`);
 
         // Forçamos o upsert para atualizar NOME e IMAGEM sempre, sobrescrevendo links mortos
         const criativo = await prisma.criativo.upsert({
