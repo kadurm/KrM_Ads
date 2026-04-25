@@ -297,6 +297,8 @@ export async function POST(request) {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
           fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
+          thumbnail_width: 800,
+          thumbnail_height: 800,
           access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
@@ -451,20 +453,20 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Hierarquia de Estabilidade e Qualidade (Prioriza HD das Bibliotecas e Posts)
-        const finalImageUrl = storyMetaMap.get(adMeta.extracted_story_id) || 
+        // Hierarquia de Estabilidade e Qualidade (Prioriza Biblioteca HD e Miniaturas de Vídeo Ordenadas)
+        const finalImageUrl = imageHashMap.get(adMeta.image_hash) || 
                               videoPictureMap.get(adMeta.extracted_video_id) || 
-                              imageHashMap.get(adMeta.image_hash) || 
+                              storyMetaMap.get(adMeta.extracted_story_id) || 
                               adMeta.image_url || 
                               adMeta.thumbnail_url || 
                               null;
 
         console.log(`[SyncDEBUG] Gravando URL para ${row.ad_name}: ${finalImageUrl}`);
 
-        // Log de depuração refinado para rastreamento de origem
-        const source = storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
+        // Log de depuração refinado para rastreamento de origem HD
+        const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
-                       imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
+                       storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
