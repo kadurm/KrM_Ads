@@ -136,6 +136,7 @@ export async function GET(request) {
 
     const groupedMap = new Map();
     for (const c of criativosRaw) {
+      const sanitizedUrl = (c.url_midia && c.url_midia.includes("p800x800")) ? null : c.url_midia;
       const key = c.nome_anuncio || 'Anúncio sem nome';
       const stats = c.metricas.reduce((acc, m) => ({
         impressoes: acc.impressoes + m.impressoes,
@@ -152,7 +153,7 @@ export async function GET(request) {
 
       if (!groupedMap.has(key)) {
         groupedMap.set(key, {
-          id: c.id, nome_anuncio: key, url_midia: c.url_midia, texto_principal: c.texto_principal,
+          id: c.id, nome_anuncio: key, url_midia: sanitizedUrl, texto_principal: c.texto_principal,
           ...stats
         });
       } else {
@@ -185,11 +186,11 @@ export async function GET(request) {
           return score;
         };
 
-        const newScore = getScore(c.url_midia);
+        const newScore = getScore(sanitizedUrl);
         const existingScore = getScore(existing.url_midia);
         
-        if (c.url_midia && newScore >= existingScore) {
-          existing.url_midia = c.url_midia;
+        if (sanitizedUrl && newScore >= existingScore) {
+          existing.url_midia = sanitizedUrl;
         }
       }
     }
@@ -455,15 +456,13 @@ export async function POST(request) {
         // 4. picture do criativo (fallback de alta resolução)
         // 5. ad_thumbnail (800px via ad level)
         // 6. thumbnail_url / image_url (fallbacks)
-        let highResImage = imageHashMap.get(adMeta.image_hash)
-                          || videoPictureMap.get(adMeta.extracted_video_id)
-                          || storyMetaMap.get(adMeta.extracted_story_id)
-                          || adMeta.picture
-                          || adMeta.ad_thumbnail
-                          || adMeta.thumbnail_url
-                          || adMeta.image_url;
-
-        const finalImage = highResImage || adMeta.thumbnail_url || adMeta.image_url;
+        const highResImage = imageHashMap.get(adMeta.image_hash) 
+                          || videoPictureMap.get(adMeta.extracted_video_id) 
+                          || storyMetaMap.get(adMeta.extracted_story_id) 
+                          || adMeta.picture 
+                          || adMeta.ad_thumbnail 
+                          || adMeta.thumbnail_url 
+                          || null;
 
         // Log de depuração refinado
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
@@ -473,21 +472,21 @@ export async function POST(request) {
                        adMeta.ad_thumbnail ? 'AD_LEVEL_THUMB' :
                        adMeta.thumbnail_url ? 'THUMBNAIL' : 'IMAGE_URL';
         
-        console.log(`[ImageDebug] Ad: ${row.ad_name} | Source: ${source} | URL: ${finalImage?.substring(0, 50)}...`);
+        console.log(`[ImageDebug] Ad: ${row.ad_name} | Source: ${source} | URL: ${highResImage?.substring(0, 50)}...`);
 
         // Forçamos o upsert para atualizar NOME e IMAGEM sempre
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: String(row.ad_id) },
           update: { 
             nome_anuncio: row.ad_name, 
-            url_midia: finalImage, 
+            url_midia: highResImage, 
             texto_principal: adMeta.body 
           },
           create: { 
             meta_ad_id: String(row.ad_id), 
             campanha_id: camp.id, 
             nome_anuncio: row.ad_name, 
-            url_midia: finalImage, 
+            url_midia: highResImage, 
             texto_principal: adMeta.body 
           }
         });
