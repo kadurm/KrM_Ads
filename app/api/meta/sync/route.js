@@ -296,7 +296,7 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,creative{id,thumbnail_url,image_hash,body,effective_object_story_id,video_id,video_data,object_story_spec,asset_feed_spec}', 
+          fields: 'id,creative{id,thumbnail_url,image_url,picture,image_hash,body,effective_object_story_id,video_id,video_data,object_story_spec,asset_feed_spec}', 
           access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
@@ -446,22 +446,12 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Estratégia de Imagem HD Supremo (Hierarquia de Fallback Robusta):
-        // 1. Imagem original (adimages/image_hash) - Qualidade Máxima
-        // 2. Thumbnail de Vídeo HD (largestThumb)
-        // 3. Imagem de Post HD (full_picture)
-        // 4. Thumbnail básica (creative/thumbnail_url)
-        const highResImage = imageHashMap.get(adMeta.image_hash) 
-                          || videoPictureMap.get(adMeta.extracted_video_id) 
-                          || storyMetaMap.get(adMeta.extracted_story_id) 
-                          || adMeta.thumbnail_url 
-                          || null;
+        const finalImageUrl = adMeta.image_url || adMeta.thumbnail_url || adMeta.picture || null;
 
         // Log de depuração refinado para rastreamento de origem
-        const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
-                       videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_PICTURE' :
-                       storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_META' :
-                       adMeta.thumbnail_url ? 'CREATIVE_THUMB' : 'NONE';
+        const source = adMeta.image_url ? 'IMAGE_URL' :
+                       adMeta.thumbnail_url ? 'THUMBNAIL_URL' :
+                       adMeta.picture ? 'PICTURE' : 'NONE';
         
         console.log(`[SyncHD] Ad: ${row.ad_name} | Source: ${source} | ID: ${row.ad_id}`);
 
@@ -470,14 +460,14 @@ export async function POST(request) {
           where: { meta_ad_id: String(row.ad_id) },
           update: { 
             nome_anuncio: row.ad_name, 
-            url_midia: highResImage, 
+            url_midia: finalImageUrl, 
             texto_principal: adMeta.body 
           },
           create: { 
             meta_ad_id: String(row.ad_id), 
             campanha_id: camp.id, 
             nome_anuncio: row.ad_name, 
-            url_midia: highResImage, 
+            url_midia: finalImageUrl, 
             texto_principal: adMeta.body 
           }
         });
