@@ -307,7 +307,7 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,creative{id,image_url,thumbnail_url.width(800).height(800),image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
+          fields: 'id,ad_thumbnail_url.width(800).height(800),creative{id,image_url,thumbnail_url.width(800).height(800),image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
           access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
@@ -338,6 +338,7 @@ export async function POST(request) {
 
             creativeMetaMap.set(String(creative.id), { 
               ...creative, 
+              ad_level_thumb: ad.ad_thumbnail_url, // Thumbnail capturada no nível do anúncio
               extracted_video_id: extractedVideoId || extractedStoryId, // Fallback recursivo para Story ID
               extracted_story_id: extractedStoryId,
               extracted_hash: extractedHash
@@ -434,9 +435,9 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Diagnóstico Raio-X: Monitoramento profundo para casos específicos
-        if (row.ad_name.includes("11/04/26") || row.ad_id === "1598730741373683") { 
-          console.log("RAIO-X AD:", JSON.stringify({ ad_name: row.ad_name, ad_id: row.ad_id, adMeta }, null, 2)); 
+        // Duelo de Dados: JSON Comparativo para Auditoria Visual
+        if (row.ad_name.includes("02/03/26") || row.ad_name.includes("17/02/26")) { 
+          console.log(`[Duelo-HD] Ad: ${row.ad_name} | JSON:`, JSON.stringify({ ad_level_thumb: adMeta.ad_level_thumb, adMeta }, null, 2)); 
         }
 
         // Identificação de Perfil de Criativo
@@ -456,15 +457,16 @@ export async function POST(request) {
         // PRIORIDADE MÁXIMA: Se a Meta entregou 800px ou 960px nativo no thumbnail_url
         const nativeHd = (adMeta.thumbnail_url?.includes('p800x800') || adMeta.thumbnail_url?.includes('p960x960')) ? adMeta.thumbnail_url : null;
 
-        // Xeque-Mate: Para vídeos, o Hash da Imagem é a capa HD original da biblioteca
-        const finalImageUrl = (profile === 'VIDEO' ? (imageHd || nativeHd) : (nativeHd || imageHd)) ||
+        // Xeque-Mate: Para vídeos, o Ad Level Thumb e o Hash da Imagem são prioritários
+        const finalImageUrl = (profile === 'VIDEO' ? (adMeta.ad_level_thumb || imageHd || nativeHd) : (nativeHd || imageHd)) ||
                               storyMetaMap.get(adMeta.extracted_story_id) || 
                               fallbackThumb ||
                               adMeta.image_url || 
                               null;
 
         // Log de depuração refinado para rastreamento de origem HD (Mantido apenas um log essencial)
-        const source = (profile === 'VIDEO' && imageHd) ? 'VIDEO_HASH_HD' :
+        const source = (profile === 'VIDEO' && adMeta.ad_level_thumb) ? 'AD_LEVEL_HD' :
+                       (profile === 'VIDEO' && imageHd) ? 'VIDEO_HASH_HD' :
                        nativeHd ? 'NATIVE_800' :
                        imageHashMap.has(adMeta.extracted_hash) ? 'AD_IMAGES' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
@@ -472,7 +474,7 @@ export async function POST(request) {
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        const resLabel = (profile === 'VIDEO' && imageHd) ? 'HASH_1080px' : nativeHd ? '800/960px' : (imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
+        const resLabel = (profile === 'VIDEO' && adMeta.ad_level_thumb) ? 'AD_800px' : (profile === 'VIDEO' && imageHd) ? 'HASH_1080px' : nativeHd ? '800/960px' : (imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
         
         console.log(`[Hash-Audit] Ad: ${row.ad_name} | Hash: ${adMeta.extracted_hash || "NULO"}`);
         console.log(`[HD-Audit] Audit: ${row.ad_name} | Perfil: ${profile} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
