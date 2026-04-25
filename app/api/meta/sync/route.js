@@ -463,13 +463,23 @@ export async function POST(request) {
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
         // Hierarquia de Estabilidade e Qualidade (Prioriza Biblioteca HD e Miniaturas de Vídeo HD)
-        const finalImageUrl = imageHashMap.get(adMeta.image_hash) || 
+        let finalImageUrl = imageHashMap.get(adMeta.image_hash) || 
                               videoPictureMap.get(adMeta.extracted_video_id) || 
                               storyMetaMap.get(adMeta.extracted_story_id) || 
                               (adMeta.thumbnail_url?.includes('p800x800') ? adMeta.thumbnail_url : null) ||
                               adMeta.image_url || 
                               adMeta.thumbnail_url || 
                               null;
+
+        const urlAntes = finalImageUrl;
+        
+        // Sanitização HD Supremo: Força resolução 960px em links da Meta se detectar miniaturas
+        if (finalImageUrl && finalImageUrl.includes('fbcdn.net')) {
+          const sizePattern = /(_p64x64|_p130x130|_s130x130|_p160x160|_p480x480)/g;
+          if (sizePattern.test(finalImageUrl)) {
+            finalImageUrl = finalImageUrl.replace(sizePattern, '_p960x960');
+          }
+        }
 
         console.log(`[SyncDEBUG] Gravando URL para ${row.ad_name}: ${finalImageUrl}`);
 
@@ -481,7 +491,12 @@ export async function POST(request) {
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        console.log(`[HD-Audit] Anúncio: ${row.ad_name} | Fonte: ${source} | URL: ${finalImageUrl}`);
+        console.log(`[HD-Audit] Anúncio: ${row.ad_name} | Fonte: ${source}`);
+        if (urlAntes !== finalImageUrl) {
+          console.log(`[HD-Audit] Sanitização: [Antes: ...${urlAntes?.slice(-50)}] -> [Depois: ...${finalImageUrl?.slice(-50)}]`);
+        } else {
+          console.log(`[HD-Audit] URL Final: ${finalImageUrl}`);
+        }
 
         // Forçamos o upsert para atualizar NOME e IMAGEM sempre, sobrescrevendo links mortos
         const criativo = await prisma.criativo.upsert({
