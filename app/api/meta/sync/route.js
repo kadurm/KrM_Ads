@@ -318,6 +318,7 @@ export async function POST(request) {
             const extractedVideoId = creative.video_id || 
                                     creative.video_data?.video_id || 
                                     creative.object_story_spec?.video_data?.video_id ||
+                                    creative.object_story_spec?.link_data?.video_id ||
                                     creative.asset_feed_spec?.videos?.[0]?.video_id;
 
             const actorId = creative.object_story_spec?.instagram_actor_id;
@@ -331,7 +332,7 @@ export async function POST(request) {
 
             creativeMetaMap.set(String(creative.id), { 
               ...creative, 
-              extracted_video_id: extractedVideoId,
+              extracted_video_id: extractedVideoId || extractedStoryId, // Fallback recursivo para Story ID
               extracted_story_id: extractedStoryId
             });
             adToCreativeMap.set(String(ad.id), String(creative.id));
@@ -471,7 +472,7 @@ export async function POST(request) {
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
         const resLabel = videoHd?.width || imageHd?.width || 'original';
-        console.log(`[HD-Audit] Anúncio: ${row.ad_name} | Fonte: ${source} | Res: ${resLabel}`);
+        console.log(`[HD-Audit] Audit: ${row.ad_name} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
 
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: String(row.ad_id) },
