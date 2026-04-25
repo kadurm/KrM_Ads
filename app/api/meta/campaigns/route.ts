@@ -40,7 +40,7 @@ export async function GET(request: Request) {
       fields = 'id,name,status,daily_budget,lifetime_budget,campaign_id,multi_advertiser_ads_enabled';
     } else if (level === 'ad') {
       endpoint = parentId ? `${parentId}/ads` : `${adAccountId}/ads`;
-      fields = 'id,name,status,adset_id,campaign_id,creative{id,thumbnail_url},is_synthetic_content';
+      fields = 'id,name,status,adset_id,campaign_id,creative{id,thumbnail_url,image_url},is_synthetic_content';
     }
 
     const insightsFields = 'spend,impressions,actions,inline_link_click_ctr,video_p25_watched_actions';
