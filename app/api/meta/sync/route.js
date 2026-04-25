@@ -307,9 +307,7 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
-          thumbnail_width: 800,
-          thumbnail_height: 800,
+          fields: 'id,creative{id,image_url,thumbnail_url.width(800).height(800),image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
           access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
@@ -361,33 +359,6 @@ export async function POST(request) {
          const data = await res.json();
          if (data) Object.values(data).forEach(post => storyMetaMap.set(String(post.id), post.full_picture));
        }));
-     }
-
-     // Busca HD para Vídeos em lotes (Capta a MAIOR miniatura disponível)
-     const videoIds = Array.from(creativeMetaMap.values()).map(m => m.extracted_video_id).filter(id => !!id);
-     const videoPictureMap = new Map();
-     if (videoIds.length > 0) {
-        const idChunks = [];
-        for (let i = 0; i < videoIds.length; i += 50) idChunks.push(videoIds.slice(i, i + 50));
-        await Promise.all(idChunks.map(async (chunk) => {
-          console.log(`[Video-Audit] Buscando thumbnails para: ${chunk.join(",")}`);
-          const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,picture,thumbnails{uri,width,height}', access_token: ACCESS_TOKEN }));
-          const data = await res.json();
-          console.log(`[Video-Response] Dados recebidos:`, JSON.stringify(data));
-
-          if (data) {
-            Object.values(data).forEach((video) => {
-              const sortedThumbs = video.thumbnails?.data?.sort((a, b) => b.width - a.width) || [];
-              const largestThumb = sortedThumbs[0];
-              
-              if (largestThumb) {
-                videoPictureMap.set(String(video.id), { url: largestThumb.uri, width: `${largestThumb.width}px` });
-              } else {
-                videoPictureMap.set(String(video.id), { url: video.picture, width: 'original' });
-              }
-            });
-          }
-        }));
      }
 
      // Busca HD via Biblioteca de Imagens da Conta (adimages) usando extracted_hash
@@ -473,13 +444,12 @@ export async function POST(request) {
         const isCarousel = !!adMeta.asset_feed_spec?.ad_formats?.includes('CAROUSEL') || !!adMeta.object_story_spec?.link_data?.child_attachments;
         const profile = isCarousel ? 'CARROSSEL' : (hasVideo ? 'VIDEO' : 'IMAGEM');
 
-        // Hierarquia de Estabilidade e Qualidade (Prioriza Miniaturas de Vídeo HD e Biblioteca HD)
-        const videoHd = videoPictureMap.get(adMeta.extracted_video_id)?.url;
+        // Hierarquia de Estabilidade e Qualidade (Biblioteca HD e Thumbnails Forçadas)
         const imageHd = imageHashMap.get(adMeta.extracted_hash)?.url;
 
         // Fallback Inteligente: Se thumbnail for fbcdn.net, tenta forçar 480px (mais estável)
         let fallbackThumb = adMeta.thumbnail_url;
-        if (!videoHd && !imageHd && fallbackThumb?.includes('fbcdn.net')) {
+        if (!imageHd && fallbackThumb?.includes('fbcdn.net')) {
           fallbackThumb = fallbackThumb.replace("/p130x130/", "/p480x480/");
         }
 
@@ -487,7 +457,7 @@ export async function POST(request) {
         const nativeHd = (adMeta.thumbnail_url?.includes('p800x800') || adMeta.thumbnail_url?.includes('p960x960')) ? adMeta.thumbnail_url : null;
 
         // Xeque-Mate: Para vídeos, o Hash da Imagem é a capa HD original da biblioteca
-        const finalImageUrl = (profile === 'VIDEO' ? (imageHd || videoHd || nativeHd) : (nativeHd || videoHd || imageHd)) ||
+        const finalImageUrl = (profile === 'VIDEO' ? (imageHd || nativeHd) : (nativeHd || imageHd)) ||
                               storyMetaMap.get(adMeta.extracted_story_id) || 
                               fallbackThumb ||
                               adMeta.image_url || 
@@ -496,14 +466,13 @@ export async function POST(request) {
         // Log de depuração refinado para rastreamento de origem HD (Mantido apenas um log essencial)
         const source = (profile === 'VIDEO' && imageHd) ? 'VIDEO_HASH_HD' :
                        nativeHd ? 'NATIVE_800' :
-                       videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
                        imageHashMap.has(adMeta.extracted_hash) ? 'AD_IMAGES' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
                        fallbackThumb?.includes('p480x480') ? 'THUMBNAIL_480_FORCED' :
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        const resLabel = (profile === 'VIDEO' && imageHd) ? 'HASH_1080px' : nativeHd ? '800/960px' : (videoHd || imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
+        const resLabel = (profile === 'VIDEO' && imageHd) ? 'HASH_1080px' : nativeHd ? '800/960px' : (imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
         
         console.log(`[Hash-Audit] Ad: ${row.ad_name} | Hash: ${adMeta.extracted_hash || "NULO"}`);
         console.log(`[HD-Audit] Audit: ${row.ad_name} | Perfil: ${profile} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
