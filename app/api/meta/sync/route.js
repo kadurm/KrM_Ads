@@ -323,10 +323,19 @@ export async function POST(request) {
                                     creative.object_story_spec?.video_data?.video_id ||
                                     creative.asset_feed_spec?.videos?.[0]?.video_id;
 
+            const actorId = creative.object_story_spec?.instagram_actor_id;
+            const linkDataPostId = creative.object_story_spec?.link_data?.post_id || creative.object_story_spec?.link_data?.item_id;
+            const videoDataPostId = creative.object_story_spec?.video_data?.post_id;
+
             const extractedStoryId = creative.effective_object_story_id || 
-                                    (creative.object_story_spec?.link_data?.post_id ? `${creative.object_story_spec.instagram_actor_id}_${creative.object_story_spec.link_data.post_id}` : null) ||
+                                    (actorId && linkDataPostId ? `${actorId}_${linkDataPostId}` : linkDataPostId) ||
+                                    (actorId && videoDataPostId ? `${actorId}_${videoDataPostId}` : videoDataPostId) ||
                                     creative.asset_feed_spec?.ad_formats?.[0]?.post_id;
             
+            if (!extractedStoryId) {
+              console.log(`[HD-Audit] Alerta: Anúncio ${ad.id} (Creative ${creative.id}) sem referência de Story/Post detectada.`);
+            }
+
             creativeMetaMap.set(String(creative.id), { 
               ...creative, 
               extracted_video_id: extractedVideoId,
