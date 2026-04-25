@@ -256,6 +256,13 @@ export async function POST(request) {
     const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
     if (!dbCliente) throw new Error("Cliente não encontrado no banco de dados local.");
 
+    // Reset de Infraestrutura Visual: Limpa URLs antigas para forçar reconstrução HD
+    console.log(`[ResetVisual] Limpando cache de mídias para ${cliente}...`);
+    await prisma.criativo.updateMany({ 
+      where: { campanha: { cliente_id: dbCliente.id } }, 
+      data: { url_midia: null } 
+    });
+
     // Bypass de Cache para HOJE
     const todayStr = new Date().toISOString().split('T')[0];
     const isToday = until === todayStr;
