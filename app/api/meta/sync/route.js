@@ -170,6 +170,8 @@ export async function GET(request) {
         // Estratégia de Preferência por Imagem de Alta Resolução (HD) - Refatorada
         const getScore = (url) => {
           if (!url) return 0;
+          if (url.includes('130x130')) return -1000; // Penalidade ABSOLUTA para miniaturas
+          
           let score = 10;
           
           // Prioridade por Origem Suprema
@@ -179,11 +181,11 @@ export async function GET(request) {
           else if (url.includes('picture')) score = 130;
 
           // Multiplicador de Resolução (Embraça 800px e 480px como elites)
-          if (url.includes('p800x800')) score += 100;
+          if (url.includes('p800x800') || url.includes('p960x960')) score += 100;
           if (url.includes('p480x480')) score += 50;
           
-          // Penalidade para resoluções de miniatura (130px ou menos)
-          if (url.includes('p130x130') || url.includes('p64x64')) score -= 200;
+          // Penalidade para resoluções de miniatura (AGRESSIVA)
+          if (url.includes('p64x64')) score -= 500;
 
           return score;
         };
