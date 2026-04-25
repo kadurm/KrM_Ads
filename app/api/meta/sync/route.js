@@ -457,9 +457,14 @@ export async function POST(request) {
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
         // Diagnóstico Raio-X: Monitoramento profundo para casos específicos
-        if (row.ad_name.includes("11/04/26")) { 
+        if (row.ad_name.includes("11/04/26") || row.ad_id === "1598730741373683") { 
           console.log("RAIO-X AD:", JSON.stringify({ ad_name: row.ad_name, ad_id: row.ad_id, adMeta }, null, 2)); 
         }
+
+        // Identificação de Perfil de Criativo
+        const hasVideo = !!adMeta.extracted_video_id || !!adMeta.video_id;
+        const isCarousel = !!adMeta.asset_feed_spec?.ad_formats?.includes('CAROUSEL') || !!adMeta.object_story_spec?.link_data?.child_attachments;
+        const profile = isCarousel ? 'CARROSSEL' : (hasVideo ? 'VIDEO' : 'IMAGEM');
 
         // Hierarquia de Estabilidade e Qualidade (Prioriza Miniaturas de Vídeo HD e Biblioteca HD)
         const videoHd = videoPictureMap.get(adMeta.extracted_video_id)?.url;
@@ -471,25 +476,28 @@ export async function POST(request) {
           fallbackThumb = fallbackThumb.replace("/p130x130/", "/p480x480/");
         }
 
-        const finalImageUrl = videoHd || 
+        // PRIORIDADE MÁXIMA: Se a Meta entregou 800px ou 960px nativo no thumbnail_url
+        const nativeHd = (adMeta.thumbnail_url?.includes('p800x800') || adMeta.thumbnail_url?.includes('p960x960')) ? adMeta.thumbnail_url : null;
+
+        const finalImageUrl = nativeHd ||
+                              videoHd || 
                               imageHd ||
                               storyMetaMap.get(adMeta.extracted_story_id) || 
-                              (adMeta.thumbnail_url?.includes('p800x800') ? adMeta.thumbnail_url : null) ||
                               fallbackThumb ||
                               adMeta.image_url || 
                               null;
 
         // Log de depuração refinado para rastreamento de origem HD (Mantido apenas um log essencial)
-        const source = videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
+        const source = nativeHd ? 'NATIVE_800' :
+                       videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
                        imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
-                       adMeta.thumbnail_url?.includes('p800x800') ? 'THUMBNAIL_800' :
                        fallbackThumb?.includes('p480x480') ? 'THUMBNAIL_480_FORCED' :
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        const resLabel = (videoHd || imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
-        console.log(`[HD-Audit] Audit: ${row.ad_name} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
+        const resLabel = nativeHd ? '800/960px' : (videoHd || imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
+        console.log(`[HD-Audit] Audit: ${row.ad_name} | Perfil: ${profile} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
 
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: String(row.ad_id) },
