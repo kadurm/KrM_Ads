@@ -296,10 +296,8 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,thumbnail_url,creative{id,image_url,thumbnail_url,picture,image_hash,body,effective_object_story_id,video_id,video_data,object_story_spec,asset_feed_spec}', 
-          access_token: ACCESS_TOKEN,
-          thumbnail_width: '800',
-          thumbnail_height: '800'
+          fields: 'id,creative{id,thumbnail_url,image_hash,body,effective_object_story_id,video_id,video_data,object_story_spec,asset_feed_spec}', 
+          access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
         Object.values(data).forEach((ad) => {
@@ -317,7 +315,6 @@ export async function POST(request) {
             
             creativeMetaMap.set(String(creative.id), { 
               ...creative, 
-              ad_thumbnail: ad.thumbnail_url,
               extracted_video_id: extractedVideoId,
               extracted_story_id: extractedStoryId
             });
@@ -453,26 +450,18 @@ export async function POST(request) {
         // 1. Imagem original (adimages/image_hash) - Qualidade Máxima
         // 2. Thumbnail de Vídeo HD (largestThumb)
         // 3. Imagem de Post HD (full_picture)
-        // 4. Picture do Criativo (creative/picture)
-        // 5. Thumbnail de 800px via Ad Level (ad/thumbnail_url com params)
-        // 6. Thumbnail básica (creative/thumbnail_url ou adMeta/image_url)
+        // 4. Thumbnail básica (creative/thumbnail_url)
         const highResImage = imageHashMap.get(adMeta.image_hash) 
                           || videoPictureMap.get(adMeta.extracted_video_id) 
                           || storyMetaMap.get(adMeta.extracted_story_id) 
-                          || adMeta.picture 
-                          || adMeta.ad_thumbnail 
                           || adMeta.thumbnail_url 
-                          || adMeta.image_url 
                           || null;
 
         // Log de depuração refinado para rastreamento de origem
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_PICTURE' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_META' :
-                       adMeta.picture ? 'CREATIVE_PICTURE' :
-                       adMeta.ad_thumbnail ? 'AD_LEVEL_THUMB' :
-                       adMeta.thumbnail_url ? 'CREATIVE_THUMB' : 
-                       adMeta.image_url ? 'CREATIVE_IMAGE' : 'NONE';
+                       adMeta.thumbnail_url ? 'CREATIVE_THUMB' : 'NONE';
         
         console.log(`[SyncHD] Ad: ${row.ad_name} | Source: ${source} | ID: ${row.ad_id}`);
 
