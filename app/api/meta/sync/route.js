@@ -352,7 +352,7 @@ export async function POST(request) {
        await Promise.all(idChunks.map(async (chunk) => {
          const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN }));
          const data = await res.json();
-         if (data) Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
+         if (data) Object.values(data).forEach(post => storyMetaMap.set(String(post.id), post.full_picture));
        }));
      }
 
@@ -363,17 +363,20 @@ export async function POST(request) {
         const idChunks = [];
         for (let i = 0; i < videoIds.length; i += 50) idChunks.push(videoIds.slice(i, i + 50));
         await Promise.all(idChunks.map(async (chunk) => {
+          console.log(`[Video-Audit] Buscando thumbnails para: ${chunk.join(",")}`);
           const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,picture,thumbnails{uri,width,height}', access_token: ACCESS_TOKEN }));
           const data = await res.json();
+          console.log(`[Video-Response] Dados recebidos:`, JSON.stringify(data));
+
           if (data) {
             Object.values(data).forEach((video) => {
               const sortedThumbs = video.thumbnails?.data?.sort((a, b) => b.width - a.width) || [];
               const largestThumb = sortedThumbs[0];
               
               if (largestThumb) {
-                videoPictureMap.set(video.id, { url: largestThumb.uri, width: `${largestThumb.width}px` });
+                videoPictureMap.set(String(video.id), { url: largestThumb.uri, width: `${largestThumb.width}px` });
               } else {
-                videoPictureMap.set(video.id, { url: video.picture, width: 'original' });
+                videoPictureMap.set(String(video.id), { url: video.picture, width: 'original' });
               }
             });
           }
@@ -392,14 +395,14 @@ export async function POST(request) {
         if (data.data) {
           data.data.forEach(img => { 
             const bestUrl = img.url || img.permalink_url;
-            if (bestUrl) imageHashMap.set(img.hash, { url: bestUrl, width: `${img.width}px` }); 
+            if (bestUrl) imageHashMap.set(String(img.hash), { url: bestUrl, width: `${img.width}px` }); 
           });
         }
       }));
      }
 
      const existingCamps = await prisma.campanha.findMany({ where: { cliente_id: dbCliente.id } });
-    const localCampMap = new Map(existingCamps.map(c => [c.meta_id, c]));
+    const localCampMap = new Map(existingCamps.map(c => [String(c.meta_id), c]));
 
     await batchProcess(campaignData.data || [], 5, async (item) => {
       let camp = localCampMap.get(String(item.campaign_id));
