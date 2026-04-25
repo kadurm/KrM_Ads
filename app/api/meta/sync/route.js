@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+export const dynamic = "force-dynamic";
+
 const prisma = new PrismaClient();
 
 function graphUrl(path, query) {
@@ -451,16 +453,27 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
+        // Diagnóstico Raio-X: Monitoramento profundo para casos específicos
+        if (row.ad_name.includes("11/04/26")) { 
+          console.log("RAIO-X AD:", JSON.stringify({ ad_name: row.ad_name, ad_id: row.ad_id, adMeta }, null, 2)); 
+        }
+
         // Hierarquia de Estabilidade e Qualidade (Prioriza Miniaturas de Vídeo HD e Biblioteca HD)
         const videoHd = videoPictureMap.get(adMeta.extracted_video_id);
         const imageHd = imageHashMap.get(adMeta.image_hash);
+
+        // Fallback Inteligente: Se thumbnail for fbcdn.net, tenta forçar 480px (mais estável)
+        let fallbackThumb = adMeta.thumbnail_url;
+        if (!videoHd && !imageHd && fallbackThumb?.includes('fbcdn.net')) {
+          fallbackThumb = fallbackThumb.replace("/p130x130/", "/p480x480/");
+        }
 
         const finalImageUrl = videoHd?.url || 
                               imageHd?.url ||
                               storyMetaMap.get(adMeta.extracted_story_id) || 
                               (adMeta.thumbnail_url?.includes('p800x800') ? adMeta.thumbnail_url : null) ||
+                              fallbackThumb ||
                               adMeta.image_url || 
-                              adMeta.thumbnail_url || 
                               null;
 
         // Log de depuração refinado para rastreamento de origem HD (Mantido apenas um log essencial)
@@ -468,10 +481,11 @@ export async function POST(request) {
                        imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
                        adMeta.thumbnail_url?.includes('p800x800') ? 'THUMBNAIL_800' :
+                       fallbackThumb?.includes('p480x480') ? 'THUMBNAIL_480_FORCED' :
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        const resLabel = videoHd?.width || imageHd?.width || 'original';
+        const resLabel = videoHd?.width || imageHd?.width || (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
         console.log(`[HD-Audit] Audit: ${row.ad_name} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
 
         const criativo = await prisma.criativo.upsert({
