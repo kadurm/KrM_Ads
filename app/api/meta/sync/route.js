@@ -168,6 +168,7 @@ export async function GET(request) {
 
         // Estratégia de Preferência por Imagem de Alta Resolução (HD)
         const getScore = (url) => {
+          if (url && url.includes("p800x800")) return -1;
           if (!url) return 0;
           let score = 10;
           
@@ -178,7 +179,6 @@ export async function GET(request) {
           else if (url.length > 250) score = 60;
 
           // Multiplicador de Resolução (Fator Decisivo)
-          if (url.includes('p800x800')) score += 100; // Prioridade máxima absoluta
           if (url.includes('p480x480')) score += 50;
           if (url.includes('p64x64') || url.includes('p130x130')) score -= 150; // Penalidade pesada para baixa res
 
@@ -463,6 +463,8 @@ export async function POST(request) {
                           || adMeta.thumbnail_url
                           || adMeta.image_url;
 
+        const finalImage = highResImage || adMeta.thumbnail_url || adMeta.image_url;
+
         // Log de depuração refinado
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_PICTURE' :
@@ -471,21 +473,21 @@ export async function POST(request) {
                        adMeta.ad_thumbnail ? 'AD_LEVEL_THUMB' :
                        adMeta.thumbnail_url ? 'THUMBNAIL' : 'IMAGE_URL';
         
-        console.log(`[ImageDebug] Ad: ${row.ad_name} | Source: ${source} | URL: ${highResImage?.substring(0, 50)}...`);
+        console.log(`[ImageDebug] Ad: ${row.ad_name} | Source: ${source} | URL: ${finalImage?.substring(0, 50)}...`);
 
         // Forçamos o upsert para atualizar NOME e IMAGEM sempre
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: String(row.ad_id) },
           update: { 
             nome_anuncio: row.ad_name, 
-            url_midia: highResImage, 
+            url_midia: finalImage, 
             texto_principal: adMeta.body 
           },
           create: { 
             meta_ad_id: String(row.ad_id), 
             campanha_id: camp.id, 
             nome_anuncio: row.ad_name, 
-            url_midia: highResImage, 
+            url_midia: finalImage, 
             texto_principal: adMeta.body 
           }
         });
