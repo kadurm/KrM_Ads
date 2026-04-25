@@ -136,7 +136,7 @@ export async function GET(request) {
 
     const groupedMap = new Map();
     for (const c of criativosRaw) {
-      const sanitizedUrl = (c.url_midia && c.url_midia.includes("p800x800")) ? null : c.url_midia;
+      const sanitizedUrl = c.url_midia;
       const key = c.nome_anuncio || 'Anúncio sem nome';
       const stats = c.metricas.reduce((acc, m) => ({
         impressoes: acc.impressoes + m.impressoes,
@@ -167,21 +167,23 @@ export async function GET(request) {
         existing.totalCtr += stats.totalCtr;
         existing.count += stats.count;
 
-        // Estratégia de Preferência por Imagem de Alta Resolução (HD)
+        // Estratégia de Preferência por Imagem de Alta Resolução (HD) - Refatorada
         const getScore = (url) => {
-          if (url && url.includes("p800x800")) return -1;
           if (!url) return 0;
           let score = 10;
           
-          if (url.includes('adimages')) score = 100; 
-          else if (url.includes('thumbnails.data') || url.includes('video')) score = 95;
-          else if (url.includes('picture')) score = 90;
-          else if (url.includes('full_picture')) score = 85;
-          else if (url.length > 250) score = 60;
+          // Prioridade por Origem Suprema
+          if (url.includes('adimages')) score = 200; 
+          else if (url.includes('thumbnails.data') || url.includes('video')) score = 150;
+          else if (url.includes('full_picture')) score = 140;
+          else if (url.includes('picture')) score = 130;
 
-          // Multiplicador de Resolução (Fator Decisivo)
+          // Multiplicador de Resolução (Embraça 800px e 480px como elites)
+          if (url.includes('p800x800')) score += 100;
           if (url.includes('p480x480')) score += 50;
-          if (url.includes('p64x64') || url.includes('p130x130')) score -= 150; // Penalidade pesada para baixa res
+          
+          // Penalidade para resoluções de miniatura (130px ou menos)
+          if (url.includes('p130x130') || url.includes('p64x64')) score -= 200;
 
           return score;
         };
@@ -453,10 +455,11 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Hierarquia de Estabilidade e Qualidade (Prioriza Biblioteca HD e Miniaturas de Vídeo Ordenadas)
+        // Hierarquia de Estabilidade e Qualidade (Prioriza Biblioteca HD e Miniaturas de Vídeo HD)
         const finalImageUrl = imageHashMap.get(adMeta.image_hash) || 
                               videoPictureMap.get(adMeta.extracted_video_id) || 
                               storyMetaMap.get(adMeta.extracted_story_id) || 
+                              (adMeta.thumbnail_url?.includes('p800x800') ? adMeta.thumbnail_url : null) ||
                               adMeta.image_url || 
                               adMeta.thumbnail_url || 
                               null;
@@ -467,6 +470,7 @@ export async function POST(request) {
         const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
+                       adMeta.thumbnail_url?.includes('p800x800') ? 'THUMBNAIL_800' :
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
