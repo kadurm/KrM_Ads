@@ -323,6 +323,12 @@ export async function POST(request) {
                                     creative.object_story_spec?.link_data?.video_id ||
                                     creative.asset_feed_spec?.videos?.[0]?.video_id;
 
+            const extractedHash = creative.image_hash || 
+                                 creative.video_data?.image_hash || 
+                                 creative.object_story_spec?.video_data?.image_hash || 
+                                 creative.asset_feed_spec?.images?.[0]?.hash || 
+                                 creative.asset_feed_spec?.videos?.[0]?.thumbnail_hash;
+
             const actorId = creative.object_story_spec?.instagram_actor_id;
             const linkDataPostId = creative.object_story_spec?.link_data?.post_id || creative.object_story_spec?.link_data?.item_id;
             const videoDataPostId = creative.object_story_spec?.video_data?.post_id;
@@ -335,7 +341,8 @@ export async function POST(request) {
             creativeMetaMap.set(String(creative.id), { 
               ...creative, 
               extracted_video_id: extractedVideoId || extractedStoryId, // Fallback recursivo para Story ID
-              extracted_story_id: extractedStoryId
+              extracted_story_id: extractedStoryId,
+              extracted_hash: extractedHash
             });
             adToCreativeMap.set(String(ad.id), String(creative.id));
           }
@@ -383,9 +390,9 @@ export async function POST(request) {
         }));
      }
 
-     // Busca HD via Biblioteca de Imagens da Conta (adimages) usando image_hash
+     // Busca HD via Biblioteca de Imagens da Conta (adimages) usando extracted_hash
      const imageHashMap = new Map();
-     const uniqueHashes = [...new Set(Array.from(creativeMetaMap.values()).map(m => m.image_hash).filter(h => !!h))];
+     const uniqueHashes = [...new Set(Array.from(creativeMetaMap.values()).map(m => m.extracted_hash).filter(h => !!h))];
      if (uniqueHashes.length > 0) {
        const hashChunks = [];
        for (let i = 0; i < uniqueHashes.length; i += 50) hashChunks.push(uniqueHashes.slice(i, i + 50));
@@ -468,7 +475,7 @@ export async function POST(request) {
 
         // Hierarquia de Estabilidade e Qualidade (Prioriza Miniaturas de Vídeo HD e Biblioteca HD)
         const videoHd = videoPictureMap.get(adMeta.extracted_video_id)?.url;
-        const imageHd = imageHashMap.get(adMeta.image_hash)?.url;
+        const imageHd = imageHashMap.get(adMeta.extracted_hash)?.url;
 
         // Fallback Inteligente: Se thumbnail for fbcdn.net, tenta forçar 480px (mais estável)
         let fallbackThumb = adMeta.thumbnail_url;
@@ -490,7 +497,7 @@ export async function POST(request) {
         const source = (profile === 'VIDEO' && imageHd) ? 'VIDEO_HASH_HD' :
                        nativeHd ? 'NATIVE_800' :
                        videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
-                       imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
+                       imageHashMap.has(adMeta.extracted_hash) ? 'AD_IMAGES' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
                        fallbackThumb?.includes('p480x480') ? 'THUMBNAIL_480_FORCED' :
                        adMeta.image_url ? 'IMAGE_URL' :
@@ -498,7 +505,7 @@ export async function POST(request) {
         
         const resLabel = (profile === 'VIDEO' && imageHd) ? 'HASH_1080px' : nativeHd ? '800/960px' : (videoHd || imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
         
-        console.log(`[Hash-Audit] Ad: ${row.ad_name} | Hash: ${adMeta.image_hash || "NULO"}`);
+        console.log(`[Hash-Audit] Ad: ${row.ad_name} | Hash: ${adMeta.extracted_hash || "NULO"}`);
         console.log(`[HD-Audit] Audit: ${row.ad_name} | Perfil: ${profile} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
 
         const criativo = await prisma.criativo.upsert({
