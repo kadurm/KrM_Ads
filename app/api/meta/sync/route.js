@@ -288,19 +288,17 @@ export async function POST(request) {
     const [metaCampsData, campaignData, adInsightData] = await Promise.all([ 
       metaCampsRes.json(), campaignRes.json(), adInsightRes.json() 
     ]);
-    console.timeEnd('Meta-API-Calls');
 
     if (campaignData.error) throw new Error(`Meta API Error: ${campaignData.error.message}`);
 
     const objectiveMap = new Map(metaCampsData.data?.map(c => [c.id, c.objective]) || []);
     
-    // Busca Criativos Especificamente para os Anúncios nos Insights (Garante HD para qualquer período)
+    // Busca Criativos Especificamente para os Anúncios nos Insights
     const adIds = [...new Set(adInsightData.data?.map(i => i.ad_id).filter(id => !!id) || [])];
     const creativeMetaMap = new Map();
     const adToCreativeMap = new Map();
 
     if (adIds.length > 0) {
-      console.time('Meta-Targeted-Creatives');
       const idChunks = [];
       for (let i = 0; i < adIds.length; i += 50) idChunks.push(adIds.slice(i, i + 50));
       
@@ -313,13 +311,10 @@ export async function POST(request) {
           access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
-        if (data.error) console.error(`[MetaAPI-Error] Chunk Creative Error: ${data.error.message}`);
         
         Object.values(data).forEach((ad) => {
           if (ad.creative) {
             const creative = ad.creative;
-            console.log(`[SyncDEBUG] Mapeando Creative ${creative.id} para Ad ${ad.id}`);
-            // Extração Ultra-Robusta de IDs de Mídia (Suporte a Dynamic Ads e Asset Feed)
             const extractedVideoId = creative.video_id || 
                                     creative.video_data?.video_id || 
                                     creative.object_story_spec?.video_data?.video_id ||
@@ -333,10 +328,6 @@ export async function POST(request) {
                                     (actorId && linkDataPostId ? `${actorId}_${linkDataPostId}` : linkDataPostId) ||
                                     (actorId && videoDataPostId ? `${actorId}_${videoDataPostId}` : videoDataPostId) ||
                                     creative.asset_feed_spec?.ad_formats?.[0]?.post_id;
-            
-            if (!extractedStoryId) {
-              console.log(`[HD-Audit] Alerta: Anúncio ${ad.id} (Creative ${creative.id}) sem referência de Story/Post detectada.`);
-            }
 
             creativeMetaMap.set(String(creative.id), { 
               ...creative, 
@@ -344,19 +335,15 @@ export async function POST(request) {
               extracted_story_id: extractedStoryId
             });
             adToCreativeMap.set(String(ad.id), String(creative.id));
-          } else if (ad.id) {
-            console.log(`[SyncDEBUG] Ad ${ad.id} não possui objeto creative.`);
           }
         });
       }));
-      console.timeEnd('Meta-Targeted-Creatives');
     }
     
     // Busca HD Supremo (Posts) em lotes
     const storyIds = Array.from(creativeMetaMap.values()).map(m => m.extracted_story_id).filter(id => !!id);
     const storyMetaMap = new Map();
     if (storyIds.length > 0) {
-       console.time('Meta-HD-Images');
        const idChunks = [];
        for (let i = 0; i < storyIds.length; i += 50) idChunks.push(storyIds.slice(i, i + 50));
        await Promise.all(idChunks.map(async (chunk) => {
@@ -364,14 +351,12 @@ export async function POST(request) {
          const data = await res.json();
          if (data) Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
        }));
-       console.timeEnd('Meta-HD-Images');
      }
 
      // Busca HD para Vídeos em lotes (Capta a MAIOR miniatura disponível)
      const videoIds = Array.from(creativeMetaMap.values()).map(m => m.extracted_video_id).filter(id => !!id);
      const videoPictureMap = new Map();
      if (videoIds.length > 0) {
-        console.time('Meta-Video-HD');
         const idChunks = [];
         for (let i = 0; i < videoIds.length; i += 50) idChunks.push(videoIds.slice(i, i + 50));
         await Promise.all(idChunks.map(async (chunk) => {
@@ -379,7 +364,6 @@ export async function POST(request) {
           const data = await res.json();
           if (data) {
             Object.values(data).forEach((video) => {
-              console.log(`[Video-Audit] Miniaturas para ${video.id}:`, JSON.stringify(video.thumbnails));
               const sortedThumbs = video.thumbnails?.data?.sort((a, b) => b.width - a.width) || [];
               const largestThumb = sortedThumbs[0];
               
@@ -391,14 +375,12 @@ export async function POST(request) {
             });
           }
         }));
-        console.timeEnd('Meta-Video-HD');
      }
 
      // Busca HD via Biblioteca de Imagens da Conta (adimages) usando image_hash
      const imageHashMap = new Map();
      const uniqueHashes = [...new Set(Array.from(creativeMetaMap.values()).map(m => m.image_hash).filter(h => !!h))];
      if (uniqueHashes.length > 0) {
-       console.time('Meta-AdImages-HD');
        const hashChunks = [];
        for (let i = 0; i < uniqueHashes.length; i += 50) hashChunks.push(uniqueHashes.slice(i, i + 50));
        await Promise.all(hashChunks.map(async (chunk) => {
@@ -411,13 +393,11 @@ export async function POST(request) {
           });
         }
       }));
-       console.timeEnd('Meta-AdImages-HD');
      }
 
      const existingCamps = await prisma.campanha.findMany({ where: { cliente_id: dbCliente.id } });
     const localCampMap = new Map(existingCamps.map(c => [c.meta_id, c]));
 
-    console.time('DB-Write-Campaigns');
     await batchProcess(campaignData.data || [], 5, async (item) => {
       let camp = localCampMap.get(String(item.campaign_id));
       if (!camp) {
@@ -428,7 +408,6 @@ export async function POST(request) {
         });
         localCampMap.set(camp.meta_id, camp);
       } else if (camp.nome_gerado !== item.campaign_name) {
-        // Atualiza nome se mudou na Meta
         camp = await prisma.campanha.update({
           where: { id: camp.id },
           data: { nome_gerado: item.campaign_name }
@@ -438,11 +417,6 @@ export async function POST(request) {
 
       const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
       
-      // Log temporário para depuração de tipos de ações (ver no Vercel Logs)
-      if (item.actions) {
-        console.log(`Campanha ${item.campaign_name} Actions:`, JSON.stringify(item.actions));
-      }
-
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
@@ -464,12 +438,8 @@ export async function POST(request) {
         }
       });
     });
-    console.timeEnd('DB-Write-Campaigns');
 
     if (adInsightData.data) {
-      console.time('DB-Write-Creatives');
-      // adToCreativeMap já foi populado na fase de busca direcionada
-
       const existingCreatives = await prisma.criativo.findMany({ where: { campanha: { cliente_id: dbCliente.id } } });
       const localCreativeMap = new Map(existingCreatives.map(c => [c.meta_ad_id, c]));
 
@@ -480,31 +450,29 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Hierarquia de Estabilidade e Qualidade (Prioriza Biblioteca HD e Miniaturas de Vídeo HD)
-        const hdSource = imageHashMap.get(adMeta.image_hash) || 
-                         videoPictureMap.get(adMeta.extracted_video_id);
+        // Hierarquia de Estabilidade e Qualidade (Prioriza Miniaturas de Vídeo HD e Biblioteca HD)
+        const videoHd = videoPictureMap.get(adMeta.extracted_video_id);
+        const imageHd = imageHashMap.get(adMeta.image_hash);
 
-        const finalImageUrl = hdSource?.url || 
+        const finalImageUrl = videoHd?.url || 
+                              imageHd?.url ||
                               storyMetaMap.get(adMeta.extracted_story_id) || 
                               (adMeta.thumbnail_url?.includes('p800x800') ? adMeta.thumbnail_url : null) ||
                               adMeta.image_url || 
                               adMeta.thumbnail_url || 
                               null;
 
-        console.log(`[SyncDEBUG] Gravando URL para ${row.ad_name}: ${finalImageUrl}`);
-
-        // Log de depuração refinado para rastreamento de origem HD
-        const source = imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
-                       videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
+        // Log de depuração refinado para rastreamento de origem HD (Mantido apenas um log essencial)
+        const source = videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
+                       imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
                        adMeta.thumbnail_url?.includes('p800x800') ? 'THUMBNAIL_800' :
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        const resLabel = hdSource?.width || 'original';
-        console.log(`[HD-Audit] Anúncio: ${row.ad_name} | Fonte: ${source} | Res: ${resLabel} | URL: ${finalImageUrl}`);
+        const resLabel = videoHd?.width || imageHd?.width || 'original';
+        console.log(`[HD-Audit] Anúncio: ${row.ad_name} | Fonte: ${source} | Res: ${resLabel}`);
 
-        // Forçamos o upsert para atualizar NOME e IMAGEM sempre, sobrescrevendo links mortos
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: String(row.ad_id) },
           update: { 

@@ -884,9 +884,6 @@ export default function App() {
                          ) : (
                             <ImageIcon className="text-slate-800" size={48} />
                          )}
-                         <div className="absolute bottom-3 left-3 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[8px] font-mono text-white/70 border border-white/5 truncate max-w-[150px]">
-                           Source: {c.url_midia?.split('/').pop()?.substring(0, 20)}
-                         </div>
                          {getRankBadge(idx)}
                          <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-black text-white uppercase border border-white/10 tracking-widest">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
                        </div>
