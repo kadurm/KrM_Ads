@@ -874,9 +874,9 @@ export default function App() {
                    return (
                      <div key={c.id} className={`bg-slate-900 rounded-3xl border ${borderHighlight} overflow-hidden group hover:border-blue-500/50 transition-all flex flex-col h-full shadow-2xl relative`}>
                        <div className="h-64 bg-slate-950 flex items-center justify-center relative overflow-hidden">
-                         {(c.url_midia || c.thumbnail_url || c.image_url) ? (
+                         {c.url_midia ? (
                             <img 
-                              src={c.url_midia || c.thumbnail_url || c.image_url} 
+                              src={c.url_midia} 
                               alt={c.nome_anuncio} 
                               referrerPolicy="no-referrer"
                               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 

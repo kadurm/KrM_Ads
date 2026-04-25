@@ -296,13 +296,16 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,creative{id,thumbnail_url,image_hash,body,effective_object_story_id,video_id,video_data,object_story_spec,asset_feed_spec}', 
+          fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
           access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
+        if (data.error) console.error(`[MetaAPI-Error] Chunk Creative Error: ${data.error.message}`);
+        
         Object.values(data).forEach((ad) => {
           if (ad.creative) {
             const creative = ad.creative;
+            console.log(`[SyncDEBUG] Mapeando Creative ${creative.id} para Ad ${ad.id}`);
             // Extração Ultra-Robusta de IDs de Mídia (Suporte a Dynamic Ads e Asset Feed)
             const extractedVideoId = creative.video_id || 
                                     creative.video_data?.video_id || 
@@ -319,6 +322,8 @@ export async function POST(request) {
               extracted_story_id: extractedStoryId
             });
             adToCreativeMap.set(String(ad.id), String(creative.id));
+          } else if (ad.id) {
+            console.log(`[SyncDEBUG] Ad ${ad.id} não possui objeto creative.`);
           }
         });
       }));
@@ -446,12 +451,22 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        const finalImageUrl = adMeta.image_url || adMeta.thumbnail_url || adMeta.picture || null;
+        // Hierarquia de Estabilidade e Qualidade (Prioriza HD das Bibliotecas e Posts)
+        const finalImageUrl = storyMetaMap.get(adMeta.extracted_story_id) || 
+                              videoPictureMap.get(adMeta.extracted_video_id) || 
+                              imageHashMap.get(adMeta.image_hash) || 
+                              adMeta.image_url || 
+                              adMeta.thumbnail_url || 
+                              null;
+
+        console.log(`[SyncDEBUG] Gravando URL para ${row.ad_name}: ${finalImageUrl}`);
 
         // Log de depuração refinado para rastreamento de origem
-        const source = adMeta.image_url ? 'IMAGE_URL' :
-                       adMeta.thumbnail_url ? 'THUMBNAIL_URL' :
-                       adMeta.picture ? 'PICTURE' : 'NONE';
+        const source = storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
+                       videoPictureMap.has(adMeta.extracted_video_id) ? 'VIDEO_HD' :
+                       imageHashMap.has(adMeta.image_hash) ? 'AD_IMAGES' :
+                       adMeta.image_url ? 'IMAGE_URL' :
+                       adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
         console.log(`[SyncHD] Ad: ${row.ad_name} | Source: ${source} | ID: ${row.ad_id}`);
 
