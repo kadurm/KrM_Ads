@@ -459,8 +459,8 @@ export async function POST(request) {
         }
 
         // Hierarquia de Estabilidade e Qualidade (Prioriza Miniaturas de Vídeo HD e Biblioteca HD)
-        const videoHd = videoPictureMap.get(adMeta.extracted_video_id);
-        const imageHd = imageHashMap.get(adMeta.image_hash);
+        const videoHd = videoPictureMap.get(adMeta.extracted_video_id)?.url;
+        const imageHd = imageHashMap.get(adMeta.image_hash)?.url;
 
         // Fallback Inteligente: Se thumbnail for fbcdn.net, tenta forçar 480px (mais estável)
         let fallbackThumb = adMeta.thumbnail_url;
@@ -468,8 +468,8 @@ export async function POST(request) {
           fallbackThumb = fallbackThumb.replace("/p130x130/", "/p480x480/");
         }
 
-        const finalImageUrl = videoHd?.url || 
-                              imageHd?.url ||
+        const finalImageUrl = videoHd || 
+                              imageHd ||
                               storyMetaMap.get(adMeta.extracted_story_id) || 
                               (adMeta.thumbnail_url?.includes('p800x800') ? adMeta.thumbnail_url : null) ||
                               fallbackThumb ||
@@ -485,7 +485,7 @@ export async function POST(request) {
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        const resLabel = videoHd?.width || imageHd?.width || (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
+        const resLabel = (videoHd || imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
         console.log(`[HD-Audit] Audit: ${row.ad_name} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
 
         const criativo = await prisma.criativo.upsert({
