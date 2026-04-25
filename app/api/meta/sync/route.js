@@ -377,8 +377,15 @@ export async function POST(request) {
           const data = await res.json();
           if (data) {
             Object.values(data).forEach((video) => {
-              const largestThumb = video.thumbnails?.data?.sort((a, b) => b.width - a.width)[0]?.uri;
-              videoPictureMap.set(video.id, largestThumb || video.picture);
+              console.log(`[Video-Audit] Miniaturas para ${video.id}:`, JSON.stringify(video.thumbnails));
+              const sortedThumbs = video.thumbnails?.data?.sort((a, b) => b.width - a.width) || [];
+              const largestThumb = sortedThumbs[0];
+              
+              if (largestThumb) {
+                videoPictureMap.set(video.id, { url: largestThumb.uri, width: `${largestThumb.width}px` });
+              } else {
+                videoPictureMap.set(video.id, { url: video.picture, width: 'original' });
+              }
             });
           }
         }));
@@ -393,12 +400,12 @@ export async function POST(request) {
        const hashChunks = [];
        for (let i = 0; i < uniqueHashes.length; i += 50) hashChunks.push(uniqueHashes.slice(i, i + 50));
        await Promise.all(hashChunks.map(async (chunk) => {
-        const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }));
+        const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash,width,height' }));
         const data = await res.json();
         if (data.data) {
           data.data.forEach(img => { 
             const bestUrl = img.url || img.permalink_url;
-            if (bestUrl) imageHashMap.set(img.hash, bestUrl); 
+            if (bestUrl) imageHashMap.set(img.hash, { url: bestUrl, width: `${img.width}px` }); 
           });
         }
       }));
@@ -472,8 +479,10 @@ export async function POST(request) {
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
         // Hierarquia de Estabilidade e Qualidade (Prioriza Biblioteca HD e Miniaturas de Vídeo HD)
-        const finalImageUrl = imageHashMap.get(adMeta.image_hash) || 
-                              videoPictureMap.get(adMeta.extracted_video_id) || 
+        const hdSource = imageHashMap.get(adMeta.image_hash) || 
+                         videoPictureMap.get(adMeta.extracted_video_id);
+
+        const finalImageUrl = hdSource?.url || 
                               storyMetaMap.get(adMeta.extracted_story_id) || 
                               (adMeta.thumbnail_url?.includes('p800x800') ? adMeta.thumbnail_url : null) ||
                               adMeta.image_url || 
@@ -490,7 +499,8 @@ export async function POST(request) {
                        adMeta.image_url ? 'IMAGE_URL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
         
-        console.log(`[HD-Audit] Anúncio: ${row.ad_name} | Fonte: ${source} | URL: ${finalImageUrl}`);
+        const resLabel = hdSource?.width || 'original';
+        console.log(`[HD-Audit] Anúncio: ${row.ad_name} | Fonte: ${source} | Res: ${resLabel} | URL: ${finalImageUrl}`);
 
         // Forçamos o upsert para atualizar NOME e IMAGEM sempre, sobrescrevendo links mortos
         const criativo = await prisma.criativo.upsert({
