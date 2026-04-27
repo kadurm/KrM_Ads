@@ -69,6 +69,27 @@ export async function GET(request) {
     const cliente = await prisma.cliente.findFirst({ where: { nome: clienteNome } });
     if (!cliente) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
+    // 1. BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão para Funil e Cards)
+    let metaAccountTotals = null;
+    try {
+      const shortName = clienteNome.split(' ')[0];
+      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
+      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`];
+      const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
+
+      if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
+        const metaUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { 
+          access_token: ACCESS_TOKEN, 
+          time_range: JSON.stringify({ since, until }),
+          fields: 'reach,spend,impressions,actions,action_values',
+          level: 'account'
+        });
+        const metaRes = await fetch(metaUrl);
+        const metaJson = await metaRes.json();
+        if (metaJson.data && metaJson.data[0]) metaAccountTotals = metaJson.data[0];
+      }
+    } catch (e) { console.error("Erro ao buscar totais reais na Meta:", e); }
+
     // Normalização de datas exata como o commit 311a6aa
     const dateUntil = until ? new Date(until + 'T23:59:59Z') : new Date();
     const dateSince = since ? new Date(since + 'T00:00:00Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
@@ -79,11 +100,9 @@ export async function GET(request) {
     });
 
     const metrics = campanhas.map(camp => {
-      const numDays = camp.metricas.length;
       const total = camp.metricas.reduce((acc, m) => ({      
         impressoes: acc.impressoes + m.impressoes,
-        // Mantemos a soma interna para aplicar o fator de de-duplicação depois
-        alcance: acc.alcance + m.alcance,
+        alcance: Math.max(acc.alcance, m.alcance), // Backup local: máximo por campanha
         cliques: acc.cliques + m.cliques,
         visitas_perfil: acc.visitas_perfil + m.visitas_perfil,
         seguidores: acc.seguidores + m.seguidores,
@@ -94,11 +113,6 @@ export async function GET(request) {
         engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores)
       }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0 });     
 
-      // Heurística de Pessoas Únicas (Alcance Real)
-      // Baseado no ratio 382k/919k (~2.4 frequencia mensal), fator cresce com o tempo.
-      const freqFactor = 1 + (Math.max(0, numDays - 1) * 0.0485);
-      const alcanceEstimado = Math.round(total.alcance / freqFactor);
-
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
       let finalVal = total.conversas_leads;
       let finalLabel = label;
@@ -108,7 +122,7 @@ export async function GET(request) {
         finalLabel = 'Impressões';
         const cpm = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
         return {
-          ...total, alcance: alcanceEstimado, objetivo: finalLabel, resultadoBruto: finalVal,
+          ...total, objetivo: finalLabel, resultadoBruto: finalVal,
           roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
           cpr: cpm, isCPM: true, campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
         };
@@ -123,7 +137,7 @@ export async function GET(request) {
       }
 
       return {
-        ...total, alcance: alcanceEstimado, objetivo: finalLabel, resultadoBruto: finalVal,
+        ...total, objetivo: finalLabel, resultadoBruto: finalVal,
         roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
         cpr: finalVal > 0 ? (total.valor_investido / finalVal) : 0,
         campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
@@ -178,24 +192,14 @@ export async function GET(request) {
     const dailyMap = new Map();
     for (const camp of campanhas) {
       const obj = (camp.objetivo || '').toUpperCase();
-      // Inclui objetivos modernos da Meta que geram Leads/Mensagens
-      const isConversionCamp = obj.includes('MESSAGING') || 
-                               obj.includes('LEADS') || 
-                               obj.includes('CONVERSIONS') || 
-                               obj.includes('OUTCOME_LEADS') || 
-                               obj.includes('OUTCOME_ENGAGEMENT') ||
-                               camp.nome_gerado?.toUpperCase().includes('CONVERSAO') ||
-                               camp.nome_gerado?.toUpperCase().includes('LEADS');
-
+      const isConversionCamp = obj.includes('MESSAGING') || obj.includes('LEADS') || obj.includes('CONVERSIONS') || obj.includes('OUTCOME_LEADS') || obj.includes('OUTCOME_ENGAGEMENT');
       for (const m of camp.metricas) {
         const dateKey = m.data.toISOString().split('T')[0];  
         if (!dailyMap.has(dateKey)) dailyMap.set(dateKey, { data: dateKey, mensagens: 0, investimentoTotal: 0, investimentoConversao: 0 });
         const day = dailyMap.get(dateKey);
         day.mensagens += m.conversas_leads;
         day.investimentoTotal += Number(m.valor_investido);  
-        if (isConversionCamp) {
-          day.investimentoConversao += Number(m.valor_investido);
-        }
+        if (isConversionCamp) day.investimentoConversao += Number(m.valor_investido);
       }
     }
     const dailyMetrics = Array.from(dailyMap.values())       
@@ -207,7 +211,10 @@ export async function GET(request) {
         cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
-    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics });
+    // PRIORIDADE: Dados reais da Meta para o Funil. BACKUP: Soma de alcances máximos.
+    const totalReach = metaAccountTotals ? parseInt(metaAccountTotals.reach) : metrics.reduce((a,c)=>a+c.alcance, 0);
+
+    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
