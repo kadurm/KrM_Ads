@@ -3,6 +3,16 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/** Maximiza a resolução de URLs do fbcdn.net para 800px */
+const maximizeResolution = (url) => {
+  if (!url || !url.includes('fbcdn.net')) return url;
+  return url
+    .replace(/_p\d+x\d+_q/g, '_p800x800_q')
+    .replace(/_s\d+x\d+_q/g, '_s800x800_q')
+    .replace(/stp=.*?_p\d+x\d+_q/g, (match) => match.replace(/p\d+x\d+/, 'p800x800'))
+    .replace(/stp=.*?_s\d+x\d+_q/g, (match) => match.replace(/s\d+x\d+/, 's800x800'));
+};
+
 function graphUrl(path, query) {
   const url = new URL(`https://graph.facebook.com/v21.0/${path}`);
   Object.entries(query).forEach(([k, v]) => {
@@ -143,30 +153,34 @@ export async function POST(request) {
 
     const objectiveMap = new Map(metaCamps.data?.map(c => [c.id, c.objective]) || []);
     
-    // Fetch Creatives and Image Hashes
+    // Fetch Creatives (Inclui story_id para HD Supremo)
     const adIds = [...new Set(adInsightData.data?.map(i => i.ad_id).filter(id => !!id) || [])];
     const creativeMap = new Map();
     const hashes = new Set();
+    const storyIds = new Set();
 
     if (adIds.length > 0) {
       for (let i = 0; i < adIds.length; i += 50) {
         const chunk = adIds.slice(i, i + 50);
-        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body}', access_token: ACCESS_TOKEN }));
+        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,creative{id,image_url,thumbnail_url,image_hash,effective_object_story_id,body}', access_token: ACCESS_TOKEN }));
         const data = await res.json();
         Object.entries(data).forEach(([adId, adInfo]) => {
           if (adInfo.creative) {
             creativeMap.set(adId, {
-              url: adInfo.creative.image_url || adInfo.creative.thumbnail_url,
+              imageUrl: adInfo.creative.image_url,
+              thumbUrl: adInfo.creative.thumbnail_url,
               body: adInfo.creative.body,
-              hash: adInfo.creative.image_hash
+              hash: adInfo.creative.image_hash,
+              storyId: adInfo.creative.effective_object_story_id
             });
             if (adInfo.creative.image_hash) hashes.add(adInfo.creative.image_hash);
+            if (adInfo.creative.effective_object_story_id) storyIds.add(adInfo.creative.effective_object_story_id);
           }
         });
       }
     }
 
-    // Fetch Native URLs from Image Library (Force scontent.fbcdn.net)
+    // Lookup 1: Biblioteca de Imagens (O que faz o AD[02/03/26] funcionar)
     const nativeUrlMap = new Map();
     if (hashes.size > 0) {
       const hashList = Array.from(hashes);
@@ -174,11 +188,19 @@ export async function POST(request) {
         const chunk = hashList.slice(i, i + 50);
         const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,hash' }));
         const data = await res.json();
-        if (data.data) {
-          data.data.forEach(img => {
-            if (img.url) nativeUrlMap.set(img.hash, img.url);
-          });
-        }
+        if (data.data) data.data.forEach(img => { if (img.url) nativeUrlMap.set(img.hash, img.url); });
+      }
+    }
+
+    // Lookup 2: Story Posts (HD para Engagement/Videos)
+    const storyMetaMap = new Map();
+    if (storyIds.size > 0) {
+      const storyList = Array.from(storyIds);
+      for (let i = 0; i < storyList.length; i += 50) {
+        const chunk = storyList.slice(i, i + 50);
+        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN }));
+        const data = await res.json();
+        Object.values(data).forEach(post => { if (post.full_picture) storyMetaMap.set(post.id, post.full_picture); });
       }
     }
 
@@ -215,14 +237,24 @@ export async function POST(request) {
       });
     });
 
-    // Process Creatives (Prioritize Native scontent URLs)
+    // Process Creatives (Hierarquia Inteligente de Imagem)
     if (adInsightData.data) {
       await batchProcess(adInsightData.data, 10, async (row) => {
         const camp = localCampMap.get(row.campaign_id);
         if (!camp) return;
 
         const info = creativeMap.get(row.ad_id) || {};
-        const finalUrl = info.hash ? nativeUrlMap.get(info.hash) : null;
+        
+        // HIERARQUIA DE QUALIDADE:
+        // 1. Hash da Biblioteca (Scontent nativo HD)
+        // 2. Story ID (Full Picture do post original)
+        // 3. Image URL Maximizada (800px)
+        // 4. Thumbnail URL Maximizada (800px)
+        const finalUrl = (info.hash && nativeUrlMap.get(info.hash)) || 
+                         (info.storyId && storyMetaMap.get(info.storyId)) || 
+                         maximizeResolution(info.imageUrl) || 
+                         maximizeResolution(info.thumbUrl) || 
+                         null;
 
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: row.ad_id },
