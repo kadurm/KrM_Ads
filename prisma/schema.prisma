@@ -104,6 +104,7 @@ model MetricaCriativo {
   valor_investido Decimal  @default(0.0)
   leads           Int      @default(0)
   compras         Int      @default(0)
+  reacoes_sociais Int      @default(0)
   ctr             Decimal?
 
   @@unique([criativo_id, data])
@@ -120,6 +121,7 @@ model MetricaCampanha {
   visitas_perfil     Int      @default(0)
   seguidores         Int      @default(0)
   conversas_leads    Int      @default(0)
+  reacoes_sociais    Int      @default(0) // Likes, comentários, salvamentos, shares
   valor_investido    Decimal  @default(0.0)
   faturamento_manual Decimal? @default(0.0) // Inserido no painel
   cac                Decimal?

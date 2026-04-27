@@ -47,6 +47,18 @@ function getTrueLeads(actions) {
   return Math.max(msgReply, msgStarted) + standardLead + leadGen;
 }
 
+function getSocialActions(actions) {
+  if (!Array.isArray(actions)) return 0;
+  return getMetric(actions, 'post_reaction') + 
+         getMetric(actions, 'like') + 
+         getMetric(actions, 'comment') + 
+         getMetric(actions, 'onsite_conversion.post_save') + 
+         getMetric(actions, 'post_save') + 
+         getMetric(actions, 'onsite_conversion.post_share') + 
+         getMetric(actions, 'post') + 
+         getMetric(actions, 'share');
+}
+
 /** Traduz objetivos e define o rótulo de resultado principal fiel. */
 const getLeadLabel = (m) => {
   if (m.conversas_leads > 0) return 'Leads';
@@ -110,8 +122,10 @@ export async function GET(request) {
         valor_investido: acc.valor_investido + Number(m.valor_investido),
         compras: acc.compras + m.compras,
         valor_compras: acc.valor_compras + Number(m.valor_compras || 0),
-        engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores)
-      }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0 });     
+        reacoes_sociais: acc.reacoes_sociais + m.reacoes_sociais,
+        // Engajamento Total inclui agora Cliques + Visitas + Reações Sociais + Seguidores
+        engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores + m.reacoes_sociais)
+      }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0, reacoes_sociais: 0 });     
 
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
       let finalVal = total.conversas_leads;
@@ -122,7 +136,7 @@ export async function GET(request) {
         finalLabel = 'Impressões';
         const cpm = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
         return {
-          ...total, objetivo: finalLabel, resultadoBruto: finalVal,
+          ...total, alcance: Math.max(total.alcance, 0), objetivo: finalLabel, resultadoBruto: finalVal,
           roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
           cpr: cpm, isCPM: true, campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
         };
@@ -159,9 +173,10 @@ export async function GET(request) {
         valor_investido: acc.valor_investido + Number(m.valor_investido),
         leads: acc.leads + m.leads,
         compras: acc.compras + m.compras,
+        reacoes_sociais: acc.reacoes_sociais + m.reacoes_sociais,
         totalCtr: acc.totalCtr + Number(m.ctr || 0),
         count: acc.count + 1
-      }), { impressoes: 0, alcance: 0, cliques: 0, valor_investido: 0, leads: 0, compras: 0, totalCtr: 0, count: 0 });    
+      }), { impressoes: 0, alcance: 0, cliques: 0, valor_investido: 0, leads: 0, compras: 0, totalCtr: 0, count: 0, reacoes_sociais: 0 });    
 
       if (stats.impressoes === 0 && stats.valor_investido === 0) continue;
 
@@ -286,17 +301,21 @@ export async function POST(request) {
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0,
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
+          cliques: parseInt(item.clicks) || 0,
           visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
+          reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         },
         create: {
           campanha_id: camp.id, data: dataInsight,
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0,
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
+          cliques: parseInt(item.clicks) || 0,
           visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
+          reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
           compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         }
@@ -332,13 +351,16 @@ export async function POST(request) {
           update: {
             impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: parseInt(row.clicks) || 0,
             ctr: parseFloat(row.inline_link_click_ctr) || 0, valor_investido: parseFloat(row.spend) || 0,
-            leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase')
+            leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'),
+            reacoes_sociais: getSocialActions(row.actions)
           },
           create: {
             criativo_id: criativo.id, data: dataInsight, impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0,
             cliques: parseInt(row.clicks) || 0, ctr: parseFloat(row.inline_link_click_ctr) || 0,
-            valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase')
+            valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'),
+            reacoes_sociais: getSocialActions(row.actions)
           }
+
         });
       });
     }

@@ -84,7 +84,6 @@ export default function App() {
   const [totalLeads, setTotalLeads] = useState(0); 
   const [totalCompras, setTotalCompras] = useState(0);
   const [vendasReais, setVendasReais] = useState(0);
-  const [totalReachReal, setTotalReachReal] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [mensagemPainel, setMensagemPainel] = useState(null);
   const [campaignsList, setCampaignsList] = useState([]);
@@ -448,6 +447,8 @@ export default function App() {
           seguidores: (m.seguidores || 0).toLocaleString(),
           rawSeguidores: m.seguidores || 0,
           leads: m.conversas_leads || 0,
+          reacoes: m.reacoes_sociais || 0,
+          rawReacoes: m.reacoes_sociais || 0,
           compras: m.compras || 0,
           valor_compras: parseFloat(m.valor_compras) || 0,
           cpr: m.cpr > 0 ? `R$ ${m.cpr.toFixed(2)}` : '-',
@@ -462,7 +463,6 @@ export default function App() {
       setTotalLeads(mapped.reduce((acc, curr) => acc + curr.leads, 0));
       setTotalCompras(mapped.reduce((acc, curr) => acc + curr.compras, 0));
       setFaturamento(mapped.reduce((acc, curr) => acc + curr.valor_compras, 0).toFixed(2));
-      if (data.totalReach) setTotalReachReal(data.totalReach);
       if (data.criativos) setCriativosDados(data.criativos);
       if (data.dailyMetrics) setDailyData(data.dailyMetrics);
 
@@ -765,8 +765,8 @@ export default function App() {
                   <div className="flex flex-col items-center space-y-4">
                     {[
                       { label: 'Impressões (Topo)', val: relatorioDados.reduce((a,c)=>a+c.rawImpressoes,0), color: 'bg-blue-600', icon: <Eye size={14}/> },
-                      { label: 'Alcance', val: totalReachReal, color: 'bg-sky-500', icon: <Target size={14}/> },
-                      { label: 'Engajamento (Meio)', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
+                      { label: 'Alcance', val: relatorioDados.reduce((a,c)=>a+c.alcance,0), color: 'bg-sky-500', icon: <Target size={14}/> },
+                      { label: 'Engajamento (Meio)', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas+c.rawReacoes,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
 
                       { label: 'Interesse (Leads)', val: relatorioDados.reduce((a,c)=>a+c.leads,0), color: 'bg-purple-500', icon: <Plus size={14}/> },
                       { label: 'Conversão (Fundo)', val: relatorioDados.reduce((a,c)=>a+c.compras,0), color: 'bg-emerald-500', icon: <ShoppingCart size={14}/> }
