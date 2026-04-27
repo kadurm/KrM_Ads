@@ -192,8 +192,8 @@ export async function GET(request) {
         }
       }
     }
-    const sortedDaily = Object.values(dailyMetrics)
-      .sort((a, b) => a.date.localeCompare(b.date))
+    const dailyMetrics = Array.from(dailyMap.values())       
+      .sort((a, b) => a.data.localeCompare(b.data))
       .map(d => ({
         ...d,
         investimento: parseFloat(d.investimentoTotal.toFixed(2)),
@@ -201,24 +201,7 @@ export async function GET(request) {
         cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
-    // Alcance Real: Soma do Alcance MÁXIMO diário de cada campanha no período
-    // (Aproximação mais fiel ao total único da Meta)
-    const campMaxReach = new Map();
-    metricsRaw.forEach(m => {
-      const campId = m.campanha.meta_id;
-      if (!campMaxReach.has(campId) || m.alcance > campMaxReach.get(campId)) {
-        campMaxReach.set(campId, m.alcance);
-      }
-    });
-    const totalReach = Array.from(campMaxReach.values()).reduce((a, b) => a + b, 0);
-
-    return NextResponse.json({ 
-      success: true, 
-      metrics: Object.values(aggregated).map(m => ({ ...m, cpr: m.conversas_leads > 0 ? m.valor_investido / m.conversas_leads : 0 })), 
-      criativos,
-      dailyMetrics: sortedDaily,
-      totalReach
-    });
+    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
