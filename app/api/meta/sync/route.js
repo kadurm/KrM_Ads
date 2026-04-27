@@ -260,13 +260,6 @@ export async function POST(request) {
     const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
     if (!dbCliente) throw new Error("Cliente não encontrado no banco de dados local.");
 
-    // Reset de Infraestrutura Visual: Limpa URLs antigas para forçar reconstrução HD
-    console.log(`[ResetVisual] Limpando cache de mídias para ${cliente}...`);
-    await prisma.criativo.updateMany({ 
-      where: { campanha: { cliente_id: dbCliente.id } }, 
-      data: { url_midia: null } 
-    });
-
     // Bypass de Cache para HOJE
     const todayStr = new Date().toISOString().split('T')[0];
     const isToday = until === todayStr;
@@ -307,7 +300,7 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,creative{id,image_url,thumbnail_url.width(800).height(800),image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
+          fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
           access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
@@ -481,7 +474,7 @@ export async function POST(request) {
           where: { meta_ad_id: String(row.ad_id) },
           update: { 
             nome_anuncio: row.ad_name, 
-            url_midia: finalImageUrl, 
+            ...(finalImageUrl ? { url_midia: finalImageUrl } : {}),
             texto_principal: adMeta.body 
           },
           create: { 
