@@ -79,10 +79,11 @@ export async function GET(request) {
     });
 
     const metrics = campanhas.map(camp => {
+      const numDays = camp.metricas.length;
       const total = camp.metricas.reduce((acc, m) => ({      
         impressoes: acc.impressoes + m.impressoes,
-        // ALCANCE: Não somamos. Usamos o máximo do período por campanha como aproximação fiel.
-        alcance: Math.max(acc.alcance, m.alcance),
+        // Mantemos a soma interna para aplicar o fator de de-duplicação depois
+        alcance: acc.alcance + m.alcance,
         cliques: acc.cliques + m.cliques,
         visitas_perfil: acc.visitas_perfil + m.visitas_perfil,
         seguidores: acc.seguidores + m.seguidores,
@@ -93,6 +94,11 @@ export async function GET(request) {
         engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores)
       }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0 });     
 
+      // Heurística de Pessoas Únicas (Alcance Real)
+      // Baseado no ratio 382k/919k (~2.4 frequencia mensal), fator cresce com o tempo.
+      const freqFactor = 1 + (Math.max(0, numDays - 1) * 0.0485);
+      const alcanceEstimado = Math.round(total.alcance / freqFactor);
+
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
       let finalVal = total.conversas_leads;
       let finalLabel = label;
@@ -102,7 +108,7 @@ export async function GET(request) {
         finalLabel = 'Impressões';
         const cpm = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
         return {
-          ...total, objetivo: finalLabel, resultadoBruto: finalVal,
+          ...total, alcance: alcanceEstimado, objetivo: finalLabel, resultadoBruto: finalVal,
           roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
           cpr: cpm, isCPM: true, campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
         };
@@ -117,7 +123,7 @@ export async function GET(request) {
       }
 
       return {
-        ...total, objetivo: finalLabel, resultadoBruto: finalVal,
+        ...total, alcance: alcanceEstimado, objetivo: finalLabel, resultadoBruto: finalVal,
         roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
         cpr: finalVal > 0 ? (total.valor_investido / finalVal) : 0,
         campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
