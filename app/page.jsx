@@ -890,7 +890,8 @@ export default function App() {
                        <div className="h-64 bg-slate-950 flex items-center justify-center relative overflow-hidden">
                          {c.url_midia ? (
                             <img
-                              src={maximizeResolution(c.url_midia)}
+                                                             src={c.url_midia}
+
                               alt={c.nome_anuncio}
                               referrerPolicy="no-referrer"
                               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -1480,7 +1481,13 @@ export default function App() {
                                       <div className="flex items-center gap-5">
                                          {campaignsLevel === 'ad' && (item.creative?.image_url || item.creative?.thumbnail_url) && (
                                             <div className="w-14 h-14 rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shadow-2xl flex-shrink-0">
-                                               <img src={maximizeResolution(item.creative.image_url || item.creative.thumbnail_url)} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="Thumb" />
+                                                                                               <img 
+                                                   src={item.creative.image_url || item.creative.thumbnail_url} 
+                                                   referrerPolicy="no-referrer"
+                                                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" 
+                                                   alt="Thumb" 
+                                                />
+
                                             </div>
                                          )}
                                          <div className="flex flex-col gap-1">
