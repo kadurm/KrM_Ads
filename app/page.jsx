@@ -209,15 +209,15 @@ export default function App() {
       element.style.backgroundColor = '#020617';
       
       // Fix: Preservar valores de inputs de data (substituindo por texto no clone)
-      const originalInputs = reportRef.current.querySelectorAll('input[type=\"date\"]');
-      const clonedInputs = element.querySelectorAll('input[type=\"date\"]');
+      const originalInputs = reportRef.current.querySelectorAll('input[type="date"]');
+      const clonedInputs = element.querySelectorAll('input[type="date"]');
       clonedInputs.forEach((input, i) => {
         const val = originalInputs[i]?.value;
         if (val) {
           const [y, m, d] = val.split('-');
           const span = document.createElement('span');
           span.innerText = `${d}/${m}/${y}`;
-          span.className = \"text-blue-400 font-bold ml-1\";
+          span.className = "text-blue-400 font-bold ml-1";
           input.parentNode.replaceChild(span, input);
         }
       });
@@ -255,7 +255,7 @@ export default function App() {
 
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidthMM, imgHeightMM, undefined, 'FAST');
 
-      pdf.save(`Auditoria_${clienteSelecionado.replace(/\\s/g, '_')}_${startDate}_${endDate}.pdf`);
+      pdf.save(`Auditoria_${clienteSelecionado.replace(/\s/g, '_')}_${startDate}_${endDate}.pdf`);
       setMensagemPainel({ tipo: 'sucesso', texto: 'Relatório exportado com sucesso.' });
       setTimeout(() => setMensagemPainel(null), 3000);
     } catch (e) {
