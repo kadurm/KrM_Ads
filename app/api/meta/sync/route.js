@@ -55,8 +55,9 @@ export async function GET(request) {
     const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
     if (!dbCliente) return NextResponse.json({ success: false, error: "Cliente não encontrado" }, { status: 404 });
 
+    // Normalização rigorosa de datas para busca no banco (sem problemas de timezone)
     const dateSince = new Date(since + 'T00:00:00.000Z');
-    const dateUntil = new Date(until + 'T00:00:00.000Z');
+    const dateUntil = new Date(until + 'T23:59:59.999Z');
 
     const [metricsRaw, criativosRaw] = await Promise.all([
       prisma.metricaCampanha.findMany({
@@ -65,7 +66,11 @@ export async function GET(request) {
       }),
       prisma.criativo.findMany({
         where: { campanha: { cliente_id: dbCliente.id } },
-        include: { metricas: { where: { data: { gte: dateSince, lte: dateUntil } } } }
+        include: { 
+          metricas: { 
+            where: { data: { gte: dateSince, lte: dateUntil } } 
+          } 
+        }
       })
     ]);
 
@@ -73,10 +78,12 @@ export async function GET(request) {
     const aggregated = {};
     metricsRaw.forEach(m => {
       const day = m.data.toISOString().split('T')[0];
-      if (!dailyMetrics[day]) dailyMetrics[day] = { date: day, spend: 0, leads: 0, impressions: 0 };
+      if (!dailyMetrics[day]) dailyMetrics[day] = { date: day, spend: 0, leads: 0, impressions: 0, investimento: 0, mensagens: 0 };
       dailyMetrics[day].spend += m.valor_investido;
       dailyMetrics[day].leads += m.conversas_leads;
       dailyMetrics[day].impressions += m.impressoes;
+      dailyMetrics[day].investimento += m.valor_investido;
+      dailyMetrics[day].mensagens += m.conversas_leads;
 
       const campId = m.campanha.meta_id;
       if (!aggregated[campId]) aggregated[campId] = { ...m, valor_investido: 0, impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, compras: 0, valor_compras: 0 };
@@ -94,27 +101,44 @@ export async function GET(request) {
     const criativos = criativosRaw.map(c => {
       const stats = c.metricas.reduce((acc, curr) => ({
         impressoes: acc.impressoes + curr.impressoes,
+        alcance: acc.alcance + (curr.alcance || 0),
         valor_investido: acc.valor_investido + curr.valor_investido,
         leads: acc.leads + curr.leads,
-        cliques: acc.cliques + curr.cliques
-      }), { impressoes: 0, valor_investido: 0, leads: 0, cliques: 0 });
+        cliques: acc.cliques + curr.cliques,
+        compras: acc.compras + (curr.compras || 0),
+        totalCtr: acc.totalCtr + (curr.ctr || 0),
+        count: acc.count + 1
+      }), { impressoes: 0, alcance: 0, valor_investido: 0, leads: 0, cliques: 0, compras: 0, totalCtr: 0, count: 0 });
 
       if (stats.impressoes === 0 && stats.valor_investido === 0) return null;
+
+      // Cálculo de CPA para ordenação (considerando o segmento dominante como Leads por padrão)
+      const cpa = stats.leads > 0 ? (stats.valor_investido / stats.leads) : Infinity;
 
       return {
         id: c.id,
         nome_anuncio: c.nome_anuncio,
         url_midia: c.url_midia,
         ...stats,
-        ctr: stats.impressoes > 0 ? (stats.cliques / stats.impressoes * 100) : 0
+        cpa,
+        ctr: stats.count > 0 ? (stats.totalCtr / stats.count) : 0
       };
-    }).filter(Boolean).sort((a, b) => b.leads - a.leads || b.valor_investido - a.valor_investido);
+    }).filter(c => c !== null && c.valor_investido > 0.1) // Remove criativos irrelevantes
+      .sort((a, b) => a.cpa - b.cpa); // Menor CPA primeiro
+
+    const sortedDaily = Object.values(dailyMetrics)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map(d => ({
+        ...d,
+        investimento: parseFloat(d.investimento.toFixed(2)),
+        cpa: d.mensagens > 0 ? parseFloat((d.investimento / d.mensagens).toFixed(2)) : 0,
+      }));
 
     return NextResponse.json({ 
       success: true, 
       metrics: Object.values(aggregated).map(m => ({ ...m, cpr: m.conversas_leads > 0 ? m.valor_investido / m.conversas_leads : 0 })), 
       criativos,
-      dailyMetrics: Object.values(dailyMetrics).sort((a, b) => a.date.localeCompare(b.date))
+      dailyMetrics: sortedDaily
     });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -136,7 +160,10 @@ export async function POST(request) {
     if (!dbCliente) return NextResponse.json({ success: false, error: "Cliente não encontrado" }, { status: 404 });
 
     const commonQuery = { access_token: ACCESS_TOKEN, limit: '1000' };
-    if (since === until && since === new Date().toISOString().split('T')[0]) {
+    
+    // Normalização para a Meta (YYYY-MM-DD sem timezone)
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (since === until && since === todayStr) {
       commonQuery.date_preset = 'today';
     } else {
       commonQuery.time_range = JSON.stringify({ since, until });
