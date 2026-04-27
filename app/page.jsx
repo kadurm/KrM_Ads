@@ -785,13 +785,25 @@ export default function App() {
                   <h3 className="text-xs font-bold uppercase text-slate-500 mb-8 text-center">Distribuição de verba</h3>
                   <div className="flex-1 flex items-center justify-center">
                     <ResponsiveContainer width="100%" height={280}>
-                      <BarChart data={dadosGrafico} layout="vertical" margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
+                      <BarChart data={dadosGrafico} layout="vertical" margin={{ top: 5, right: 60, left: 10, bottom: 5 }}>
                         <XAxis type="number" hide/>
                         <YAxis dataKey="nome" type="category" tick={{fontSize:9, fill:'#64748b'}} width={100} />
                         <Tooltip cursor={{fill:'#1e293b'}} contentStyle={{backgroundColor:'#0f172a', border:'none', borderRadius:'8px'}} formatter={(v) => [`R$ ${parseFloat(v).toFixed(2)}`, 'Gasto']} />
-                        <Bar dataKey="rawValor" fill="#3b82f6" radius={[0,4,4,0]} />
+                        <Bar 
+                          dataKey="rawValor" 
+                          fill="#3b82f6" 
+                          radius={[0,4,4,0]} 
+                          label={{ 
+                            position: 'right', 
+                            formatter: (v) => `R$ ${parseFloat(v).toFixed(0)}`,
+                            fill: '#94a3b8',
+                            fontSize: 10,
+                            fontWeight: 'bold'
+                          }} 
+                        />
                       </BarChart>
                     </ResponsiveContainer>
+
                   </div>
                 </div>
               </div>
