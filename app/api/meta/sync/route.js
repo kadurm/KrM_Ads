@@ -143,22 +143,42 @@ export async function POST(request) {
 
     const objectiveMap = new Map(metaCamps.data?.map(c => [c.id, c.objective]) || []);
     
-    // Fetch Creatives (Minimal Fields)
+    // Fetch Creatives and Image Hashes
     const adIds = [...new Set(adInsightData.data?.map(i => i.ad_id).filter(id => !!id) || [])];
     const creativeMap = new Map();
+    const hashes = new Set();
+
     if (adIds.length > 0) {
       for (let i = 0; i < adIds.length; i += 50) {
         const chunk = adIds.slice(i, i + 50);
-        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,creative{id,image_url,thumbnail_url.width(800).height(800),body}', access_token: ACCESS_TOKEN }));
+        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body}', access_token: ACCESS_TOKEN }));
         const data = await res.json();
         Object.entries(data).forEach(([adId, adInfo]) => {
           if (adInfo.creative) {
             creativeMap.set(adId, {
               url: adInfo.creative.image_url || adInfo.creative.thumbnail_url,
-              body: adInfo.creative.body
+              body: adInfo.creative.body,
+              hash: adInfo.creative.image_hash
             });
+            if (adInfo.creative.image_hash) hashes.add(adInfo.creative.image_hash);
           }
         });
+      }
+    }
+
+    // Fetch Native URLs from Image Library (Force scontent.fbcdn.net)
+    const nativeUrlMap = new Map();
+    if (hashes.size > 0) {
+      const hashList = Array.from(hashes);
+      for (let i = 0; i < hashList.length; i += 50) {
+        const chunk = hashList.slice(i, i + 50);
+        const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,hash' }));
+        const data = await res.json();
+        if (data.data) {
+          data.data.forEach(img => {
+            if (img.url) nativeUrlMap.set(img.hash, img.url);
+          });
+        }
       }
     }
 
@@ -195,17 +215,20 @@ export async function POST(request) {
       });
     });
 
-    // Process Creatives
+    // Process Creatives (Prioritize Native scontent URLs)
     if (adInsightData.data) {
       await batchProcess(adInsightData.data, 10, async (row) => {
         const camp = localCampMap.get(row.campaign_id);
         if (!camp) return;
 
         const info = creativeMap.get(row.ad_id) || {};
+        const nativeUrl = info.hash ? nativeUrlMap.get(info.hash) : null;
+        const finalUrl = nativeUrl || info.url;
+
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: row.ad_id },
-          update: { nome_anuncio: row.ad_name, url_midia: info.url, texto_principal: info.body },
-          create: { meta_ad_id: row.ad_id, campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: info.url, texto_principal: info.body }
+          update: { nome_anuncio: row.ad_name, url_midia: finalUrl, texto_principal: info.body },
+          create: { meta_ad_id: row.ad_id, campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: finalUrl, texto_principal: info.body }
         });
 
         const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
