@@ -290,6 +290,14 @@ export async function POST(request) {
     
     // Busca Criativos Especificamente para os Anúncios nos Insights
     const adIds = [...new Set(adInsightData.data?.map(i => i.ad_id).filter(id => !!id) || [])];
+    if (adIds.length > 0) {
+      console.log(`[TargetedReset] Limpando cache de mídias para ${adIds.length} anúncios ativos...`);
+      await prisma.criativo.updateMany({
+        where: { meta_ad_id: { in: adIds } },
+        data: { url_midia: null }
+      });
+    }
+
     const creativeMetaMap = new Map();
     const adToCreativeMap = new Map();
 
@@ -300,7 +308,7 @@ export async function POST(request) {
       await Promise.all(idChunks.map(async (chunk) => {
         const res = await fetch(graphUrl(``, { 
           ids: chunk.join(','), 
-          fields: 'id,creative{id,image_url,thumbnail_url.width(800).height(800),image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
+          fields: 'id,creative{id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id,object_story_spec,asset_feed_spec}', 
           access_token: ACCESS_TOKEN
         }));
         const data = await res.json();
@@ -484,7 +492,7 @@ export async function POST(request) {
           where: { meta_ad_id: String(row.ad_id) },
           update: { 
             nome_anuncio: row.ad_name, 
-            ...(finalImageUrl ? { url_midia: finalImageUrl } : {}),
+            url_midia: finalImageUrl, 
             texto_principal: adMeta.body 
           },
           create: { 
