@@ -52,19 +52,6 @@ function formatDateLocal(d) {
   return `${y}-${m}-${day}`;
 }
 
-/**
- * Maximiza a resolução de URLs do fbcdn.net para 800px
- * Aplica para padrões: p64x64, p130x130, p320x320, p480x480, s150x150, etc.
- * Exemplo: ..._p64x64_q75... -> ..._p800x800_q75...
- */
-const maximizeResolution = (url) => {
-  if (!url || !url.includes('fbcdn.net')) return url;
-  return url
-    .replace(/_p\d+x\d+_q/g, '_p800x800_q')
-    .replace(/_s\d+x\d+_q/g, '_s800x800_q')
-    .replace(/stp=.*?_p\d+x\d+_q/g, (match) => match.replace(/p\d+x\d+/, 'p800x800'))
-    .replace(/stp=.*?_s\d+x\d+_q/g, (match) => match.replace(/s\d+x\d+/, 's800x800'));
-};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('relatorios');
@@ -890,8 +877,7 @@ export default function App() {
                        <div className="h-64 bg-slate-950 flex items-center justify-center relative overflow-hidden">
                          {c.url_midia ? (
                             <img
-                                                             src={c.url_midia}
-
+                              src={c.url_midia}
                               alt={c.nome_anuncio}
                               referrerPolicy="no-referrer"
                               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -1481,13 +1467,12 @@ export default function App() {
                                       <div className="flex items-center gap-5">
                                          {campaignsLevel === 'ad' && (item.creative?.image_url || item.creative?.thumbnail_url) && (
                                             <div className="w-14 h-14 rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shadow-2xl flex-shrink-0">
-                                                                                               <img 
+                                                <img 
                                                    src={item.creative.image_url || item.creative.thumbnail_url} 
                                                    referrerPolicy="no-referrer"
                                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" 
                                                    alt="Thumb" 
                                                 />
-
                                             </div>
                                          )}
                                          <div className="flex flex-col gap-1">
