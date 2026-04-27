@@ -149,7 +149,7 @@ export async function POST(request) {
     if (adIds.length > 0) {
       for (let i = 0; i < adIds.length; i += 50) {
         const chunk = adIds.slice(i, i + 50);
-        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,creative{id,image_url,thumbnail_url,body}', access_token: ACCESS_TOKEN }));
+        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,creative{id,image_url,thumbnail_url.width(800).height(800),body}', access_token: ACCESS_TOKEN }));
         const data = await res.json();
         Object.entries(data).forEach(([adId, adInfo]) => {
           if (adInfo.creative) {
