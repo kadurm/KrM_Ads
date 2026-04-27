@@ -201,14 +201,15 @@ export default function App() {
 
   const handleExportPDF = async () => {
     if (!reportRef.current) return;
-    setMensagemPainel({ tipo: 'info', texto: 'Gerando PDF estratégico...' });
+    setMensagemPainel({ tipo: 'info', texto: 'Gerando PDF completo...' });
     try {
+      // 1. Configurações de captura
       const element = reportRef.current.cloneNode(true);
-      element.style.padding = '40px';
+      element.style.width = '1280px'; // Largura fixa ideal para o layout Bento
+      element.style.padding = '20px';
       element.style.backgroundColor = '#020617';
-      element.style.width = '1200px';
-
-      // Remove elementos indesejados no PDF
+      
+      // Remove botões e elementos de diagnóstico para o PDF
       const toRemove = ['button', 'textarea', '.DiagnosticHeader', '.DiagnosticContent'];
       toRemove.forEach(sel => element.querySelectorAll(sel).forEach(el => el.remove()));
 
@@ -218,27 +219,40 @@ export default function App() {
 
       const canvas = await html2canvas(element, {
         backgroundColor: '#020617',
-        scale: 2,
+        scale: 2, // Alta qualidade
         useCORS: true,
         logging: false,
+        windowWidth: 1280
       });
 
       document.body.removeChild(element);
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
       
-      const margin = 10;
-      const finalWidth = pdfWidth - (margin * 2);
-      const finalHeight = (canvas.height * finalWidth) / canvas.width;
+      const imgWidth = 210; // Largura A4 em mm
+      const pageHeight = 297; // Altura A4 em mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
 
-      pdf.addImage(imgData, 'PNG', margin, margin, finalWidth, finalHeight);
+      // Adiciona primeira página
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      heightLeft -= pageHeight;
+
+      // Adiciona páginas subsequentes se o conteúdo for longo (evita cortes)
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pageHeight;
+      }
+
       pdf.save(`Auditoria_${clienteSelecionado.replace(/\s/g, '_')}_${startDate}_${endDate}.pdf`);
       setMensagemPainel({ tipo: 'sucesso', texto: 'Relatório exportado com sucesso.' });
       setTimeout(() => setMensagemPainel(null), 3000);
     } catch (e) {
+      console.error(e);
       setMensagemPainel({ tipo: 'erro', texto: 'Falha ao gerar o PDF.' });
     }
   };
