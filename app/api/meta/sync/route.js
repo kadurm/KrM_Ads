@@ -167,24 +167,38 @@ export async function GET(request) {
       ...c, ctr: c.count > 0 ? c.totalCtr / c.count : 0      
     }));
 
-    // Agregação diária corrigida
+    // Agregação diária corrigida para CPL (Custo por Lead/Conversa)
     const dailyMap = new Map();
     for (const camp of campanhas) {
-      const isConversionCamp = camp.objetivo.includes('MESSAGING') || camp.objetivo.includes('LEADS') || camp.objetivo.includes('CONVERSIONS');
+      const obj = (camp.objetivo || '').toUpperCase();
+      // Inclui objetivos modernos da Meta que geram Leads/Mensagens
+      const isConversionCamp = obj.includes('MESSAGING') || 
+                               obj.includes('LEADS') || 
+                               obj.includes('CONVERSIONS') || 
+                               obj.includes('OUTCOME_LEADS') || 
+                               obj.includes('OUTCOME_ENGAGEMENT') ||
+                               camp.nome_gerado?.toUpperCase().includes('CONVERSAO') ||
+                               camp.nome_gerado?.toUpperCase().includes('LEADS');
+
       for (const m of camp.metricas) {
         const dateKey = m.data.toISOString().split('T')[0];  
         if (!dailyMap.has(dateKey)) dailyMap.set(dateKey, { data: dateKey, mensagens: 0, investimentoTotal: 0, investimentoConversao: 0 });
         const day = dailyMap.get(dateKey);
         day.mensagens += m.conversas_leads;
         day.investimentoTotal += Number(m.valor_investido);  
-        if (isConversionCamp) day.investimentoConversao += Number(m.valor_investido);
+        if (isConversionCamp) {
+          day.investimentoConversao += Number(m.valor_investido);
+        }
       }
     }
     const dailyMetrics = Array.from(dailyMap.values())       
       .sort((a, b) => a.data.localeCompare(b.data))
       .map(d => ({
-        ...d, investimento: d.investimentoTotal,
-        cpa: d.mensagens > 0 ? (d.investimentoConversao / d.mensagens) : 0,
+        ...d,
+        investimento: parseFloat(d.investimentoTotal.toFixed(2)),
+        cpl: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
+        // Mantemos cpa como alias para compatibilidade se necessário, mas o foco é cpl
+        cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
     return NextResponse.json({ success: true, metrics, criativos, dailyMetrics });
