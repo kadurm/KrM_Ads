@@ -842,8 +842,8 @@ export default function App() {
                 </div>
               )}
 
-              <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-slate-100"><ImageIcon className="text-blue-500" /> Ranking de Criativos — Melhores Resultados</h3>
-              <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado. Os criativos no topo são os que devem ser replicados e escalados.</p>
+              <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-slate-100"><ImageIcon className="text-blue-500" /> Ranking de Criativos</h3>
+              <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado.</p>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[...criativosDados]
                   .map(c => ({ ...c, _cpa: segmento === 'inside_sales' ? (c.leads > 0 ? c.valor_investido / c.leads : Infinity) : (c.compras > 0 ? c.valor_investido / c.compras : Infinity) }))
