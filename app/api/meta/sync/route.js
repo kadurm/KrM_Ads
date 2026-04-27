@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-/** Maximiza a resolução de URLs do fbcdn.net para 800px */
+/** Maximiza a resolução de URLs do fbcdn.net para 800px como fallback de segurança */
 const maximizeResolution = (url) => {
   if (!url || !url.includes('fbcdn.net')) return url;
   return url
@@ -21,125 +21,173 @@ function graphUrl(path, query) {
   return url.toString();
 }
 
-function getMetric(actions, type, isValue = false) {
-  if (!actions || !Array.isArray(actions)) return 0;
-  const action = actions.find(a => a.action_type === type);
-  if (!action) return 0;
-  return isValue ? parseFloat(action.value || 0) : parseInt(action.value || 0);
-}
-
-function getTrueLeads(actions) {
-  if (!actions || !Array.isArray(actions)) return 0;
-  return getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d') + 
-         getMetric(actions, 'lead');
-}
-
-async function batchProcess(items, batchSize, fn) {
+async function batchProcess(items, limit, taskFn) {
   const results = [];
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-    results.push(...(await Promise.all(batch.map(fn))));
+  for (let i = 0; i < items.length; i += limit) {
+    const batch = items.slice(i, i + limit);
+    const batchResults = await Promise.all(batch.map(item => taskFn(item)));
+    results.push(...batchResults);
   }
   return results;
 }
 
+function getMetric(actions, type, isValue = false) {
+  if (!Array.isArray(actions)) return 0;
+  const matches = actions.filter(a => a.action_type === type);
+  if (matches.length === 0) return 0;
+  return matches.reduce((acc, a) => acc + (isValue ? parseFloat(a.value || 0) : parseInt(a.value || 0, 10)), 0);
+}
+
+function getTrueLeads(actions) {
+  if (!Array.isArray(actions)) return 0;
+  const msgReply = getMetric(actions, 'onsite_conversion.messaging_first_reply');
+  const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
+  const standardLead = getMetric(actions, 'lead');
+  const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
+  return Math.max(msgReply, msgStarted) + standardLead + leadGen;
+}
+
+/** Traduz objetivos e define o rótulo de resultado principal fiel. */
+const getLeadLabel = (m) => {
+  if (m.conversas_leads > 0) return 'Leads';
+  const obj = m.objetivo || '';
+  if (obj.includes('TRAFFIC')) return 'Visitas';
+  if (obj.includes('AWARENESS') || obj.includes('REACH')) return 'Alcance';
+  if (obj.includes('ENGAGEMENT')) return 'Engajamentos';     
+  if (obj.includes('SALES')) return 'Vendas';
+  return 'Resultados';
+};
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const cliente = searchParams.get('cliente');
+    const clienteNome = searchParams.get('cliente');
     const since = searchParams.get('since');
     const until = searchParams.get('until');
+    if (!clienteNome) return NextResponse.json({ success: false, error: "Cliente não especificado" }, { status: 400 });   
 
-    if (!cliente) return NextResponse.json({ success: false, error: "Cliente não fornecido" }, { status: 400 });
+    const cliente = await prisma.cliente.findFirst({ where: { nome: clienteNome } });
+    if (!cliente) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
-    const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
-    if (!dbCliente) return NextResponse.json({ success: false, error: "Cliente não encontrado" }, { status: 404 });
+    // Normalização de datas exata como o commit 311a6aa
+    const dateUntil = until ? new Date(until + 'T23:59:59Z') : new Date();
+    const dateSince = since ? new Date(since + 'T00:00:00Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
 
-    // Normalização rigorosa de datas para busca no banco (sem problemas de timezone)
-    const dateSince = new Date(since + 'T00:00:00.000Z');
-    const dateUntil = new Date(until + 'T23:59:59.999Z');
-
-    const [metricsRaw, criativosRaw] = await Promise.all([
-      prisma.metricaCampanha.findMany({
-        where: { campanha: { cliente_id: dbCliente.id }, data: { gte: dateSince, lte: dateUntil } },
-        include: { campanha: true }
-      }),
-      prisma.criativo.findMany({
-        where: { campanha: { cliente_id: dbCliente.id } },
-        include: { 
-          metricas: { 
-            where: { data: { gte: dateSince, lte: dateUntil } } 
-          } 
-        }
-      })
-    ]);
-
-    const dailyMetrics = {};
-    const aggregated = {};
-    metricsRaw.forEach(m => {
-      const day = m.data.toISOString().split('T')[0];
-      if (!dailyMetrics[day]) dailyMetrics[day] = { date: day, spend: 0, leads: 0, impressions: 0, investimento: 0, mensagens: 0 };
-      dailyMetrics[day].spend += m.valor_investido;
-      dailyMetrics[day].leads += m.conversas_leads;
-      dailyMetrics[day].impressions += m.impressoes;
-      dailyMetrics[day].investimento += m.valor_investido;
-      dailyMetrics[day].mensagens += m.conversas_leads;
-
-      const campId = m.campanha.meta_id;
-      if (!aggregated[campId]) aggregated[campId] = { ...m, valor_investido: 0, impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, compras: 0, valor_compras: 0 };
-      aggregated[campId].valor_investido += m.valor_investido;
-      aggregated[campId].impressoes += m.impressoes;
-      aggregated[campId].alcance += m.alcance;
-      aggregated[campId].cliques += m.cliques;
-      aggregated[campId].visitas_perfil += m.visitas_perfil;
-      aggregated[campId].seguidores += m.seguidores;
-      aggregated[campId].conversas_leads += m.conversas_leads;
-      aggregated[campId].compras += m.compras;
-      aggregated[campId].valor_compras += m.valor_compras;
+    const campanhas = await prisma.campanha.findMany({       
+      where: { cliente_id: cliente.id },
+      include: { metricas: { where: { data: { gte: dateSince, lte: dateUntil } } } }
     });
 
-    const criativos = criativosRaw.map(c => {
-      const stats = c.metricas.reduce((acc, curr) => ({
-        impressoes: acc.impressoes + curr.impressoes,
-        alcance: acc.alcance + (curr.alcance || 0),
-        valor_investido: acc.valor_investido + curr.valor_investido,
-        leads: acc.leads + curr.leads,
-        cliques: acc.cliques + curr.cliques,
-        compras: acc.compras + (curr.compras || 0),
-        totalCtr: acc.totalCtr + (curr.ctr || 0),
-        count: acc.count + 1
-      }), { impressoes: 0, alcance: 0, valor_investido: 0, leads: 0, cliques: 0, compras: 0, totalCtr: 0, count: 0 });
+    const metrics = campanhas.map(camp => {
+      const total = camp.metricas.reduce((acc, m) => ({      
+        impressoes: acc.impressoes + m.impressoes,
+        alcance: acc.alcance + m.alcance,
+        cliques: acc.cliques + m.cliques,
+        visitas_perfil: acc.visitas_perfil + m.visitas_perfil,
+        seguidores: acc.seguidores + m.seguidores,
+        conversas_leads: acc.conversas_leads + m.conversas_leads,
+        valor_investido: acc.valor_investido + Number(m.valor_investido),
+        compras: acc.compras + m.compras,
+        valor_compras: acc.valor_compras + Number(m.valor_compras || 0),
+        engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores)
+      }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0 });     
 
-      if (stats.impressoes === 0 && stats.valor_investido === 0) return null;
+      const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
+      let finalVal = total.conversas_leads;
+      let finalLabel = label;
 
-      // Cálculo de CPA para ordenação (considerando o segmento dominante como Leads por padrão)
-      const cpa = stats.leads > 0 ? (stats.valor_investido / stats.leads) : Infinity;
+      if (camp.nome_gerado.includes('[01]')) {
+        finalVal = total.impressoes;
+        finalLabel = 'Impressões';
+        const cpm = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
+        return {
+          ...total, objetivo: finalLabel, resultadoBruto: finalVal,
+          roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
+          cpr: cpm, isCPM: true, campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
+        };
+      } else if (camp.nome_gerado.includes('[02]') || label === 'Engajamentos') {
+        finalVal = total.engajamentoTotal;
+        finalLabel = 'Engajamentos';
+      } else if (camp.nome_gerado.includes('[05]')) {        
+        finalVal = Math.round(total.visitas_perfil * 0.792); 
+        finalLabel = 'Visitas';
+      } else if (label === 'Vendas') {
+        finalVal = total.compras;
+      }
 
       return {
-        id: c.id,
-        nome_anuncio: c.nome_anuncio,
-        url_midia: c.url_midia,
-        ...stats,
-        cpa,
-        ctr: stats.count > 0 ? (stats.totalCtr / stats.count) : 0
+        ...total, objetivo: finalLabel, resultadoBruto: finalVal,
+        roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
+        cpr: finalVal > 0 ? (total.valor_investido / finalVal) : 0,
+        campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
       };
-    }).filter(c => c !== null && c.valor_investido > 0.1) // Remove criativos irrelevantes
-      .sort((a, b) => a.cpa - b.cpa); // Menor CPA primeiro
+    }).filter(m => m.impressoes > 0 || m.valor_investido > 0);
 
-    const sortedDaily = Object.values(dailyMetrics)
-      .sort((a, b) => a.date.localeCompare(b.date))
+    const criativosRaw = await prisma.criativo.findMany({    
+      where: { campanha: { cliente_id: cliente.id } },       
+      include: { metricas: { where: { data: { gte: dateSince, lte: dateUntil } } } }
+    });
+
+    const groupedMap = new Map();
+    for (const c of criativosRaw) {
+      const key = c.nome_anuncio || 'Anúncio sem nome';      
+      const stats = c.metricas.reduce((acc, m) => ({
+        impressoes: acc.impressoes + m.impressoes,
+        alcance: acc.alcance + m.alcance,
+        cliques: acc.cliques + m.cliques,
+        valor_investido: acc.valor_investido + Number(m.valor_investido),
+        leads: acc.leads + m.leads,
+        compras: acc.compras + m.compras,
+        totalCtr: acc.totalCtr + Number(m.ctr || 0),
+        count: acc.count + 1
+      }), { impressoes: 0, alcance: 0, cliques: 0, valor_investido: 0, leads: 0, compras: 0, totalCtr: 0, count: 0 });    
+
+      if (stats.impressoes === 0 && stats.valor_investido === 0) continue;
+
+      if (!groupedMap.has(key)) {
+        groupedMap.set(key, {
+          id: c.id, nome_anuncio: key, url_midia: c.url_midia, texto_principal: c.texto_principal,
+          ...stats
+        });
+      } else {
+        const existing = groupedMap.get(key);
+        existing.impressoes += stats.impressoes;
+        existing.alcance += stats.alcance;
+        existing.cliques += stats.cliques;
+        existing.valor_investido += stats.valor_investido;   
+        existing.leads += stats.leads;
+        existing.compras += stats.compras;
+        existing.totalCtr += stats.totalCtr;
+        existing.count += stats.count;
+        if (!existing.url_midia) existing.url_midia = c.url_midia;
+      }
+    }
+
+    const criativos = Array.from(groupedMap.values()).map(c => ({
+      ...c, ctr: c.count > 0 ? c.totalCtr / c.count : 0      
+    }));
+
+    // Agregação diária corrigida
+    const dailyMap = new Map();
+    for (const camp of campanhas) {
+      const isConversionCamp = camp.objetivo.includes('MESSAGING') || camp.objetivo.includes('LEADS') || camp.objetivo.includes('CONVERSIONS');
+      for (const m of camp.metricas) {
+        const dateKey = m.data.toISOString().split('T')[0];  
+        if (!dailyMap.has(dateKey)) dailyMap.set(dateKey, { data: dateKey, mensagens: 0, investimentoTotal: 0, investimentoConversao: 0 });
+        const day = dailyMap.get(dateKey);
+        day.mensagens += m.conversas_leads;
+        day.investimentoTotal += Number(m.valor_investido);  
+        if (isConversionCamp) day.investimentoConversao += Number(m.valor_investido);
+      }
+    }
+    const dailyMetrics = Array.from(dailyMap.values())       
+      .sort((a, b) => a.data.localeCompare(b.data))
       .map(d => ({
-        ...d,
-        investimento: parseFloat(d.investimento.toFixed(2)),
-        cpa: d.mensagens > 0 ? parseFloat((d.investimento / d.mensagens).toFixed(2)) : 0,
+        ...d, investimento: d.investimentoTotal,
+        cpa: d.mensagens > 0 ? (d.investimentoConversao / d.mensagens) : 0,
       }));
 
-    return NextResponse.json({ 
-      success: true, 
-      metrics: Object.values(aggregated).map(m => ({ ...m, cpr: m.conversas_leads > 0 ? m.valor_investido / m.conversas_leads : 0 })), 
-      criativos,
-      dailyMetrics: sortedDaily
-    });
+    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
@@ -153,93 +201,57 @@ export async function POST(request) {
     const shortName = cliente.split(' ')[0];
     const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
     const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`];
-    if (!rawAccountId || !ACCESS_TOKEN) return NextResponse.json({ success: false, error: "Configuração ausente" }, { status: 500 });
-
     const AD_ACCOUNT_ID = rawAccountId.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
     const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
-    if (!dbCliente) return NextResponse.json({ success: false, error: "Cliente não encontrado" }, { status: 404 });
 
     const commonQuery = { access_token: ACCESS_TOKEN, limit: '1000' };
-    
-    // Normalização para a Meta (YYYY-MM-DD sem timezone)
-    const todayStr = new Date().toISOString().split('T')[0];
-    if (since === until && since === todayStr) {
-      commonQuery.date_preset = 'today';
-    } else {
-      commonQuery.time_range = JSON.stringify({ since, until });
-    }
+    const todayStr = new Date().toISOString().split('T')[0]; 
+    if (until === todayStr && since === todayStr) commonQuery.date_preset = 'today';
+    else commonQuery.time_range = JSON.stringify({ since, until });
 
-    const [metaCampsRes, campaignRes, adInsightRes] = await Promise.all([
+    const [metaCampsRes, campaignRes, adInsightRes, adsMetaRes] = await Promise.all([
       fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'ad', time_increment: '1' }))
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),  
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'ad', time_increment: '1' })),        
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
     ]);
 
-    const [metaCamps, campaignData, adInsightData] = await Promise.all([metaCampsRes.json(), campaignRes.json(), adInsightRes.json()]);
-    if (campaignData.error) throw new Error(campaignData.error.message);
+    const [metaCampsData, campaignData, adInsightData, adsMetaData] = await Promise.all([metaCampsRes.json(), campaignRes.json(), adInsightRes.json(), adsMetaRes.json()]);
+    const objectiveMap = new Map(metaCampsData.data?.map(c => [c.id, c.objective]) || []);
+    const creativeMetaMap = new Map(adsMetaData.data?.map(m => [String(m.id), m]) || []);
 
-    const objectiveMap = new Map(metaCamps.data?.map(c => [c.id, c.objective]) || []);
-    
-    // Fetch Creatives (Inclui story_id para HD Supremo)
-    const adIds = [...new Set(adInsightData.data?.map(i => i.ad_id).filter(id => !!id) || [])];
-    const creativeMap = new Map();
-    const hashes = new Set();
-    const storyIds = new Set();
-
-    if (adIds.length > 0) {
-      for (let i = 0; i < adIds.length; i += 50) {
-        const chunk = adIds.slice(i, i + 50);
-        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,creative{id,image_url,thumbnail_url,image_hash,effective_object_story_id,body}', access_token: ACCESS_TOKEN }));
-        const data = await res.json();
-        Object.entries(data).forEach(([adId, adInfo]) => {
-          if (adInfo.creative) {
-            creativeMap.set(adId, {
-              imageUrl: adInfo.creative.image_url,
-              thumbUrl: adInfo.creative.thumbnail_url,
-              body: adInfo.creative.body,
-              hash: adInfo.creative.image_hash,
-              storyId: adInfo.creative.effective_object_story_id
-            });
-            if (adInfo.creative.image_hash) hashes.add(adInfo.creative.image_hash);
-            if (adInfo.creative.effective_object_story_id) storyIds.add(adInfo.creative.effective_object_story_id);
-          }
-        });
-      }
-    }
-
-    // Lookup 1: Biblioteca de Imagens (O que faz o AD[02/03/26] funcionar)
-    const nativeUrlMap = new Map();
-    if (hashes.size > 0) {
-      const hashList = Array.from(hashes);
-      for (let i = 0; i < hashList.length; i += 50) {
-        const chunk = hashList.slice(i, i + 50);
-        const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,hash' }));
-        const data = await res.json();
-        if (data.data) data.data.forEach(img => { if (img.url) nativeUrlMap.set(img.hash, img.url); });
-      }
-    }
-
-    // Lookup 2: Story Posts (HD para Engagement/Videos)
+    const storyIds = adsMetaData.data?.map(m => m.effective_object_story_id).filter(id => !!id) || [];
     const storyMetaMap = new Map();
-    if (storyIds.size > 0) {
-      const storyList = Array.from(storyIds);
-      for (let i = 0; i < storyList.length; i += 50) {
-        const chunk = storyList.slice(i, i + 50);
-        const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN }));
-        const data = await res.json();
-        Object.values(data).forEach(post => { if (post.full_picture) storyMetaMap.set(post.id, post.full_picture); });
-      }
+    if (storyIds.length > 0) {
+       const idChunks = [];
+       for (let i = 0; i < storyIds.length; i += 50) idChunks.push(storyIds.slice(i, i + 50));
+       await Promise.all(idChunks.map(async (chunk) => {     
+         const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN }));
+         const data = await res.json();
+         Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
+       }));
     }
 
-    // Process Campaigns
+     const imageHashMap = new Map();
+     const uniqueHashes = [...new Set(adsMetaData.data?.map(m => m.image_hash).filter(h => !!h) || [])];
+     if (uniqueHashes.length > 0) {
+       const hashChunks = [];
+       for (let i = 0; i < uniqueHashes.length; i += 50) hashChunks.push(uniqueHashes.slice(i, i + 50));
+       await Promise.all(hashChunks.map(async (chunk) => {   
+        const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }));
+        const data = await res.json();
+        if (data.data) data.data.forEach(img => { const bestUrl = img.url || img.permalink_url; if (bestUrl) imageHashMap.set(img.hash, bestUrl); });
+      }));
+     }
+
     const localCampMap = new Map((await prisma.campanha.findMany({ where: { cliente_id: dbCliente.id } })).map(c => [c.meta_id, c]));
-    await batchProcess(campaignData.data || [], 10, async (item) => {
-      let camp = localCampMap.get(item.campaign_id);
+    await batchProcess(campaignData.data || [], 5, async (item) => {
+      let camp = localCampMap.get(String(item.campaign_id)); 
       if (!camp) {
         camp = await prisma.campanha.upsert({
-          where: { meta_id: item.campaign_id },
+          where: { meta_id: String(item.campaign_id) },      
           update: { nome_gerado: item.campaign_name, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN' },
-          create: { meta_id: item.campaign_id, nome_gerado: item.campaign_name, cliente_id: dbCliente.id, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN', tipo_orcamento: 'UNKNOWN' }
+          create: { meta_id: String(item.campaign_id), nome_gerado: item.campaign_name, cliente_id: dbCliente.id, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN', tipo_orcamento: 'UNKNOWN' }
         });
         localCampMap.set(camp.meta_id, camp);
       }
@@ -247,68 +259,65 @@ export async function POST(request) {
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0, 
-          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0, 
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0,
+          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
-          compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
+          compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         },
         create: {
           campanha_id: camp.id, data: dataInsight,
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0, 
-          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0, 
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0,
+          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
-          compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)
+          compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         }
       });
     });
 
-    // Process Creatives (Hierarquia Inteligente de Imagem)
     if (adInsightData.data) {
-      await batchProcess(adInsightData.data, 10, async (row) => {
-        const camp = localCampMap.get(row.campaign_id);
+      const adsListRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/ads`, { access_token: ACCESS_TOKEN, fields: 'id,creative{id}', limit: '1000' }));
+      const adsListData = await adsListRes.json();
+      const adToCreativeMap = new Map(adsListData.data?.map(a => [a.id, a.creative.id]) || []);
+
+      await batchProcess(adInsightData.data, 5, async (row) => {
+        const camp = localCampMap.get(String(row.campaign_id));
         if (!camp) return;
-
-        const info = creativeMap.get(row.ad_id) || {};
+        const creativeId = adToCreativeMap.get(String(row.ad_id));
+        const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // HIERARQUIA DE QUALIDADE:
-        // 1. Hash da Biblioteca (Scontent nativo HD)
-        // 2. Story ID (Full Picture do post original)
-        // 3. Image URL Maximizada (800px)
-        // 4. Thumbnail URL Maximizada (800px)
-        const finalUrl = (info.hash && nativeUrlMap.get(info.hash)) || 
-                         (info.storyId && storyMetaMap.get(info.storyId)) || 
-                         maximizeResolution(info.imageUrl) || 
-                         maximizeResolution(info.thumbUrl) || 
-                         null;
+        // Hierarquia de imagem 311a6aa + Maximização 800px
+        const highResImage = imageHashMap.get(adMeta.image_hash)
+                          || storyMetaMap.get(adMeta.effective_object_story_id)
+                          || maximizeResolution(adMeta.image_url)
+                          || maximizeResolution(adMeta.thumbnail_url);
 
-        const criativo = await prisma.criativo.upsert({
-          where: { meta_ad_id: row.ad_id },
-          update: { nome_anuncio: row.ad_name, url_midia: finalUrl, texto_principal: info.body },
-          create: { meta_ad_id: row.ad_id, campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: finalUrl, texto_principal: info.body }
+        const criativo = await prisma.criativo.upsert({      
+          where: { meta_ad_id: String(row.ad_id) },
+          update: { nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body },
+          create: { meta_ad_id: String(row.ad_id), campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body }
         });
 
         const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
         return prisma.metricaCriativo.upsert({
           where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },
-          update: { 
-            impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: parseInt(row.clicks) || 0, 
-            ctr: parseFloat(row.inline_link_click_ctr) || 0, valor_investido: parseFloat(row.spend) || 0, 
-            leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase') 
+          update: {
+            impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: parseInt(row.clicks) || 0,
+            ctr: parseFloat(row.inline_link_click_ctr) || 0, valor_investido: parseFloat(row.spend) || 0,
+            leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase')
           },
-          create: { 
-            criativo_id: criativo.id, data: dataInsight, impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, 
-            cliques: parseInt(row.clicks) || 0, ctr: parseFloat(row.inline_link_click_ctr) || 0, 
-            valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase') 
+          create: {
+            criativo_id: criativo.id, data: dataInsight, impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0,
+            cliques: parseInt(row.clicks) || 0, ctr: parseFloat(row.inline_link_click_ctr) || 0,
+            valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase')
           }
         });
       });
     }
-
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Sync Error:", error);
+    console.error("POST Sync Error:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
