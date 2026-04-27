@@ -201,15 +201,28 @@ export default function App() {
 
   const handleExportPDF = async () => {
     if (!reportRef.current) return;
-    setMensagemPainel({ tipo: 'info', texto: 'Gerando PDF completo...' });
+    setMensagemPainel({ tipo: 'info', texto: 'Gerando PDF estratégico...' });
     try {
-      // 1. Configurações de captura
       const element = reportRef.current.cloneNode(true);
-      element.style.width = '1280px'; // Largura fixa ideal para o layout Bento
-      element.style.padding = '20px';
+      element.style.width = '1280px';
+      element.style.padding = '30px';
       element.style.backgroundColor = '#020617';
       
-      // Remove botões e elementos de diagnóstico para o PDF
+      // Fix: Preservar valores de inputs de data (substituindo por texto no clone)
+      const originalInputs = reportRef.current.querySelectorAll('input[type=\"date\"]');
+      const clonedInputs = element.querySelectorAll('input[type=\"date\"]');
+      clonedInputs.forEach((input, i) => {
+        const val = originalInputs[i]?.value;
+        if (val) {
+          const [y, m, d] = val.split('-');
+          const span = document.createElement('span');
+          span.innerText = `${d}/${m}/${y}`;
+          span.className = \"text-blue-400 font-bold ml-1\";
+          input.parentNode.replaceChild(span, input);
+        }
+      });
+
+      // Remove botões e elementos indesejados
       const toRemove = ['button', 'textarea', '.DiagnosticHeader', '.DiagnosticContent'];
       toRemove.forEach(sel => element.querySelectorAll(sel).forEach(el => el.remove()));
 
@@ -219,7 +232,7 @@ export default function App() {
 
       const canvas = await html2canvas(element, {
         backgroundColor: '#020617',
-        scale: 2, // Alta qualidade
+        scale: 2,
         useCORS: true,
         logging: false,
         windowWidth: 1280
@@ -228,27 +241,21 @@ export default function App() {
       document.body.removeChild(element);
 
       const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
       
-      const imgWidth = 210; // Largura A4 em mm
-      const pageHeight = 297; // Altura A4 em mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
+      // Calculamos as dimensões para uma página única sem cortes
+      const imgWidthMM = 210; 
+      const imgHeightMM = (canvas.height * imgWidthMM) / canvas.width;
 
-      // Adiciona primeira página
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-      heightLeft -= pageHeight;
+      // Criamos o PDF com a altura EXATA do conteúdo (Página Única Contínua)
+      const pdf = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: [imgWidthMM, imgHeightMM]
+      });
 
-      // Adiciona páginas subsequentes se o conteúdo for longo (evita cortes)
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-        heightLeft -= pageHeight;
-      }
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidthMM, imgHeightMM, undefined, 'FAST');
 
-      pdf.save(`Auditoria_${clienteSelecionado.replace(/\s/g, '_')}_${startDate}_${endDate}.pdf`);
+      pdf.save(`Auditoria_${clienteSelecionado.replace(/\\s/g, '_')}_${startDate}_${endDate}.pdf`);
       setMensagemPainel({ tipo: 'sucesso', texto: 'Relatório exportado com sucesso.' });
       setTimeout(() => setMensagemPainel(null), 3000);
     } catch (e) {
