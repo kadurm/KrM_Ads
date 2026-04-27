@@ -192,17 +192,33 @@ export async function GET(request) {
         }
       }
     }
-    const dailyMetrics = Array.from(dailyMap.values())       
-      .sort((a, b) => a.data.localeCompare(b.data))
+    const sortedDaily = Object.values(dailyMetrics)
+      .sort((a, b) => a.date.localeCompare(b.date))
       .map(d => ({
         ...d,
         investimento: parseFloat(d.investimentoTotal.toFixed(2)),
         cpl: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
-        // Mantemos cpa como alias para compatibilidade se necessário, mas o foco é cpl
         cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
-    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics });
+    // Alcance Real: Soma do Alcance MÁXIMO diário de cada campanha no período
+    // (Aproximação mais fiel ao total único da Meta)
+    const campMaxReach = new Map();
+    metricsRaw.forEach(m => {
+      const campId = m.campanha.meta_id;
+      if (!campMaxReach.has(campId) || m.alcance > campMaxReach.get(campId)) {
+        campMaxReach.set(campId, m.alcance);
+      }
+    });
+    const totalReach = Array.from(campMaxReach.values()).reduce((a, b) => a + b, 0);
+
+    return NextResponse.json({ 
+      success: true, 
+      metrics: Object.values(aggregated).map(m => ({ ...m, cpr: m.conversas_leads > 0 ? m.valor_investido / m.conversas_leads : 0 })), 
+      criativos,
+      dailyMetrics: sortedDaily,
+      totalReach
+    });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
