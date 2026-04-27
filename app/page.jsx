@@ -201,31 +201,43 @@ export default function App() {
 
   const handleExportPDF = async () => {
     if (!reportRef.current) return;
-    setMensagemPainel({ tipo: 'info', texto: 'Gerando PDF...' });
+    setMensagemPainel({ tipo: 'info', texto: 'Gerando PDF estratégico...' });
     try {
-      const canvas = await html2canvas(reportRef.current, {
-        backgroundColor: '#0f172a',
+      const element = reportRef.current.cloneNode(true);
+      element.style.padding = '40px';
+      element.style.backgroundColor = '#020617';
+      element.style.width = '1200px';
+
+      // Remove elementos indesejados no PDF
+      const toRemove = ['button', 'textarea', '.DiagnosticHeader', '.DiagnosticContent'];
+      toRemove.forEach(sel => element.querySelectorAll(sel).forEach(el => el.remove()));
+
+      document.body.appendChild(element);
+      element.style.position = 'absolute';
+      element.style.left = '-9999px';
+
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#020617',
         scale: 2,
         useCORS: true,
         logging: false,
       });
+
+      document.body.removeChild(element);
+
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      let position = 0;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      if (pdfHeight <= pageHeight) {
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      } else {
-        while (position < pdfHeight) {
-          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, pdfHeight);
-          position += pageHeight;
-          if (position < pdfHeight) pdf.addPage();
-        }
-      }
-      pdf.save(`Relatorio_${clienteSelecionado.replace(/\s/g, '_')}_${startDate}_${endDate}.pdf`);
-      setMensagemPainel(null);
+      
+      const margin = 10;
+      const finalWidth = pdfWidth - (margin * 2);
+      const finalHeight = (canvas.height * finalWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', margin, margin, finalWidth, finalHeight);
+      pdf.save(`Auditoria_${clienteSelecionado.replace(/\s/g, '_')}_${startDate}_${endDate}.pdf`);
+      setMensagemPainel({ tipo: 'sucesso', texto: 'Relatório exportado com sucesso.' });
+      setTimeout(() => setMensagemPainel(null), 3000);
     } catch (e) {
       setMensagemPainel({ tipo: 'erro', texto: 'Falha ao gerar o PDF.' });
     }
@@ -935,9 +947,9 @@ export default function App() {
                 })}
               </div>
 
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mt-8 shadow-2xl">
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mt-8 shadow-2xl DiagnosticHeader">
                 <div className="p-6 border-b border-slate-800 flex justify-between items-center"><h3 className="font-bold flex items-center gap-2"><Sparkles className="text-purple-400" size={18} /> Diagnóstico de Campanhas</h3><button onClick={handleGerarIA} disabled={isGenerating} className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold p-2 px-6 rounded-lg transition-all shadow-lg shadow-purple-900/20">{isGenerating ? 'Analisando...' : 'Gerar Diagnóstico'}</button></div>
-                <div className="p-6"><textarea className="w-full h-64 bg-slate-950 border-none rounded-xl p-4 text-sm text-slate-300 resize-none outline-none focus:ring-1 focus:ring-purple-500" readOnly value={analiseIA} placeholder="A análise estratégica baseada nos dados auditados aparecerá aqui..."></textarea></div>
+                <div className="p-6 DiagnosticContent"><textarea className="w-full h-64 bg-slate-950 border-none rounded-xl p-4 text-sm text-slate-300 resize-none outline-none focus:ring-1 focus:ring-purple-500" readOnly value={analiseIA} placeholder="A análise estratégica baseada nos dados auditados aparecerá aqui..."></textarea></div>
               </div>
 
               <div className="flex justify-end gap-4 pb-12">
