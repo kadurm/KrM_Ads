@@ -866,6 +866,7 @@ export default function App() {
                 {[...criativosDados]
                   .map(c => ({ ...c, _cpa: segmento === 'inside_sales' ? (c.leads > 0 ? c.valor_investido / c.leads : Infinity) : (c.compras > 0 ? c.valor_investido / c.compras : Infinity) }))
                   .sort((a, b) => a._cpa - b._cpa)
+                  .slice(0, 12)
                   .map((c, idx) => {
                    const cpa = c._cpa === Infinity ? 0 : c._cpa;
                    
