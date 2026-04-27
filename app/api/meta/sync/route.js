@@ -81,7 +81,8 @@ export async function GET(request) {
     const metrics = campanhas.map(camp => {
       const total = camp.metricas.reduce((acc, m) => ({      
         impressoes: acc.impressoes + m.impressoes,
-        alcance: acc.alcance + m.alcance,
+        // ALCANCE: Não somamos. Usamos o máximo do período por campanha como aproximação fiel.
+        alcance: Math.max(acc.alcance, m.alcance),
         cliques: acc.cliques + m.cliques,
         visitas_perfil: acc.visitas_perfil + m.visitas_perfil,
         seguidores: acc.seguidores + m.seguidores,
@@ -133,7 +134,7 @@ export async function GET(request) {
       const key = c.nome_anuncio || 'Anúncio sem nome';      
       const stats = c.metricas.reduce((acc, m) => ({
         impressoes: acc.impressoes + m.impressoes,
-        alcance: acc.alcance + m.alcance,
+        alcance: Math.max(acc.alcance, m.alcance),
         cliques: acc.cliques + m.cliques,
         valor_investido: acc.valor_investido + Number(m.valor_investido),
         leads: acc.leads + m.leads,
