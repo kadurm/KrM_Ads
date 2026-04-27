@@ -222,8 +222,7 @@ export async function POST(request) {
         if (!camp) return;
 
         const info = creativeMap.get(row.ad_id) || {};
-        const nativeUrl = info.hash ? nativeUrlMap.get(info.hash) : null;
-        const finalUrl = nativeUrl || info.url;
+        const finalUrl = info.hash ? nativeUrlMap.get(info.hash) : null;
 
         const criativo = await prisma.criativo.upsert({
           where: { meta_ad_id: row.ad_id },
