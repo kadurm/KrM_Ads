@@ -7,7 +7,8 @@
       "Bash(vercel --prod --yes)",
       "Bash(curl -s \"https://krmads.vercel.app/api/meta/sync\")",
       "Bash(curl *)",
-      "Bash(node scripts/diagnostico-sync.js)"
+      "Bash(node scripts/diagnostico-sync.js)",
+      "Bash(node *)"
     ]
   }
 }

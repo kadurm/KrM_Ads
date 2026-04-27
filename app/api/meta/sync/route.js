@@ -440,32 +440,42 @@ export async function POST(request) {
         // Hierarquia de Estabilidade e Qualidade (Biblioteca HD e Thumbnails Forçadas)
         const imageHd = imageHashMap.get(adMeta.extracted_hash)?.url;
 
-        // Fallback Inteligente: Se thumbnail for fbcdn.net, tenta forçar 480px (mais estável)
-        let fallbackThumb = adMeta.thumbnail_url;
-        if (!imageHd && fallbackThumb?.includes('fbcdn.net')) {
-          fallbackThumb = fallbackThumb.replace("/p130x130/", "/p480x480/");
-        }
-
         // PRIORIDADE MÁXIMA: Se a Meta entregou 800px ou 960px nativo no thumbnail_url
         const nativeHd = (adMeta.thumbnail_url?.includes('p800x800') || adMeta.thumbnail_url?.includes('p960x960')) ? adMeta.thumbnail_url : null;
 
+        // Fallback Inteligente: Força máxima resolução em qualquer URL do fbcdn.net
+        const maximizeResolution = (url) => {
+          if (!url || !url.includes('fbcdn.net')) return url;
+          // Substitui TODAS as resoluções baixas por 800px (prioritário)
+          return url
+            .replace(/_p\d+x\d+_q/g, '_p800x800_q')
+            .replace(/_s\d+x\d+_q/g, '_s800x800_q')
+            .replace(/stp=.*?_p\d+x\d+_q/g, (match) => match.replace(/p\d+x\d+/, 'p800x800'))
+            .replace(/stp=.*?_s\d+x\d+_q/g, (match) => match.replace(/s\d+x\d+/, 's800x800'));
+        };
+
+        const imageHdMaximized = maximizeResolution(adMeta.image_url);
+        const thumbnailHdMaximized = maximizeResolution(adMeta.thumbnail_url);
+
         // Xeque-Mate: Para vídeos, o Hash da Imagem é a capa HD original da biblioteca
+        // Hierarquia corrigida: HD Hash > HD Nativo > Image URL (maximizada) > Full Picture > Thumbnail (maximizada)
         const finalImageUrl = (profile === 'VIDEO' ? (imageHd || nativeHd) : (nativeHd || imageHd)) ||
-                              storyMetaMap.get(adMeta.extracted_story_id) || 
-                              fallbackThumb ||
-                              adMeta.image_url || 
+                              imageHdMaximized ||
+                              storyMetaMap.get(adMeta.extracted_story_id) ||
+                              thumbnailHdMaximized ||
                               null;
 
-        // Log de depuração refinado para rastreamento de origem HD (Mantido apenas um log essencial)
+        // Log de depuração refinado para rastreamento de origem HD
         const source = (profile === 'VIDEO' && imageHd) ? 'VIDEO_HASH_HD' :
                        nativeHd ? 'NATIVE_800' :
+                       imageHdMaximized ? 'IMAGE_URL_800PX' :
                        imageHashMap.has(adMeta.extracted_hash) ? 'AD_IMAGES' :
                        storyMetaMap.has(adMeta.extracted_story_id) ? 'STORY_POST' :
-                       fallbackThumb?.includes('p480x480') ? 'THUMBNAIL_480_FORCED' :
-                       adMeta.image_url ? 'IMAGE_URL' :
+                       thumbnailHdMaximized ? 'THUMBNAIL_800PX' :
+                       adMeta.image_url ? 'IMAGE_URL_ORIGINAL' :
                        adMeta.thumbnail_url ? 'THUMBNAIL_URL' : 'NONE';
-        
-        const resLabel = (profile === 'VIDEO' && imageHd) ? 'HASH_1080px' : nativeHd ? '800/960px' : (imageHd) ? 'HD_DETECTED' : (fallbackThumb?.includes('p480x480') ? '480px' : 'original');
+
+        const resLabel = (profile === 'VIDEO' && imageHd) ? 'HASH_1080px' : nativeHd ? '800/960px' : imageHdMaximized ? '800px' : (imageHd) ? 'HD_DETECTED' : (thumbnailHdMaximized ? '800px' : 'original');
         
         console.log(`[Hash-Audit] Ad: ${row.ad_name} | Hash: ${adMeta.extracted_hash || "NULO"}`);
         console.log(`[HD-Audit] Audit: ${row.ad_name} | Perfil: ${profile} | VID: ${adMeta.extracted_video_id || "NULO"} | Fonte: ${source} | Res: ${resLabel}`);
