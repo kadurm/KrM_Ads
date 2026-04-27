@@ -81,27 +81,6 @@ export async function GET(request) {
     const cliente = await prisma.cliente.findFirst({ where: { nome: clienteNome } });
     if (!cliente) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
-    // 1. BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão para Funil e Cards)
-    let metaAccountTotals = null;
-    try {
-      const shortName = clienteNome.split(' ')[0];
-      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
-      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`];
-      const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
-
-      if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
-        const metaUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { 
-          access_token: ACCESS_TOKEN, 
-          time_range: JSON.stringify({ since, until }),
-          fields: 'reach,spend,impressions,actions,action_values',
-          level: 'account'
-        });
-        const metaRes = await fetch(metaUrl);
-        const metaJson = await metaRes.json();
-        if (metaJson.data && metaJson.data[0]) metaAccountTotals = metaJson.data[0];
-      }
-    } catch (e) { console.error("Erro ao buscar totais reais na Meta:", e); }
-
     // Normalização de datas exata como o commit 311a6aa
     const dateUntil = until ? new Date(until + 'T23:59:59Z') : new Date();
     const dateSince = since ? new Date(since + 'T00:00:00Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
@@ -123,7 +102,6 @@ export async function GET(request) {
         compras: acc.compras + m.compras,
         valor_compras: acc.valor_compras + Number(m.valor_compras || 0),
         reacoes_sociais: acc.reacoes_sociais + m.reacoes_sociais,
-        // Engajamento Total inclui agora Cliques + Visitas + Reações Sociais + Seguidores
         engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores + m.reacoes_sociais)
       }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0, reacoes_sociais: 0 });     
 
@@ -136,7 +114,7 @@ export async function GET(request) {
         finalLabel = 'Impressões';
         const cpm = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
         return {
-          ...total, alcance: Math.max(total.alcance, 0), objetivo: finalLabel, resultadoBruto: finalVal,
+          ...total, objetivo: finalLabel, resultadoBruto: finalVal,
           roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
           cpr: cpm, isCPM: true, campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
         };
@@ -226,8 +204,8 @@ export async function GET(request) {
         cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
-    // PRIORIDADE: Dados reais da Meta para o Funil. BACKUP: Soma de alcances máximos.
-    const totalReach = metaAccountTotals ? parseInt(metaAccountTotals.reach) : metrics.reduce((a,c)=>a+c.alcance, 0);
+    // Alcance Real: Soma dos alcances máximos das campanhas no período.
+    const totalReach = metrics.reduce((a,c)=>a+c.alcance, 0);
 
     return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach });
   } catch (error) {
@@ -301,8 +279,7 @@ export async function POST(request) {
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
-          cliques: parseInt(item.clicks) || 0,
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0,
           visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
@@ -311,8 +288,7 @@ export async function POST(request) {
         },
         create: {
           campanha_id: camp.id, data: dataInsight,
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
-          cliques: parseInt(item.clicks) || 0,
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0,
           visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
