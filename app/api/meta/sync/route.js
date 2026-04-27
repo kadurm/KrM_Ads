@@ -81,7 +81,28 @@ export async function GET(request) {
     const cliente = await prisma.cliente.findFirst({ where: { nome: clienteNome } });
     if (!cliente) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
-    // Normalização de datas exata como o commit 311a6aa
+    // 1. LOGICA DO COMMIT 8170273: BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão)
+    let metaAccountTotals = null;
+    try {
+      const shortName = clienteNome.split(' ')[0];
+      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
+      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`];
+      const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
+
+      if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
+        const metaUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { 
+          access_token: ACCESS_TOKEN, 
+          time_range: JSON.stringify({ since, until }),
+          fields: 'reach,spend,impressions,actions,action_values',
+          level: 'account'
+        });
+        const metaRes = await fetch(metaUrl);
+        const metaJson = await metaRes.json();
+        if (metaJson.data && metaJson.data[0]) metaAccountTotals = metaJson.data[0];
+      }
+    } catch (e) { console.error("Erro ao buscar totais reais na Meta:", e); }
+
+    // Normalização de datas
     const dateUntil = until ? new Date(until + 'T23:59:59Z') : new Date();
     const dateSince = since ? new Date(since + 'T00:00:00Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
 
@@ -93,7 +114,7 @@ export async function GET(request) {
     const metrics = campanhas.map(camp => {
       const total = camp.metricas.reduce((acc, m) => ({      
         impressoes: acc.impressoes + m.impressoes,
-        alcance: Math.max(acc.alcance, m.alcance), // Backup local: máximo por campanha
+        alcance: Math.max(acc.alcance, m.alcance),
         cliques: acc.cliques + m.cliques,
         visitas_perfil: acc.visitas_perfil + m.visitas_perfil,
         seguidores: acc.seguidores + m.seguidores,
@@ -181,7 +202,7 @@ export async function GET(request) {
       ...c, ctr: c.count > 0 ? c.totalCtr / c.count : 0      
     }));
 
-    // Agregação diária corrigida para CPL (Custo por Lead/Conversa)
+    // Agregação diária para CPL (Custo por Lead)
     const dailyMap = new Map();
     for (const camp of campanhas) {
       const obj = (camp.objetivo || '').toUpperCase();
@@ -204,8 +225,8 @@ export async function GET(request) {
         cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
-    // Alcance Real: Soma dos alcances máximos das campanhas no período.
-    const totalReach = metrics.reduce((a,c)=>a+c.alcance, 0);
+    // PRIORIDADE: Dados reais da Meta para o Funil. BACKUP: Soma de alcances máximos.
+    const totalReach = metaAccountTotals ? parseInt(metaAccountTotals.reach) : metrics.reduce((a,c)=>a+c.alcance, 0);
 
     return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach });
   } catch (error) {
@@ -279,7 +300,8 @@ export async function POST(request) {
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0,
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
+          cliques: parseInt(item.clicks) || 0,
           visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
@@ -288,7 +310,8 @@ export async function POST(request) {
         },
         create: {
           campanha_id: camp.id, data: dataInsight,
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: parseInt(item.clicks) || 0,
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
+          cliques: parseInt(item.clicks) || 0,
           visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || parseInt(item.inline_link_clicks) || 0,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
