@@ -739,6 +739,7 @@ export default function App() {
                   <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento real</span>
                   <div className="flex items-center gap-1 mt-1">
 
+
                     <span className="text-xl font-black text-slate-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
                   </div>
                 </div>
