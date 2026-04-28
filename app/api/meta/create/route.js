@@ -27,7 +27,16 @@ export async function POST(request) {
       params.append('objective', data.objective);
       params.append('status', data.status || 'PAUSED');
       params.append('special_ad_categories', '[]');
-      if (data.daily_budget) params.append('daily_budget', String(Math.round(parseFloat(data.daily_budget) * 100)));
+      
+      // Advantage+ Campaign Budget (CBO)
+      if (data.advantage_plus_budget) {
+        if (data.daily_budget) {
+          params.append('daily_budget', String(Math.round(parseFloat(data.daily_budget) * 100)));
+        } else if (data.lifetime_budget) {
+          params.append('lifetime_budget', String(Math.round(parseFloat(data.lifetime_budget) * 100)));
+        }
+        params.append('bid_strategy', data.bid_strategy || 'LOWEST_COST_WITHOUT_CAP');
+      }
     } 
     else if (type === 'adset') {
       endpoint = `${creds.adAccountId}/adsets`;
@@ -36,7 +45,14 @@ export async function POST(request) {
       params.append('status', data.status || 'PAUSED');
       params.append('billing_event', data.billing_event || 'IMPRESSIONS');
       params.append('optimization_goal', data.optimization_goal || 'REACH');
-      params.append('daily_budget', String(Math.round(parseFloat(data.daily_budget || 10) * 100)));
+      
+      // Budget is optional in AdSet if Campaign uses CBO
+      if (data.daily_budget) {
+        params.append('daily_budget', String(Math.round(parseFloat(data.daily_budget) * 100)));
+      } else if (data.lifetime_budget) {
+        params.append('lifetime_budget', String(Math.round(parseFloat(data.lifetime_budget) * 100)));
+      }
+      
       // Targeting básico (Brasil) se não especificado
       params.append('targeting', JSON.stringify(data.targeting || { geo_locations: { countries: ['BR'] } }));
     }
