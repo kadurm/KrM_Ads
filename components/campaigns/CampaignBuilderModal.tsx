@@ -1,15 +1,18 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  X, Target, Zap, TrendingUp, MessageSquare, Smartphone, ShoppingBag, Eye, Loader2
+  X, Target, Zap, TrendingUp, MessageSquare, Smartphone, ShoppingBag, Eye, Loader2,
+  Globe, Users, Image as ImageIcon, Link as LinkIcon, Type
 } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (payload: any) => Promise<void>;
   clienteName: string;
+  level: string;
+  parentId?: string | null;
 }
 
 const OBJECTIVES = [
@@ -21,14 +24,50 @@ const OBJECTIVES = [
   { id: 'OUTCOME_SALES', label: 'Sales', icon: ShoppingBag, description: 'Find people likely to purchase' },
 ];
 
-export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, clienteName }) => {
+export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, clienteName, level, parentId }) => {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     name: '',
-    objective: 'OUTCOME_LEADS',
-    advantage_plus_budget: true,
-    daily_budget: 50,
+    status: 'PAUSED',
   });
+
+  // Reset/Initialize form based on level
+  useEffect(() => {
+    if (level === 'campaign') {
+      setFormData({
+        name: '',
+        objective: 'OUTCOME_LEADS',
+        advantage_plus_budget: true,
+        daily_budget: 50,
+        status: 'PAUSED',
+      });
+    } else if (level === 'adset') {
+      setFormData({
+        name: '',
+        campaign_id: parentId,
+        billing_event: 'IMPRESSIONS',
+        optimization_goal: 'REACH',
+        daily_budget: 20,
+        targeting: { geo_locations: { countries: ['BR'] }, age_min: 18, age_max: 65 },
+        status: 'PAUSED',
+      });
+    } else if (level === 'ad') {
+      setFormData({
+        name: '',
+        adset_id: parentId,
+        creative_id: '',
+        object_story_spec: {
+          page_id: '', // Would need to be fetched/provided
+          link_data: {
+            link: '',
+            message: '',
+            call_to_action: { type: 'LEARN_MORE' }
+          }
+        },
+        status: 'PAUSED',
+      });
+    }
+  }, [level, parentId, isOpen]);
 
   if (!isOpen) return null;
 
@@ -38,19 +77,200 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     try {
       await onSubmit({
         cliente: clienteName,
-        type: 'campaign',
-        data: {
-          ...formData,
-          status: 'PAUSED',
-        }
+        type: level,
+        data: formData
       });
       onClose();
     } catch (error) {
-      console.error('Error creating campaign:', error);
+      console.error('Error in builder submission:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const renderCampaignFields = () => (
+    <>
+      {/* OBJECTIVES GRID (BENTO) */}
+      <div className="space-y-3">
+        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Select Strategic Objective</label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {OBJECTIVES.map((obj) => (
+            <div 
+              key={obj.id}
+              onClick={() => setFormData({ ...formData, objective: obj.id })}
+              className={`
+                cursor-pointer p-4 rounded-2xl border transition-all group
+                ${formData.objective === obj.id ? 'bg-blue-600/10 border-blue-500' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}
+              `}
+            >
+              <obj.icon size={20} className={formData.objective === obj.id ? 'text-blue-500' : 'text-slate-600 group-hover:text-slate-400'} />
+              <p className={`text-[11px] font-black mt-3 uppercase tracking-tighter ${formData.objective === obj.id ? 'text-white' : 'text-slate-400'}`}>
+                {obj.label}
+              </p>
+              <p className="text-[8px] text-slate-600 mt-1 uppercase font-bold leading-tight">
+                {obj.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ADVANTAGE+ TOGGLE & BUDGET */}
+      <div className="bg-slate-950/50 border border-slate-800 rounded-[2rem] p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center text-blue-500">
+              <Zap size={18} />
+            </div>
+            <div>
+              <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Advantage+ Campaign Budget</h4>
+              <p className="text-[9px] text-slate-500 uppercase font-bold">Machine Learning dynamic allocation (CBO)</p>
+            </div>
+          </div>
+          <button 
+            type="button"
+            onClick={() => setFormData({ ...formData, advantage_plus_budget: !formData.advantage_plus_budget })}
+            className={`w-12 h-6 rounded-full relative transition-all ${formData.advantage_plus_budget ? 'bg-blue-600' : 'bg-slate-800'}`}
+          >
+            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.advantage_plus_budget ? 'right-1' : 'left-1'}`} />
+          </button>
+        </div>
+
+        {formData.advantage_plus_budget && (
+          <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Daily Budget (BRL)</label>
+             <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 font-black text-[11px]">R$</span>
+                <input 
+                  type="number" 
+                  value={formData.daily_budget}
+                  onChange={(e) => setFormData({ ...formData, daily_budget: Number(e.target.value) })}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 pl-12 text-[13px] text-blue-400 outline-none focus:border-blue-600/50 transition-all font-black"
+                />
+             </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+
+  const renderAdSetFields = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Optimization Goal</label>
+          <select 
+            value={formData.optimization_goal}
+            onChange={(e) => setFormData({ ...formData, optimization_goal: e.target.value })}
+            className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all"
+          >
+            <option value="REACH">REACH</option>
+            <option value="IMPRESSIONS">IMPRESSIONS</option>
+            <option value="LINK_CLICKS">LINK CLICKS</option>
+            <option value="CONVERSIONS">CONVERSIONS</option>
+          </select>
+        </div>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Daily Budget</label>
+          <input 
+            type="number" 
+            value={formData.daily_budget}
+            onChange={(e) => setFormData({ ...formData, daily_budget: Number(e.target.value) })}
+            className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-blue-400 outline-none focus:border-blue-600/50 transition-all font-black"
+          />
+        </div>
+      </div>
+
+      <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-[2rem] space-y-4">
+        <div className="flex items-center gap-3">
+          <Globe size={16} className="text-blue-500" />
+          <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Basic Targeting (Fallback)</h4>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-1">
+            <span className="text-[8px] font-black text-slate-600 uppercase">Country</span>
+            <p className="text-xs text-white font-bold">Brazil (Default)</p>
+          </div>
+          <div className="space-y-1">
+            <span className="text-[8px] font-black text-slate-600 uppercase">Age Range</span>
+            <div className="flex items-center gap-2">
+               <input 
+                 type="number" 
+                 value={formData.targeting.age_min}
+                 onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, age_min: Number(e.target.value) } })}
+                 className="w-12 bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px] text-center" 
+               />
+               <span className="text-slate-700">-</span>
+               <input 
+                 type="number" 
+                 value={formData.targeting.age_max}
+                 onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, age_max: Number(e.target.value) } })}
+                 className="w-12 bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px] text-center" 
+               />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <span className="text-[8px] font-black text-slate-600 uppercase">Gender</span>
+            <select 
+              onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, genders: e.target.value === 'ALL' ? undefined : [Number(e.target.value)] } })}
+              className="w-full bg-slate-900 border border-slate-800 rounded-lg p-1 text-[10px]"
+            >
+              <option value="ALL">All</option>
+              <option value="1">Men</option>
+              <option value="2">Women</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAdFields = () => (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+          <ImageIcon size={12} /> Creative ID
+        </label>
+        <input 
+          required
+          type="text" 
+          value={formData.creative_id}
+          onChange={(e) => setFormData({ ...formData, creative_id: e.target.value })}
+          placeholder="Paste Meta Creative ID (from Assets)"
+          className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all font-mono"
+        />
+        <p className="text-[8px] text-slate-600 uppercase font-bold ml-1">Para controle total, use o Agente ANTIGRAVITY para gerar o AdCreative Spec.</p>
+      </div>
+
+      <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-[2rem] space-y-4">
+        <div className="flex items-center gap-3">
+          <LinkIcon size={16} className="text-blue-500" />
+          <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Destination & Copy</h4>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-1">
+             <span className="text-[8px] font-black text-slate-600 uppercase flex items-center gap-1"><LinkIcon size={10}/> Destination URL</span>
+             <input 
+               type="text"
+               value={formData.object_story_spec.link_data.link}
+               onChange={(e) => setFormData({ ...formData, object_story_spec: { ...formData.object_story_spec, link_data: { ...formData.object_story_spec.link_data, link: e.target.value } } })}
+               className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-blue-400"
+               placeholder="https://..."
+             />
+          </div>
+          <div className="space-y-1">
+             <span className="text-[8px] font-black text-slate-600 uppercase flex items-center gap-1"><Type size={10}/> Primary Text</span>
+             <textarea 
+               value={formData.object_story_spec.link_data.message}
+               onChange={(e) => setFormData({ ...formData, object_story_spec: { ...formData.object_story_spec, link_data: { ...formData.object_story_spec.link_data, message: e.target.value } } })}
+               className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-white min-h-[80px] resize-none"
+               placeholder="Write your ad copy..."
+             />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -59,13 +279,13 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
       {/* MODAL */}
       <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div className="p-8 space-y-8">
+        <div className="p-8 space-y-8 max-h-[90vh] overflow-y-auto">
           
           {/* HEADER */}
           <div className="flex justify-between items-center">
             <div>
               <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Andromeda Protocol</p>
-              <h2 className="text-2xl font-black text-white tracking-tighter uppercase">Initialize New Campaign</h2>
+              <h2 className="text-2xl font-black text-white tracking-tighter uppercase">Initialize New {level === 'campaign' ? 'Campaign' : level === 'adset' ? 'Ad Set' : 'Ad'}</h2>
             </div>
             <button onClick={onClose} className="w-10 h-10 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-500 hover:text-white transition-all">
               <X size={20} />
@@ -75,78 +295,20 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
           <form onSubmit={handleHandleSubmit} className="space-y-8">
             {/* NAME INPUT */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Campaign Name</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Name / Identification</label>
               <input 
                 required
                 type="text" 
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ex: [ANDROMEDA] - Leads Q1 2026"
+                placeholder={`Ex: [ANDROMEDA] - ${level.toUpperCase()} 01`}
                 className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all font-medium"
               />
             </div>
 
-            {/* OBJECTIVES GRID (BENTO) */}
-            <div className="space-y-3">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Select Strategic Objective</label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {OBJECTIVES.map((obj) => (
-                  <div 
-                    key={obj.id}
-                    onClick={() => setFormData({ ...formData, objective: obj.id })}
-                    className={`
-                      cursor-pointer p-4 rounded-2xl border transition-all group
-                      ${formData.objective === obj.id ? 'bg-blue-600/10 border-blue-500' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}
-                    `}
-                  >
-                    <obj.icon size={20} className={formData.objective === obj.id ? 'text-blue-500' : 'text-slate-600 group-hover:text-slate-400'} />
-                    <p className={`text-[11px] font-black mt-3 uppercase tracking-tighter ${formData.objective === obj.id ? 'text-white' : 'text-slate-400'}`}>
-                      {obj.label}
-                    </p>
-                    <p className="text-[8px] text-slate-600 mt-1 uppercase font-bold leading-tight">
-                      {obj.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ADVANTAGE+ TOGGLE & BUDGET */}
-            <div className="bg-slate-950/50 border border-slate-800 rounded-[2rem] p-6 space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center text-blue-500">
-                    <Zap size={18} />
-                  </div>
-                  <div>
-                    <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Advantage+ Campaign Budget</h4>
-                    <p className="text-[9px] text-slate-500 uppercase font-bold">Machine Learning dynamic allocation (CBO)</p>
-                  </div>
-                </div>
-                <button 
-                  type="button"
-                  onClick={() => setFormData({ ...formData, advantage_plus_budget: !formData.advantage_plus_budget })}
-                  className={`w-12 h-6 rounded-full relative transition-all ${formData.advantage_plus_budget ? 'bg-blue-600' : 'bg-slate-800'}`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.advantage_plus_budget ? 'right-1' : 'left-1'}`} />
-                </button>
-              </div>
-
-              {formData.advantage_plus_budget && (
-                <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Daily Budget (BRL)</label>
-                   <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 font-black text-[11px]">R$</span>
-                      <input 
-                        type="number" 
-                        value={formData.daily_budget}
-                        onChange={(e) => setFormData({ ...formData, daily_budget: Number(e.target.value) })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 pl-12 text-[13px] text-blue-400 outline-none focus:border-blue-600/50 transition-all font-black"
-                      />
-                   </div>
-                </div>
-              )}
-            </div>
+            {level === 'campaign' && renderCampaignFields()}
+            {level === 'adset' && renderAdSetFields()}
+            {level === 'ad' && renderAdFields()}
 
             {/* ACTIONS */}
             <div className="flex gap-4 pt-4">

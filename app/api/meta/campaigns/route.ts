@@ -126,8 +126,15 @@ export async function PATCH(request: Request) {
     
     const params = new URLSearchParams({ access_token: accessToken });
     Object.entries(updates).forEach(([k, v]) => {
-      if (k === 'daily_budget') v = Math.round(Number(v) * 100);
-      if (v !== undefined && v !== null) params.append(k, String(v));
+      if (v === undefined || v === null) return;
+      
+      if (k === 'daily_budget' || k === 'lifetime_budget') {
+        params.append(k, String(Math.round(Number(v) * 100)));
+      } else if (typeof v === 'object') {
+        params.append(k, JSON.stringify(v));
+      } else {
+        params.append(k, String(v));
+      }
     });
 
     const res = await fetch(`https://graph.facebook.com/v21.0/${id}`, {

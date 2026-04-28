@@ -21,12 +21,13 @@ interface Props {
   searchTerm: string;
   setSearchTerm: (val: string) => void;
   level: string;
+  parentId?: string | null;
   setLevel: (level: string, parentId?: string | null) => void;
   clienteName: string;
 }
 
 export const CampaignsBoard: React.FC<Props> = ({
-  campaigns, loading, onUpdate, onRefresh, searchTerm, setSearchTerm, level, setLevel, clienteName
+  campaigns, loading, onUpdate, onRefresh, searchTerm, setSearchTerm, level, parentId, setLevel, clienteName
 }) => {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
 
@@ -34,7 +35,7 @@ export const CampaignsBoard: React.FC<Props> = ({
     return campaigns.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [campaigns, searchTerm]);
 
-  const handleCreateCampaign = async (payload: any) => {
+  const handleCreateObject = async (payload: any) => {
     try {
       const res = await fetch('/api/meta/create', {
         method: 'POST',
@@ -45,10 +46,10 @@ export const CampaignsBoard: React.FC<Props> = ({
       if (data.success) {
         onRefresh();
       } else {
-        alert('Erro ao criar campanha: ' + data.error);
+        alert('Erro ao criar item: ' + data.error);
       }
     } catch (error) {
-      console.error('Error creating campaign:', error);
+      console.error('Error creating meta object:', error);
       alert('Falha na comunicação com a API');
     }
   };
@@ -146,8 +147,10 @@ export const CampaignsBoard: React.FC<Props> = ({
       <CampaignBuilderModal 
         isOpen={isBuilderOpen}
         onClose={() => setIsBuilderOpen(false)}
-        onSubmit={handleCreateCampaign}
+        onSubmit={handleCreateObject}
         clienteName={clienteName}
+        level={level}
+        parentId={parentId}
       />
 
     </div>

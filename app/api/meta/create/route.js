@@ -21,47 +21,40 @@ export async function POST(request) {
     let endpoint = '';
     const params = new URLSearchParams({ access_token: creds.accessToken });
 
+    // Dynamic parameter mapping for ANTIGRAVITY
+    const processData = (fields) => {
+      Object.entries(fields).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        
+        // Special transformations
+        if (key === 'daily_budget' || key === 'lifetime_budget') {
+          params.append(key, String(Math.round(parseFloat(value) * 100)));
+        } 
+        else if (typeof value === 'object') {
+          params.append(key, JSON.stringify(value));
+        } 
+        else {
+          params.append(key, String(value));
+        }
+      });
+    };
+
     if (type === 'campaign') {
       endpoint = `${creds.adAccountId}/campaigns`;
-      params.append('name', data.name);
-      params.append('objective', data.objective);
-      params.append('status', data.status || 'PAUSED');
-      params.append('special_ad_categories', '[]');
-      
-      // Advantage+ Campaign Budget (CBO)
-      if (data.advantage_plus_budget) {
-        if (data.daily_budget) {
-          params.append('daily_budget', String(Math.round(parseFloat(data.daily_budget) * 100)));
-        } else if (data.lifetime_budget) {
-          params.append('lifetime_budget', String(Math.round(parseFloat(data.lifetime_budget) * 100)));
-        }
-        params.append('bid_strategy', data.bid_strategy || 'LOWEST_COST_WITHOUT_CAP');
-      }
+      params.append('special_ad_categories', '[]'); // Default if not provided
+      processData(data);
     } 
     else if (type === 'adset') {
       endpoint = `${creds.adAccountId}/adsets`;
-      params.append('campaign_id', data.campaign_id);
-      params.append('name', data.name);
-      params.append('status', data.status || 'PAUSED');
-      params.append('billing_event', data.billing_event || 'IMPRESSIONS');
-      params.append('optimization_goal', data.optimization_goal || 'REACH');
-      
-      // Budget is optional in AdSet if Campaign uses CBO
-      if (data.daily_budget) {
-        params.append('daily_budget', String(Math.round(parseFloat(data.daily_budget) * 100)));
-      } else if (data.lifetime_budget) {
-        params.append('lifetime_budget', String(Math.round(parseFloat(data.lifetime_budget) * 100)));
+      // Ensure basic targeting if missing for ANTIGRAVITY flexibility
+      if (!data.targeting) {
+        data.targeting = { geo_locations: { countries: ['BR'] } };
       }
-      
-      // Targeting básico (Brasil) se não especificado
-      params.append('targeting', JSON.stringify(data.targeting || { geo_locations: { countries: ['BR'] } }));
+      processData(data);
     }
     else if (type === 'ad') {
       endpoint = `${creds.adAccountId}/ads`;
-      params.append('adset_id', data.adset_id);
-      params.append('name', data.name);
-      params.append('status', data.status || 'PAUSED');
-      params.append('creative', JSON.stringify({ creative_id: data.creative_id }));
+      processData(data);
     }
 
     const res = await fetch(`https://graph.facebook.com/v21.0/${endpoint}`, {

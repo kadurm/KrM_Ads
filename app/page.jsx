@@ -1243,6 +1243,7 @@ export default function App() {
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 level={campaignsLevel}
+                parentId={campaignsParentId}
                 setLevel={loadCampaigns}
                 clienteName={clienteSelecionado}
               />
