@@ -26,7 +26,10 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const cliente = searchParams.get('cliente');
     const level = searchParams.get('level') || 'campaign';
-    const parentId = searchParams.get('parentId');
+    const parentId = searchParams.get('parentId'); // Legacy single ID support
+    const parentIds = searchParams.get('parentIds'); // Multi-selection support (comma separated)
+    const since = searchParams.get('since');
+    const until = searchParams.get('until');
 
     if (!cliente) throw new Error('Cliente obrigatório');
     const { adAccountId, accessToken } = getCredentials(cliente);
@@ -34,23 +37,51 @@ export async function GET(request: Request) {
 
     let endpoint = `${adAccountId}/campaigns`;
     let fields = 'id,name,status,objective,daily_budget,lifetime_budget,updated_time,bid_strategy';
+    let filtering: any[] = [];
 
     if (level === 'adset') {
-      endpoint = parentId ? `${parentId}/adsets` : `${adAccountId}/adsets`;
+      // If we have parentIds (campaigns), we query all adsets from the account with a filter
+      if (parentIds) {
+        endpoint = `${adAccountId}/adsets`;
+        filtering.push({ field: 'campaign.id', operator: 'IN', value: parentIds.split(',') });
+      } else if (parentId) {
+        endpoint = `${parentId}/adsets`;
+      } else {
+        endpoint = `${adAccountId}/adsets`;
+      }
       fields = 'id,name,status,daily_budget,lifetime_budget,campaign_id,multi_advertiser_ads_enabled';
     } else if (level === 'ad') {
-      endpoint = parentId ? `${parentId}/ads` : `${adAccountId}/ads`;
+      if (parentIds) {
+        endpoint = `${adAccountId}/ads`;
+        // Filtering depends on whether we are coming from adsets or campaigns
+        // For now assume parentIds are adsets if we are looking at ads
+        filtering.push({ field: 'adset.id', operator: 'IN', value: parentIds.split(',') });
+      } else if (parentId) {
+        endpoint = `${parentId}/ads`;
+      } else {
+        endpoint = `${adAccountId}/ads`;
+      }
       fields = 'id,name,status,adset_id,campaign_id,creative{id,thumbnail_url.width(800).height(800),image_url},is_synthetic_content';
     }
 
     const insightsFields = 'spend,impressions,actions,inline_link_click_ctr,video_p25_watched_actions';
     const historicalFields = 'spend,purchase_roas,actions';
     
-    const url = graphUrl(endpoint, {
+    const queryParams: Record<string, any> = {
       access_token: accessToken,
       fields: `${fields},insights.level(${level}){${insightsFields}},historical_insights:insights.date_preset(last_7d).time_increment(1){${historicalFields}}`,
-      limit: '50'
-    });
+      limit: '100'
+    };
+
+    if (since && until) {
+      queryParams.time_range = JSON.stringify({ since, until });
+    }
+
+    if (filtering.length > 0) {
+      queryParams.filtering = JSON.stringify(filtering);
+    }
+
+    const url = graphUrl(endpoint, queryParams);
 
     const res = await fetch(url);
     const data = await res.json();

@@ -24,10 +24,16 @@ interface Props {
   parentId?: string | null;
   setLevel: (level: string, parentId?: string | null) => void;
   clienteName: string;
+  selectedIds: string[];
+  onToggleSelect: (id: string) => void;
+  onClearSelection: () => void;
+  since?: string;
+  until?: string;
 }
 
 export const CampaignsBoard: React.FC<Props> = ({
-  campaigns, loading, onUpdate, onRefresh, searchTerm, setSearchTerm, level, parentId, setLevel, clienteName
+  campaigns, loading, onUpdate, onRefresh, searchTerm, setSearchTerm, level, parentId, setLevel, clienteName,
+  selectedIds, onToggleSelect, onClearSelection, since, until
 }) => {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [editingObject, setEditingObject] = useState<MetaCampaign | null>(null);
@@ -39,6 +45,15 @@ export const CampaignsBoard: React.FC<Props> = ({
   const handleEdit = (obj: MetaCampaign) => {
     setEditingObject(obj);
     setIsBuilderOpen(true);
+  };
+
+  const handleTabClick = (newLevel: string) => {
+    // Meta Ads Logic: If we have selected items, use them as filter for next level
+    if (selectedIds.length > 0) {
+      setLevel(newLevel, selectedIds.join(','));
+    } else {
+      setLevel(newLevel, null);
+    }
   };
 
   const handleCreateObject = async (payload: any) => {
@@ -94,16 +109,40 @@ export const CampaignsBoard: React.FC<Props> = ({
       
       {/* ADVANCED TOOLBAR */}
       <div className="flex flex-wrap items-center justify-between gap-6 bg-slate-900/20 p-6 rounded-[2rem] border border-slate-800/50 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-           {['campaign', 'adset', 'ad'].map((lvl) => (
-             <button
-               key={lvl}
-               onClick={() => setLevel(lvl)}
-               className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${level === lvl ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'bg-slate-950 text-slate-600 hover:text-slate-400'}`}
-             >
-               {lvl}s
-             </button>
-           ))}
+        <div className="flex items-center gap-6">
+           <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+              {[
+                { id: 'campaign', label: 'Campaigns' },
+                { id: 'adset', label: 'Ad Sets' },
+                { id: 'ad', label: 'Ads' }
+              ].map((lvl) => (
+                <button
+                  key={lvl.id}
+                  onClick={() => handleTabClick(lvl.id)}
+                  className={`
+                    px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+                    ${level === lvl.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-500 hover:text-white'}
+                  `}
+                >
+                  {lvl.label}
+                </button>
+              ))}
+           </div>
+
+           {selectedIds.length > 0 && (
+             <div className="flex items-center gap-4 animate-in fade-in zoom-in duration-300">
+                <div className="h-8 w-px bg-slate-800" />
+                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                  {selectedIds.length} Selected
+                </span>
+                <button 
+                  onClick={onClearSelection}
+                  className="text-[10px] font-black text-slate-500 hover:text-red-400 uppercase tracking-widest transition-all"
+                >
+                  Clear
+                </button>
+             </div>
+           )}
         </div>
 
         <div className="flex items-center gap-4 flex-1 max-w-2xl">
@@ -158,10 +197,8 @@ export const CampaignsBoard: React.FC<Props> = ({
               campaign={campaign} 
               onUpdate={onUpdate}
               onEdit={handleEdit}
-              onNavigate={(id) => {
-                if (level === 'campaign') setLevel('adset', id);
-                else if (level === 'adset') setLevel('ad', id);
-              }}
+              isSelected={selectedIds.includes(campaign.id)}
+              onToggleSelect={onToggleSelect}
             />
           ))}
         </div>

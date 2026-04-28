@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { 
-  Play, Pause, ShieldCheck, Zap, Activity, AlertTriangle, Fingerprint, Image as ImageIcon, Edit3 
+  Play, Pause, ShieldCheck, Zap, Activity, AlertTriangle, Fingerprint, Image as ImageIcon, Edit3, Check 
 } from 'lucide-react';
 import { MetaCampaign } from '@/types/meta-campaigns';
 import AndromedaPredictiveChart from './AndromedaPredictiveChart';
@@ -17,9 +17,13 @@ interface Props {
   onUpdate: (id: string, updates: Partial<MetaCampaign>) => Promise<void>;
   onNavigate?: (id: string) => void;
   onEdit?: (campaign: MetaCampaign) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
-export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavigate, onEdit }) => {
+export const CampaignBentoCard: React.FC<Props> = ({ 
+  campaign, onUpdate, onNavigate, onEdit, isSelected, onToggleSelect 
+}) => {
   // Determine Level
   const isAd = !!campaign.adset_id;
   const isAdSet = !!campaign.campaign_id && !campaign.adset_id;
@@ -56,20 +60,33 @@ export const CampaignBentoCard: React.FC<Props> = ({ campaign, onUpdate, onNavig
         
         {/* HEADER */}
         <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              {renderLevelBadge()}
-              <div className="flex items-center gap-1.5">
-                <div className={`w-1 h-1 rounded-full ${campaign.capi_status === 'HEALTHY' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-slate-700'}`} />
-                <span className="text-[7px] font-bold text-slate-600 uppercase tracking-widest">CAPI</span>
-              </div>
-            </div>
-            <h3 
-              onClick={() => onNavigate?.(campaign.id)}
-              className="text-base font-black text-white tracking-tighter uppercase leading-tight cursor-pointer hover:text-blue-400 transition-colors"
+          <div className="flex items-start gap-4">
+            {/* SELECTION CHECKBOX */}
+            <div 
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSelect?.(campaign.id);
+              }}
+              className={`
+                w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all cursor-pointer mt-1
+                ${isSelected ? 'bg-blue-600 border-blue-500 shadow-[0_0_10px_rgba(37,99,235,0.4)]' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}
+              `}
             >
-              {campaign.name || 'Untitled'}
-            </h3>
+              {isSelected && <Check size={14} className="text-white" strokeWidth={4} />}
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                {renderLevelBadge()}
+                <div className="flex items-center gap-1.5">
+                  <div className={`w-1 h-1 rounded-full ${campaign.capi_status === 'HEALTHY' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-slate-700'}`} />
+                  <span className="text-[7px] font-bold text-slate-600 uppercase tracking-widest">CAPI</span>
+                </div>
+              </div>
+              <h3 className="text-base font-black text-white tracking-tighter uppercase leading-tight">
+                {campaign.name || 'Untitled'}
+              </h3>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">

@@ -271,10 +271,16 @@ export default function App() {
     setSelectedIds([]); // Reseta seleção ao mudar de nível
     try {
       let url = `/api/meta/campaigns?cliente=${encodeURIComponent(clienteSelecionado)}&level=${level}&since=${startDate}&until=${endDate}`;
-      if (parentId) url += `&parentId=${parentId}`;
-      
-      const res = await fetch(url);
-      const data = await res.json();
+      if (parentId) {
+        // If parentId contains a comma, it's multiple IDs
+        if (String(parentId).includes(',')) {
+          url += `&parentIds=${parentId}`;
+        } else {
+          url += `&parentId=${parentId}`;
+        }
+      }
+
+      const res = await fetch(url);      const data = await res.json();
       if (data.success) setCampaignsList(data.items || []);
       else setMensagemPainel({ tipo: 'erro', texto: data.error });
     } catch (e) {
@@ -1234,7 +1240,36 @@ export default function App() {
           )}
 
           {activeTab === 'campanhas' && (
-            <div className="max-w-[1400px] mx-auto py-10 px-8">
+            <div className="max-w-[1400px] mx-auto py-10 px-8 space-y-8">
+              {/* CAMPAIGN LEVEL DATE FILTER */}
+              <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-900/40 p-6 rounded-[2rem] border border-slate-800/50 backdrop-blur-md">
+                <div>
+                  <h2 className="text-xl font-black text-white uppercase tracking-tighter">Gestão de Performance</h2>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Fonte: Meta Ads Graph API • {clienteSelecionado}</p>
+                </div>
+                <div className="flex items-center gap-3 bg-slate-950 p-2 rounded-2xl border border-slate-800 shadow-sm flex-wrap">
+                  <div className="flex gap-1 bg-slate-900 p-1 rounded-xl">
+                    {[
+                      { id: 'hoje', label: 'Hoje' },
+                      { id: 'ontem', label: 'Ontem' },
+                      { id: '7d', label: '7 Dias' },
+                      { id: 'este_mes', label: 'Este Mês' },
+                      { id: 'mes_passado', label: 'Mês Passado' },
+                    ].map(s => (
+                      <button key={s.id} onClick={() => handleShortcut(s.id)} className={getShortcutClass(s.id)}>{s.label}</button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2 px-2">
+                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-900 text-[11px] font-bold text-slate-300 p-2 rounded-xl border border-slate-800 outline-none focus:border-blue-500/50 transition-all" />
+                    <span className="text-slate-600 text-xs">→</span>
+                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-900 text-[11px] font-bold text-slate-300 p-2 rounded-xl border border-slate-800 outline-none focus:border-blue-500/50 transition-all" />
+                  </div>
+                  <button onClick={handleSync} disabled={isSyncing} title="Sincronizar" className="p-2.5 px-4 bg-blue-600/20 text-blue-400 rounded-xl font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all">
+                    <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} />
+                  </button>
+                </div>
+              </div>
+
               <CampaignsBoard 
                 campaigns={campaignsList}
                 loading={campaignsLoading}
@@ -1246,6 +1281,13 @@ export default function App() {
                 parentId={campaignsParentId}
                 setLevel={loadCampaigns}
                 clienteName={clienteSelecionado}
+                selectedIds={selectedIds}
+                onToggleSelect={(id) => {
+                  setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+                }}
+                onClearSelection={() => setSelectedIds([])}
+                since={startDate}
+                until={endDate}
               />
             </div>
           )}
