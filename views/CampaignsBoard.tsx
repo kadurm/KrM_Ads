@@ -30,28 +30,51 @@ export const CampaignsBoard: React.FC<Props> = ({
   campaigns, loading, onUpdate, onRefresh, searchTerm, setSearchTerm, level, parentId, setLevel, clienteName
 }) => {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [editingObject, setEditingObject] = useState<MetaCampaign | null>(null);
 
   const filteredCampaigns = useMemo(() => {
     return campaigns.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [campaigns, searchTerm]);
 
+  const handleEdit = (obj: MetaCampaign) => {
+    setEditingObject(obj);
+    setIsBuilderOpen(true);
+  };
+
   const handleCreateObject = async (payload: any) => {
     try {
-      const res = await fetch('/api/meta/create', {
-        method: 'POST',
+      const isEdit = !!editingObject;
+      const endpoint = isEdit ? `/api/meta/campaigns` : '/api/meta/create';
+      const method = isEdit ? 'PATCH' : 'POST';
+      
+      const body = isEdit ? {
+        cliente: clienteName,
+        id: editingObject.id,
+        ...payload.data
+      } : payload;
+
+      const res = await fetch(endpoint, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (data.success) {
         onRefresh();
+        setIsBuilderOpen(false);
+        setEditingObject(null);
       } else {
-        alert('Erro ao criar item: ' + data.error);
+        alert('Erro: ' + data.error);
       }
     } catch (error) {
-      console.error('Error creating meta object:', error);
+      console.error('Error handling meta object:', error);
       alert('Falha na comunicação com a API');
     }
+  };
+
+  const closeBuilder = () => {
+    setIsBuilderOpen(false);
+    setEditingObject(null);
   };
 
   if (loading && campaigns.length === 0) {
@@ -134,6 +157,7 @@ export const CampaignsBoard: React.FC<Props> = ({
               key={campaign.id} 
               campaign={campaign} 
               onUpdate={onUpdate}
+              onEdit={handleEdit}
               onNavigate={(id) => {
                 if (level === 'campaign') setLevel('adset', id);
                 else if (level === 'adset') setLevel('ad', id);
@@ -146,11 +170,12 @@ export const CampaignsBoard: React.FC<Props> = ({
       {/* MODAL SYSTEM */}
       <CampaignBuilderModal 
         isOpen={isBuilderOpen}
-        onClose={() => setIsBuilderOpen(false)}
+        onClose={closeBuilder}
         onSubmit={handleCreateObject}
         clienteName={clienteName}
-        level={level}
+        level={editingObject ? (editingObject.adset_id ? 'ad' : editingObject.campaign_id ? 'adset' : 'campaign') : level}
         parentId={parentId}
+        initialData={editingObject}
       />
 
     </div>
