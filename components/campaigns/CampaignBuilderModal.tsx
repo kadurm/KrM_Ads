@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   X, Target, Zap, TrendingUp, MessageSquare, Smartphone, ShoppingBag, Eye, Loader2,
   Globe, Users, Image as ImageIcon, Link as LinkIcon, Type, Layers, MousePointer2, 
-  Monitor, ChevronDown, ChevronRight, AlertCircle, Info, Layout
+  Monitor, ChevronDown, ChevronRight, AlertCircle, Info, Layout, Search
 } from 'lucide-react';
 import { MetaAdSetTargeting, MetaAdCreative, MetaPromotedObject, MetaCampaign } from '@/types/meta-campaigns';
 
