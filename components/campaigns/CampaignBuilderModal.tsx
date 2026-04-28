@@ -313,78 +313,100 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
     if (activeTab === 'audience') {
       return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-[2rem] space-y-6">
-            <div className="flex items-center gap-3">
-              <Globe size={16} className="text-blue-500" />
-              <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Location & Demographics</h4>
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          
+          {/* Accordion 1: Demographics */}
+          <div className={`p-6 bg-slate-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'demographics' ? 'border-blue-500/50' : 'border-slate-800'}`}>
+            <div 
+              className="flex items-center justify-between cursor-pointer group"
+              onClick={() => toggleSection('demographics')}
+            >
+              <div className="flex items-center gap-3">
+                <Globe size={16} className={expandedSection === 'demographics' ? 'text-blue-500' : 'text-slate-500'} />
+                <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Location & Demographics</h4>
+              </div>
+              {expandedSection === 'demographics' ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
             </div>
             
-            <div className="space-y-4">
-              <div className="space-y-1">
-                <span className="text-[8px] font-black text-slate-600 uppercase">Countries</span>
-                <div className="flex flex-wrap gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl">
-                  {formData.targeting.geo_locations.countries.map((c: string) => (
-                    <span key={c} className="px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-[9px] font-black border border-blue-500/30 flex items-center gap-2">
-                      {c} <X size={10} className="cursor-pointer" />
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            {expandedSection === 'demographics' && (
+              <div className="space-y-6 mt-6 pt-6 border-t border-slate-800/50 animate-in slide-in-from-top-2 duration-300">
                 <div className="space-y-1">
-                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Age Range</span>
-                  <div className="flex items-center gap-3">
-                     <input 
-                       type="number" 
-                       value={formData.targeting.age_min}
-                       onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, age_min: Number(e.target.value) } })}
-                       className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-center text-white" 
-                     />
-                     <span className="text-slate-700 font-bold">-</span>
-                     <input 
-                       type="number" 
-                       value={formData.targeting.age_max}
-                       onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, age_max: Number(e.target.value) } })}
-                       className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-center text-white" 
-                     />
+                  <span className="text-[8px] font-black text-slate-600 uppercase">Countries</span>
+                  <div className="flex flex-wrap gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl">
+                    {formData.targeting.geo_locations.countries.map((c: string) => (
+                      <span key={c} className="px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-[9px] font-black border border-blue-500/30 flex items-center gap-2">
+                        {c} <X size={10} className="cursor-pointer" />
+                      </span>
+                    ))}
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Gender</span>
-                  <select 
-                    value={formData.targeting.genders?.[0] || 'ALL'}
-                    onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, genders: e.target.value === 'ALL' ? undefined : [Number(e.target.value)] } })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-white"
-                  >
-                    <option value="ALL">All Genders</option>
-                    <option value="1">Men</option>
-                    <option value="2">Women</option>
-                  </select>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Age Range</span>
+                    <div className="flex items-center gap-3">
+                       <input 
+                         type="number" 
+                         value={formData.targeting.age_min}
+                         onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, age_min: Number(e.target.value) } })}
+                         className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-center text-white outline-none focus:border-blue-500/50" 
+                       />
+                       <span className="text-slate-700 font-bold">-</span>
+                       <input 
+                         type="number" 
+                         value={formData.targeting.age_max}
+                         onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, age_max: Number(e.target.value) } })}
+                         className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-center text-white outline-none focus:border-blue-500/50" 
+                       />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Gender</span>
+                    <select 
+                      value={formData.targeting.genders?.[0] || 'ALL'}
+                      onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, genders: e.target.value === 'ALL' ? undefined : [Number(e.target.value)] } })}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-white outline-none focus:border-blue-500/50"
+                    >
+                      <option value="ALL">All Genders</option>
+                      <option value="1">Men</option>
+                      <option value="2">Women</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
-          <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-[2rem] space-y-4">
-            <div className="flex items-center gap-3">
-              <Users size={16} className="text-purple-500" />
-              <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Detailed Targeting</h4>
+          {/* Accordion 2: Detailed Targeting */}
+          <div className={`p-6 bg-slate-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'detailed' ? 'border-purple-500/50' : 'border-slate-800'}`}>
+            <div 
+              className="flex items-center justify-between cursor-pointer group"
+              onClick={() => toggleSection('detailed')}
+            >
+              <div className="flex items-center gap-3">
+                <Users size={16} className={expandedSection === 'detailed' ? 'text-purple-500' : 'text-slate-500'} />
+                <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Detailed Targeting</h4>
+              </div>
+              {expandedSection === 'detailed' ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
             </div>
-            <div className="relative group">
-              <input 
-                type="text"
-                placeholder="Search interests, behaviors..."
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-4 pl-12 text-[11px] text-white outline-none focus:border-purple-500/50"
-              />
-              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
-            </div>
-            <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center gap-2 opacity-50">
-               <AlertCircle size={20} className="text-slate-700" />
-               <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Advanced Targeting UI Module Loading...</p>
-            </div>
-            <AndromedaInsight text="Públicos BROAD (sem interesses) convertem 22% melhor em escala." />
+
+            {expandedSection === 'detailed' && (
+              <div className="space-y-4 mt-6 pt-6 border-t border-slate-800/50 animate-in slide-in-from-top-2 duration-300">
+                <div className="relative group">
+                  <input 
+                    type="text"
+                    placeholder="Search interests, behaviors..."
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-4 pl-12 text-[11px] text-white outline-none focus:border-purple-500/50"
+                  />
+                  <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                </div>
+                <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center gap-2 opacity-50">
+                   <AlertCircle size={20} className="text-slate-700" />
+                   <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Advanced Targeting UI Module Loading...</p>
+                </div>
+                <AndromedaInsight text="Públicos BROAD (sem interesses) convertem 22% melhor em escala." />
+              </div>
+            )}
           </div>
         </div>
       );
@@ -455,65 +477,94 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
     if (activeTab === 'content') {
       return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="space-y-4">
-            <div className="space-y-2">
-               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
-                 <ImageIcon size={12} /> Media Hash / Video ID
-               </label>
-               <input 
-                 type="text" 
-                 value={formData.creative.object_story_spec.link_data.image_hash || ''}
-                 onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, image_hash: e.target.value } } } })}
-                 placeholder="Enter Asset ID or Hash"
-                 className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 font-mono"
-               />
-            </div>
-
-            <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-[2rem] space-y-6">
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          
+          {/* Accordion 1: Media Configuration */}
+          <div className={`p-6 bg-slate-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'media' ? 'border-blue-500/50' : 'border-slate-800'}`}>
+            <div 
+              className="flex items-center justify-between cursor-pointer group"
+              onClick={() => toggleSection('media')}
+            >
               <div className="flex items-center gap-3">
-                <Type size={16} className="text-blue-500" />
-                <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Ad Copy (Standard)</h4>
+                <ImageIcon size={16} className={expandedSection === 'media' ? 'text-blue-500' : 'text-slate-500'} />
+                <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Media Configuration</h4>
               </div>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Primary Text</span>
-                  <textarea 
-                    value={formData.creative.object_story_spec.link_data.message}
-                    onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, message: e.target.value } } } })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[12px] text-white min-h-[100px] resize-none focus:border-blue-600/50 outline-none transition-all"
-                    placeholder="Capture attention with your main copy..."
-                  />
-                  <AndromedaInsight text="Textos primários com menos de 280 caracteres perfomam 15% melhor." />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                   <div className="space-y-2">
-                      <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Headline</span>
-                      <input 
-                        type="text" 
-                        placeholder="Short catchy title"
-                        className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] text-white"
-                      />
-                   </div>
-                   <div className="space-y-2">
-                      <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">CTA Type</span>
-                      <select 
-                        value={formData.creative.object_story_spec.link_data.call_to_action.type}
-                        onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, call_to_action: { ...formData.creative.object_story_spec.link_data.call_to_action, type: e.target.value } } } } })}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] text-white"
-                      >
-                        <option value="LEARN_MORE">Learn More</option>
-                        <option value="CONTACT_US">Contact Us</option>
-                        <option value="SEND_MESSAGE">Send Message</option>
-                        <option value="SHOP_NOW">Shop Now</option>
-                        <option value="ORDER_NOW">Order Now</option>
-                      </select>
-                   </div>
-                </div>
-              </div>
+              {expandedSection === 'media' ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
             </div>
+
+            {expandedSection === 'media' && (
+              <div className="space-y-4 mt-6 pt-6 border-t border-slate-800/50 animate-in slide-in-from-top-2 duration-300">
+                <div className="space-y-2">
+                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                     <ImageIcon size={12} /> Media Hash / Video ID
+                   </label>
+                   <input 
+                     type="text" 
+                     value={formData.creative.object_story_spec.link_data.image_hash || ''}
+                     onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, image_hash: e.target.value } } } })}
+                     placeholder="Enter Asset ID or Hash"
+                     className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 font-mono"
+                   />
+                </div>
+                <AndromedaInsight text="Anúncios de vídeo (Reels) têm 3x mais engajamento que estáticos em 2026." />
+              </div>
+            )}
+          </div>
+
+          {/* Accordion 2: Ad Copy & Messaging */}
+          <div className={`p-6 bg-slate-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'copy' ? 'border-blue-500/50' : 'border-slate-800'}`}>
+            <div 
+              className="flex items-center justify-between cursor-pointer group"
+              onClick={() => toggleSection('copy')}
+            >
+              <div className="flex items-center gap-3">
+                <Type size={16} className={expandedSection === 'copy' ? 'text-blue-500' : 'text-slate-500'} />
+                <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Ad Copy & Messaging</h4>
+              </div>
+              {expandedSection === 'copy' ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
+            </div>
+
+            {expandedSection === 'copy' && (
+              <div className="space-y-6 mt-6 pt-6 border-t border-slate-800/50 animate-in slide-in-from-top-2 duration-300">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Primary Text</span>
+                    <textarea 
+                      value={formData.creative.object_story_spec.link_data.message}
+                      onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, message: e.target.value } } } })}
+                      className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[12px] text-white min-h-[100px] resize-none focus:border-blue-600/50 outline-none transition-all"
+                      placeholder="Capture attention with your main copy..."
+                    />
+                    <AndromedaInsight text="Textos primários com menos de 280 caracteres perfomam 15% melhor." />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                     <div className="space-y-2">
+                        <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Headline</span>
+                        <input 
+                          type="text" 
+                          placeholder="Short catchy title"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-blue-500/50"
+                        />
+                     </div>
+                     <div className="space-y-2">
+                        <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">CTA Type</span>
+                        <select 
+                          value={formData.creative.object_story_spec.link_data.call_to_action.type}
+                          onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, call_to_action: { ...formData.creative.object_story_spec.link_data.call_to_action, type: e.target.value } } } } })}
+                          className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-blue-500/50"
+                        >
+                          <option value="LEARN_MORE">Learn More</option>
+                          <option value="CONTACT_US">Contact Us</option>
+                          <option value="SEND_MESSAGE">Send Message</option>
+                          <option value="SHOP_NOW">Shop Now</option>
+                          <option value="ORDER_NOW">Order Now</option>
+                        </select>
+                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       );
