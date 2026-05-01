@@ -67,6 +67,7 @@ export default function App() {
   const [novoCliente, setNovoCliente] = useState({ nome: '', accountId: '', token: '', pixelId: '' });
 
   const [isAddingCliente, setIsAddingCliente] = useState(false);
+  const [isDeepLearningLoading, setIsDeepLearningLoading] = useState(false);
   const [editingCliente, setEditingCliente] = useState(null);
   const [perfilCliente, setPerfilCliente] = useState(null);
   const [portfolioData, setPortfolioData] = useState(null);
@@ -206,6 +207,27 @@ export default function App() {
       }
     } catch (e) {
       setMensagemPainel({ tipo: 'erro', texto: 'Erro ao atualizar cliente.' });
+    }
+  };
+
+  const handleTriggerDeepLearning = async () => {
+    if (!window.confirm('Isso iniciará o motor de IA para analisar todas as contas e atualizar os contextos estratégicos (agent.md). Deseja continuar?')) return;
+    setIsDeepLearningLoading(true);
+    try {
+      const res = await fetch('/api/cron/deep-learning', {
+        headers: { 'Authorization': `Bearer KRM_ADS_DEEP_LEARNING_2026` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        await loadClientes();
+        setMensagemPainel({ tipo: 'sucesso', texto: 'Deep Learning concluído! Contextos atualizados.' });
+      } else {
+        setMensagemPainel({ tipo: 'erro', texto: 'Falha no aprendizado: ' + data.error });
+      }
+    } catch (error) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Erro de comunicação com o motor Andromeda.' });
+    } finally {
+      setIsDeepLearningLoading(false);
     }
   };
 
@@ -1153,11 +1175,20 @@ export default function App() {
                   <h1 className="text-3xl font-bold text-slate-100 font-sans tracking-tight">Administração de Empresas</h1>
                   <p className="text-slate-500 text-sm mt-1">Gerenciamento global de contas e contextos estratégicos.</p>
                 </div>
-                <button onClick={() => setShowNovoClienteForm(true)} className="p-3 px-6 bg-blue-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-xl shadow-blue-900/20 hover:bg-blue-700 transition-all border border-blue-500/20">
-                  <Plus size={18} /> Vincular Nova Conta
-                </button>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={handleTriggerDeepLearning}
+                    disabled={isDeepLearningLoading}
+                    className="p-3 px-6 bg-slate-800 border border-slate-700 text-blue-400 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-slate-700 transition-all disabled:opacity-50 shadow-xl"
+                  >
+                    {isDeepLearningLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                    Acionar Deep Learning
+                  </button>
+                  <button onClick={() => setShowNovoClienteForm(true)} className="p-3 px-6 bg-blue-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-xl shadow-blue-900/20 hover:bg-blue-700 transition-all border border-blue-500/20">
+                    <Plus size={18} /> Vincular Nova Conta
+                  </button>
+                </div>
               </div>
-
               {/* LISTA DE CLIENTES */}
               <div className="grid grid-cols-1 gap-4">
                 {clientesDisponiveis.map(cliente => (
