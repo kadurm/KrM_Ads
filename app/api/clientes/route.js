@@ -5,6 +5,30 @@ import path from 'path';
 
 const prisma = new PrismaClient();
 
+/** Função para salvar arquivo físico de contexto e histórico (Save Point) */
+function saveContextFile(clienteNome, conteudo) {
+  try {
+    const safeNome = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/gi, '_');
+    const baseDir = path.join(process.cwd(), 'ref', safeNome);
+    const historyDir = path.join(baseDir, 'history');
+
+    // Garante que as pastas existem
+    if (!fs.existsSync(historyDir)) fs.mkdirSync(historyDir, { recursive: true });
+
+    // 1. Salva o contexto ATUAL
+    fs.writeFileSync(path.join(baseDir, 'agent.md'), conteudo);
+
+    // 2. Salva o SAVE POINT datado
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16);
+    const fileName = `agent_${timestamp}.md`;
+    fs.writeFileSync(path.join(historyDir, fileName), conteudo);
+
+    console.log(`[File System] Contexto e Save Point salvos para ${clienteNome}`);
+  } catch (e) {
+    console.warn(`[File System Warning] Falha ao salvar arquivo físico: ${e.message}`);
+  }
+}
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -27,6 +51,7 @@ export async function GET(request) {
     });
     return NextResponse.json({ success: true, clientes });
   } catch (error) {
+    console.error('Clientes GET Error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
@@ -63,74 +88,44 @@ export async function POST(request) {
       }
     });
 
-    try {
-      const refDir = path.join(process.cwd(), 'ref', nome);
-      if (!fs.existsSync(refDir)) {
-        fs.mkdirSync(refDir, { recursive: true });
-        fs.writeFileSync(path.join(refDir, 'agent.md'), agentTemplate);
-      }
-    /** Função para salvar arquivo físico de contexto e histórico (Save Point) */
-    function saveContextFile(clienteNome, conteudo) {
-      try {
-        const safeNome = clienteNome.replace(/[^a-z0-9]/gi, '_');
-        const baseDir = path.join(process.cwd(), 'ref', safeNome);
-        const historyDir = path.join(baseDir, 'history');
+    // Tenta salvar arquivo físico inicial
+    saveContextFile(nome, agentTemplate);
 
-        // Garante que as pastas existem
-        if (!fs.existsSync(historyDir)) fs.mkdirSync(historyDir, { recursive: true });
+    return NextResponse.json({ success: true, cliente });
+  } catch (error) {
+    console.error('Clientes POST Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
 
-        // 1. Salva o contexto ATUAL
-        fs.writeFileSync(path.join(baseDir, 'agent.md'), conteudo);
+export async function PATCH(request) {
+  try {
+    const { id, nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights } = await request.json();
+    if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
 
-        // 2. Salva o SAVE POINT datado
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16);
-        const fileName = `agent_${timestamp}.md`;
-        fs.writeFileSync(path.join(historyDir, fileName), conteudo);
+    // 1. Atualiza o Cliente
+    const cliente = await prisma.cliente.update({
+      where: { id },
+      data: { nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights }
+    });
 
-        console.log(`[File System] Contexto e Save Point salvos para ${clienteNome}`);
-      } catch (e) {
-        console.warn(`[File System Warning] Falha ao salvar arquivo físico: ${e.message}`);
-      }
-    }
-
-    export async function GET() {
-      try {
-        const clientes = await prisma.cliente.findMany({
-          orderBy: { nome: 'asc' }
-        });
-        return NextResponse.json({ success: true, clientes });
-      } catch (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-      }
-    }
-    ...
-    export async function PATCH(request) {
-      try {
-        const { id, nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights } = await request.json();
-        if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
-
-        // 1. Atualiza o Cliente
-        const cliente = await prisma.cliente.update({
-          where: { id },
-          data: { nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights }
-        });
-
-        // 2. Se houver insights (agent.md), cria Save Point no Banco e no FS
-        if (insights) {
-          await prisma.historicoContexto.create({
-            data: {
-              cliente_id: id,
-              conteudo: insights
-            }
-          });
-          saveContextFile(nome || cliente.nome, insights);
+    // 2. Se houver insights (agent.md), cria Save Point no Banco e no FS
+    if (insights) {
+      await prisma.historicoContexto.create({
+        data: {
+          cliente_id: id,
+          conteudo: insights
         }
-
-        return NextResponse.json({ success: true, cliente });
-      } catch (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-      }
+      });
+      saveContextFile(nome || cliente.nome, insights);
     }
+
+    return NextResponse.json({ success: true, cliente });
+  } catch (error) {
+    console.error('Clientes PATCH Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
 
 export async function DELETE(request) {
   try {
@@ -138,14 +133,11 @@ export async function DELETE(request) {
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
 
-    // Nota: Em um sistema real, você pode querer deletar em cascata ou apenas desativar.
-    // Aqui deletamos as métricas relacionadas antes do cliente para evitar erro de FK (se não configurado cascata no BD)
-    // No schema atual, Campanhas dependem de Clientes.
-    
     await prisma.cliente.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('Clientes DELETE Error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
