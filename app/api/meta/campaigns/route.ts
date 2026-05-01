@@ -18,7 +18,8 @@ function graphUrl(path: string, query: Record<string, any>) {
 }
 
 async function getCredentials(clienteName: string) {
-  const shortName = clienteName.split(' ')[0];
+  // Limpa o nome para o formato do .env (Pega a primeira palavra, remove acentos e caracteres especiais)
+  const shortName = clienteName.split(' ')[0].normalize('NFD').replace(/[\u0300-\u036f]/g, "");
   
   // Prioridade 1: Variáveis de Ambiente (Configuração via Agentes/Automação)
   let adAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
