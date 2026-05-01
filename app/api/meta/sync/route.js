@@ -84,10 +84,10 @@ export async function GET(request) {
     // 1. LOGICA DO COMMIT 8170273: BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão)
     let metaAccountTotals = null;
     try {
-      const shortName = clienteNome.split(' ')[0];
-      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
-      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`];
-      const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
+      const ACCESS_TOKEN = cliente.meta_access_token;
+      const AD_ACCOUNT_ID = cliente.meta_ads_account_id.startsWith('act_') 
+        ? cliente.meta_ads_account_id 
+        : `act_${cliente.meta_ads_account_id}`;
 
       if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
         const metaUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { 
@@ -239,11 +239,15 @@ export async function POST(request) {
     const { since, until, cliente } = await request.json();
     if (!cliente) return NextResponse.json({ success: false, error: "Cliente não fornecido" }, { status: 400 });
 
-    const shortName = cliente.split(' ')[0];
-    const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
-    const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`];
-    const AD_ACCOUNT_ID = rawAccountId.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
     const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
+    if (!dbCliente) throw new Error("Cliente não encontrado no banco de dados");
+    
+    const ACCESS_TOKEN = dbCliente.meta_access_token;
+    const AD_ACCOUNT_ID = dbCliente.meta_ads_account_id.startsWith('act_') 
+      ? dbCliente.meta_ads_account_id 
+      : `act_${dbCliente.meta_ads_account_id}`;
+    
+    if (!ACCESS_TOKEN || !AD_ACCOUNT_ID) throw new Error("Credenciais da Meta incompletas para este cliente");
 
     const commonQuery = { access_token: ACCESS_TOKEN, limit: '1000' };
     const todayStr = new Date().toISOString().split('T')[0]; 

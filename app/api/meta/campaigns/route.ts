@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 import { MetaCampaign } from '@/types/meta-campaigns';
+
+const prisma = new PrismaClient();
 
 /**
  * Meta Ads 2026 - Centralized Campaign API
@@ -14,11 +17,21 @@ function graphUrl(path: string, query: Record<string, any>) {
   return url.toString();
 }
 
-function getCredentials(clienteName: string) {
-  const shortName = clienteName.split(' ')[0];
-  const adAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
-  const accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`];
-  return { adAccountId: adAccountId?.startsWith('act_') ? adAccountId : `act_${adAccountId}`, accessToken };
+async function getCredentials(clienteName: string) {
+  // Busca no banco pelo nome do cliente
+  const clienteData = await prisma.cliente.findFirst({
+    where: { nome: clienteName }
+  });
+
+  if (!clienteData) return { adAccountId: null, accessToken: null };
+
+  const adAccountId = clienteData.meta_ads_account_id;
+  const accessToken = clienteData.meta_access_token;
+  
+  return { 
+    adAccountId: adAccountId?.startsWith('act_') ? adAccountId : `act_${adAccountId}`, 
+    accessToken 
+  };
 }
 
 export async function GET(request: Request) {
@@ -32,7 +45,7 @@ export async function GET(request: Request) {
     const until = searchParams.get('until');
 
     if (!cliente) throw new Error('Cliente obrigatório');
-    const { adAccountId, accessToken } = getCredentials(cliente);
+    const { adAccountId, accessToken } = await getCredentials(cliente);
     if (!adAccountId || !accessToken) throw new Error(`Credenciais ausentes para ${cliente}`);
 
     let endpoint = `${adAccountId}/campaigns`;
@@ -158,7 +171,7 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const { cliente, id, ...updates } = await request.json();
-    const { accessToken } = getCredentials(cliente);
+    const { accessToken } = await getCredentials(cliente);
     if (!accessToken) throw new Error('Token de acesso não encontrado');
     
     const params = new URLSearchParams({ access_token: accessToken });

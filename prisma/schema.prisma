@@ -15,6 +15,7 @@ model Cliente {
   nome                String
   slug                String?     @unique // Ex: solutionplace
   meta_ads_account_id String
+  meta_access_token   String?     @default("")
   insights            String?     @default("")
   campanhas           Campanha[]
   relatorios          Relatorio[]

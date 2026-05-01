@@ -35,7 +35,7 @@ O sistema utiliza um modelo de **Sincronização Diária Fiel**:
 - **Pesquisa e Planejamento:** Antes de qualquer alteração no código, é obrigatório realizar uma investigação detalhada da estrutura atual e elaborar um plano de execução claro, documentando-o se necessário.
 - **Ciclo de Vida e Autonomia:** Ao finalizar uma atualização e publicar (GitHub/Vercel), o agente DEVE realizar uma inspeção técnica para verificar se a funcionalidade opera como esperado. Caso detecte falhas, o agente tem autonomia e obrigação de buscar alternativas e aplicar correções automaticamente até que o objetivo seja atingido, evitando turnos de retrabalho por parte do usuário.
 - **Regra de Ouro (Copywriting):** Todo texto gerado pela IA ou sistema para anúncios/relatórios deve terminar obrigatoriamente com uma **pergunta estratégica**.
-- **Gestão de Tokens:** Temporariamente via `.env` dinâmico (ex: `META_ACCESS_TOKEN_Cliente`).
+- **Gestão de Tokens:** Multi-Tenant via Banco de Dados (Tabela `Cliente`). Gerenciado dinamicamente pelo painel de administração.
 - **Segurança:** Legacy peer dependencies habilitado no `.npmrc` para compatibilidade com React 19.
 
 ## Endpoints de API

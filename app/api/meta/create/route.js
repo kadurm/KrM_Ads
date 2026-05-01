@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
-function getClientCredentials(clienteName) {
-  const shortName = clienteName.split(' ')[0];
-  const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
-  const accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`];
-  if (!rawAccountId || !accessToken) return null;
+const prisma = new PrismaClient();
+
+async function getClientCredentials(clienteName) {
+  const cliente = await prisma.cliente.findFirst({
+    where: { nome: clienteName }
+  });
+
+  if (!cliente || !cliente.meta_access_token || !cliente.meta_ads_account_id) return null;
+
+  const rawAccountId = cliente.meta_ads_account_id;
+  const accessToken = cliente.meta_access_token;
   const adAccountId = rawAccountId.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
+  
   return { adAccountId, accessToken };
 }
 
@@ -15,8 +23,8 @@ export async function POST(request) {
     const { cliente, type, data } = await request.json();
     if (!cliente || !type || !data) return NextResponse.json({ success: false, error: 'Dados incompletos' }, { status: 400 });
 
-    const creds = getClientCredentials(cliente);
-    if (!creds) return NextResponse.json({ success: false, error: `Credenciais não encontradas` }, { status: 500 });
+    const creds = await getClientCredentials(cliente);
+    if (!creds) return NextResponse.json({ success: false, error: `Credenciais não encontradas para o cliente ${cliente}` }, { status: 500 });
 
     let endpoint = '';
     const params = new URLSearchParams({ access_token: creds.accessToken });

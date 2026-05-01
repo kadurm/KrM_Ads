@@ -61,7 +61,8 @@ export default function App() {
   
   // Estados para Gestão de Clientes
   const [showNovoClienteForm, setShowNovoClienteForm] = useState(false);
-  const [novoCliente, setNovoCliente] = useState({ nome: '', accountId: '' });
+  const [novoCliente, setNovoCliente] = useState({ nome: '', accountId: '', token: '' });
+
   const [isAddingCliente, setIsAddingCliente] = useState(false);
   const [editingCliente, setEditingCliente] = useState(null);
   const [perfilCliente, setPerfilCliente] = useState(null);
@@ -144,11 +145,15 @@ export default function App() {
       const res = await fetch('/api/clientes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome: novoCliente.nome, meta_ads_account_id: novoCliente.accountId }),
+        body: JSON.stringify({ 
+          nome: novoCliente.nome, 
+          meta_ads_account_id: novoCliente.accountId,
+          meta_access_token: novoCliente.token 
+        }),
       });
       const data = await res.json();
       if (data.success) {
-        setNovoCliente({ nome: '', accountId: '' });
+        setNovoCliente({ nome: '', accountId: '', token: '' });
         setShowNovoClienteForm(false);
         await loadClientes();
         setMensagemPainel({ tipo: 'sucesso', texto: 'Cliente vinculado com sucesso!' });
@@ -1000,7 +1005,12 @@ export default function App() {
                             <label className="block text-[10px] font-black text-slate-500 uppercase mb-3 tracking-[0.2em]">Meta Ad Account ID</label>
                             <input type="text" required value={novoCliente.accountId} onChange={e => setNovoCliente({...novoCliente, accountId: e.target.value})} className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-100 outline-none focus:border-blue-600 transition-all shadow-inner" placeholder="act_861875509414758" />
                           </div>
-                        </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-3 tracking-[0.2em]">Meta Access Token</label>
+                            <input type="password" required value={novoCliente.token} onChange={e => setNovoCliente({...novoCliente, token: e.target.value})} className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-100 outline-none focus:border-blue-600 transition-all shadow-inner" placeholder="EAAYYES5..." />
+                          </div>
+                          </div>
+
                         <div className="bg-blue-600/5 p-6 rounded-3xl border border-blue-500/10 flex items-start gap-4">
                            <Sparkles size={24} className="text-blue-500 flex-shrink-0 mt-1" />
                            <p className="text-xs text-blue-400/80 leading-relaxed font-medium">
@@ -1031,6 +1041,10 @@ export default function App() {
                       <div>
                         <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">ID da Conta</label>
                         <input type="text" value={editingCliente.meta_ads_account_id} onChange={e => setEditingCliente({...editingCliente, meta_ads_account_id: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Access Token da Meta</label>
+                        <input type="password" value={editingCliente.meta_access_token || ''} onChange={e => setEditingCliente({...editingCliente, meta_access_token: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" placeholder="EAAYYES5..." />
                       </div>
                       <button onClick={() => handleUpdateCliente(editingCliente)} className="w-full bg-blue-600 p-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20">Salvar Alterações</button>
                     </div>
