@@ -20,6 +20,8 @@ interface Props {
   onRefresh: () => void;
   searchTerm: string;
   setSearchTerm: (val: string) => void;
+  statusFilter: string;
+  setStatusFilter: (val: string) => void;
   level: string;
   parentId?: string | null;
   setLevel: (level: string, parentId?: string | null) => void;
@@ -32,15 +34,28 @@ interface Props {
 }
 
 export const CampaignsBoard: React.FC<Props> = ({
-  campaigns, loading, onUpdate, onRefresh, searchTerm, setSearchTerm, level, parentId, setLevel, clienteName,
+  campaigns, loading, onUpdate, onRefresh, searchTerm, setSearchTerm, 
+  statusFilter, setStatusFilter,
+  level, parentId, setLevel, clienteName,
   selectedIds, onToggleSelect, onClearSelection, since, until
 }) => {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [editingObject, setEditingObject] = useState<MetaCampaign | null>(null);
 
   const filteredCampaigns = useMemo(() => {
-    return campaigns.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [campaigns, searchTerm]);
+    return campaigns.filter(c => {
+      const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      let matchesStatus = true;
+      if (statusFilter === 'ACTIVE') {
+        matchesStatus = c.status === 'ACTIVE';
+      } else if (statusFilter === 'DELIVERY') {
+        matchesStatus = (c.spend || 0) > 0 || (c.impressions || 0) > 0;
+      }
+      
+      return matchesSearch && matchesStatus;
+    });
+  }, [campaigns, searchTerm, statusFilter]);
 
   const handleEdit = (obj: MetaCampaign) => {
     setEditingObject(obj);
@@ -145,7 +160,7 @@ export const CampaignsBoard: React.FC<Props> = ({
            )}
         </div>
 
-        <div className="flex items-center gap-4 flex-1 max-w-2xl">
+        <div className="flex items-center gap-4 flex-1 max-w-3xl">
            <div className="relative flex-1 group">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors" size={16} />
               <input 
@@ -155,6 +170,25 @@ export const CampaignsBoard: React.FC<Props> = ({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-2xl py-4 pl-14 pr-6 text-[11px] text-white outline-none focus:border-blue-600/50 transition-all font-medium"
               />
+           </div>
+
+           <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+            {[
+              { id: 'ALL', label: 'Todas' },
+              { id: 'DELIVERY', label: 'Veiculadas' },
+              { id: 'ACTIVE', label: 'Ativas' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setStatusFilter(f.id)}
+                className={`
+                  px-4 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all
+                  ${statusFilter === f.id ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}
+                `}
+              >
+                {f.label}
+              </button>
+            ))}
            </div>
            
            <div className="flex items-center gap-2">

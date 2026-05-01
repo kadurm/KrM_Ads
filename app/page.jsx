@@ -97,7 +97,8 @@ export default function App() {
   const [campaignsLevel, setCampaignsLevel] = useState('campaign');
   const [campaignsParentId, setCampaignsParentId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, ACTIVE, PAUSED
+  const [statusFilter, setStatusFilter] = useState('ALL'); // ALL, ACTIVE, DELIVERY
+
   const [visibleColumns, setVisibleColumns] = useState(['spend', 'results', 'cpa']); // spend, results, cpa, impressions, ctr, clicks
   const [showColumnMenu, setShowColumnMenu] = useState(false);
   const [leadsList, setLeadsList] = useState([]);
@@ -1277,6 +1278,8 @@ export default function App() {
                 onRefresh={() => loadCampaigns(campaignsLevel, campaignsParentId)}
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
                 level={campaignsLevel}
                 parentId={campaignsParentId}
                 setLevel={loadCampaigns}
