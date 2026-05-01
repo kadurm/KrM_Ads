@@ -5,8 +5,23 @@ import path from 'path';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const clienteId = searchParams.get('id');
+
+    if (clienteId) {
+      const cliente = await prisma.cliente.findUnique({
+        where: { id: clienteId },
+        include: {
+          historico_contexto: {
+            orderBy: { criado_em: 'desc' }
+          }
+        }
+      });
+      return NextResponse.json({ success: true, cliente });
+    }
+
     const clientes = await prisma.cliente.findMany({
       orderBy: { nome: 'asc' }
     });

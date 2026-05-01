@@ -70,6 +70,7 @@ export default function App() {
   const [isDeepLearningLoading, setIsDeepLearningLoading] = useState(false);
   const [editingCliente, setEditingCliente] = useState(null);
   const [perfilCliente, setPerfilCliente] = useState(null);
+  const [historicoContexto, setHistoricoContexto] = useState([]);
   const [portfolioData, setPortfolioData] = useState(null);
   const [portfolioLoading, setPortfolioLoading] = useState(false);
   
@@ -144,6 +145,20 @@ export default function App() {
       if (data.success) setPortfolioData(data);
     } catch (e) { console.error("Erro ao carregar portfólio:", e); }
     finally { setPortfolioLoading(false); }
+  };
+
+  const loadHistorico = async (clienteId) => {
+    try {
+      const res = await fetch(`/api/clientes?id=${clienteId}`);
+      const data = await res.json();
+      if (data.success) setHistoricoContexto(data.cliente.historico_contexto || []);
+    } catch (e) { console.error("Erro ao carregar histórico:", e); }
+  };
+
+  const handleRestoreContext = (versao) => {
+    if (!window.confirm('Deseja restaurar esta versão do contexto? O texto atual será substituído.')) return;
+    setPerfilCliente({ ...perfilCliente, insights: versao.conteudo });
+    setMensagemPainel({ tipo: 'sucesso', texto: 'Versão restaurada no editor. Salve para aplicar.' });
   };
 
   const loadClientes = async () => {
@@ -1224,7 +1239,7 @@ export default function App() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <button onClick={() => setPerfilCliente(cliente)} className="p-3 px-6 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-slate-700 shadow-lg">
+                      <button onClick={() => { setPerfilCliente(cliente); loadHistorico(cliente.id); }} className="p-3 px-6 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-slate-700 shadow-lg">
                         <Settings size={16} className="text-blue-400" /> Perfil & Estratégia
                       </button>
                       <button onClick={() => setEditingCliente(cliente)} className="p-3 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-2xl transition-all border border-slate-700">
@@ -1358,6 +1373,28 @@ export default function App() {
                             </div>
                           </div>
                         </div>
+
+                        {/* HISTÓRICO DE VERSÕES */}
+                        <div>
+                          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6 opacity-60">Save Points (Histórico)</h4>
+                          <div className="space-y-3">
+                             {historicoContexto.length === 0 ? (
+                               <p className="text-[10px] text-slate-700 font-bold uppercase italic">Nenhum save point registrado.</p>
+                             ) : historicoContexto.map((v, i) => (
+                               <div key={v.id} className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800 flex justify-between items-center group hover:border-blue-500/30 transition-all cursor-pointer" onClick={() => handleRestoreContext(v)}>
+                                  <div>
+                                     <p className="text-[10px] font-black text-slate-400 uppercase">{new Date(v.criado_em).toLocaleDateString('pt-BR')}</p>
+                                     <p className="text-[9px] text-slate-600 font-bold">{new Date(v.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                     <span className="text-[8px] font-black text-blue-500 uppercase">Restaurar</span>
+                                     <RefreshCw size={12} className="text-blue-500" />
+                                  </div>
+                               </div>
+                             ))}
+                          </div>
+                        </div>
+
                         <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 p-8 rounded-[2.5rem] border border-blue-500/20 relative group">
                           <Sparkles className="absolute -top-4 -right-4 text-blue-500/10 group-hover:scale-125 transition-transform duration-1000" size={120} />
                           <h4 className="text-xs font-black text-white mb-4 flex items-center gap-2 uppercase tracking-widest">Guia do Agente IA</h4>
