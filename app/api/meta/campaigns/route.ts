@@ -18,22 +18,25 @@ function graphUrl(path: string, query: Record<string, any>) {
 }
 
 async function getCredentials(clienteName: string) {
-  // Limpa o nome para o formato do .env (Pega a primeira palavra, remove acentos e caracteres especiais)
-  const shortName = clienteName.split(' ')[0].normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+  // Limpa o nome para o formato do .env (Remove acentos, espaços e pega a primeira palavra)
+  const normalized = clienteName.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+  const shortName = normalized.split(' ')[0];
   
+  console.log(`[Auth] Buscando credenciais para: ${clienteName} (Key: ${shortName})`);
+
   // Prioridade 1: Variáveis de Ambiente (Configuração via Agentes/Automação)
   let adAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
   let accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`] || process.env[`META_ACCESS_TOKEN_GLOBAL`];
 
   // Prioridade 2: Banco de Dados (Configuração via Painel UI)
-  if (!adAccountId || !accessToken) {
+  if (!adAccountId) {
     const clienteData = await prisma.cliente.findFirst({
       where: { nome: clienteName }
     });
     
     if (clienteData) {
       adAccountId = adAccountId || clienteData.meta_ads_account_id;
-      accessToken = accessToken || clienteData.meta_access_token || undefined;
+      accessToken = accessToken || clienteData.meta_access_token || process.env[`META_ACCESS_TOKEN_GLOBAL`];
     }
   }
   

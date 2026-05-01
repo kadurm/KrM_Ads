@@ -83,8 +83,9 @@ export async function GET(request) {
     // 1. LOGICA DO COMMIT 8170273: BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão)
     let metaAccountTotals = null;
     try {
-      // Limpa o nome para o formato do .env (Pega a primeira palavra, remove acentos e caracteres especiais)
-      const shortName = clienteNome.split(' ')[0].normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+      // Limpa o nome para o formato do .env (Remove acentos, espaços e pega a primeira palavra)
+      const normalized = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+      const shortName = normalized.split(' ')[0];
       
       // Lógica Híbrida: Env (Prioridade) -> DB
       const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || process.env[`META_ACCESS_TOKEN_GLOBAL`] || cliente?.meta_access_token;
@@ -243,7 +244,8 @@ export async function POST(request) {
     const { since, until, cliente } = await request.json();
     if (!cliente) return NextResponse.json({ success: false, error: "Cliente não fornecido" }, { status: 400 });
 
-    const shortName = cliente.split(' ')[0].normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+    const normalized = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+    const shortName = normalized.split(' ')[0];
     const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
     
     // Lógica Híbrida
