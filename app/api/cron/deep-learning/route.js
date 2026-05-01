@@ -7,16 +7,15 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function GET(request) {
   try {
-    // Verificação de Segurança (CRON_SECRET deve estar no .env da Vercel)
     const authHeader = request.headers.get('authorization');
-    console.log(`[Deep Learning] Auth Header: ${authHeader}`);
+    const expectedAuth = `Bearer ${process.env.CRON_SECRET || 'KRM_ADS_DEEP_LEARNING_2026'}`;
 
-    if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      // Fallback para permitir chamadas via Vercel Cron que às vezes usa chaves internas ou bypass em certos contextos de dashboard
-      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
-      }
+    if (authHeader !== expectedAuth) {
+      console.error(`[Deep Learning] Erro de Autenticação. Recebido: ${authHeader}`);
+      return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
     }
+
+    console.log(`[Deep Learning] Iniciando processamento global...`);
 
     const clientes = await prisma.cliente.findMany();
     const results = [];
