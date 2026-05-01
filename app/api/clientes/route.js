@@ -54,31 +54,68 @@ export async function POST(request) {
         fs.mkdirSync(refDir, { recursive: true });
         fs.writeFileSync(path.join(refDir, 'agent.md'), agentTemplate);
       }
-    } catch (fsError) {
-      console.warn("Aviso: Não foi possível criar pasta física.");
+    /** Função para salvar arquivo físico de contexto e histórico (Save Point) */
+    function saveContextFile(clienteNome, conteudo) {
+      try {
+        const safeNome = clienteNome.replace(/[^a-z0-9]/gi, '_');
+        const baseDir = path.join(process.cwd(), 'ref', safeNome);
+        const historyDir = path.join(baseDir, 'history');
+
+        // Garante que as pastas existem
+        if (!fs.existsSync(historyDir)) fs.mkdirSync(historyDir, { recursive: true });
+
+        // 1. Salva o contexto ATUAL
+        fs.writeFileSync(path.join(baseDir, 'agent.md'), conteudo);
+
+        // 2. Salva o SAVE POINT datado
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16);
+        const fileName = `agent_${timestamp}.md`;
+        fs.writeFileSync(path.join(historyDir, fileName), conteudo);
+
+        console.log(`[File System] Contexto e Save Point salvos para ${clienteNome}`);
+      } catch (e) {
+        console.warn(`[File System Warning] Falha ao salvar arquivo físico: ${e.message}`);
+      }
     }
 
-    return NextResponse.json({ success: true, cliente });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
-}
+    export async function GET() {
+      try {
+        const clientes = await prisma.cliente.findMany({
+          orderBy: { nome: 'asc' }
+        });
+        return NextResponse.json({ success: true, clientes });
+      } catch (error) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      }
+    }
+    ...
+    export async function PATCH(request) {
+      try {
+        const { id, nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights } = await request.json();
+        if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
 
-export async function PATCH(request) {
-  try {
-    const { id, nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights } = await request.json();
-    if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
+        // 1. Atualiza o Cliente
+        const cliente = await prisma.cliente.update({
+          where: { id },
+          data: { nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights }
+        });
 
-    const cliente = await prisma.cliente.update({
-      where: { id },
-      data: { nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights }
-    });
+        // 2. Se houver insights (agent.md), cria Save Point no Banco e no FS
+        if (insights) {
+          await prisma.historicoContexto.create({
+            data: {
+              cliente_id: id,
+              conteudo: insights
+            }
+          });
+          saveContextFile(nome || cliente.nome, insights);
+        }
 
-    return NextResponse.json({ success: true, cliente });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
-}
+        return NextResponse.json({ success: true, cliente });
+      } catch (error) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      }
+    }
 
 export async function DELETE(request) {
   try {

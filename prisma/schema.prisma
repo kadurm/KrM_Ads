@@ -22,7 +22,16 @@ model Cliente {
   campanhas           Campanha[]
   relatorios          Relatorio[]
   leads               Lead[]
+  historico_contexto  HistoricoContexto[]
   criado_em           DateTime    @default(now())
+}
+
+model HistoricoContexto {
+  id         String   @id @default(uuid())
+  cliente_id String
+  cliente    Cliente  @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
+  conteudo   String
+  criado_em  DateTime @default(now())
 }
 
 model Lead {
