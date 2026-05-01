@@ -22,7 +22,7 @@ async function getCredentials(clienteName: string) {
   
   // Prioridade 1: Variáveis de Ambiente (Configuração via Agentes/Automação)
   let adAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
-  let accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`];
+  let accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`] || process.env[`META_ACCESS_TOKEN_GLOBAL`];
 
   // Prioridade 2: Banco de Dados (Configuração via Painel UI)
   if (!adAccountId || !accessToken) {
