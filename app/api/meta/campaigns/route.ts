@@ -49,7 +49,7 @@ export async function GET(request: Request) {
       } else {
         endpoint = `${adAccountId}/adsets`;
       }
-      fields = 'id,name,status,daily_budget,lifetime_budget,campaign_id,multi_advertiser_ads_enabled';
+      fields = 'id,name,status,daily_budget,lifetime_budget,campaign_id,multi_advertiser_ads_enabled,optimization_goal,billing_event,start_time,end_time,targeting';
     } else if (level === 'ad') {
       if (parentIds) {
         endpoint = `${adAccountId}/ads`;
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
       } else {
         endpoint = `${adAccountId}/ads`;
       }
-      fields = 'id,name,status,adset_id,campaign_id,creative{id,thumbnail_url.width(800).height(800),image_url},is_synthetic_content';
+      fields = 'id,name,status,adset_id,campaign_id,creative{id,thumbnail_url.width(800).height(800),image_url,object_story_spec},is_synthetic_content';
     }
 
     const insightsFields = 'spend,impressions,actions,inline_link_click_ctr,video_p25_watched_actions';
@@ -118,6 +118,12 @@ export async function GET(request: Request) {
         status: item.status || 'PAUSED',
         objective: item.objective || 'OUTCOME_TRAFFIC',
         daily_budget: item.daily_budget ? parseInt(item.daily_budget) / 100 : undefined,
+        bid_strategy: item.bid_strategy,
+        optimization_goal: item.optimization_goal,
+        billing_event: item.billing_event,
+        start_time: item.start_time ? item.start_time.slice(0, 16) : undefined,
+        end_time: item.end_time ? item.end_time.slice(0, 16) : undefined,
+        targeting: item.targeting,
         
         // 2026 Infrastructure - Defaults for legacy
         advantage_plus_budget: !!item.bid_strategy,

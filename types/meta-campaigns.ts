@@ -60,6 +60,8 @@ export interface MetaCampaign {
   billing_event?: string;
   optimization_goal?: string;
   bid_amount?: number;
+  start_time?: string;
+  end_time?: string;
 }
 
 export interface MetaAdSetTargeting {

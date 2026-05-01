@@ -70,6 +70,37 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
           publisher_platforms: ['facebook', 'instagram', 'audience_network', 'messenger']
         }
       });
+      // Fallback para campos faltantes dentro de estruturas existentes
+      if (initialData.creative && !initialData.creative.object_story_spec) {
+        setFormData(prev => ({
+          ...prev,
+          creative: {
+            ...prev.creative,
+            object_story_spec: {
+              page_id: '',
+              instagram_actor_id: '',
+              link_data: { link: '', message: '', call_to_action: { type: 'LEARN_MORE' } }
+            }
+          }
+        }));
+      }
+      if (initialData.targeting && !initialData.targeting.geo_locations) {
+        setFormData(prev => ({
+          ...prev,
+          targeting: {
+            ...prev.targeting,
+            geo_locations: { countries: ['BR'] }
+          }
+        }));
+      }
+      // Fallback para AdSet Fields
+      if (level === 'adset') {
+        setFormData(prev => ({
+          ...prev,
+          billing_event: prev.billing_event || 'IMPRESSIONS',
+          optimization_goal: prev.optimization_goal || 'REACH'
+        }));
+      }
     } else {
       if (level === 'campaign') {
         setFormData({
@@ -197,12 +228,14 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
       return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Select Strategic Objective</label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+              Select Strategic Objective {isEdit && <span className="text-amber-500 ml-2">(Locked after creation)</span>}
+            </label>
+            <div className={`grid grid-cols-2 md:grid-cols-3 gap-3 ${isEdit ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}>
               {OBJECTIVES.map((obj) => (
                 <div 
                   key={obj.id}
-                  onClick={() => setFormData({ ...formData, objective: obj.id })}
+                  onClick={() => !isEdit && setFormData({ ...formData, objective: obj.id })}
                   className={`
                     cursor-pointer p-4 rounded-2xl border transition-all group
                     ${formData.objective === obj.id ? 'bg-blue-600/10 border-blue-500' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}
@@ -284,11 +317,14 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Optimization Goal</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                Optimization Goal {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
+              </label>
               <select 
+                disabled={isEdit}
                 value={formData.optimization_goal}
                 onChange={(e) => setFormData({ ...formData, optimization_goal: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all"
+                className={`w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <option value="REACH">REACH</option>
                 <option value="IMPRESSIONS">IMPRESSIONS</option>
@@ -298,11 +334,14 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Billing Event</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                Billing Event {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
+              </label>
               <select 
+                disabled={isEdit}
                 value={formData.billing_event}
                 onChange={(e) => setFormData({ ...formData, billing_event: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all"
+                className={`w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <option value="IMPRESSIONS">Impressions (Recommended)</option>
                 <option value="LINK_CLICKS">Link Clicks (CPC)</option>
@@ -478,23 +517,29 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Facebook Page ID</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                Facebook Page ID {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
+              </label>
               <input 
+                disabled={isEdit}
                 type="text" 
                 value={formData.creative.object_story_spec.page_id}
                 onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, page_id: e.target.value } } })}
                 placeholder="Enter Page ID"
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50"
+                className={`w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Instagram Account ID</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                Instagram Account ID {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
+              </label>
               <input 
+                disabled={isEdit}
                 type="text" 
                 value={formData.creative.object_story_spec.instagram_actor_id}
                 onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, instagram_actor_id: e.target.value } } })}
                 placeholder="Enter Instagram ID (Optional)"
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-purple-600/50"
+                className={`w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-purple-600/50 ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
           </div>
