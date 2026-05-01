@@ -4,14 +4,24 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function getClientCredentials(clienteName) {
-  const cliente = await prisma.cliente.findFirst({
-    where: { nome: clienteName }
-  });
+  const shortName = clienteName.split(' ')[0];
+  
+  // Prioridade 1: Env
+  let rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
+  let accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`];
 
-  if (!cliente || !cliente.meta_access_token || !cliente.meta_ads_account_id) return null;
+  // Prioridade 2: DB
+  if (!rawAccountId || !accessToken) {
+    const cliente = await prisma.cliente.findFirst({
+      where: { nome: clienteName }
+    });
+    if (cliente) {
+      rawAccountId = rawAccountId || cliente.meta_ads_account_id;
+      accessToken = accessToken || cliente.meta_access_token;
+    }
+  }
 
-  const rawAccountId = cliente.meta_ads_account_id;
-  const accessToken = cliente.meta_access_token;
+  if (!rawAccountId || !accessToken) return null;
   const adAccountId = rawAccountId.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
   
   return { adAccountId, accessToken };

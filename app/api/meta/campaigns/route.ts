@@ -18,18 +18,26 @@ function graphUrl(path: string, query: Record<string, any>) {
 }
 
 async function getCredentials(clienteName: string) {
-  // Busca no banco pelo nome do cliente
-  const clienteData = await prisma.cliente.findFirst({
-    where: { nome: clienteName }
-  });
+  const shortName = clienteName.split(' ')[0];
+  
+  // Prioridade 1: Variáveis de Ambiente (Configuração via Agentes/Automação)
+  let adAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
+  let accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`];
 
-  if (!clienteData) return { adAccountId: null, accessToken: null };
-
-  const adAccountId = clienteData.meta_ads_account_id;
-  const accessToken = clienteData.meta_access_token;
+  // Prioridade 2: Banco de Dados (Configuração via Painel UI)
+  if (!adAccountId || !accessToken) {
+    const clienteData = await prisma.cliente.findFirst({
+      where: { nome: clienteName }
+    });
+    
+    if (clienteData) {
+      adAccountId = adAccountId || clienteData.meta_ads_account_id;
+      accessToken = accessToken || clienteData.meta_access_token || undefined;
+    }
+  }
   
   return { 
-    adAccountId: adAccountId?.startsWith('act_') ? adAccountId : `act_${adAccountId}`, 
+    adAccountId: adAccountId?.startsWith('act_') ? adAccountId : (adAccountId ? `act_${adAccountId}` : null), 
     accessToken 
   };
 }

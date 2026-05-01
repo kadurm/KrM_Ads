@@ -79,15 +79,16 @@ export async function GET(request) {
     if (!clienteNome) return NextResponse.json({ success: false, error: "Cliente não especificado" }, { status: 400 });   
 
     const cliente = await prisma.cliente.findFirst({ where: { nome: clienteNome } });
-    if (!cliente) return NextResponse.json({ success: true, metrics: [], criativos: [] });
-
+    
     // 1. LOGICA DO COMMIT 8170273: BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão)
     let metaAccountTotals = null;
     try {
-      const ACCESS_TOKEN = cliente.meta_access_token;
-      const AD_ACCOUNT_ID = cliente.meta_ads_account_id.startsWith('act_') 
-        ? cliente.meta_ads_account_id 
-        : `act_${cliente.meta_ads_account_id}`;
+      const shortName = clienteNome.split(' ')[0];
+      
+      // Lógica Híbrida: Env (Prioridade) -> DB
+      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || cliente?.meta_access_token;
+      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || cliente?.meta_ads_account_id;
+      const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
 
       if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
         const metaUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { 
@@ -101,6 +102,8 @@ export async function GET(request) {
         if (metaJson.data && metaJson.data[0]) metaAccountTotals = metaJson.data[0];
       }
     } catch (e) { console.error("Erro ao buscar totais reais na Meta:", e); }
+
+    if (!cliente && !metaAccountTotals) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
     // Normalização de datas
     const dateUntil = until ? new Date(until + 'T23:59:59Z') : new Date();
@@ -239,15 +242,30 @@ export async function POST(request) {
     const { since, until, cliente } = await request.json();
     if (!cliente) return NextResponse.json({ success: false, error: "Cliente não fornecido" }, { status: 400 });
 
+    const shortName = cliente.split(' ')[0];
     const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
-    if (!dbCliente) throw new Error("Cliente não encontrado no banco de dados");
     
-    const ACCESS_TOKEN = dbCliente.meta_access_token;
-    const AD_ACCOUNT_ID = dbCliente.meta_ads_account_id.startsWith('act_') 
-      ? dbCliente.meta_ads_account_id 
-      : `act_${dbCliente.meta_ads_account_id}`;
+    // Lógica Híbrida
+    const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || dbCliente?.meta_access_token;
+    const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || dbCliente?.meta_ads_account_id;
+    const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
     
-    if (!ACCESS_TOKEN || !AD_ACCOUNT_ID) throw new Error("Credenciais da Meta incompletas para este cliente");
+    if (!ACCESS_TOKEN || !AD_ACCOUNT_ID) {
+      throw new Error(`Credenciais da Meta não encontradas para o cliente ${cliente} (Env ou DB)`);
+    }
+
+    // Se o cliente não existe no banco (vindo apenas do Env), criamos ele para permitir o Sync
+    let targetCliente = dbCliente;
+    if (!targetCliente) {
+      targetCliente = await prisma.cliente.create({
+        data: {
+          nome: cliente,
+          meta_ads_account_id: AD_ACCOUNT_ID,
+          meta_access_token: ACCESS_TOKEN,
+          insights: `# Contexto Automático via Antigravity\nEmpresa vinculada via Variáveis de Ambiente.`
+        }
+      });
+    }
 
     const commonQuery = { access_token: ACCESS_TOKEN, limit: '1000' };
     const todayStr = new Date().toISOString().split('T')[0]; 
@@ -289,14 +307,14 @@ export async function POST(request) {
       }));
      }
 
-    const localCampMap = new Map((await prisma.campanha.findMany({ where: { cliente_id: dbCliente.id } })).map(c => [c.meta_id, c]));
+    const localCampMap = new Map((await prisma.campanha.findMany({ where: { cliente_id: targetCliente.id } })).map(c => [c.meta_id, c]));
     await batchProcess(campaignData.data || [], 5, async (item) => {
       let camp = localCampMap.get(String(item.campaign_id)); 
       if (!camp) {
         camp = await prisma.campanha.upsert({
           where: { meta_id: String(item.campaign_id) },      
           update: { nome_gerado: item.campaign_name, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN' },
-          create: { meta_id: String(item.campaign_id), nome_gerado: item.campaign_name, cliente_id: dbCliente.id, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN', tipo_orcamento: 'UNKNOWN' }
+          create: { meta_id: String(item.campaign_id), nome_gerado: item.campaign_name, cliente_id: targetCliente.id, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN', tipo_orcamento: 'UNKNOWN' }
         });
         localCampMap.set(camp.meta_id, camp);
       }
