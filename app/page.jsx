@@ -211,16 +211,34 @@ export default function App() {
   };
 
   const handleTriggerDeepLearning = async () => {
-    if (!window.confirm('Isso iniciará o motor de IA para analisar todas as contas e atualizar os contextos estratégicos (agent.md). Deseja continuar?')) return;
+    const isGlobal = !clienteSelecionado;
+    const confirmMsg = isGlobal 
+      ? 'Isso iniciará o motor de IA para analisar TODAS as contas. Deseja continuar?'
+      : `Deseja iniciar o aprendizado inteligente para ${clienteSelecionado}?`;
+
+    if (!window.confirm(confirmMsg)) return;
+    
     setIsDeepLearningLoading(true);
     try {
-      const res = await fetch('/api/cron/deep-learning', {
+      // Busca o ID do cliente atual se não for global
+      let url = '/api/cron/deep-learning';
+      if (!isGlobal) {
+        const clienteObj = clientesDisponiveis.find(c => c.nome === clienteSelecionado);
+        if (clienteObj) url += `?clienteId=${clienteObj.id}`;
+      }
+
+      const res = await fetch(url, {
         headers: { 'Authorization': `Bearer KRM_ADS_DEEP_LEARNING_2026` }
       });
       const data = await res.json();
       if (data.success) {
         await loadClientes();
-        setMensagemPainel({ tipo: 'sucesso', texto: 'Deep Learning concluído! Contextos atualizados.' });
+        setMensagemPainel({ tipo: 'sucesso', texto: isGlobal ? 'Deep Learning global concluído!' : `Aprendizado concluído para ${clienteSelecionado}!` });
+        // Se houver um perfil aberto, atualiza ele
+        if (!isGlobal && perfilCliente) {
+           const updated = (await (await fetch('/api/clientes')).json()).clientes.find(c => c.nome === clienteSelecionado);
+           if (updated) setPerfilCliente(updated);
+        }
       } else {
         setMensagemPainel({ tipo: 'erro', texto: 'Falha no aprendizado: ' + data.error });
       }

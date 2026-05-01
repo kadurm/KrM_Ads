@@ -15,9 +15,19 @@ export async function GET(request) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
     }
 
-    console.log(`[Deep Learning] Iniciando processamento global...`);
+    const { searchParams } = new URL(request.url);
+    const targetClienteId = searchParams.get('clienteId');
 
-    const clientes = await prisma.cliente.findMany();
+    console.log(`[Deep Learning] Iniciando processamento... ${targetClienteId ? `(Cliente: ${targetClienteId})` : '(Global)'}`);
+
+    const clientes = targetClienteId 
+      ? await prisma.cliente.findMany({ where: { id: targetClienteId } })
+      : await prisma.cliente.findMany();
+    
+    if (clientes.length === 0) {
+      return NextResponse.json({ success: false, error: 'Nenhum cliente encontrado para processamento.' });
+    }
+
     const results = [];
 
     for (const cliente of clientes) {
