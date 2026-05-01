@@ -40,7 +40,9 @@ import {
   Search,
   Settings2,
   Shield,
-  MoreVertical
+  MoreVertical,
+  Copy,
+  Zap,
   } from 'lucide-react';
 import { CampaignsBoard } from '@/views/CampaignsBoard';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
@@ -106,6 +108,11 @@ export default function App() {
   const [leadsLoading, setLeadsLoading] = useState(false);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
+
+  // Creative Lab States
+  const [creativeBriefings, setCreativeBriefings] = useState(null);
+  const [isGeneratingBriefing, setIsGeneratingBriefing] = useState(false);
+  const [selectedChampion, setSelectedChampion] = useState(null);
   const [newLead, setNewLead] = useState({ nome: '', contato: '', status: 'NOVO', valor: '0', origem: '' });
   
   // Estados Meta Ads 2026 (Andromeda & GEM)
@@ -409,6 +416,39 @@ export default function App() {
     }
   };
 
+  const handleGenerateCreativeBriefing = async (creative) => {
+    setIsGeneratingBriefing(true);
+    setSelectedChampion(creative);
+    setCreativeBriefings(null);
+    try {
+      const res = await fetch('/api/meta/creative-lab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cliente: clienteSelecionado,
+          creativeData: creative
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        try {
+          // Tenta parsear o JSON retornado pela IA
+          const parsed = JSON.parse(data.analysis);
+          setCreativeBriefings(parsed.variações || parsed.variations || parsed);
+        } catch (e) {
+          // Fallback para texto puro se a IA falhar no JSON
+          setCreativeBriefings([{ titulo: "Análise Andromeda", copy: data.analysis }]);
+        }
+      } else {
+        setMensagemPainel({ tipo: 'erro', texto: 'Erro na IA: ' + data.error });
+      }
+    } catch (error) {
+      setMensagemPainel({ tipo: 'erro', texto: 'Falha na conexão com Creative Lab.' });
+    } finally {
+      setIsGeneratingBriefing(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'campanhas') loadCampaigns(campaignsLevel, campaignsParentId);
   }, [startDate, endDate]);
@@ -664,6 +704,9 @@ export default function App() {
               </button>
               <button onClick={() => { setActiveTab('crm'); loadLeads(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'crm' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Database size={16} /> CRM / Extrato
+              </button>
+              <button onClick={() => setActiveTab('creative-lab')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'creative-lab' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <Sparkles size={16} /> Creative Lab (IA)
               </button>
             </nav>
           </div>
@@ -1251,6 +1294,149 @@ export default function App() {
                     </div>
                  </div>
                )}
+            </div>
+          )}
+
+          {activeTab === 'creative-lab' && (
+            <div className="max-w-[1400px] mx-auto py-10 px-8 space-y-10 animate-in fade-in duration-500">
+               <div className="flex justify-between items-end">
+                 <div className="space-y-2">
+                    <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Intelligence Module</p>
+                    <h1 className="text-5xl font-black text-white tracking-tighter uppercase">Creative Lab</h1>
+                    <p className="text-slate-500 font-medium uppercase text-[10px] tracking-widest">Treinamento Contextual e Engenharia de Criativos Campeões</p>
+                 </div>
+                 <div className="flex items-center gap-4 bg-slate-900/50 p-4 rounded-3xl border border-slate-800">
+                    <div className="text-right">
+                       <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Andromeda Power</p>
+                       <p className="text-xs font-bold text-blue-400">92% Precision Score</p>
+                    </div>
+                    <Sparkles className="text-blue-500" size={24} />
+                 </div>
+               </div>
+
+               <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                 {/* LISTA DE CAMPEÕES */}
+                 <div className="lg:col-span-2 space-y-6">
+                    <div className="flex items-center gap-4 mb-8">
+                       <div className="h-px flex-1 bg-slate-800"></div>
+                       <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Select Champion Ad for Learning</span>
+                       <div className="h-px flex-1 bg-slate-800"></div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {criativosList
+                        .filter(c => (c.ctr > 1.5 || c.leads > 0) && c.valor_investido > 10)
+                        .sort((a, b) => b.ctr - a.ctr)
+                        .slice(0, 8)
+                        .map(creative => (
+                          <div key={creative.id} className={`group relative p-6 rounded-[2rem] bg-slate-900 border transition-all duration-500 cursor-pointer ${selectedChampion?.id === creative.id ? 'border-blue-500 shadow-[0_0_50px_rgba(59,130,246,0.2)] scale-[1.02]' : 'border-slate-800 hover:border-slate-700'}`} onClick={() => setSelectedChampion(creative)}>
+                             <div className="flex gap-4">
+                                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex-shrink-0">
+                                   {creative.url_midia ? (
+                                     <img src={creative.url_midia} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Creative" />
+                                   ) : (
+                                     <div className="w-full h-full flex items-center justify-center text-slate-800"><ImageIcon size={32} /></div>
+                                   )}
+                                </div>
+                                <div className="flex-1 space-y-2">
+                                   <div className="flex justify-between items-start">
+                                      <h3 className="text-xs font-black text-white uppercase truncate max-w-[150px]">{creative.nome_anuncio}</h3>
+                                      <span className="text-[9px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">TOP PERFORMER</span>
+                                   </div>
+                                   <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                         <p className="text-[8px] font-black text-slate-600 uppercase">CTR Real</p>
+                                         <p className="text-sm font-black text-slate-200">{creative.ctr?.toFixed(2)}%</p>
+                                      </div>
+                                      <div>
+                                         <p className="text-[8px] font-black text-slate-600 uppercase">Leads</p>
+                                         <p className="text-sm font-black text-slate-200">{creative.leads}</p>
+                                      </div>
+                                   </div>
+                                </div>
+                             </div>
+                             
+                             <button 
+                               onClick={(e) => { e.stopPropagation(); handleGenerateCreativeBriefing(creative); }}
+                               disabled={isGeneratingBriefing}
+                               className="w-full mt-6 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-blue-500 hover:bg-blue-600 hover:text-white hover:border-blue-500 transition-all flex items-center justify-center gap-3"
+                             >
+                               {isGeneratingBriefing && selectedChampion?.id === creative.id ? (
+                                 <><Loader2 className="animate-spin" size={14} /> Analisando Padrões...</>
+                               ) : (
+                                 <><Zap size={14} fill="currentColor" /> Gerar Variações</>
+                               )}
+                             </button>
+                          </div>
+                      ))}
+                    </div>
+                 </div>
+
+                 {/* RESULTADOS IA */}
+                 <div className="space-y-6">
+                    <div className="sticky top-10 space-y-6">
+                       <div className="p-8 bg-slate-900 border-2 border-slate-800 rounded-[3rem] shadow-2xl relative overflow-hidden min-h-[600px]">
+                          {isGeneratingBriefing ? (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-md z-10 gap-6 p-10 text-center">
+                               <div className="relative">
+                                  <div className="w-20 h-24 border-4 border-blue-500/20 rounded-2xl animate-pulse"></div>
+                                  <Sparkles className="absolute -top-4 -right-4 text-blue-500 animate-bounce" size={32} />
+                               </div>
+                               <div>
+                                  <h4 className="text-lg font-black text-white uppercase tracking-tighter">Processando Inteligência</h4>
+                                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">Mapeando gatilhos mentais e ganchos de alta retenção...</p>
+                               </div>
+                               <Loader2 className="animate-spin text-blue-500" size={32} />
+                            </div>
+                          ) : creativeBriefings ? (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                               <div className="flex items-center gap-4">
+                                  <div className="w-12 h-12 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20">
+                                     <Zap size={24} />
+                                  </div>
+                                  <div>
+                                     <h3 className="text-xl font-black text-white tracking-tighter uppercase">Novos Briefings</h3>
+                                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Gerado por Andromeda Engine</p>
+                                  </div>
+                               </div>
+
+                               <div className="space-y-6">
+                                  {Array.isArray(creativeBriefings) ? creativeBriefings.map((brief, idx) => (
+                                    <div key={idx} className="p-6 bg-slate-950 border border-slate-800 rounded-2xl space-y-4 hover:border-blue-500/30 transition-all">
+                                       <div className="flex justify-between items-center">
+                                          <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Variação {idx + 1}</span>
+                                          <button className="text-slate-600 hover:text-white transition-all"><Copy size={14}/></button>
+                                       </div>
+                                       <h4 className="text-xs font-black text-white uppercase">{brief.titulo || brief.v_titulo || "Briefing de Escala"}</h4>
+                                       <div className="space-y-2">
+                                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Estrutura Visual</p>
+                                          <p className="text-[11px] text-slate-400 leading-relaxed italic">{brief.estrutura_visual || brief.visual}</p>
+                                       </div>
+                                       <div className="space-y-2">
+                                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Copy Sugerida</p>
+                                          <p className="text-[12px] text-slate-200 leading-relaxed font-medium whitespace-pre-wrap">{brief.nova_copy || brief.copy}</p>
+                                       </div>
+                                    </div>
+                                  )) : (
+                                    <div className="text-slate-300 text-sm whitespace-pre-wrap font-medium leading-relaxed bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                                       {creativeBriefings}
+                                    </div>
+                                  )}
+                               </div>
+                            </div>
+                          ) : (
+                            <div className="h-full flex flex-col items-center justify-center text-center p-10 space-y-6 opacity-40">
+                               <Layout size={64} className="text-slate-800" />
+                               <div>
+                                  <h4 className="text-lg font-black text-slate-700 uppercase tracking-tighter">Laboratório Vazio</h4>
+                                  <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest mt-2">Selecione um criativo campeão à esquerda para iniciar o treinamento da IA.</p>
+                               </div>
+                            </div>
+                          )}
+                       </div>
+                    </div>
+                 </div>
+               </div>
             </div>
           )}
 
