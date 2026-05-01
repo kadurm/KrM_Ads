@@ -27,7 +27,7 @@ const OBJECTIVES = [
   { id: 'OUTCOME_SALES', label: 'Sales', icon: ShoppingBag, description: 'Find people likely to purchase' },
 ];
 
-export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, clienteName, level, parentId }) => {
+export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, clienteName, level, parentId, initialData }) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('geral');
   const [expandedSection, setExpandedSection] = useState<string | null>('basic');
@@ -37,45 +37,22 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     status: 'PAUSED',
   });
 
-  // Reset/Initialize form based on level
+  const isEdit = !!initialData;
+
+  // Reset/Initialize form based on level and initialData
   useEffect(() => {
     if (!isOpen) return;
     
     setActiveTab('geral');
     setExpandedSection('basic');
 
-    if (level === 'campaign') {
+    if (isEdit && initialData) {
       setFormData({
-        name: '',
-        objective: 'OUTCOME_LEADS',
-        advantage_plus_budget: true,
-        daily_budget: 50,
-        bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
-        status: 'PAUSED',
-      });
-    } else if (level === 'adset') {
-      setFormData({
-        name: '',
-        campaign_id: parentId,
-        billing_event: 'IMPRESSIONS',
-        optimization_goal: 'REACH',
-        daily_budget: 20,
-        start_time: new Date().toISOString().slice(0, 16),
-        end_time: '',
-        targeting: { 
-          geo_locations: { countries: ['BR'] }, 
-          age_min: 18, 
-          age_max: 65,
-          publisher_platforms: ['facebook', 'instagram', 'audience_network', 'messenger']
-        },
-        status: 'PAUSED',
-      });
-    } else if (level === 'ad') {
-      setFormData({
-        name: '',
-        adset_id: parentId,
-        pixel_id: '',
-        creative: {
+        ...initialData,
+        // O dado já vem convertido para reais da API de consulta
+        daily_budget: initialData.daily_budget ? Number(initialData.daily_budget) : 0,
+        // Garantir estruturas aninhadas para ADs se necessário
+        creative: initialData.creative || {
           object_story_spec: {
             page_id: '',
             instagram_actor_id: '',
@@ -86,10 +63,61 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
             }
           }
         },
-        status: 'PAUSED',
+        targeting: initialData.targeting || { 
+          geo_locations: { countries: ['BR'] }, 
+          age_min: 18, 
+          age_max: 65,
+          publisher_platforms: ['facebook', 'instagram', 'audience_network', 'messenger']
+        }
       });
+    } else {
+      if (level === 'campaign') {
+        setFormData({
+          name: '',
+          objective: 'OUTCOME_LEADS',
+          advantage_plus_budget: true,
+          daily_budget: 50,
+          bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+          status: 'PAUSED',
+        });
+      } else if (level === 'adset') {
+        setFormData({
+          name: '',
+          campaign_id: parentId,
+          billing_event: 'IMPRESSIONS',
+          optimization_goal: 'REACH',
+          daily_budget: 20,
+          start_time: new Date().toISOString().slice(0, 16),
+          end_time: '',
+          targeting: { 
+            geo_locations: { countries: ['BR'] }, 
+            age_min: 18, 
+            age_max: 65,
+            publisher_platforms: ['facebook', 'instagram', 'audience_network', 'messenger']
+          },
+          status: 'PAUSED',
+        });
+      } else if (level === 'ad') {
+        setFormData({
+          name: '',
+          adset_id: parentId,
+          pixel_id: '',
+          creative: {
+            object_story_spec: {
+              page_id: '',
+              instagram_actor_id: '',
+              link_data: {
+                link: '',
+                message: '',
+                call_to_action: { type: 'LEARN_MORE' }
+              }
+            }
+          },
+          status: 'PAUSED',
+        });
+      }
     }
-  }, [level, parentId, isOpen]);
+  }, [level, parentId, isOpen, initialData, isEdit]);
 
   if (!isOpen) return null;
 
@@ -619,7 +647,9 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
           <div className="flex justify-between items-center">
             <div>
               <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Andromeda Protocol</p>
-              <h2 className="text-2xl font-black text-white tracking-tighter uppercase">Initialize New {level === 'campaign' ? 'Campaign' : level === 'adset' ? 'Ad Set' : 'Ad'}</h2>
+              <h2 className="text-2xl font-black text-white tracking-tighter uppercase">
+                {isEdit ? 'Update Existing' : 'Initialize New'} {level === 'campaign' ? 'Campaign' : level === 'adset' ? 'Ad Set' : 'Ad'}
+              </h2>
             </div>
             <button onClick={onClose} className="w-10 h-10 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-500 hover:text-white transition-all">
               <X size={20} />
@@ -662,7 +692,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                 type="submit"
                 className="flex-[2] py-4 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
               >
-                {loading ? <Loader2 className="animate-spin" size={16} /> : 'Execute Deployment'}
+                {loading ? <Loader2 className="animate-spin" size={16} /> : (isEdit ? 'Save Changes' : 'Execute Deployment')}
               </button>
             </div>
           </form>

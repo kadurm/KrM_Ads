@@ -47,10 +47,14 @@ export const CampaignBentoCard: React.FC<Props> = ({
   };
 
   return (
-    <div className={`
-      group relative p-6 rounded-[2rem] bg-slate-900/40 backdrop-blur-3xl border transition-all duration-500
-      ${isCritical ? 'border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.1)]' : 'border-slate-800 hover:border-slate-700'}
-      hover:scale-[1.02] active:scale-[0.98]
+    <div 
+      onClick={() => {
+        if (!isAd) onNavigate?.(campaign.id);
+      }}
+      className={`
+        group relative p-6 rounded-[2rem] bg-slate-900/40 backdrop-blur-3xl border transition-all duration-500 cursor-pointer
+        ${isCritical ? 'border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.1)]' : 'border-slate-800 hover:border-slate-700'}
+        hover:scale-[1.02] active:scale-[0.98]
     `}>
       
       {/* GLOW EFFECT */}
@@ -91,13 +95,19 @@ export const CampaignBentoCard: React.FC<Props> = ({
 
           <div className="flex items-center gap-2">
             <button 
-              onClick={() => onEdit?.(campaign)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit?.(campaign);
+              }}
               className="w-10 h-10 bg-slate-950 text-slate-600 border border-slate-800 rounded-xl flex items-center justify-center hover:text-white transition-all"
             >
               <Edit3 size={16} />
             </button>
             <button 
-              onClick={() => onUpdate(campaign.id, { status: campaign.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE' })}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate(campaign.id, { status: campaign.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE' });
+              }}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${campaign.status === 'ACTIVE' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'bg-slate-950 text-slate-700 border border-slate-800'}`}
             >
               {campaign.status === 'ACTIVE' ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}

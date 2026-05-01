@@ -197,6 +197,10 @@ export const CampaignsBoard: React.FC<Props> = ({
               campaign={campaign} 
               onUpdate={onUpdate}
               onEdit={handleEdit}
+              onNavigate={(id) => {
+                const nextLevel = level === 'campaign' ? 'adset' : level === 'adset' ? 'ad' : 'ad';
+                setLevel(nextLevel, id);
+              }}
               isSelected={selectedIds.includes(campaign.id)}
               onToggleSelect={onToggleSelect}
             />
