@@ -83,30 +83,45 @@ export async function GET(request) {
         ${crmSummary || 'Sem vendas registradas no CRM.'}
 
         TAREFA:
-        Reescreva o CONTEXTO ESTRATÉGICO (AGENT.MD) incorporando os novos aprendizados.
-        - Identifique quais tipos de criativos estão trazendo leads que de fato FECHAM vendas.
-        - Refine o "Público-Alvo Ideal" com base nas campanhas de melhor CPA.
-        - Ajuste as "Diretrizes de Copy" e "Identidade Visual" (fontes, cores citadas nas copies ou nomes) com base nos padrões dos criativos campeões.
-        - Adicione uma seção de "MEMÓRIAS DE LONGO PRAZO" com aprendizados específicos (ex: "Em Março/2026 descobrimos que vídeos de depoimento baixam o CPA em 30%").
+        1. Classifique o "Setor Comercial" (Ramo de Atuação) desta empresa em apenas 1 ou 2 palavras (ex: Advocacia, Saúde, Tecnologia, Ecommerce, Infoproduto).
+        2. Reescreva o CONTEXTO ESTRATÉGICO (AGENT.MD) incorporando os novos aprendizados.
+           - Identifique quais tipos de criativos estão trazendo leads que de fato FECHAM vendas.
+           - Refine o "Público-Alvo Ideal" com base nas campanhas de melhor CPA.
+           - Ajuste as "Diretrizes de Copy" e "Identidade Visual" com base nos padrões dos criativos campeões.
+           - Adicione uma seção de "MEMÓRIAS DE LONGO PRAZO" com aprendizados específicos.
 
-        REGRAS:
-        - Mantenha o formato Markdown.
-        - Termine a nova seção de memórias com uma pergunta estratégica para o gestor.
-        - Retorne APENAS o novo conteúdo completo do agent.md.
+        REGRAS DE RETORNO (JSON OBRIGATÓRIO):
+        Retorne um objeto JSON com as chaves:
+        - "setor": O ramo de atuação identificado.
+        - "insights": O novo conteúdo completo do agent.md em Markdown.
+
+        O campo insights deve terminar obrigatoriamente com uma pergunta estratégica para o gestor.
       `;
 
       const result = await model.generateContent(prompt);
-      const updatedInsights = result.response.text().trim();
+      let responseText = result.response.text().trim();
+      
+      // Limpeza de Markdown JSON
+      responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      
+      try {
+        const parsed = JSON.parse(responseText);
+        const updatedInsights = parsed.insights;
+        const extractedSector = parsed.setor;
 
-      // 4. Persistência da Memória
-      if (updatedInsights && updatedInsights.length > 100) {
-        await prisma.cliente.update({
-          where: { id: cliente.id },
-          data: { insights: updatedInsights }
-        });
-        results.push({ cliente: cliente.nome, status: 'Evoluído' });
-      } else {
-        results.push({ cliente: cliente.nome, status: 'Pulado (IA retornou texto curto demais)' });
+        if (updatedInsights && updatedInsights.length > 100) {
+          await prisma.cliente.update({
+            where: { id: cliente.id },
+            data: { 
+              insights: updatedInsights,
+              setor: extractedSector || cliente.setor
+            }
+          });
+          results.push({ cliente: cliente.nome, status: 'Evoluído', setor: extractedSector });
+        }
+      } catch (parseError) {
+        console.error(`Erro ao parsear retorno do Gemini para ${cliente.nome}:`, parseError);
+        results.push({ cliente: cliente.nome, status: 'Erro no formato da IA' });
       }
     }
 

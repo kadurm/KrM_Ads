@@ -17,6 +17,7 @@ model Cliente {
   meta_ads_account_id String
   meta_access_token   String?     @default("")
   meta_pixel_id       String?     @default("")
+  setor               String?     @default("Geral")
   insights            String?     @default("")
   campanhas           Campanha[]
   relatorios          Relatorio[]

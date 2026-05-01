@@ -68,6 +68,8 @@ export default function App() {
   const [isAddingCliente, setIsAddingCliente] = useState(false);
   const [editingCliente, setEditingCliente] = useState(null);
   const [perfilCliente, setPerfilCliente] = useState(null);
+  const [portfolioData, setPortfolioData] = useState(null);
+  const [portfolioLoading, setPortfolioLoading] = useState(false);
   
   const [analiseIA, setAnaliseIA] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
@@ -131,6 +133,16 @@ export default function App() {
   }, []);
 
   const reportRef = useRef(null);
+
+  const loadPortfolio = async () => {
+    setPortfolioLoading(true);
+    try {
+      const res = await fetch(`/api/portfolio?since=${startDate}&until=${endDate}`);
+      const data = await res.json();
+      if (data.success) setPortfolioData(data);
+    } catch (e) { console.error("Erro ao carregar portfólio:", e); }
+    finally { setPortfolioLoading(false); }
+  };
 
   const loadClientes = async () => {
     try {
@@ -690,6 +702,9 @@ export default function App() {
               <button onClick={() => setActiveTab('clientes')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'clientes' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Users size={16} /> Gerenciar Empresas
               </button>
+              <button onClick={() => { setActiveTab('portfolio'); loadPortfolio(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'portfolio' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <LayoutGrid size={16} /> Visão de Portfólio
+              </button>
             </nav>
           </div>
 
@@ -985,6 +1000,148 @@ export default function App() {
                 <button onClick={handleExportPDF} className="p-3 px-8 bg-slate-800 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-slate-700 transition-all text-slate-300 border border-slate-700 shadow-lg shadow-black/20 flex-shrink-0"><Download size={18} /> Exportar PDF</button>
                 <button className="p-3 px-8 bg-[#25D366] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-green-900/20 flex-shrink-0"><MessageCircle size={18} /> WhatsApp</button>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'portfolio' && (
+            <div className="max-w-[1600px] mx-auto py-10 px-8 space-y-12 animate-in fade-in duration-700">
+               {/* PORTFOLIO HEADER */}
+               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
+                 <div className="space-y-2">
+                    <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Master Administration</p>
+                    <h1 className="text-5xl font-black text-white tracking-tighter uppercase">Visão de Portfólio</h1>
+                    <p className="text-slate-500 font-medium uppercase text-[10px] tracking-widest flex items-center gap-2">
+                      <Shield size={12} className="text-blue-500/50" /> Consolidado Global de Performance e LTV
+                    </p>
+                 </div>
+                 
+                 <div className="flex items-center gap-3 bg-slate-900/50 p-2 rounded-2xl border border-slate-800 shadow-sm backdrop-blur-md">
+                    <div className="flex gap-1 bg-slate-950 p-1 rounded-xl">
+                      {[
+                        { id: '7d', label: '7 Dias' },
+                        { id: '30d', label: '30 Dias' },
+                        { id: 'este_mes', label: 'Este Mês' },
+                      ].map(s => (
+                        <button key={s.id} onClick={() => { handleShortcut(s.id); loadPortfolio(); }} className={getShortcutClass(s.id)}>{s.label}</button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 px-2 border-l border-slate-800 ml-2">
+                      <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="bg-transparent text-[11px] font-bold text-slate-300 p-2 outline-none" />
+                      <span className="text-slate-700">→</span>
+                      <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="bg-transparent text-[11px] font-bold text-slate-300 p-2 outline-none" />
+                    </div>
+                    <button onClick={loadPortfolio} className="p-3 bg-blue-600/10 text-blue-500 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                      <RefreshCw size={16} className={portfolioLoading ? 'animate-spin' : ''} />
+                    </button>
+                 </div>
+               </div>
+
+               {portfolioLoading ? (
+                 <div className="py-40 flex flex-col items-center justify-center gap-6">
+                    <Loader2 className="animate-spin text-blue-600" size={48} />
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Agregando dados de todas as contas...</p>
+                 </div>
+               ) : portfolioData && (
+                 <>
+                  {/* TOP KPIs */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                     {[
+                       { label: 'Investimento Global', value: `R$ ${portfolioData.global.totalSpend.toLocaleString()}`, sub: 'Budget sob gestão', icon: Zap, color: 'blue' },
+                       { label: 'Receita Consolidada', value: `R$ ${portfolioData.global.totalRevenue.toLocaleString()}`, sub: 'LTV via CRM', icon: DollarSign, color: 'emerald' },
+                       { label: 'Total de Leads', value: portfolioData.global.totalLeads.toLocaleString(), sub: 'Volume captado', icon: Users, color: 'purple' },
+                       { label: 'ROAS Global', value: `${(portfolioData.global.totalRevenue / (portfolioData.global.totalSpend || 1)).toFixed(2)}x`, sub: 'Eficiência de portfólio', icon: TrendingUp, color: 'amber' },
+                     ].map((kpi, i) => (
+                       <div key={i} className="bg-slate-900/40 p-8 rounded-[2.5rem] border border-slate-800 flex items-center gap-6 group hover:border-blue-500/30 transition-all">
+                          <div className={`w-14 h-14 rounded-2xl bg-${kpi.color}-600/10 text-${kpi.color}-500 flex items-center justify-center shadow-inner`}>
+                            <kpi.icon size={28} />
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-black uppercase text-slate-600 tracking-widest">{kpi.label}</p>
+                            <p className="text-2xl font-black text-white">{kpi.value}</p>
+                            <p className="text-[9px] font-bold text-slate-500 uppercase mt-1">{kpi.sub}</p>
+                          </div>
+                       </div>
+                     ))}
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                     {/* CHART SETORES */}
+                     <div className="lg:col-span-1 bg-slate-900/40 p-8 rounded-[2.5rem] border border-slate-800 space-y-8">
+                        <div className="flex items-center gap-3">
+                           <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                           <h3 className="text-sm font-black text-white uppercase tracking-widest">Divisão por Setor</h3>
+                        </div>
+                        <div className="h-72">
+                           <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={portfolioData.sectors} layout="vertical">
+                                 <XAxis type="number" hide />
+                                 <YAxis dataKey="sector" type="category" width={100} axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 10, fontWeight: 'bold'}} />
+                                 <Tooltip 
+                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px' }}
+                                    itemStyle={{ color: '#fff', fontSize: '12px' }}
+                                 />
+                                 <Bar dataKey="spend" fill="#3b82f6" radius={[0, 10, 10, 0]} barSize={20} />
+                              </BarChart>
+                           </ResponsiveContainer>
+                        </div>
+                        <div className="space-y-4">
+                           {portfolioData.sectors.map((s, idx) => (
+                             <div key={idx} className="flex justify-between items-center p-4 bg-slate-950/50 rounded-2xl border border-slate-800">
+                                <span className="text-[10px] font-black text-slate-400 uppercase">{s.sector}</span>
+                                <span className="text-xs font-black text-white">R$ {s.spend.toLocaleString()}</span>
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+
+                     {/* TABELA DE CLIENTES */}
+                     <div className="lg:col-span-2 bg-slate-900/40 p-8 rounded-[2.5rem] border border-slate-800 space-y-8 overflow-hidden">
+                        <div className="flex justify-between items-center">
+                           <div className="flex items-center gap-3">
+                              <div className="w-1.5 h-6 bg-emerald-600 rounded-full"></div>
+                              <h3 className="text-sm font-black text-white uppercase tracking-widest">Performance Individual</h3>
+                           </div>
+                           <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{portfolioData.clients.length} Contas Ativas</span>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                           <table className="w-full text-left border-collapse">
+                              <thead>
+                                 <tr className="text-[10px] font-black uppercase text-slate-600 tracking-widest border-b border-slate-800">
+                                    <th className="pb-6">Cliente</th>
+                                    <th className="pb-6">Setor</th>
+                                    <th className="pb-6 text-right">Investimento</th>
+                                    <th className="pb-6 text-right">Leads</th>
+                                    <th className="pb-6 text-right">CAC</th>
+                                    <th className="pb-6 text-right">Receita (LTV)</th>
+                                    <th className="pb-6 text-right">ROAS</th>
+                                 </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-800/30">
+                                 {portfolioData.clients.map((c) => (
+                                   <tr key={c.id} className="group hover:bg-white/5 transition-all">
+                                      <td className="py-5 font-black text-white text-xs uppercase tracking-tight">{c.nome}</td>
+                                      <td className="py-5">
+                                         <span className="px-3 py-1 bg-slate-950 border border-slate-800 rounded-full text-[9px] font-black text-slate-500 uppercase">{c.setor}</span>
+                                      </td>
+                                      <td className="py-5 text-right font-mono text-xs text-blue-400 font-bold">R$ {c.spend.toLocaleString()}</td>
+                                      <td className="py-5 text-right text-xs font-black text-slate-300">{c.leads}</td>
+                                      <td className="py-5 text-right text-xs font-black text-slate-300">R$ {c.cac.toFixed(2)}</td>
+                                      <td className="py-5 text-right font-mono text-xs text-emerald-400 font-bold">R$ {c.revenue.toLocaleString()}</td>
+                                      <td className="py-5 text-right">
+                                         <div className={`inline-block px-3 py-1 rounded-lg text-[10px] font-black ${c.roas > 3 ? 'bg-emerald-600/20 text-emerald-500' : 'bg-blue-600/10 text-blue-500'}`}>
+                                            {c.roas.toFixed(2)}x
+                                         </div>
+                                      </td>
+                                   </tr>
+                                 ))}
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                  </div>
+                 </>
+               )}
             </div>
           )}
 
