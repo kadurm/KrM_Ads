@@ -43,6 +43,7 @@ import {
   MoreVertical,
   Copy,
   Zap,
+  LayoutGrid,
   } from 'lucide-react';
 import { CampaignsBoard } from '@/views/CampaignsBoard';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
