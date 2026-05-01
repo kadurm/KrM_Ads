@@ -18,30 +18,48 @@ function graphUrl(path: string, query: Record<string, any>) {
 }
 
 async function getCredentials(clienteName: string) {
-  // Limpa o nome para o formato do .env (Remove acentos, espaços e pega a primeira palavra)
   const normalized = clienteName.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
   const shortName = normalized.split(' ')[0];
+  const slug = clienteName.toLowerCase().replace(/ /g, '');
   
-  console.log(`[Auth] Buscando credenciais para: ${clienteName} (Key: ${shortName})`);
+  console.log(`[Auth Audit] Iniciando busca para: "${clienteName}"`);
+  console.log(`[Auth Audit] Tentando chaves: ${shortName}, ${slug}`);
 
-  // Prioridade 1: Variáveis de Ambiente (Configuração via Agentes/Automação)
-  let adAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`];
-  let accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`] || process.env[`META_ACCESS_TOKEN_GLOBAL`];
+  // 1. Tenta buscar ID da Conta no Env (Várias formas)
+  let adAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || 
+                    process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
+                    process.env[`META_AD_ACCOUNT_ID_${clienteName.replace(/ /g, '_')}`];
 
-  // Prioridade 2: Banco de Dados (Configuração via Painel UI)
+  // 2. Tenta buscar Token no Env (Várias formas) ou usa GLOBAL
+  let accessToken = process.env[`META_ACCESS_TOKEN_${shortName}`] || 
+                    process.env[`META_ACCESS_TOKEN_${slug}`] ||
+                    process.env[`META_ACCESS_TOKEN_GLOBAL`];
+
+  // 3. Fallback para Banco de Dados se ainda não tiver ID
   if (!adAccountId) {
     const clienteData = await prisma.cliente.findFirst({
-      where: { nome: clienteName }
+      where: { 
+        OR: [
+          { nome: { equals: clienteName, mode: 'insensitive' } },
+          { slug: { equals: slug, mode: 'insensitive' } }
+        ]
+      }
     });
     
     if (clienteData) {
-      adAccountId = adAccountId || clienteData.meta_ads_account_id;
-      accessToken = accessToken || clienteData.meta_access_token || process.env[`META_ACCESS_TOKEN_GLOBAL`];
+      adAccountId = clienteData.meta_ads_account_id;
+      accessToken = accessToken || clienteData.meta_access_token;
+      console.log(`[Auth Audit] ID recuperado do Banco de Dados: ${adAccountId}`);
     }
   }
+
+  // 4. Garantia de act_ prefix
+  const finalAccountId = adAccountId?.startsWith('act_') ? adAccountId : (adAccountId ? `act_${adAccountId}` : null);
   
+  console.log(`[Auth Audit] Resultado Final - ID: ${finalAccountId ? 'OK' : 'NULL'}, Token: ${accessToken ? 'OK' : 'NULL'}`);
+
   return { 
-    adAccountId: adAccountId?.startsWith('act_') ? adAccountId : (adAccountId ? `act_${adAccountId}` : null), 
+    adAccountId: finalAccountId, 
     accessToken 
   };
 }

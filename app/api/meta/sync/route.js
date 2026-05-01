@@ -78,18 +78,31 @@ export async function GET(request) {
     const until = searchParams.get('until');
     if (!clienteNome) return NextResponse.json({ success: false, error: "Cliente não especificado" }, { status: 400 });   
 
-    const cliente = await prisma.cliente.findFirst({ where: { nome: clienteNome } });
+    const normalized = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+    const shortName = normalized.split(' ')[0];
+    const slug = clienteNome.toLowerCase().replace(/ /g, '');
+    const cliente = await prisma.cliente.findFirst({ 
+      where: { 
+        OR: [
+          { nome: { equals: clienteNome, mode: 'insensitive' } },
+          { slug: { equals: slug, mode: 'insensitive' } }
+        ]
+      } 
+    });
     
     // 1. LOGICA DO COMMIT 8170273: BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão)
     let metaAccountTotals = null;
     try {
-      // Limpa o nome para o formato do .env (Remove acentos, espaços e pega a primeira palavra)
-      const normalized = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-      const shortName = normalized.split(' ')[0];
-      
-      // Lógica Híbrida: Env (Prioridade) -> DB
-      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || process.env[`META_ACCESS_TOKEN_GLOBAL`] || cliente?.meta_access_token;
-      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || cliente?.meta_ads_account_id;
+      // Lógica Híbrida: Env (Prioridade) -> DB -> GLOBAL
+      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || 
+                           process.env[`META_ACCESS_TOKEN_${slug}`] ||
+                           process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
+                           cliente?.meta_access_token;
+
+      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || 
+                           process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
+                           cliente?.meta_ads_account_id;
+
       const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
 
       if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
@@ -246,15 +259,34 @@ export async function POST(request) {
 
     const normalized = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
     const shortName = normalized.split(' ')[0];
-    const dbCliente = await prisma.cliente.findFirst({ where: { nome: cliente } });
+    const slug = cliente.toLowerCase().replace(/ /g, '');
+
+    const dbCliente = await prisma.cliente.findFirst({ 
+      where: { 
+        OR: [
+          { nome: { equals: cliente, mode: 'insensitive' } },
+          { slug: { equals: slug, mode: 'insensitive' } }
+        ]
+      } 
+    });
     
-    // Lógica Híbrida
-    const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || process.env[`META_ACCESS_TOKEN_GLOBAL`] || dbCliente?.meta_access_token;
-    const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || dbCliente?.meta_ads_account_id;
+    // Lógica Híbrida: Env (Várias Chaves) -> DB -> GLOBAL
+    const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || 
+                         process.env[`META_ACCESS_TOKEN_${slug}`] ||
+                         process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
+                         dbCliente?.meta_access_token;
+
+    const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || 
+                         process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
+                         dbCliente?.meta_ads_account_id;
+
     const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
     
-    if (!ACCESS_TOKEN || !AD_ACCOUNT_ID) {
-      throw new Error(`Credenciais da Meta não encontradas para o cliente ${cliente} (Env ou DB)`);
+    if (!ACCESS_TOKEN) {
+      throw new Error(`Token de Acesso não encontrado para o cliente ${cliente}. Verifique o META_ACCESS_TOKEN_GLOBAL ou o cadastro no banco.`);
+    }
+    if (!AD_ACCOUNT_ID) {
+      throw new Error(`ID da Conta (act_ID) não encontrado para o cliente ${cliente}. Verifique o .env ou o cadastro no banco.`);
     }
 
     // Se o cliente não existe no banco (vindo apenas do Env), criamos ele para permitir o Sync
