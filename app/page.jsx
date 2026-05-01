@@ -210,21 +210,22 @@ export default function App() {
     }
   };
 
-  const handleTriggerDeepLearning = async () => {
-    const isGlobal = !clienteSelecionado;
-    const confirmMsg = isGlobal 
-      ? 'Isso iniciará o motor de IA para analisar TODAS as contas. Deseja continuar?'
-      : `Deseja iniciar o aprendizado inteligente para ${clienteSelecionado}?`;
+  const handleTriggerDeepLearning = async (forcedClienteId = null) => {
+    // Se passar um ID, é individual (perfil). Se não, e houver cliente selecionado no workspace, é individual. Se não houver nada, é global.
+    const isIndividual = !!forcedClienteId || !!clienteSelecionado;
+    const targetId = forcedClienteId || (clienteSelecionado ? clientesDisponiveis.find(c => c.nome === clienteSelecionado)?.id : null);
+    
+    const confirmMsg = !isIndividual 
+      ? 'Isso iniciará o motor de IA para analisar TODAS as contas do portfólio. Deseja continuar?'
+      : `Deseja iniciar o aprendizado inteligente para este cliente?`;
 
     if (!window.confirm(confirmMsg)) return;
     
     setIsDeepLearningLoading(true);
     try {
-      // Busca o ID do cliente atual se não for global
       let url = '/api/cron/deep-learning';
-      if (!isGlobal) {
-        const clienteObj = clientesDisponiveis.find(c => c.nome === clienteSelecionado);
-        if (clienteObj) url += `?clienteId=${clienteObj.id}`;
+      if (isIndividual && targetId) {
+        url += `?clienteId=${targetId}`;
       }
 
       const res = await fetch(url, {
@@ -233,10 +234,11 @@ export default function App() {
       const data = await res.json();
       if (data.success) {
         await loadClientes();
-        setMensagemPainel({ tipo: 'sucesso', texto: isGlobal ? 'Deep Learning global concluído!' : `Aprendizado concluído para ${clienteSelecionado}!` });
-        // Se houver um perfil aberto, atualiza ele
-        if (!isGlobal && perfilCliente) {
-           const updated = (await (await fetch('/api/clientes')).json()).clientes.find(c => c.nome === clienteSelecionado);
+        setMensagemPainel({ tipo: 'sucesso', texto: !isIndividual ? 'Deep Learning global concluído!' : `Aprendizado concluído com sucesso!` });
+        
+        // Se estiver no modal de perfil, atualiza o texto na tela
+        if (isIndividual && perfilCliente) {
+           const updated = (await (await fetch('/api/clientes')).json()).clientes.find(c => c.id === (targetId || perfilCliente.id));
            if (updated) setPerfilCliente(updated);
         }
       } else {
@@ -1195,10 +1197,11 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={handleTriggerDeepLearning}
+                    onClick={() => handleTriggerDeepLearning(null)}
                     disabled={isDeepLearningLoading}
                     className="p-3 px-6 bg-slate-800 border border-slate-700 text-blue-400 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-slate-700 transition-all disabled:opacity-50 shadow-xl"
                   >
+
                     {isDeepLearningLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
                     Acionar Deep Learning
                   </button>
@@ -1328,7 +1331,7 @@ export default function App() {
                       </div>
                       <div className="flex items-center gap-4">
                         <button 
-                          onClick={handleTriggerDeepLearning}
+                          onClick={() => handleTriggerDeepLearning(perfilCliente.id)}
                           disabled={isDeepLearningLoading}
                           className="p-3 px-6 bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 disabled:opacity-50"
                         >
