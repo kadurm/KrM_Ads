@@ -29,9 +29,11 @@ O KrM_Ads é um SaaS Fullstack projetado para a gestão de campanhas de tráfego
 3. [Concluído] Configurar geração de diagnóstico de performance via IA (Gemini).
 4. [Concluído] Migrar gestão de tokens Meta Ads para Multi-Tenancy dinâmico no Banco de Dados.
 5. [Concluído] Implementar Andromeda Deep Learning (Motor de Aprendizado Autônomo via Cron).
+6. [Concluído] Integração de Funil de Vendas CRM -> Meta (Offline Conversions via CAPI).
 
 ## 7. Protocolo de Sincronização e Trabalho
 - Protocolo de Trabalho: Existe um rigoroso protocolo de sincronização onde cada alteração estrutural deve ser registrada no agent.md para manter a consistência entre diferentes sessões de IA.
 - Realidade Material: O Agente deve priorizar os arquivos físicos e logs de erro fornecidos pelo usuário em detrimento de sua própria memória de sessões passadas.
 - Gestão de Tokens (Meta Ads): A gestão de tokens é feita de forma dinâmica e Multi-Tenant diretamente na tabela `Cliente` do banco de dados. Isso permite a adição e gerenciamento de múltiplas contas Meta sem necessidade de variáveis de ambiente (.env) individuais ou novos deploys.
 - Aprendizado Contínuo (Deep Learning): O sistema possui um motor autônomo que analisa campanhas, criativos e dados do CRM semanalmente, atualizando automaticamente o contexto estratégico (`insights`) de cada cliente com base em performance real.
+- Conversões Offline (CAPI): O sistema está conectado à Conversions API da Meta. Sempre que um lead muda para o status "FECHADO" no CRM interno, um evento de "Purchase" é enviado à Meta para otimizar o algoritmo de ROAS.

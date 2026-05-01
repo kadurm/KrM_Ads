@@ -18,7 +18,7 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const { nome, meta_ads_account_id, meta_access_token } = await request.json();
+    const { nome, meta_ads_account_id, meta_access_token, meta_pixel_id } = await request.json();
     
     if (!nome || !meta_ads_account_id) {
       return NextResponse.json({ success: false, error: "Nome e ID da conta são obrigatórios" }, { status: 400 });
@@ -43,6 +43,7 @@ export async function POST(request) {
         nome, 
         meta_ads_account_id,
         meta_access_token,
+        meta_pixel_id,
         insights: agentTemplate
       }
     });
@@ -65,12 +66,12 @@ export async function POST(request) {
 
 export async function PATCH(request) {
   try {
-    const { id, nome, meta_ads_account_id, meta_access_token, insights } = await request.json();
+    const { id, nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights } = await request.json();
     if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
 
     const cliente = await prisma.cliente.update({
       where: { id },
-      data: { nome, meta_ads_account_id, meta_access_token, insights }
+      data: { nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights }
     });
 
     return NextResponse.json({ success: true, cliente });
