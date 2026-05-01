@@ -1326,9 +1326,19 @@ export default function App() {
                           </p>
                         </div>
                       </div>
-                      <button onClick={() => handleUpdateCliente(perfilCliente)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black p-3 px-10 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center gap-3 shadow-2xl shadow-emerald-900/40 border border-emerald-500/20">
-                        <Check size={20} /> Salvar Contexto
-                      </button>
+                      <div className="flex items-center gap-4">
+                        <button 
+                          onClick={handleTriggerDeepLearning}
+                          disabled={isDeepLearningLoading}
+                          className="p-3 px-6 bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 disabled:opacity-50"
+                        >
+                          {isDeepLearningLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                          Treinar Andromeda agora
+                        </button>
+                        <button onClick={() => handleUpdateCliente(perfilCliente)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black p-3 px-10 rounded-2xl text-xs uppercase tracking-widest transition-all flex items-center gap-3 shadow-2xl shadow-emerald-900/40 border border-emerald-500/20">
+                          <Check size={20} /> Salvar Contexto
+                        </button>
+                      </div>
                    </header>
                    <div className="flex-1 overflow-hidden flex">
                       <div className="w-[400px] border-r border-slate-800 p-12 space-y-12 overflow-y-auto bg-slate-900/30">
