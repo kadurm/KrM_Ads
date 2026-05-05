@@ -45,9 +45,11 @@ import {
   Zap,
   LayoutGrid,
   CreditCard,
+  PieChart,
   } from 'lucide-react';
 import { CampaignsBoard } from '@/views/CampaignsBoard';
 import { PaymentsView } from '@/views/PaymentsView';
+import { GlobalFinancialView } from '@/views/GlobalFinancialView';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
 /** YYYY-MM-DD no fuso local. */
@@ -764,6 +766,9 @@ export default function App() {
               </button>
               <button onClick={() => { setActiveTab('portfolio'); loadPortfolio(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'portfolio' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <LayoutGrid size={16} /> Visão de Portfólio
+              </button>
+              <button onClick={() => setActiveTab('financeiro-global')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'financeiro-global' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <PieChart size={16} /> Financeiro Global
               </button>
             </nav>
           </div>
@@ -1768,6 +1773,12 @@ export default function App() {
           {activeTab === 'pagamentos' && (
             <div className="max-w-[1400px] mx-auto py-10 px-8">
               <PaymentsView clienteName={clienteSelecionado} startDate={startDate} endDate={endDate} />
+            </div>
+          )}
+
+          {activeTab === 'financeiro-global' && (
+            <div className="max-w-[1400px] mx-auto py-10 px-8">
+              <GlobalFinancialView startDate={startDate} endDate={endDate} />
             </div>
           )}
 
