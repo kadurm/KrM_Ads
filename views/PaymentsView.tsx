@@ -74,7 +74,12 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
       await fetch('/api/pagamentos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cliente: clienteName, ...novaTransacao, categoria: 'HONORARIO', tipo: 'COBRANCA' }),
+        body: JSON.stringify({ 
+          cliente: clienteName, 
+          ...novaTransacao, 
+          categoria: novaTransacao.categoria || 'HONORARIO', 
+          tipo: 'COBRANCA' 
+        }),
       });
       setShowTransacaoModal(false);
       loadData();
@@ -173,8 +178,11 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
                       <tr key={t.id} className="hover:bg-slate-800/30 transition-all">
                         <td className="p-6 text-xs text-slate-400 font-bold">{new Date(t.criado_em).toLocaleDateString()}</td>
                         <td className="p-6">
-                          <p className="text-sm font-bold text-slate-200">{t.descricao}</p>
-                          <p className="text-[9px] text-slate-500 font-black uppercase">{t.referencia}</p>
+                          <div className="flex flex-col">
+                            <span className="text-[8px] font-black uppercase text-blue-500 mb-1 tracking-tighter">{t.categoria}</span>
+                            <p className="text-sm font-bold text-slate-200">{t.descricao}</p>
+                            <p className="text-[9px] text-slate-500 font-black uppercase">{t.referencia}</p>
+                          </div>
                         </td>
                         <td className="p-6">
                           <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
@@ -307,6 +315,20 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
                   <button onClick={() => setShowTransacaoModal(false)} className="text-slate-500 hover:text-white"><X size={24}/></button>
                </div>
                <form onSubmit={handleSaveTransacao} className="space-y-4">
+                  <div>
+                     <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Serviço / Categoria</label>
+                     <select 
+                        value={novaTransacao.categoria || 'HONORARIO'} 
+                        onChange={e => setNovaTransacao({...novaTransacao, categoria: e.target.value})} 
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none"
+                     >
+                        <option value="HONORARIO">Gestão de Tráfego (Fee)</option>
+                        <option value="LANDING_PAGE">Landing Page / Site</option>
+                        <option value="SOCIAL_MEDIA">Social Media / Design</option>
+                        <option value="CONSULTORIA">Consultoria Estratégica</option>
+                        <option value="OUTROS">Outros Serviços</option>
+                     </select>
+                  </div>
                   <div>
                      <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Descrição</label>
                      <input type="text" required value={novaTransacao.descricao} onChange={e => setNovaTransacao({...novaTransacao, descricao: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none" placeholder="Ex: Fee Mensal Maio/26" />
