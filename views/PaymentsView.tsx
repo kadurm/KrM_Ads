@@ -17,17 +17,17 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
-export function PaymentsView({ clienteName, startDate, endDate }) {
+export function PaymentsView({ clienteName, startDate, endDate }: any) {
   const [activeSubTab, setActiveSubTab] = useState('extrato'); // extrato, metodos, notas
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState({ transacoes: [], metodos: [], kpis: {} });
-  const [notas, setNotas] = useState([]);
+  const [data, setData] = useState<any>({ transacoes: [], metodos: [], kpis: {} });
+  const [notas, setNotas] = useState<any[]>([]);
   
   // Modals
   const [showMetodoModal, setShowMetodoModal] = useState(false);
   const [showTransacaoModal, setShowTransacaoModal] = useState(false);
-  const [novoMetodo, setNovoMetodo] = useState({ tipo: 'PIX', descricao: '', chave_pix: '', is_principal: false });
-  const [novaTransacao, setNovaTransacao] = useState({ descricao: '', valor: '', data_vencimento: '' });
+  const [novoMetodo, setNovoMetodo] = useState<any>({ tipo: 'PIX', descricao: '', chave_pix: '', is_principal: false });
+  const [novaTransacao, setNovaTransacao] = useState<any>({ descricao: '', valor: '', data_vencimento: '' });
 
   const loadData = async () => {
     if (!clienteName) return;
@@ -251,7 +251,7 @@ export function PaymentsView({ clienteName, startDate, endDate }) {
                   ))}
                   {notas.length === 0 && (
                      <tr>
-                        <td colSpan="5" className="p-10 text-center text-slate-500 font-bold text-sm">Nenhuma Nota Fiscal emitida neste período.</td>
+                        <td colSpan={5} className="p-10 text-center text-slate-500 font-bold text-sm">Nenhuma Nota Fiscal emitida neste período.</td>
                      </tr>
                   )}
                 </tbody>
