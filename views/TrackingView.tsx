@@ -145,16 +145,26 @@ src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"
               <p className="text-[8px] font-bold text-slate-600 mt-2 uppercase">Encontre este código na aba "Testar Eventos" do Gerenciador de Eventos da Meta.</p>
             </div>
 
+          <div className="flex flex-col md:flex-row gap-3">
             <button 
               onClick={handleTestCAPI}
               disabled={loading || !pixelId || !accessToken}
-              className={`w-full p-4 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+              className={`flex-1 p-4 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                 loading ? 'bg-slate-800 text-slate-500' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-900/20'
               }`}
             >
               {loading ? <Loader2 className="animate-spin" size={16} /> : <Play size={16} />}
               Testar Conexão CAPI
             </button>
+            <a 
+              href={`/api/tracking/gtm-export?cliente=${encodeURIComponent(cliente?.nome || '')}`}
+              download
+              className="p-4 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-900/20"
+            >
+              <Download size={16} />
+              Exportar para GTM
+            </a>
+          </div>
 
             {testStatus && (
               <div className={`p-4 rounded-2xl border ${testStatus.success ? 'bg-emerald-600/10 border-emerald-500/20' : 'bg-red-600/10 border-red-500/20'} animate-in zoom-in duration-300`}>
