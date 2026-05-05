@@ -36,7 +36,7 @@ export async function GET(req) {
             "type": "html",
             "parameter": [
               {
-                "type": "template",
+                "type": "TEMPLATE",
                 "key": "html",
                 "value": `\u003cscript\u003e\n!function(f,b,e,v,n,t,s)\n{if(f.fbq)return;n=f.fbq=function(){n.callMethod?\nn.callMethod.apply(n,arguments):n.queue.push(arguments)};\nif(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\nn.queue=[];t=b.createElement(e);t.async=!0;\nt.src=v;s=b.getElementsByTagName(e)[0];\ns.parentNode.insertBefore(t,s)}(window, document,'script',\n'https://connect.facebook.net/en_US/fbevents.js');\nfbq('init', '{{Meta Pixel ID}}');\nfbq('track', 'PageView');\n\u003c/script\u003e`
               }
@@ -49,7 +49,7 @@ export async function GET(req) {
             "type": "html",
             "parameter": [
               {
-                "type": "template",
+                "type": "TEMPLATE",
                 "key": "html",
                 "value": "\u003cscript\u003efbq('track', 'Lead');\u003c/script\u003e"
               }
@@ -67,8 +67,8 @@ export async function GET(req) {
               {
                 "type": "CONTAINS",
                 "parameter": [
-                  { "type": "template", "key": "arg0", "value": "{{Click Text}}" },
-                  { "type": "template", "key": "arg1", "value": "Garantir minha vaga" }
+                  { "type": "TEMPLATE", "key": "arg0", "value": "{{Click Text}}" },
+                  { "type": "TEMPLATE", "key": "arg1", "value": "Garantir minha vaga" }
                 ]
               }
             ]
@@ -79,7 +79,7 @@ export async function GET(req) {
             "name": "Meta Pixel ID",
             "type": "c",
             "parameter": [
-              { "type": "template", "key": "value", "value": pixelId }
+              { "type": "TEMPLATE", "key": "value", "value": pixelId }
             ]
           }
         ],
