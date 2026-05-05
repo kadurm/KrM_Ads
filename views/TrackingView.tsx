@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Zap,
   Info,
+  Download,
   Loader2
 } from 'lucide-react';
 
