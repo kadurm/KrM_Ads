@@ -1809,11 +1809,10 @@ export default function App() {
           )}
 
           {activeTab === 'tracking' && (
-            <div className="max-w-[1400px] mx-auto py-10 px-8">
-              <TrackingView cliente={clientes.find(c => c.nome === clienteSelecionado)} />
+            <div className="max-w-[1400px] mx-auto py-10 px-8">     
+              <TrackingView cliente={clientesDisponiveis.find(c => c.nome === clienteSelecionado)} />
             </div>
           )}
-
         </div>
       </main>
     </div>
