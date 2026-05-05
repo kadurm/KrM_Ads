@@ -23,6 +23,9 @@ model Cliente {
   relatorios          Relatorio[]
   leads               Lead[]
   historico_contexto  HistoricoContexto[]
+  metodos_pagamento   MetodoPagamento[]
+  transacoes          Transacao[]
+  notas_fiscais       NotaFiscal[]
   criado_em           DateTime    @default(now())
 }
 
@@ -153,4 +156,50 @@ model Relatorio {
   desenvolvimento_algoritmo String? // Gerado pelo Gemini
   proximos_passos           String? // Gerado pelo Gemini
   criado_em                 DateTime @default(now())
+}
+
+model MetodoPagamento {
+  id           String      @id @default(uuid())
+  cliente_id   String
+  cliente      Cliente     @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
+  tipo         String      // PIX, BOLETO, CARTAO, TRANSFERENCIA
+  descricao    String      // "PIX CPF ***123", "Cartão final 4242"
+  chave_pix    String?     // Chave PIX (se tipo = PIX)
+  dados_banco  String?     // JSON com dados bancários (se transferência)
+  is_principal Boolean     @default(false)
+  ativo        Boolean     @default(true)
+  transacoes   Transacao[]
+  criado_em    DateTime    @default(now())
+}
+
+model Transacao {
+  id                  String            @id @default(uuid())
+  cliente_id          String
+  cliente             Cliente           @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
+  metodo_pagamento_id String?
+  metodo              MetodoPagamento?  @relation(fields: [metodo_pagamento_id], references: [id])
+  tipo                String            // COBRANCA, PAGAMENTO, REEMBOLSO
+  categoria           String            @default("ADS") // ADS, HONORARIO, SERVICO
+  descricao           String
+  valor               Decimal
+  status              String            @default("PENDENTE") // PENDENTE, PAGO, VENCIDO, CANCELADO
+  data_vencimento     DateTime?
+  data_pagamento      DateTime?
+  referencia          String?           // Código de barras, link PIX, etc.
+  nota_fiscal         NotaFiscal?
+  criado_em           DateTime          @default(now())
+}
+
+model NotaFiscal {
+  id           String   @id @default(uuid())
+  cliente_id   String
+  cliente      Cliente  @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
+  transacao_id String?  @unique
+  transacao    Transacao? @relation(fields: [transacao_id], references: [id])
+  numero       Int
+  valor        Decimal
+  descricao    String
+  status       String   @default("EMITIDA") // EMITIDA, CANCELADA
+  url_pdf      String?
+  criado_em    DateTime @default(now())
 }

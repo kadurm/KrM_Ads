@@ -44,8 +44,10 @@ import {
   Copy,
   Zap,
   LayoutGrid,
+  CreditCard,
   } from 'lucide-react';
 import { CampaignsBoard } from '@/views/CampaignsBoard';
+import { PaymentsView } from '@/views/PaymentsView';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
 /** YYYY-MM-DD no fuso local. */
@@ -778,6 +780,9 @@ export default function App() {
               </button>
               <button onClick={() => { setActiveTab('crm'); loadLeads(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'crm' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Database size={16} /> CRM / Extrato
+              </button>
+              <button onClick={() => setActiveTab('pagamentos')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'pagamentos' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                <CreditCard size={16} /> Pagamentos
               </button>
               <button onClick={() => setActiveTab('creative-lab')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'creative-lab' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Sparkles size={16} /> Creative Lab (IA)
@@ -1757,6 +1762,12 @@ export default function App() {
                 since={startDate}
                 until={endDate}
               />
+            </div>
+          )}
+
+          {activeTab === 'pagamentos' && (
+            <div className="max-w-[1400px] mx-auto py-10 px-8">
+              <PaymentsView clienteName={clienteSelecionado} startDate={startDate} endDate={endDate} />
             </div>
           )}
 
