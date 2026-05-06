@@ -44,18 +44,19 @@ function getTrueLeads(actions) {
   const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
-  return Math.max(msgReply, msgStarted) + standardLead + leadGen;
+  // Evita contagem dupla de mensagens e prioriza o maior volume de leads (standard vs grouped)
+  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen);
 }
 
 function getSocialActions(actions) {
   if (!Array.isArray(actions)) return 0;
+  // A API da Meta já inclui 'like' dentro de 'post_reaction'. 
+  // Mantemos apenas as métricas de nível superior para evitar inflação.
   return getMetric(actions, 'post_reaction') + 
-         getMetric(actions, 'like') + 
          getMetric(actions, 'comment') + 
          getMetric(actions, 'onsite_conversion.post_save') + 
          getMetric(actions, 'post_save') + 
          getMetric(actions, 'onsite_conversion.post_share') + 
-         getMetric(actions, 'post') + 
          getMetric(actions, 'share');
 }
 
@@ -63,7 +64,7 @@ function getSocialActions(actions) {
 const getLeadLabel = (m) => {
   if (m.conversas_leads > 0) return 'Leads';
   const obj = m.objetivo || '';
-  if (obj.includes('TRAFFIC')) return 'Visitas';
+  if (obj.includes('TRAFFIC')) return 'Cliques no Link';
   if (obj.includes('AWARENESS') || obj.includes('REACH')) return 'Alcance';
   if (obj.includes('ENGAGEMENT')) return 'Engajamentos';     
   if (obj.includes('SALES')) return 'Vendas';
@@ -78,9 +79,9 @@ export async function GET(request) {
     const until = searchParams.get('until');
     if (!clienteNome) return NextResponse.json({ success: false, error: "Cliente não especificado" }, { status: 400 });   
 
-    const normalized = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-    const shortName = normalized.split(' ')[0];
-    const slug = clienteNome.toLowerCase().replace(/ /g, '');
+    // Normalização rigorosa para SLUG (minúsculo, sem acentos, sem espaços)
+    const slug = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
+    
     const cliente = await prisma.cliente.findFirst({ 
       where: { 
         OR: [
@@ -90,16 +91,15 @@ export async function GET(request) {
       } 
     });
     
-    // 1. LOGICA DO COMMIT 8170273: BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão)
+    // LOGICA DE CREDENCIAIS PADRONIZADA: Prioriza SLUG (limpo)
     let metaAccountTotals = null;
     try {
-      // Lógica Híbrida: Env (Prioridade) -> DB -> GLOBAL
-      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || 
+      const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
                            process.env[`META_ACCESS_TOKEN_${slug}`] ||
                            process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
                            cliente?.meta_access_token;
 
-      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || 
+      const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${slug.toUpperCase()}`] || 
                            process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
                            cliente?.meta_ads_account_id;
 
@@ -161,8 +161,8 @@ export async function GET(request) {
         finalVal = total.engajamentoTotal;
         finalLabel = 'Engajamentos';
       } else if (camp.nome_gerado.includes('[05]')) {        
-        finalVal = Math.round(total.visitas_perfil * 0.792); 
-        finalLabel = 'Visitas';
+        finalVal = total.visitas_perfil; // Removido fator de correção impreciso
+        finalLabel = 'Visitas ao Perfil';
       } else if (label === 'Vendas') {
         finalVal = total.compras;
       }
@@ -174,6 +174,7 @@ export async function GET(request) {
         campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
       };
     }).filter(m => m.impressoes > 0 || m.valor_investido > 0);
+
 
     const criativosRaw = await prisma.criativo.findMany({    
       where: { campanha: { cliente_id: cliente.id } },       
@@ -257,9 +258,7 @@ export async function POST(request) {
     const { since, until, cliente } = await request.json();
     if (!cliente) return NextResponse.json({ success: false, error: "Cliente não fornecido" }, { status: 400 });
 
-    const normalized = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-    const shortName = normalized.split(' ')[0];
-    const slug = cliente.toLowerCase().replace(/ /g, '');
+    const slug = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
 
     const dbCliente = await prisma.cliente.findFirst({ 
       where: { 
@@ -270,13 +269,13 @@ export async function POST(request) {
       } 
     });
     
-    // Lógica Híbrida: Env (Várias Chaves) -> DB -> GLOBAL
-    const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${shortName}`] || 
+    // Lógica de Credenciais via SLUG
+    const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
                          process.env[`META_ACCESS_TOKEN_${slug}`] ||
                          process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
                          dbCliente?.meta_access_token;
 
-    const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${shortName}`] || 
+    const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${slug.toUpperCase()}`] || 
                          process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
                          dbCliente?.meta_ads_account_id;
 
