@@ -24,21 +24,23 @@ export async function GET(req) {
       "exportFormatVersion": 2,
       "exportTime": new Date().toISOString().replace('T', ' ').split('.')[0],
       "container": {
-        "accountId": "1001",
-        "containerId": "2002",
-        "name": `KrM Tracking - ${cliente.nome}`,
+        "accountId": "92837415",
+        "containerId": "81726354",
+        "name": `KrM-Tracking-${cliente.nome}`,
         "publicId": "GTM-KRMADS",
-        "usageContext": ["WEB"]
+        "usageContext": ["WEB"],
+        "fingerprint": "1730650000000"
       },
       "containerVersion": {
-        "accountId": "1001",
-        "containerId": "2002",
+        "path": "accounts/92837415/containers/81726354/versions/0",
+        "accountId": "92837415",
+        "containerId": "81726354",
         "containerVersionId": "0",
         "name": "KrM Ads Tracking Version",
         "tag": [
           {
-            "accountId": "1001",
-            "containerId": "2002",
+            "accountId": "92837415",
+            "containerId": "81726354",
             "tagId": "1",
             "name": "Meta Pixel - Base Code",
             "type": "html",
@@ -50,11 +52,12 @@ export async function GET(req) {
               }
             ],
             "firingTriggerId": ["2147483647"],
-            "tagFiringOption": "ONCE_PER_EVENT"
+            "tagFiringOption": "ONCE_PER_EVENT",
+            "fingerprint": "1730650000001"
           },
           {
-            "accountId": "1001",
-            "containerId": "2002",
+            "accountId": "92837415",
+            "containerId": "81726354",
             "tagId": "2",
             "name": "Meta Pixel - Event - Lead (Button Click)",
             "type": "html",
@@ -66,13 +69,14 @@ export async function GET(req) {
               }
             ],
             "firingTriggerId": ["100"],
-            "tagFiringOption": "ONCE_PER_EVENT"
+            "tagFiringOption": "ONCE_PER_EVENT",
+            "fingerprint": "1730650000002"
           }
         ],
         "trigger": [
           {
-            "accountId": "1001",
-            "containerId": "2002",
+            "accountId": "92837415",
+            "containerId": "81726354",
             "triggerId": "100",
             "name": "Click - Garantir Minha Vaga",
             "type": "CLICK",
@@ -84,30 +88,33 @@ export async function GET(req) {
                   { "type": "TEMPLATE", "key": "arg1", "value": "Garantir minha vaga" }
                 ]
               }
-            ]
+            ],
+            "fingerprint": "1730650000003"
           }
         ],
         "variable": [
           {
-            "accountId": "1001",
-            "containerId": "2002",
+            "accountId": "92837415",
+            "containerId": "81726354",
             "variableId": "1",
             "name": "Meta Pixel ID",
             "type": "c",
             "parameter": [
               { "type": "TEMPLATE", "key": "value", "value": pixelId }
-            ]
+            ],
+            "fingerprint": "1730650000004"
           }
         ],
         "builtInVariable": [
           { 
-            "accountId": "1001",
-            "containerId": "2002",
+            "accountId": "92837415",
+            "containerId": "81726354",
             "name": "Click Text", 
             "type": "CLICK_TEXT" 
           }
         ]
-      }
+      },
+      "fingerprint": "1730650000000"
     };
 
     return new NextResponse(JSON.stringify(gtmExport, null, 2), {
