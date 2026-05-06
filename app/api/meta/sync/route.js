@@ -244,7 +244,8 @@ export async function POST(request) {
       where: { 
         OR: [
           { nome: { equals: cliente, mode: 'insensitive' } },
-          { slug: { equals: slug, mode: 'insensitive' } }
+          { slug: { equals: slug, mode: 'insensitive' } },
+          { slug: { equals: cliente.toLowerCase().replace(/ /g, ''), mode: 'insensitive' } }
         ]
       } 
     });
