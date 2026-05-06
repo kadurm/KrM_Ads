@@ -91,7 +91,7 @@ export async function GET(request) {
       } 
     });
     
-    // LOGICA DE CREDENCIAIS PADRONIZADA: Prioriza SLUG (limpo)
+    // 1. LOGICA DO COMMIT 8170273: BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão)
     let metaAccountTotals = null;
     try {
       const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
@@ -120,9 +120,9 @@ export async function GET(request) {
 
     if (!cliente && !metaAccountTotals) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
-    // Normalização de datas
-    const dateUntil = until ? new Date(until + 'T23:59:59Z') : new Date();
-    const dateSince = since ? new Date(since + 'T00:00:00Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
+    // Normalização de datas (Voltando para a lógica estável de T00:00:00/T23:59:59 sem fuso UTC forçado para relatórios retroativos)
+    const dateUntil = until ? new Date(until + 'T23:59:59') : new Date();
+    const dateSince = since ? new Date(since + 'T00:00:00') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
 
     const campanhas = await prisma.campanha.findMany({       
       where: { cliente_id: cliente.id },
@@ -161,8 +161,8 @@ export async function GET(request) {
         finalVal = total.engajamentoTotal;
         finalLabel = 'Engajamentos';
       } else if (camp.nome_gerado.includes('[05]')) {        
-        finalVal = total.visitas_perfil; // Removido fator de correção impreciso
-        finalLabel = 'Visitas ao Perfil';
+        finalVal = Math.round(total.visitas_perfil * 0.792); // Restaurado fator de correção estável do commit 311a6aa
+        finalLabel = 'Visitas';
       } else if (label === 'Vendas') {
         finalVal = total.compras;
       }
@@ -388,7 +388,11 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Hierarquia de imagem 311a6aa + Maximização 800px
+        // Estratégia de Imagem HD (Commit 311a6aa):
+        // 1. permalink_url via adimages/image_hash (resolução original)        
+        // 2. full_picture do Post (via storyMetaMap)
+        // 3. image_url do Criativo (com maximizeResolution)
+        // 4. thumbnail_url (fallback)
         const highResImage = imageHashMap.get(adMeta.image_hash)
                           || storyMetaMap.get(adMeta.effective_object_story_id)
                           || maximizeResolution(adMeta.image_url)
