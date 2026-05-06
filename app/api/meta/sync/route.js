@@ -3,16 +3,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-/** Maximiza a resolução de URLs do fbcdn.net para 800px como fallback de segurança */
-const maximizeResolution = (url) => {
-  if (!url || !url.includes('fbcdn.net')) return url;
-  return url
-    .replace(/_p\d+x\d+_q/g, '_p800x800_q')
-    .replace(/_s\d+x\d+_q/g, '_s800x800_q')
-    .replace(/stp=.*?_p\d+x\d+_q/g, (match) => match.replace(/p\d+x\d+/, 'p800x800'))
-    .replace(/stp=.*?_s\d+x\d+_q/g, (match) => match.replace(/s\d+x\d+/, 's800x800'));
-};
-
 function graphUrl(path, query) {
   const url = new URL(`https://graph.facebook.com/v21.0/${path}`);
   Object.entries(query).forEach(([k, v]) => {
@@ -44,14 +34,11 @@ function getTrueLeads(actions) {
   const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
-  // Evita contagem dupla de mensagens e prioriza o maior volume de leads (standard vs grouped)
   return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen);
 }
 
 function getSocialActions(actions) {
   if (!Array.isArray(actions)) return 0;
-  // A API da Meta já inclui 'like' dentro de 'post_reaction'. 
-  // Mantemos apenas as métricas de nível superior para evitar inflação.
   return getMetric(actions, 'post_reaction') + 
          getMetric(actions, 'comment') + 
          getMetric(actions, 'onsite_conversion.post_save') + 
@@ -60,7 +47,6 @@ function getSocialActions(actions) {
          getMetric(actions, 'share');
 }
 
-/** Traduz objetivos e define o rótulo de resultado principal fiel. */
 const getLeadLabel = (m) => {
   if (m.conversas_leads > 0) return 'Leads';
   const obj = m.objetivo || '';
@@ -79,7 +65,6 @@ export async function GET(request) {
     const until = searchParams.get('until');
     if (!clienteNome) return NextResponse.json({ success: false, error: "Cliente não especificado" }, { status: 400 });   
 
-    // Normalização rigorosa para SLUG (minúsculo, sem acentos, sem espaços)
     const slug = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
     
     const cliente = await prisma.cliente.findFirst({ 
@@ -91,7 +76,6 @@ export async function GET(request) {
       } 
     });
     
-    // 1. LOGICA DO COMMIT 8170273: BUSCA TOTAIS REAIS DIRETAMENTE DA META (100% de precisão)
     let metaAccountTotals = null;
     try {
       const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
@@ -120,9 +104,8 @@ export async function GET(request) {
 
     if (!cliente && !metaAccountTotals) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
-    // Normalização de datas (Voltando para a lógica estável de T00:00:00/T23:59:59 sem fuso UTC forçado para relatórios retroativos)
-    const dateUntil = until ? new Date(until + 'T23:59:59') : new Date();
-    const dateSince = since ? new Date(since + 'T00:00:00') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
+    const dateUntil = until ? new Date(until + 'T23:59:59.999Z') : new Date();
+    const dateSince = since ? new Date(since + 'T00:00:00.000Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
 
     const campanhas = await prisma.campanha.findMany({       
       where: { cliente_id: cliente.id },
@@ -161,7 +144,7 @@ export async function GET(request) {
         finalVal = total.engajamentoTotal;
         finalLabel = 'Engajamentos';
       } else if (camp.nome_gerado.includes('[05]')) {        
-        finalVal = Math.round(total.visitas_perfil * 0.792); // Restaurado fator de correção estável do commit 311a6aa
+        finalVal = Math.round(total.visitas_perfil * 0.792); 
         finalLabel = 'Visitas';
       } else if (label === 'Vendas') {
         finalVal = total.compras;
@@ -174,7 +157,6 @@ export async function GET(request) {
         campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
       };
     }).filter(m => m.impressoes > 0 || m.valor_investido > 0);
-
 
     const criativosRaw = await prisma.criativo.findMany({    
       where: { campanha: { cliente_id: cliente.id } },       
@@ -221,7 +203,6 @@ export async function GET(request) {
       ...c, ctr: c.count > 0 ? c.totalCtr / c.count : 0      
     }));
 
-    // Agregação diária para CPL (Custo por Lead)
     const dailyMap = new Map();
     for (const camp of campanhas) {
       const obj = (camp.objetivo || '').toUpperCase();
@@ -244,7 +225,6 @@ export async function GET(request) {
         cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
-    // PRIORIDADE: Dados reais da Meta para o Funil. BACKUP: Soma de alcances máximos.
     const totalReach = metaAccountTotals ? parseInt(metaAccountTotals.reach) : metrics.reduce((a,c)=>a+c.alcance, 0);
 
     return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach });
@@ -269,7 +249,6 @@ export async function POST(request) {
       } 
     });
     
-    // Lógica de Credenciais via SLUG
     const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
                          process.env[`META_ACCESS_TOKEN_${slug}`] ||
                          process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
@@ -281,14 +260,9 @@ export async function POST(request) {
 
     const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
     
-    if (!ACCESS_TOKEN) {
-      throw new Error(`Token de Acesso não encontrado para o cliente ${cliente}. Verifique o META_ACCESS_TOKEN_GLOBAL ou o cadastro no banco.`);
-    }
-    if (!AD_ACCOUNT_ID) {
-      throw new Error(`ID da Conta (act_ID) não encontrado para o cliente ${cliente}. Verifique o .env ou o cadastro no banco.`);
-    }
+    if (!ACCESS_TOKEN) throw new Error(`Token de Acesso não encontrado para o cliente ${cliente}.`);
+    if (!AD_ACCOUNT_ID) throw new Error(`ID da Conta (act_ID) não encontrado para o cliente ${cliente}.`);
 
-    // Se o cliente não existe no banco (vindo apenas do Env), criamos ele para permitir o Sync
     let targetCliente = dbCliente;
     if (!targetCliente) {
       targetCliente = await prisma.cliente.create({
@@ -388,15 +362,10 @@ export async function POST(request) {
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         
-        // Estratégia de Imagem HD (Commit 311a6aa):
-        // 1. permalink_url via adimages/image_hash (resolução original)        
-        // 2. full_picture do Post (via storyMetaMap)
-        // 3. image_url do Criativo (com maximizeResolution)
-        // 4. thumbnail_url (fallback)
         const highResImage = imageHashMap.get(adMeta.image_hash)
                           || storyMetaMap.get(adMeta.effective_object_story_id)
-                          || maximizeResolution(adMeta.image_url)
-                          || maximizeResolution(adMeta.thumbnail_url);
+                          || adMeta.image_url
+                          || adMeta.thumbnail_url;
 
         const criativo = await prisma.criativo.upsert({      
           where: { meta_ad_id: String(row.ad_id) },
@@ -419,7 +388,6 @@ export async function POST(request) {
             valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'),
             reacoes_sociais: getSocialActions(row.actions)
           }
-
         });
       });
     }
