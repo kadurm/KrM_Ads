@@ -19,29 +19,19 @@ export async function GET(req) {
 
     const pixelId = cliente.meta_pixel_id || 'INSERT_PIXEL_ID_HERE';
 
-    // Template de exportação do GTM
+    // Template de exportação do GTM (Minimalista e Robusto)
     const gtmExport = {
       "exportFormatVersion": 2,
       "exportTime": new Date().toISOString().replace('T', ' ').split('.')[0],
       "container": {
-        "accountId": "92837415",
-        "containerId": "81726354",
-        "name": `KrM-Tracking-${cliente.nome}`,
+        "name": `KrM-Tracking`,
         "publicId": "GTM-KRMADS",
-        "usageContext": ["WEB"],
-        "fingerprint": "1730650000000"
+        "usageContext": ["WEB"]
       },
       "containerVersion": {
-        "path": "accounts/92837415/containers/81726354/versions/0",
-        "accountId": "92837415",
-        "containerId": "81726354",
-        "containerVersionId": "0",
-        "name": "KrM Ads Tracking Version",
+        "name": "KrM Ads Tracking",
         "tag": [
           {
-            "accountId": "92837415",
-            "containerId": "81726354",
-            "tagId": "1",
             "name": "Meta Pixel - Base Code",
             "type": "html",
             "parameter": [
@@ -52,13 +42,9 @@ export async function GET(req) {
               }
             ],
             "firingTriggerId": ["2147483647"],
-            "tagFiringOption": "ONCE_PER_EVENT",
-            "fingerprint": "1730650000001"
+            "tagFiringOption": "ONCE_PER_EVENT"
           },
           {
-            "accountId": "92837415",
-            "containerId": "81726354",
-            "tagId": "2",
             "name": "Meta Pixel - Event - Lead (Button Click)",
             "type": "html",
             "parameter": [
@@ -68,16 +54,13 @@ export async function GET(req) {
                 "value": "\u003cscript\u003efbq('track', 'Lead');\u003c/script\u003e"
               }
             ],
-            "firingTriggerId": ["100"],
-            "tagFiringOption": "ONCE_PER_EVENT",
-            "fingerprint": "1730650000002"
+            "firingTriggerId": ["1"],
+            "tagFiringOption": "ONCE_PER_EVENT"
           }
         ],
         "trigger": [
           {
-            "accountId": "92837415",
-            "containerId": "81726354",
-            "triggerId": "100",
+            "triggerId": "1",
             "name": "Click - Garantir Minha Vaga",
             "type": "CLICK",
             "filter": [
@@ -88,33 +71,22 @@ export async function GET(req) {
                   { "type": "TEMPLATE", "key": "arg1", "value": "Garantir minha vaga" }
                 ]
               }
-            ],
-            "fingerprint": "1730650000003"
+            ]
           }
         ],
         "variable": [
           {
-            "accountId": "92837415",
-            "containerId": "81726354",
-            "variableId": "1",
             "name": "Meta Pixel ID",
             "type": "c",
             "parameter": [
               { "type": "TEMPLATE", "key": "value", "value": pixelId }
-            ],
-            "fingerprint": "1730650000004"
+            ]
           }
         ],
         "builtInVariable": [
-          { 
-            "accountId": "92837415",
-            "containerId": "81726354",
-            "name": "Click Text", 
-            "type": "CLICK_TEXT" 
-          }
+          { "name": "Click Text", "type": "CLICK_TEXT" }
         ]
-      },
-      "fingerprint": "1730650000000"
+      }
     };
 
     return new NextResponse(JSON.stringify(gtmExport, null, 2), {
