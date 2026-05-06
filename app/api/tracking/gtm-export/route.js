@@ -24,14 +24,22 @@ export async function GET(req) {
       "exportFormatVersion": 2,
       "exportTime": new Date().toISOString().replace('T', ' ').split('.')[0],
       "container": {
+        "accountId": "1001",
+        "containerId": "2002",
         "name": `KrM Tracking - ${cliente.nome}`,
         "publicId": "GTM-KRMADS",
         "usageContext": ["WEB"]
       },
       "containerVersion": {
+        "accountId": "1001",
+        "containerId": "2002",
+        "containerVersionId": "0",
         "name": "KrM Ads Tracking Version",
         "tag": [
           {
+            "accountId": "1001",
+            "containerId": "2002",
+            "tagId": "1",
             "name": "Meta Pixel - Base Code",
             "type": "html",
             "parameter": [
@@ -45,6 +53,9 @@ export async function GET(req) {
             "tagFiringOption": "ONCE_PER_EVENT"
           },
           {
+            "accountId": "1001",
+            "containerId": "2002",
+            "tagId": "2",
             "name": "Meta Pixel - Event - Lead (Button Click)",
             "type": "html",
             "parameter": [
@@ -60,6 +71,8 @@ export async function GET(req) {
         ],
         "trigger": [
           {
+            "accountId": "1001",
+            "containerId": "2002",
             "triggerId": "100",
             "name": "Click - Garantir Minha Vaga",
             "type": "CLICK",
@@ -76,6 +89,9 @@ export async function GET(req) {
         ],
         "variable": [
           {
+            "accountId": "1001",
+            "containerId": "2002",
+            "variableId": "1",
             "name": "Meta Pixel ID",
             "type": "c",
             "parameter": [
@@ -84,7 +100,12 @@ export async function GET(req) {
           }
         ],
         "builtInVariable": [
-          { "name": "Click Text", "type": "CLICK_TEXT" }
+          { 
+            "accountId": "1001",
+            "containerId": "2002",
+            "name": "Click Text", 
+            "type": "CLICK_TEXT" 
+          }
         ]
       }
     };
