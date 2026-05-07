@@ -16,6 +16,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { jsPDF } from 'jspdf';
 
 export function PaymentsView({ clienteName, startDate, endDate }: any) {
   const [activeSubTab, setActiveSubTab] = useState('extrato'); // extrato, metodos, notas
@@ -26,8 +27,17 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
   // Modals
   const [showMetodoModal, setShowMetodoModal] = useState(false);
   const [showTransacaoModal, setShowTransacaoModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showMetaReceiptModal, setShowMetaReceiptModal] = useState(false);
+  
   const [novoMetodo, setNovoMetodo] = useState<any>({ tipo: 'PIX', descricao: '', chave_pix: '', is_principal: false });
   const [novaTransacao, setNovaTransacao] = useState<any>({ descricao: '', valor: '', data_vencimento: '' });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [metaReceiptDate, setMetaReceiptDate] = useState({ 
+    mes: new Date().getMonth(), 
+    ano: new Date().getFullYear() 
+  });
 
   const loadData = async () => {
     if (!clienteName) return;
@@ -103,6 +113,79 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
     loadData();
   };
 
+  const handleUploadNF = async (e) => {
+    e.preventDefault();
+    if (!selectedFile) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      const res = await fetch('/api/pagamentos/upload', { method: 'POST', body: formData });
+      const json = await res.json();
+      if (json.success) {
+        alert(`Nota Fiscal de ${json.cliente} processada com sucesso!`);
+        setShowUploadModal(false);
+        setSelectedFile(null);
+        loadData();
+      } else {
+        alert(json.error || 'Erro ao processar nota.');
+      }
+    } catch (err) { console.error(err); alert('Erro crítico ao enviar arquivo.'); }
+    finally { setUploading(false); }
+  };
+
+  const handleGenerateMetaReceipt = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/pagamentos/meta-receipt?cliente=${encodeURIComponent(clienteName)}&mes=${metaReceiptDate.mes}&ano=${metaReceiptDate.ano}`);
+      const json = await res.json();
+      if (json.success) {
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFillColor(15, 23, 42); // slate-900
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text('KrM Ads - Comprovante de Investimento', 20, 25);
+        
+        // Body
+        doc.setTextColor(50, 50, 50);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Cliente: ${json.cliente}`, 20, 60);
+        doc.text(`Período: ${json.periodo.nomeMes} de ${json.periodo.ano}`, 20, 70);
+        doc.text(`Data de Emissão: ${new Date(json.dataGeracao).toLocaleDateString()}`, 20, 80);
+        
+        doc.setDrawColor(200, 200, 200);
+        doc.line(20, 90, 190, 90);
+        
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('TOTAL INVESTIDO EM META ADS', 20, 110);
+        
+        doc.setFontSize(32);
+        doc.setTextColor(37, 99, 235); // blue-600
+        doc.text(`R$ ${json.totalInvestido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 20, 130);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text('Este documento é um recibo gerado automaticamente pelo sistema KrM_Ads', 20, 150);
+        doc.text('baseado nos dados sincronizados via Graph API da Meta.', 20, 155);
+        
+        doc.setFont('courier', 'normal');
+        doc.text(`Código de Autenticidade: ${json.autenticidade}`, 20, 170);
+        
+        doc.save(`Recibo_Meta_${json.cliente}_${json.periodo.nomeMes}_${json.periodo.ano}.pdf`);
+        setShowMetaReceiptModal(false);
+      } else {
+        alert(json.error || 'Erro ao gerar recibo.');
+      }
+    } catch (err) { console.error(err); alert('Erro ao processar recibo.'); }
+    finally { setLoading(false); }
+  };
+
   const renderKPIs = () => (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
       <div className="bg-slate-900 p-6 rounded-[2rem] border border-slate-800 shadow-xl">
@@ -152,6 +235,16 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
           <button onClick={() => setShowMetodoModal(true)} className="p-3 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/30">
             <Plus size={16} /> Adicionar Método
           </button>
+        )}
+        {activeSubTab === 'notas' && (
+          <div className="flex gap-2">
+            <button onClick={() => setShowMetaReceiptModal(true)} className="p-3 px-6 bg-slate-800 text-slate-200 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-slate-700 transition-all shadow-xl">
+              <Download size={16} /> Recibo Meta
+            </button>
+            <button onClick={() => setShowUploadModal(true)} className="p-3 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/30">
+              <FileText size={16} /> Upload NF
+            </button>
+          </div>
         )}
       </div>
 
@@ -343,6 +436,88 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
                   </div>
                   <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black p-4 rounded-xl mt-6 uppercase tracking-widest text-[10px]">Gerar Cobrança</button>
                </form>
+            </div>
+         </div>
+      )}
+
+      {showUploadModal && (
+         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div className="bg-slate-900 w-full max-w-md rounded-[2rem] border border-slate-800 p-8 shadow-2xl">
+               <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-black text-xl uppercase tracking-tighter text-white">Upload Nota Fiscal</h3>
+                  <button onClick={() => setShowUploadModal(false)} className="text-slate-500 hover:text-white"><X size={24}/></button>
+               </div>
+               <p className="text-xs text-slate-500 mb-6 font-bold leading-relaxed">
+                  Envie o arquivo da Nota Fiscal (PDF ou Imagem). Nossa IA identificará o cliente, valor e descrição para organizar seu financeiro automaticamente.
+               </p>
+               <form onSubmit={handleUploadNF} className="space-y-6">
+                  <div className="relative group">
+                    <input 
+                      type="file" 
+                      onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+                      className="hidden" 
+                      id="nf-upload"
+                      accept=".pdf,image/*"
+                    />
+                    <label 
+                      htmlFor="nf-upload" 
+                      className="w-full h-32 border-2 border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer group-hover:border-blue-500/50 transition-all bg-slate-950/50"
+                    >
+                      <Plus size={24} className="text-slate-600 mb-2 group-hover:text-blue-500" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        {selectedFile ? selectedFile.name : 'Clique para selecionar arquivo'}
+                      </span>
+                    </label>
+                  </div>
+                  <button 
+                    type="submit" 
+                    disabled={!selectedFile || uploading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black p-4 rounded-xl uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {uploading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
+                    {uploading ? 'Processando com IA...' : 'Enviar e Organizar'}
+                  </button>
+               </form>
+            </div>
+         </div>
+      )}
+
+      {showMetaReceiptModal && (
+         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div className="bg-slate-900 w-full max-w-md rounded-[2rem] border border-slate-800 p-8 shadow-2xl">
+               <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-black text-xl uppercase tracking-tighter text-white">Extrair Recibo Meta</h3>
+                  <button onClick={() => setShowMetaReceiptModal(false)} className="text-slate-500 hover:text-white"><X size={24}/></button>
+               </div>
+               <div className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Mês de Referência</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <select 
+                        value={metaReceiptDate.mes} 
+                        onChange={e => setMetaReceiptDate({...metaReceiptDate, mes: parseInt(e.target.value)})}
+                        className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none"
+                      >
+                        {['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'].map((m, i) => (
+                          <option key={m} value={i}>{m}</option>
+                        ))}
+                      </select>
+                      <select 
+                        value={metaReceiptDate.ano} 
+                        onChange={e => setMetaReceiptDate({...metaReceiptDate, ano: parseInt(e.target.value)})}
+                        className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white outline-none"
+                      >
+                        {[2024, 2025, 2026].map(a => <option key={a} value={a}>{a}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={handleGenerateMetaReceipt}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black p-4 rounded-xl mt-4 uppercase tracking-widest text-[10px] flex items-center justify-center gap-2"
+                  >
+                    <Download size={16} /> Gerar Recibo PDF
+                  </button>
+               </div>
             </div>
          </div>
       )}
