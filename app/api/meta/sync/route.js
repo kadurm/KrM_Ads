@@ -34,7 +34,9 @@ function getTrueLeads(actions) {
   const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
-  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen);
+  const customContact = getMetric(actions, 'offsite_conversion.fb_pixel_custom');
+  const fbContact = getMetric(actions, 'contact');
+  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + customContact + fbContact;
 }
 
 function getSocialActions(actions) {
