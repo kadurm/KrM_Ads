@@ -79,6 +79,8 @@ export async function GET(request) {
     });
     
     let metaAccountTotals = null;
+    let metaCampReachMap = new Map();
+    let metaAdReachMap = new Map();
     try {
       const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
                            process.env[`META_ACCESS_TOKEN_${slug}`] ||
@@ -92,15 +94,20 @@ export async function GET(request) {
       const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
 
       if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
-        const metaUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { 
-          access_token: ACCESS_TOKEN, 
-          time_range: JSON.stringify({ since, until }),
-          fields: 'reach,spend,impressions,actions,action_values',
-          level: 'account'
-        });
-        const metaRes = await fetch(metaUrl);
-        const metaJson = await metaRes.json();
-        if (metaJson.data && metaJson.data[0]) metaAccountTotals = metaJson.data[0];
+        const tr = JSON.stringify({ since, until });
+        const [accRes, campRes, adRes] = await Promise.all([
+          fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'reach,spend,impressions,actions,action_values', level: 'account' })),
+          fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'campaign_name,reach', level: 'campaign', limit: '100' })),
+          fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'ad_name,reach', level: 'ad', limit: '500' }))
+        ]);
+        const accJson = await accRes.json();
+        if (accJson.data && accJson.data[0]) metaAccountTotals = accJson.data[0];
+        
+        const campJson = await campRes.json();
+        if (campJson.data) campJson.data.forEach(c => metaCampReachMap.set(c.campaign_name, parseInt(c.reach) || 0));
+
+        const adJson = await adRes.json();
+        if (adJson.data) adJson.data.forEach(a => metaAdReachMap.set(a.ad_name, parseInt(a.reach) || 0));
       }
     } catch (e) { console.error("Erro ao buscar totais reais na Meta:", e); }
 
@@ -117,7 +124,7 @@ export async function GET(request) {
     const metrics = campanhas.map(camp => {
       const total = camp.metricas.reduce((acc, m) => ({      
         impressoes: acc.impressoes + m.impressoes,
-        alcance: acc.alcance + m.alcance,
+        alcance: Math.max(acc.alcance, m.alcance),
         cliques: acc.cliques + m.cliques,
         visitas_perfil: acc.visitas_perfil + m.visitas_perfil,
         seguidores: acc.seguidores + m.seguidores,
@@ -128,6 +135,10 @@ export async function GET(request) {
         reacoes_sociais: acc.reacoes_sociais + m.reacoes_sociais,
         engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores + m.reacoes_sociais)
       }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0, reacoes_sociais: 0 });     
+
+      if (metaCampReachMap.has(camp.nome_gerado)) {
+        total.alcance = metaCampReachMap.get(camp.nome_gerado);
+      }
 
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
       let finalVal = total.conversas_leads;
@@ -170,7 +181,7 @@ export async function GET(request) {
       const key = c.nome_anuncio || 'Anúncio sem nome';      
       const stats = c.metricas.reduce((acc, m) => ({
         impressoes: acc.impressoes + m.impressoes,
-        alcance: acc.alcance + m.alcance,
+        alcance: Math.max(acc.alcance, m.alcance),
         cliques: acc.cliques + m.cliques,
         valor_investido: acc.valor_investido + Number(m.valor_investido),
         leads: acc.leads + m.leads,
@@ -201,9 +212,17 @@ export async function GET(request) {
       }
     }
 
-    const criativos = Array.from(groupedMap.values()).map(c => ({
-      ...c, ctr: c.count > 0 ? c.totalCtr / c.count : 0      
-    }));
+    const criativos = Array.from(groupedMap.values()).map(c => {
+      let finalAlcance = c.alcance;
+      if (metaAdReachMap.has(c.nome_anuncio)) {
+        finalAlcance = metaAdReachMap.get(c.nome_anuncio);
+      }
+      return {
+        ...c, 
+        alcance: finalAlcance,
+        ctr: c.count > 0 ? c.totalCtr / c.count : 0      
+      };
+    });
 
     // --- REFRESH IMAGE URLs FROM META (fixes expired CDN tokens) ---
     try {
