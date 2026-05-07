@@ -48,7 +48,7 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
       if (json.success) {
         setData(json);
       }
-      
+
       const resNotas = await fetch(`/api/pagamentos/notas?cliente=${encodeURIComponent(clienteName)}&since=${startDate}&until=${endDate}`);
       const jsonNotas = await resNotas.json();
       if (jsonNotas.success) {
@@ -59,11 +59,11 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
     } finally {
       setLoading(false);
     }
-  };
+    };
 
-  useEffect(() => {
+    useEffect(() => {
     loadData();
-  }, [clienteName, startDate, endDate]);
+    }, [clienteName, startDate, endDate]);
 
   const handleSaveMetodo = async (e) => {
     e.preventDefault();
