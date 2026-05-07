@@ -215,81 +215,84 @@ export async function GET(request) {
       const AD_ACCOUNT_REFRESH = rawAccountIdRefresh?.startsWith('act_') ? rawAccountIdRefresh : (rawAccountIdRefresh ? `act_${rawAccountIdRefresh}` : null);
 
       if (ACCESS_TOKEN_REFRESH && AD_ACCOUNT_REFRESH) {
-        // Collect unique meta_ad_ids from raw criativos
-        const allAdIds = [...new Set(criativosRaw.filter(c => c.meta_ad_id).map(c => c.meta_ad_id))];
+        // Step 1: Fetch all adcreatives with high-res thumbnails (same as POST sync)
+        const [adsListRefreshRes, adCreativesRefreshRes] = await Promise.all([
+          fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/ads`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,creative{id}', limit: '1000' })),
+          fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/adcreatives`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,image_url,thumbnail_url,image_hash,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
+        ]);
+        const [adsListRefresh, adCreativesRefresh] = await Promise.all([adsListRefreshRes.json(), adCreativesRefreshRes.json()]);
 
-        if (allAdIds.length > 0) {
-          const freshUrlMap = new Map(); // meta_ad_id -> fresh image URL
+        // Step 2: Build ad_id -> creative_id mapping
+        const adToCreativeRefresh = new Map(adsListRefresh.data?.map(a => [a.id, a.creative?.id]) || []);
+        // Build creative_id -> creative data mapping
+        const creativeRefreshMap = new Map(adCreativesRefresh.data?.map(c => [String(c.id), c]) || []);
 
-          // Batch fetch fresh creative data in chunks of 50
-          for (let i = 0; i < allAdIds.length; i += 50) {
-            const chunk = allAdIds.slice(i, i + 50);
-            const batchRes = await fetch(graphUrl('', {
-              ids: chunk.join(','),
-              fields: 'creative{image_url,thumbnail_url,effective_object_story_id,image_hash}',
-              access_token: ACCESS_TOKEN_REFRESH
-            }));
-            const batchData = await batchRes.json();
-
-            for (const [adId, adData] of Object.entries(batchData)) {
-              if (adData.error) continue;
-              const creative = adData.creative || {};
-              let imgUrl = creative.image_url || creative.thumbnail_url;
-
-              // Try full_picture from story post for higher quality
-              if (!imgUrl && creative.effective_object_story_id) {
-                try {
-                  const storyRes = await fetch(graphUrl(creative.effective_object_story_id, {
-                    fields: 'full_picture',
-                    access_token: ACCESS_TOKEN_REFRESH
-                  }));
-                  const storyData = await storyRes.json();
-                  if (storyData.full_picture) imgUrl = storyData.full_picture;
-                } catch (e) { /* skip */ }
-              }
-
-              // Try adimages endpoint via image_hash as last resort
-              if (!imgUrl && creative.image_hash) {
-                try {
-                  const hashRes = await fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/adimages`, {
-                    access_token: ACCESS_TOKEN_REFRESH,
-                    hashes: JSON.stringify([creative.image_hash]),
-                    fields: 'url,permalink_url,hash'
-                  }));
-                  const hashData = await hashRes.json();
-                  if (hashData.data?.[0]) imgUrl = hashData.data[0].url || hashData.data[0].permalink_url;
-                } catch (e) { /* skip */ }
-              }
-
-              if (imgUrl) freshUrlMap.set(adId, imgUrl);
-            }
+        // Step 3: Fetch full_picture from story posts for best quality
+        const storyIdsRefresh = adCreativesRefresh.data?.map(c => c.effective_object_story_id).filter(id => !!id) || [];
+        const storyRefreshMap = new Map();
+        if (storyIdsRefresh.length > 0) {
+          for (let i = 0; i < storyIdsRefresh.length; i += 50) {
+            const chunk = storyIdsRefresh.slice(i, i + 50);
+            try {
+              const stRes = await fetch(graphUrl('', { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN_REFRESH }));
+              const stData = await stRes.json();
+              if (!stData.error) Object.values(stData).forEach(post => { if (post.full_picture) storyRefreshMap.set(post.id, post.full_picture); });
+            } catch (e) { /* skip chunk */ }
           }
-
-          // Build name-to-fresh-url mapping (criativos are grouped by name)
-          const nameToFreshUrl = new Map();
-          for (const c of criativosRaw) {
-            if (c.meta_ad_id && freshUrlMap.has(c.meta_ad_id) && !nameToFreshUrl.has(c.nome_anuncio || 'Anúncio sem nome')) {
-              nameToFreshUrl.set(c.nome_anuncio || 'Anúncio sem nome', freshUrlMap.get(c.meta_ad_id));
-            }
-          }
-
-          // Update response criativos with fresh URLs
-          criativos.forEach(c => {
-            if (nameToFreshUrl.has(c.nome_anuncio)) {
-              c.url_midia = nameToFreshUrl.get(c.nome_anuncio);
-            }
-          });
-
-          // Fire-and-forget: update DB with fresh URLs
-          Promise.all(
-            [...freshUrlMap.entries()].map(([adId, url]) =>
-              prisma.criativo.updateMany({
-                where: { meta_ad_id: adId },
-                data: { url_midia: url }
-              }).catch(() => {})
-            )
-          ).catch(() => {});
         }
+
+        // Step 4: Fetch high-res URLs via image_hash
+        const imageHashRefreshMap = new Map();
+        const hashesRefresh = [...new Set(adCreativesRefresh.data?.map(c => c.image_hash).filter(h => !!h) || [])];
+        if (hashesRefresh.length > 0) {
+          for (let i = 0; i < hashesRefresh.length; i += 50) {
+            const chunk = hashesRefresh.slice(i, i + 50);
+            try {
+              const hRes = await fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/adimages`, { access_token: ACCESS_TOKEN_REFRESH, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }));
+              const hData = await hRes.json();
+              if (hData.data) hData.data.forEach(img => { const u = img.url || img.permalink_url; if (u) imageHashRefreshMap.set(img.hash, u); });
+            } catch (e) { /* skip chunk */ }
+          }
+        }
+
+        // Step 5: Map fresh URLs to meta_ad_ids using priority chain (same as POST sync)
+        const freshUrlMap = new Map();
+        for (const c of criativosRaw) {
+          if (!c.meta_ad_id) continue;
+          const creativeId = adToCreativeRefresh.get(String(c.meta_ad_id));
+          const creativeMeta = creativeRefreshMap.get(String(creativeId)) || {};
+          const highRes = imageHashRefreshMap.get(creativeMeta.image_hash)
+                       || storyRefreshMap.get(creativeMeta.effective_object_story_id)
+                       || creativeMeta.image_url
+                       || creativeMeta.thumbnail_url;
+          if (highRes) freshUrlMap.set(c.meta_ad_id, highRes);
+        }
+
+        // Step 6: Map to grouped criativos by name
+        const nameToFreshUrl = new Map();
+        for (const c of criativosRaw) {
+          const key = c.nome_anuncio || 'Anúncio sem nome';
+          if (c.meta_ad_id && freshUrlMap.has(c.meta_ad_id) && !nameToFreshUrl.has(key)) {
+            nameToFreshUrl.set(key, freshUrlMap.get(c.meta_ad_id));
+          }
+        }
+
+        // Update response criativos with fresh URLs
+        criativos.forEach(c => {
+          if (nameToFreshUrl.has(c.nome_anuncio)) {
+            c.url_midia = nameToFreshUrl.get(c.nome_anuncio);
+          }
+        });
+
+        // Fire-and-forget: update DB with fresh URLs
+        Promise.all(
+          [...freshUrlMap.entries()].map(([adId, url]) =>
+            prisma.criativo.updateMany({
+              where: { meta_ad_id: adId },
+              data: { url_midia: url }
+            }).catch(() => {})
+          )
+        ).catch(() => {});
       }
     } catch (e) {
       console.error('Non-fatal: Error refreshing creative URLs:', e);
