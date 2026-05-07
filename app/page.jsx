@@ -614,7 +614,32 @@ export default function App() {
   };
 
   useEffect(() => { loadClientes(); }, []);
-  useEffect(() => { if (clienteSelecionado) loadMetrics(); }, [loadMetrics, clienteSelecionado]);
+  useEffect(() => {
+    if (!clienteSelecionado) return;
+    let cancelled = false;
+    const autoSync = async () => {
+      if (isSyncing) { loadMetrics(); return; }
+      setIsSyncing(true);
+      try {
+        const res = await fetch('/api/meta/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ since: startDate, until: endDate, cliente: clienteSelecionado }),
+        });
+        const data = await res.json();
+        if (!data.success && !cancelled) {
+          setMensagemPainel({ tipo: 'erro', texto: data.error });
+        }
+      } catch (e) {
+        if (!cancelled) console.error('Auto-sync failed:', e);
+      } finally {
+        if (!cancelled) setIsSyncing(false);
+      }
+      if (!cancelled) await loadMetrics();
+    };
+    autoSync();
+    return () => { cancelled = true; };
+  }, [startDate, endDate, clienteSelecionado]);
 
   const handleShortcut = (shortcut) => {
     const hojeObj = new Date();
