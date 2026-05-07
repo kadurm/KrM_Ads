@@ -792,8 +792,8 @@ export default function App() {
       {/* SIDEBAR REORGANIZADA */}
       <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 shadow-2xl">
         <div className="p-6 border-b border-slate-800">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <LayoutDashboard className="text-blue-500" size={24} /> KrM Ads
+          <h1 className="text-2xl font-bold flex items-center gap-3">
+            <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-8 h-8 object-contain" /> KrM Ads
           </h1>
         </div>
 
@@ -848,7 +848,9 @@ export default function App() {
 
         <div className="p-4 border-t border-slate-800">
            <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-xs font-black uppercase tracking-tighter">KrM</div>
+              <div className="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/20 overflow-hidden shadow-lg">
+                <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-full h-full object-cover scale-125" />
+              </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-bold text-white truncate">Operador KrM</p>
                 <p className="text-[8px] text-slate-500 font-bold uppercase">Sessão Ativa</p>
@@ -861,8 +863,8 @@ export default function App() {
         {/* HEADER SUPERIOR MODERNIZADO */}
         <header className="h-20 bg-slate-900/50 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-10 flex-shrink-0 z-50">
           <div className="flex items-center gap-4">
-             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
-               <Briefcase className="text-blue-400" size={18} />
+             <div className="p-1 bg-blue-500/10 rounded-lg border border-blue-500/20">
+               <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-6 h-6 object-contain" />
              </div>
              <div>
                <h2 className="font-black uppercase tracking-[0.2em] text-[10px] text-slate-500">Workspace</h2>
