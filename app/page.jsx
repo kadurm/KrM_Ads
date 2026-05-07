@@ -35,6 +35,7 @@ import {
   Briefcase,
   CalendarDays,
   ChevronRight,
+  ChevronDown,
   Trophy,
   Medal,
   Search,
@@ -139,9 +140,19 @@ export default function App() {
   });
   const [isGemActive, setIsGemActive] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+  const [showClientSelector, setShowClientSelector] = useState(false);
+  const [clientSearch, setClientSearch] = useState('');
+  const selectorRef = useRef(null);
 
   useEffect(() => {
     setIsMounted(true);
+    const handleClickOutside = (event) => {
+      if (selectorRef.current && !selectorRef.current.contains(event.target)) {
+        setShowClientSelector(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const reportRef = useRef(null);
@@ -847,14 +858,109 @@ export default function App() {
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8 flex-shrink-0 shadow-sm">
-          <div className="flex items-center gap-3">
-             <Briefcase className="text-blue-500/50" size={16} />
-             <h2 className="font-semibold uppercase tracking-widest text-[10px] text-slate-400">Ambiente de Operação KrM Ads</h2>
+        {/* HEADER SUPERIOR MODERNIZADO */}
+        <header className="h-20 bg-slate-900/50 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-10 flex-shrink-0 z-50">
+          <div className="flex items-center gap-4">
+             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+               <Briefcase className="text-blue-400" size={18} />
+             </div>
+             <div>
+               <h2 className="font-black uppercase tracking-[0.2em] text-[10px] text-slate-500">Workspace</h2>
+               <p className="text-xs font-bold text-slate-300">Ambiente de Operação KrM Ads</p>
+             </div>
           </div>
-          <select value={clienteSelecionado} onChange={(e) => setClienteSelecionado(e.target.value)} className="bg-slate-800 text-[11px] font-black uppercase p-2 px-4 rounded-xl outline-none cursor-pointer border border-slate-700 hover:border-blue-500/50 transition-all text-blue-400 shadow-lg">
-            {clientesDisponiveis.map(c => <option key={c.id} value={c.nome}>{c.nome}</option>)}
-          </select>
+
+          {/* CUSTOM CLIENT SELECTOR */}
+          <div className="relative" ref={selectorRef}>
+            <button 
+              onClick={() => setShowClientSelector(!showClientSelector)}
+              className="group flex items-center gap-3 bg-slate-800/40 hover:bg-slate-800/80 p-2.5 px-5 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all duration-300 shadow-xl"
+            >
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-[10px] font-black text-white shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform">
+                {clienteSelecionado?.substring(0, 2).toUpperCase()}
+              </div>
+              <div className="text-left">
+                <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Empresa Selecionada</span>
+                <span className="block text-[11px] font-black text-blue-400 uppercase truncate max-w-[180px]">
+                  {clienteSelecionado || 'Selecionar Cliente'}
+                </span>
+              </div>
+              <ChevronDown className={`text-slate-500 group-hover:text-blue-400 transition-all ${showClientSelector ? 'rotate-180' : ''}`} size={16} />
+            </button>
+
+            {/* DROPDOWN MENU */}
+            {showClientSelector && (
+              <div className="absolute right-0 mt-4 w-72 bg-slate-900/95 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="p-4 border-b border-white/5">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
+                    <input 
+                      type="text" 
+                      placeholder="Buscar empresa..."
+                      value={clientSearch}
+                      onChange={(e) => setClientSearch(e.target.value)}
+                      className="w-full bg-slate-800/50 border border-white/5 rounded-xl py-2 pl-10 pr-4 text-xs text-slate-300 outline-none focus:border-blue-500/30 transition-all"
+                      autoFocus
+                    />
+                  </div>
+                </div>
+                
+                <div className="max-h-80 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-slate-700">
+                  {clientesDisponiveis
+                    .filter(c => c.nome.toLowerCase().includes(clientSearch.toLowerCase()))
+                    .map(c => (
+                      <button
+                        key={c.id}
+                        onClick={() => {
+                          setClienteSelecionado(c.nome);
+                          setShowClientSelector(false);
+                          setClientSearch('');
+                        }}
+                        className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 group/item ${
+                          clienteSelecionado === c.nome 
+                            ? 'bg-blue-600/20 border border-blue-500/30' 
+                            : 'hover:bg-white/5 border border-transparent'
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black transition-all ${
+                          clienteSelecionado === c.nome 
+                            ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' 
+                            : 'bg-slate-800 text-slate-500 group-hover/item:bg-slate-700 group-hover/item:text-slate-300'
+                        }`}>
+                          {c.nome.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div className="text-left">
+                          <span className={`block text-[11px] font-bold uppercase transition-colors ${
+                            clienteSelecionado === c.nome ? 'text-blue-400' : 'text-slate-400 group-hover/item:text-slate-200'
+                          }`}>
+                            {c.nome}
+                          </span>
+                          <span className="text-[9px] text-slate-600 uppercase font-medium">Conta: {c.meta_ads_account_id?.substring(0, 8)}...</span>
+                        </div>
+                        {clienteSelecionado === c.nome && (
+                          <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                        )}
+                      </button>
+                    ))}
+                  
+                  {clientesDisponiveis.filter(c => c.nome.toLowerCase().includes(clientSearch.toLowerCase())).length === 0 && (
+                    <div className="p-8 text-center">
+                      <p className="text-xs text-slate-500 italic">Nenhuma empresa encontrada</p>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="p-3 bg-slate-800/30 border-t border-white/5">
+                   <button 
+                    onClick={() => { setActiveTab('clientes'); setShowClientSelector(false); }}
+                    className="w-full py-2.5 rounded-xl border border-dashed border-slate-700 hover:border-blue-500/50 text-[10px] font-bold text-slate-500 hover:text-blue-400 transition-all flex items-center justify-center gap-2"
+                   >
+                     <Plus size={12} /> Gerenciar Empresas
+                   </button>
+                </div>
+              </div>
+            )}
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 space-y-6">
