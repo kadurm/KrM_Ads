@@ -8,7 +8,8 @@
       "Bash(curl -s \"https://krmads.vercel.app/api/meta/sync\")",
       "Bash(curl *)",
       "Bash(node scripts/diagnostico-sync.js)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(Select-Object -First 100)"
     ]
   }
 }

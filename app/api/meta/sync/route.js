@@ -203,6 +203,99 @@ export async function GET(request) {
       ...c, ctr: c.count > 0 ? c.totalCtr / c.count : 0      
     }));
 
+    // --- REFRESH IMAGE URLs FROM META (fixes expired CDN tokens) ---
+    try {
+      const ACCESS_TOKEN_REFRESH = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
+                                   process.env[`META_ACCESS_TOKEN_${slug}`] ||
+                                   process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
+                                   cliente?.meta_access_token;
+      const rawAccountIdRefresh = process.env[`META_AD_ACCOUNT_ID_${slug.toUpperCase()}`] || 
+                                  process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
+                                  cliente?.meta_ads_account_id;
+      const AD_ACCOUNT_REFRESH = rawAccountIdRefresh?.startsWith('act_') ? rawAccountIdRefresh : (rawAccountIdRefresh ? `act_${rawAccountIdRefresh}` : null);
+
+      if (ACCESS_TOKEN_REFRESH && AD_ACCOUNT_REFRESH) {
+        // Collect unique meta_ad_ids from raw criativos
+        const allAdIds = [...new Set(criativosRaw.filter(c => c.meta_ad_id).map(c => c.meta_ad_id))];
+
+        if (allAdIds.length > 0) {
+          const freshUrlMap = new Map(); // meta_ad_id -> fresh image URL
+
+          // Batch fetch fresh creative data in chunks of 50
+          for (let i = 0; i < allAdIds.length; i += 50) {
+            const chunk = allAdIds.slice(i, i + 50);
+            const batchRes = await fetch(graphUrl('', {
+              ids: chunk.join(','),
+              fields: 'creative{image_url,thumbnail_url,effective_object_story_id,image_hash}',
+              access_token: ACCESS_TOKEN_REFRESH
+            }));
+            const batchData = await batchRes.json();
+
+            for (const [adId, adData] of Object.entries(batchData)) {
+              if (adData.error) continue;
+              const creative = adData.creative || {};
+              let imgUrl = creative.image_url || creative.thumbnail_url;
+
+              // Try full_picture from story post for higher quality
+              if (!imgUrl && creative.effective_object_story_id) {
+                try {
+                  const storyRes = await fetch(graphUrl(creative.effective_object_story_id, {
+                    fields: 'full_picture',
+                    access_token: ACCESS_TOKEN_REFRESH
+                  }));
+                  const storyData = await storyRes.json();
+                  if (storyData.full_picture) imgUrl = storyData.full_picture;
+                } catch (e) { /* skip */ }
+              }
+
+              // Try adimages endpoint via image_hash as last resort
+              if (!imgUrl && creative.image_hash) {
+                try {
+                  const hashRes = await fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/adimages`, {
+                    access_token: ACCESS_TOKEN_REFRESH,
+                    hashes: JSON.stringify([creative.image_hash]),
+                    fields: 'url,permalink_url,hash'
+                  }));
+                  const hashData = await hashRes.json();
+                  if (hashData.data?.[0]) imgUrl = hashData.data[0].url || hashData.data[0].permalink_url;
+                } catch (e) { /* skip */ }
+              }
+
+              if (imgUrl) freshUrlMap.set(adId, imgUrl);
+            }
+          }
+
+          // Build name-to-fresh-url mapping (criativos are grouped by name)
+          const nameToFreshUrl = new Map();
+          for (const c of criativosRaw) {
+            if (c.meta_ad_id && freshUrlMap.has(c.meta_ad_id) && !nameToFreshUrl.has(c.nome_anuncio || 'Anúncio sem nome')) {
+              nameToFreshUrl.set(c.nome_anuncio || 'Anúncio sem nome', freshUrlMap.get(c.meta_ad_id));
+            }
+          }
+
+          // Update response criativos with fresh URLs
+          criativos.forEach(c => {
+            if (nameToFreshUrl.has(c.nome_anuncio)) {
+              c.url_midia = nameToFreshUrl.get(c.nome_anuncio);
+            }
+          });
+
+          // Fire-and-forget: update DB with fresh URLs
+          Promise.all(
+            [...freshUrlMap.entries()].map(([adId, url]) =>
+              prisma.criativo.updateMany({
+                where: { meta_ad_id: adId },
+                data: { url_midia: url }
+              }).catch(() => {})
+            )
+          ).catch(() => {});
+        }
+      }
+    } catch (e) {
+      console.error('Non-fatal: Error refreshing creative URLs:', e);
+      // Continue with existing (possibly stale) URLs
+    }
+
     const dailyMap = new Map();
     for (const camp of campanhas) {
       const obj = (camp.objetivo || '').toUpperCase();
