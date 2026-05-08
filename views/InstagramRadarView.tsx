@@ -13,7 +13,8 @@ import {
   ExternalLink,
   Loader2,
   RefreshCw,
-  Info
+  Info,
+  Calendar
 } from 'lucide-react';
 
 export default function InstagramRadarView({ cliente, startDate, endDate }) {
