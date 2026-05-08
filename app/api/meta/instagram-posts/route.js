@@ -16,12 +16,21 @@ export async function GET(request) {
       where: { nome: clienteNome }
     });
 
-    if (!cliente || !cliente.meta_access_token) {
-      return NextResponse.json({ success: false, error: 'Cliente ou Token não encontrados' }, { status: 404 });
+    const slug = clienteNome.replace(/[^a-zA-Z0-9]/g, '');
+    const token = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
+                  process.env[`META_ACCESS_TOKEN_${slug}`] ||
+                  process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
+                  cliente?.meta_access_token;
+
+    const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${slug.toUpperCase()}`] || 
+                         process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
+                         cliente?.meta_ads_account_id;
+
+    if (!token || !rawAccountId) {
+      return NextResponse.json({ success: false, error: 'Token da Meta ou ID da Conta não encontrados' }, { status: 404 });
     }
 
-    const token = cliente.meta_access_token;
-    const adAccountId = cliente.meta_ads_account_id;
+    const adAccountId = rawAccountId.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
 
     // 1. Descobrir a Página vinculada à conta de anúncios
     const adAccountRes = await fetch(`https://graph.facebook.com/v19.0/${adAccountId}?fields=promotable_page_ids&access_token=${token}`);
