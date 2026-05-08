@@ -32,32 +32,46 @@ export async function GET(request) {
 
     const adAccountId = rawAccountId.startsWith('act_') ? rawAccountId : `act_${rawAccountId}`;
 
-    // 1. Descobrir a Página vinculada à conta de anúncios
-    const adAccountRes = await fetch(`https://graph.facebook.com/v19.0/${adAccountId}?fields=promotable_page_ids&access_token=${token}`);
-    const adAccountData = await adAccountRes.json();
-
-    if (adAccountData.error) {
-      return NextResponse.json({ success: false, error: 'Erro ao buscar conta de anúncios: ' + adAccountData.error.message }, { status: 400 });
-    }
-
-    const pageIds = adAccountData.promotable_page_ids?.data || [];
-    if (pageIds.length === 0) {
-      return NextResponse.json({ success: false, error: 'Nenhuma página do Facebook vinculada a esta conta de anúncios.' }, { status: 404 });
-    }
-
-    // 2. Tentar encontrar a Instagram Business Account em qualquer uma das páginas
+    // 1. Descobrir a Instagram Business Account via me/accounts
     let igBusinessAccountId = null;
-    for (const page of pageIds) {
-      const pageRes = await fetch(`https://graph.facebook.com/v19.0/${page.id}?fields=instagram_business_account&access_token=${token}`);
-      const pageData = await pageRes.json();
-      if (pageData.instagram_business_account) {
-        igBusinessAccountId = pageData.instagram_business_account.id;
-        break;
+    
+    const accountsRes = await fetch(`https://graph.facebook.com/v19.0/me/accounts?fields=instagram_business_account,name&access_token=${token}`);
+    const accountsData = await accountsRes.json();
+
+    if (accountsData.error) {
+      return NextResponse.json({ success: false, error: 'Erro de permissão no Token: ' + accountsData.error.message }, { status: 400 });
+    }
+
+    if (accountsData.data && accountsData.data.length > 0) {
+      for (const page of accountsData.data) {
+        if (page.instagram_business_account) {
+          igBusinessAccountId = page.instagram_business_account.id;
+          break;
+        }
+      }
+    }
+
+    // Fallback: tentar buscar via Ad Account se me/accounts falhar ou retornar vazio
+    if (!igBusinessAccountId && adAccountId) {
+      try {
+        const adAccountRes = await fetch(`https://graph.facebook.com/v19.0/${adAccountId}?fields=promote_pages{instagram_business_account}&access_token=${token}`);
+        const adAccountData = await adAccountRes.json();
+        
+        if (adAccountData.promote_pages && adAccountData.promote_pages.data) {
+           for (const page of adAccountData.promote_pages.data) {
+             if (page.instagram_business_account) {
+               igBusinessAccountId = page.instagram_business_account.id;
+               break;
+             }
+           }
+        }
+      } catch (e) {
+        console.error("Fallback ad account error:", e);
       }
     }
 
     if (!igBusinessAccountId) {
-      return NextResponse.json({ success: false, error: 'Nenhuma conta comercial do Instagram vinculada às páginas desta conta.' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Nenhuma conta comercial do Instagram vinculada às páginas acessíveis por este token.' }, { status: 404 });
     }
 
     // 3. Buscar Mídias (Feed e Reels)
