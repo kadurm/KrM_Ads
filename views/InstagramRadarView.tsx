@@ -186,21 +186,28 @@ export default function InstagramRadarView({ cliente, startDate, endDate }) {
         </div>
 
         <div className="flex flex-col items-end gap-3">
-          <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-2xl border border-slate-800 shadow-sm backdrop-blur-md">
-            <span className="text-[10px] font-bold text-slate-500 uppercase px-2">Filtro de Data:</span>
-            <input 
-              type="date" 
-              value={localStartDate} 
-              onChange={e => setLocalStartDate(e.target.value)} 
-              className="bg-slate-950 text-[11px] font-bold text-slate-300 p-2 rounded-lg border border-slate-800 outline-none focus:border-blue-500/50 transition-all" 
-            />
-            <span className="text-slate-600 text-xs">→</span>
-            <input 
-              type="date" 
-              value={localEndDate} 
-              onChange={e => setLocalEndDate(e.target.value)} 
-              className="bg-slate-950 text-[11px] font-bold text-slate-300 p-2 rounded-lg border border-slate-800 outline-none focus:border-blue-500/50 transition-all" 
-            />
+          <div className="flex items-center gap-3 bg-slate-900/80 p-2 rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] backdrop-blur-2xl">
+            <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-950/40 rounded-2xl border border-white/5 focus-within:border-blue-500/40 focus-within:bg-slate-950/60 transition-all duration-300">
+              <Calendar size={14} className="text-blue-500" />
+              <input 
+                type="date" 
+                value={localStartDate} 
+                onChange={e => setLocalStartDate(e.target.value)} 
+                className="bg-transparent text-[11px] font-black text-slate-200 outline-none w-28 uppercase tracking-tighter [color-scheme:dark]" 
+              />
+            </div>
+            
+            <div className="w-6 h-px bg-slate-800"></div>
+
+            <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-950/40 rounded-2xl border border-white/5 focus-within:border-blue-500/40 focus-within:bg-slate-950/60 transition-all duration-300">
+              <Calendar size={14} className="text-blue-500" />
+              <input 
+                type="date" 
+                value={localEndDate} 
+                onChange={e => setLocalEndDate(e.target.value)} 
+                className="bg-transparent text-[11px] font-black text-slate-200 outline-none w-28 uppercase tracking-tighter [color-scheme:dark]" 
+              />
+            </div>
           </div>
           <div className="flex items-center gap-3 bg-slate-900/50 p-2 rounded-2xl border border-slate-800 shadow-sm backdrop-blur-md">
           <div className="flex gap-1 bg-slate-950 p-1 rounded-xl">
