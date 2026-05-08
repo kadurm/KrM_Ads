@@ -863,8 +863,8 @@ export default function App() {
         {/* HEADER SUPERIOR MODERNIZADO */}
         <header className="h-20 bg-slate-900/50 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-10 flex-shrink-0 z-50">
           <div className="flex items-center gap-4">
-             <div className="p-1 bg-blue-500/10 rounded-lg border border-blue-500/20">
-               <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-8 h-8 object-contain" />
+             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+               <Briefcase className="text-blue-400" size={18} />
              </div>
              <div>
                <h2 className="font-black uppercase tracking-[0.2em] text-[10px] text-slate-500">Workspace</h2>
