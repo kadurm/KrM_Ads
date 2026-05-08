@@ -74,12 +74,25 @@ export async function GET(request) {
       return NextResponse.json({ success: false, error: 'Nenhuma conta comercial do Instagram vinculada às páginas acessíveis por este token.' }, { status: 404 });
     }
 
+    // Process Date Filters
+    const sinceParam = searchParams.get('since');
+    const untilParam = searchParams.get('until');
+    let dateFilters = '';
+    if (sinceParam && sinceParam !== 'undefined' && sinceParam !== 'null') {
+      const sinceDate = new Date(sinceParam + 'T00:00:00.000Z');
+      dateFilters += `&since=${Math.floor(sinceDate.getTime() / 1000)}`;
+    }
+    if (untilParam && untilParam !== 'undefined' && untilParam !== 'null') {
+      const untilDate = new Date(untilParam + 'T23:59:59.999Z');
+      dateFilters += `&until=${Math.floor(untilDate.getTime() / 1000)}`;
+    }
+
     // 3. Buscar Mídias (Feed e Reels)
-    const mediaRes = await fetch(`https://graph.facebook.com/v19.0/${igBusinessAccountId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${token}&limit=20`);
+    const mediaRes = await fetch(`https://graph.facebook.com/v19.0/${igBusinessAccountId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${token}&limit=100${dateFilters}`);
     const mediaData = await mediaRes.json();
 
     // 4. Buscar Stories
-    const storiesRes = await fetch(`https://graph.facebook.com/v19.0/${igBusinessAccountId}/stories?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${token}`);
+    const storiesRes = await fetch(`https://graph.facebook.com/v19.0/${igBusinessAccountId}/stories?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${token}${dateFilters}`);
     const storiesData = await storiesRes.json();
 
     const allMedia = mediaData.data || [];

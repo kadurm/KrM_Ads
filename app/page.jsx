@@ -1931,7 +1931,7 @@ export default function App() {
 
           {activeTab === 'radar' && (
             <div className="max-w-[1400px] mx-auto py-10 px-8">
-              <InstagramRadarView cliente={clienteSelecionado} />
+              <InstagramRadarView cliente={clienteSelecionado} startDate={startDate} endDate={endDate} />
             </div>
           )}
 

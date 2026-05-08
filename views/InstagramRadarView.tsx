@@ -16,19 +16,21 @@ import {
   Info
 } from 'lucide-react';
 
-export default function InstagramRadarView({ cliente }) {
+export default function InstagramRadarView({ cliente, startDate, endDate }) {
   const [activeSubTab, setActiveSubTab] = useState('feed');
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState({ feed: [], reels: [], stories: [] });
   const [error, setError] = useState(null);
   const [analyzingPostId, setAnalyzingPostId] = useState(null);
   const [analyses, setAnalyses] = useState({});
+  const [localStartDate, setLocalStartDate] = useState(startDate || '');
+  const [localEndDate, setLocalEndDate] = useState(endDate || '');
 
   const fetchPosts = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/meta/instagram-posts?cliente=${encodeURIComponent(cliente)}`);
+      const res = await fetch(`/api/meta/instagram-posts?cliente=${encodeURIComponent(cliente)}&since=${localStartDate}&until=${localEndDate}`);
       const data = await res.json();
       if (data.success) {
         setPosts({
@@ -183,7 +185,24 @@ export default function InstagramRadarView({ cliente }) {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-slate-900/50 p-2 rounded-2xl border border-slate-800 shadow-sm backdrop-blur-md">
+        <div className="flex flex-col items-end gap-3">
+          <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-2xl border border-slate-800 shadow-sm backdrop-blur-md">
+            <span className="text-[10px] font-bold text-slate-500 uppercase px-2">Filtro de Data:</span>
+            <input 
+              type="date" 
+              value={localStartDate} 
+              onChange={e => setLocalStartDate(e.target.value)} 
+              className="bg-slate-950 text-[11px] font-bold text-slate-300 p-2 rounded-lg border border-slate-800 outline-none focus:border-blue-500/50 transition-all" 
+            />
+            <span className="text-slate-600 text-xs">→</span>
+            <input 
+              type="date" 
+              value={localEndDate} 
+              onChange={e => setLocalEndDate(e.target.value)} 
+              className="bg-slate-950 text-[11px] font-bold text-slate-300 p-2 rounded-lg border border-slate-800 outline-none focus:border-blue-500/50 transition-all" 
+            />
+          </div>
+          <div className="flex items-center gap-3 bg-slate-900/50 p-2 rounded-2xl border border-slate-800 shadow-sm backdrop-blur-md">
           <div className="flex gap-1 bg-slate-950 p-1 rounded-xl">
             {[
               { id: 'feed', label: 'Feed' },
