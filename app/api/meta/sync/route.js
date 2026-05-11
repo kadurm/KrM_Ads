@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 function graphUrl(path, query) {
@@ -113,8 +115,8 @@ export async function GET(request) {
 
     if (!cliente && !metaAccountTotals) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
-    const dateUntil = until ? new Date(until + 'T23:59:59.999Z') : new Date();
-    const dateSince = since ? new Date(since + 'T00:00:00.000Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
+    const dateUntil = until ? new Date(until + 'T23:59:59') : new Date();
+    const dateSince = since ? new Date(since + 'T00:00:00') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
 
     const campanhas = await prisma.campanha.findMany({       
       where: { cliente_id: cliente.id },
@@ -444,7 +446,7 @@ export async function POST(request) {
         });
         localCampMap.set(camp.meta_id, camp);
       }
-      const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
+      const dataInsight = new Date(item.date_start + 'T00:00:00');
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
@@ -491,7 +493,7 @@ export async function POST(request) {
           create: { meta_ad_id: String(row.ad_id), campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body }
         });
 
-        const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
+        const dataInsight = new Date(row.date_start + 'T00:00:00');
         return prisma.metricaCriativo.upsert({
           where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },
           update: {
