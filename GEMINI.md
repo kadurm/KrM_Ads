@@ -22,10 +22,15 @@
 ## Arquitetura de Dados e Sincronização
 O sistema utiliza um modelo de **Sincronização Diária Fiel**:
 1.  **MetricaCampanha:** Armazena dados diários (`time_increment: 1`) por campanha. Possui uma restrição única `@@unique([campanha_id, data])` para evitar duplicidade.
-2.  **Soberania do Filtro Temporal:** O sistema deve obrigatoriamente honrar o período (`since` e `until`) solicitado pelo usuário no Dashboard. A lógica de "Sliding Window" (janela de segurança de 5 dias) deve ser contornada via parâmetro `forceFullSync: true` para garantir que o usuário possa reconstruir métricas de qualquer período histórico sem bloqueios.
-3.  **Resolução de Slugs e Credenciais:** Para máxima compatibilidade com variáveis de ambiente (.env), a resolução de tokens deve tentar o slug completo e, obrigatoriamente, realizar um **fallback para o `shortName`** (primeira palavra do nome do cliente). Isso evita quebras de sincronização devido a nomes compostos.
-4.  **Agregação Dinâmica:** O endpoint `GET /api/meta/sync` calcula a soma das métricas no período solicitado, garantindo que o investimento total e os leads sejam sempre precisos, independente de quantos syncs foram realizados.
-5.  **Criativos:** Sincroniza metadados (imagem, texto) e métricas acumuladas para identificar as peças de melhor performance (Ranking por CPA).
+2.  **Soberania do Filtro Temporal:** O sistema deve obrigatoriamente honrar o período (`since` e `until`) solicitado pelo usuário no Dashboard. A lógica de "Sliding Window" (janela de segurança de 5 dias) deve ser contornada via parâmetro `forceFullSync: true`.
+3.  **Resolução de Slugs e Credenciais:** Fallback obrigatório para o `shortName` (primeira palavra do nome do cliente) na busca de variáveis de ambiente.
+4.  **Padrão Global de Resultados (KPIs):** A classificação do "Resultado" exibido deve seguir estritamente o objetivo da campanha na Meta Ads, independente de métricas secundárias residuais:
+    *   **MENSAGENS / LEADS / CONVERSÕES:** O resultado principal é SEMPRE "Leads" (Conversas Iniciadas).
+    *   **TRÁFEGO (com foco em Perfil/Instagram):** O resultado principal é SEMPRE "Visitas".
+    *   **AWARENESS / ALCANCE:** O resultado principal é SEMPRE "Alcance/Impressões".
+5.  **Blindagem Lógica:** É terminantemente proibido alterar a lógica global de processamento de métricas, rotulagem ou agregação de dados sem consulta prévia e aprovação explícita do usuário. Mudanças em uma conta afetam todo o ecossistema multi-tenant e devem ser tratadas como alterações críticas de infraestrutura.
+6.  **Agregação Dinâmica:** O endpoint `GET /api/meta/sync` calcula a soma das métricas no período solicitado.
+7.  **Criativos:** Sincroniza metadados e métricas acumuladas para Ranking por CPA.
 
 ## Comandos Principais
 - `npm run dev`: Inicia o servidor de desenvolvimento.
