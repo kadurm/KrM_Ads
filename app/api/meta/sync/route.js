@@ -505,7 +505,7 @@ export async function POST(request) {
         update: {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0,
-          visitas_perfil: (parseInt(item.inline_link_clicks) || 0) + getMetric(item.actions, 'outbound_click'),
+          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || ((parseInt(item.inline_link_clicks) || 0) + getMetric(item.actions, 'outbound_click')),
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
@@ -515,7 +515,7 @@ export async function POST(request) {
           campanha_id: camp.id, data: dataInsight,
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0,
-          visitas_perfil: (parseInt(item.inline_link_clicks) || 0) + getMetric(item.actions, 'outbound_click'),
+          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || ((parseInt(item.inline_link_clicks) || 0) + getMetric(item.actions, 'outbound_click')),
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
