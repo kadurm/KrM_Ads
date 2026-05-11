@@ -22,8 +22,10 @@
 ## Arquitetura de Dados e Sincronização
 O sistema utiliza um modelo de **Sincronização Diária Fiel**:
 1.  **MetricaCampanha:** Armazena dados diários (`time_increment: 1`) por campanha. Possui uma restrição única `@@unique([campanha_id, data])` para evitar duplicidade.
-2.  **Agregação Dinâmica:** O endpoint `GET /api/meta/sync` calcula a soma das métricas no período solicitado (`since` e `until`), garantindo que o investimento total e os leads sejam sempre precisos, independente de quantos syncs foram realizados.
-3.  **Criativos:** Sincroniza metadados (imagem, texto) e métricas acumuladas para identificar as peças de melhor performance (Ranking por CPA).
+2.  **Soberania do Filtro Temporal:** O sistema deve obrigatoriamente honrar o período (`since` e `until`) solicitado pelo usuário no Dashboard. A lógica de "Sliding Window" (janela de segurança de 5 dias) deve ser contornada via parâmetro `forceFullSync: true` para garantir que o usuário possa reconstruir métricas de qualquer período histórico sem bloqueios.
+3.  **Resolução de Slugs e Credenciais:** Para máxima compatibilidade com variáveis de ambiente (.env), a resolução de tokens deve tentar o slug completo e, obrigatoriamente, realizar um **fallback para o `shortName`** (primeira palavra do nome do cliente). Isso evita quebras de sincronização devido a nomes compostos.
+4.  **Agregação Dinâmica:** O endpoint `GET /api/meta/sync` calcula a soma das métricas no período solicitado, garantindo que o investimento total e os leads sejam sempre precisos, independente de quantos syncs foram realizados.
+5.  **Criativos:** Sincroniza metadados (imagem, texto) e métricas acumuladas para identificar as peças de melhor performance (Ranking por CPA).
 
 ## Comandos Principais
 - `npm run dev`: Inicia o servidor de desenvolvimento.
