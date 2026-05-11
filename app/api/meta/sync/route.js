@@ -154,34 +154,53 @@ export async function GET(request) {
         total.alcance = metaCampReachMap.get(camp.nome_gerado);
       }
 
-      const isVisitas = camp.nome_gerado.includes('[05]') || camp.objetivo === 'OUTCOME_TRAFFIC';
-      const label = getLeadLabel({ ...total, objetivo: camp.objetivo, isVisitas });
-      let finalVal = total.conversas_leads;
-      let finalLabel = label;
+      let finalVal = 0;
+      let finalLabel = 'Resultados';
+      let isCPM = false;
+      let cpr = 0;
 
-      if (camp.nome_gerado.includes('[01]')) {
-        finalVal = total.impressoes;
-        finalLabel = 'Impressões';
-        const cpm = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
-        return {
-          ...total, objetivo: finalLabel, resultadoBruto: finalVal,
-          roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
-          cpr: cpm, isCPM: true, campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
-        };
-      } else if (camp.nome_gerado.includes('[02]') || label === 'Engajamentos') {
-        finalVal = total.engajamentoTotal;
-        finalLabel = 'Engajamentos';
-      } else if (isVisitas) {        
+      const obj = (camp.objetivo || '').toUpperCase();
+
+      if (obj.includes('TRAFFIC')) {
         finalVal = total.visitas_perfil; 
         finalLabel = 'Visitas';
-      } else if (label === 'Vendas') {
+        cpr = finalVal > 0 ? (total.valor_investido / finalVal) : 0;
+      } else if (obj.includes('AWARENESS') || obj.includes('REACH')) {
+        finalVal = total.impressoes;
+        finalLabel = 'Impressões';
+        cpr = total.impressoes > 0 ? (total.valor_investido / (total.impressoes / 1000)) : 0;
+        isCPM = true;
+      } else if (obj.includes('ENGAGEMENT')) {
+        if (total.conversas_leads > 0) {
+           finalVal = total.conversas_leads;
+           finalLabel = 'Leads';
+           cpr = finalVal > 0 ? (total.valor_investido / finalVal) : 0;
+        } else {
+           finalVal = total.engajamentoTotal;
+           finalLabel = 'Engajamentos';
+           cpr = finalVal > 0 ? (total.valor_investido / finalVal) : 0;
+        }
+      } else if (obj.includes('MESSAGING') || obj.includes('LEADS') || obj.includes('CONVERSIONS') || obj.includes('OUTCOME_LEADS') || total.conversas_leads > 0) {
+        finalVal = total.conversas_leads;
+        finalLabel = 'Leads';
+        cpr = finalVal > 0 ? (total.valor_investido / finalVal) : 0;
+      } else if (obj.includes('SALES')) {
         finalVal = total.compras;
+        finalLabel = 'Vendas';
+        cpr = finalVal > 0 ? (total.valor_investido / finalVal) : 0;
+      } else {
+        finalVal = total.conversas_leads > 0 ? total.conversas_leads : total.visitas_perfil;
+        finalLabel = total.conversas_leads > 0 ? 'Leads' : 'Visitas';
+        cpr = finalVal > 0 ? (total.valor_investido / finalVal) : 0;
       }
 
       return {
-        ...total, objetivo: finalLabel, resultadoBruto: finalVal,
+        ...total, 
+        objetivo: finalLabel, 
+        resultadoBruto: finalVal,
         roas: total.valor_investido > 0 ? total.valor_compras / total.valor_investido : 0,
-        cpr: finalVal > 0 ? (total.valor_investido / finalVal) : 0,
+        cpr: cpr,
+        isCPM: isCPM,
         campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
       };
     }).filter(m => m.impressoes > 0 || m.valor_investido > 0);
