@@ -9,7 +9,12 @@
       "Bash(curl *)",
       "Bash(node scripts/diagnostico-sync.js)",
       "Bash(node *)",
-      "Bash(Select-Object -First 100)"
+      "Bash(Select-Object -First 100)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'fix: correct timezone drift and disable cache in meta sync to ensure metric stability *)",
+      "Bash(git push *)",
+      "Bash(npx prisma *)",
+      "Bash(git commit -m 'fix: implement sliding window sync and last-sync tracking for meta metrics *)"
     ]
   }
 }

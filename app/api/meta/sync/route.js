@@ -70,6 +70,7 @@ export async function GET(request) {
     if (!clienteNome) return NextResponse.json({ success: false, error: "Cliente não especificado" }, { status: 400 });   
 
     const slug = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
+    const shortName = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(' ')[0];
     
     const cliente = await prisma.cliente.findFirst({ 
       where: { 
@@ -86,11 +87,15 @@ export async function GET(request) {
     try {
       const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
                            process.env[`META_ACCESS_TOKEN_${slug}`] ||
+                           process.env[`META_ACCESS_TOKEN_${shortName.toUpperCase()}`] ||
+                           process.env[`META_ACCESS_TOKEN_${shortName}`] ||
                            process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
                            cliente?.meta_access_token;
 
       const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${slug.toUpperCase()}`] || 
                            process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
+                           process.env[`META_AD_ACCOUNT_ID_${shortName.toUpperCase()}`] ||
+                           process.env[`META_AD_ACCOUNT_ID_${shortName}`] ||
                            cliente?.meta_ads_account_id;
 
       const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
@@ -353,7 +358,6 @@ export async function GET(request) {
     const totalReach = metaAccountTotals ? parseInt(metaAccountTotals.reach) : metrics.reduce((a,c)=>a+c.alcance, 0);
 
     return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach, lastSyncDate });
-S
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
@@ -361,10 +365,11 @@ S
 
 export async function POST(request) {
   try {
-    const { since, until, cliente } = await request.json();
+    const { since, until, cliente, forceFullSync } = await request.json();
     if (!cliente) return NextResponse.json({ success: false, error: "Cliente não fornecido" }, { status: 400 });
 
     const slug = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
+    const shortName = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(' ')[0];
 
     const dbCliente = await prisma.cliente.findFirst({ 
       where: { 
@@ -378,11 +383,15 @@ export async function POST(request) {
     
     const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
                          process.env[`META_ACCESS_TOKEN_${slug}`] ||
+                         process.env[`META_ACCESS_TOKEN_${shortName.toUpperCase()}`] ||
+                         process.env[`META_ACCESS_TOKEN_${shortName}`] ||
                          process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
                          dbCliente?.meta_access_token;
 
     const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${slug.toUpperCase()}`] || 
                          process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
+                         process.env[`META_AD_ACCOUNT_ID_${shortName.toUpperCase()}`] ||
+                         process.env[`META_AD_ACCOUNT_ID_${shortName}`] ||
                          dbCliente?.meta_ads_account_id;
 
     const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
@@ -413,7 +422,7 @@ export async function POST(request) {
     fiveDaysAgo.setDate(today.getDate() - 5);
     const fiveDaysAgoStr = fiveDaysAgo.toISOString().split('T')[0];
 
-    if (!since || (since && new Date(since) > fiveDaysAgo)) {
+    if (!forceFullSync && (!since || (since && new Date(since) > fiveDaysAgo))) {
       finalSince = fiveDaysAgoStr;
     }
 
