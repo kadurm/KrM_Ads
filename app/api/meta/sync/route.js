@@ -154,7 +154,7 @@ export async function GET(request) {
         total.alcance = metaCampReachMap.get(camp.nome_gerado);
       }
 
-      const isVisitas = camp.nome_gerado.includes('[05]') || (camp.objetivo === 'OUTCOME_TRAFFIC' && camp.nome_gerado.toLowerCase().includes('perfil'));
+      const isVisitas = camp.nome_gerado.includes('[05]') || camp.objetivo === 'OUTCOME_TRAFFIC';
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo, isVisitas });
       let finalVal = total.conversas_leads;
       let finalLabel = label;
@@ -172,7 +172,7 @@ export async function GET(request) {
         finalVal = total.engajamentoTotal;
         finalLabel = 'Engajamentos';
       } else if (isVisitas) {        
-        finalVal = Math.round(total.visitas_perfil * 0.792); 
+        finalVal = total.visitas_perfil; 
         finalLabel = 'Visitas';
       } else if (label === 'Vendas') {
         finalVal = total.compras;
