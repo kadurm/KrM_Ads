@@ -156,21 +156,8 @@ export async function GET(request) {
 
       const isVisitas = camp.nome_gerado.includes('[05]') || camp.objetivo === 'OUTCOME_TRAFFIC';
       const label = getLeadLabel({ ...total, objetivo: camp.objetivo, isVisitas });
-      
-      // FORÇAR: Campanhas de Tráfego ou Reconhecimento não devem exibir 'Leads' como resultado principal
-      let finalLabel = label;
       let finalVal = total.conversas_leads;
-
-      if (isVisitas || camp.objetivo === 'OUTCOME_AWARENESS') {
-         // Se for tráfego ou awareness, mensagens residuais são ignoradas no KPI principal
-         if (isVisitas) {
-           finalLabel = 'Visitas';
-           finalVal = total.visitas_perfil;
-         } else {
-           finalLabel = 'Alcance';
-           finalVal = total.alcance;
-         }
-      }
+      let finalLabel = label;
 
       if (camp.nome_gerado.includes('[01]')) {
         finalVal = total.impressoes;
@@ -184,6 +171,9 @@ export async function GET(request) {
       } else if (camp.nome_gerado.includes('[02]') || label === 'Engajamentos') {
         finalVal = total.engajamentoTotal;
         finalLabel = 'Engajamentos';
+      } else if (isVisitas) {        
+        finalVal = total.visitas_perfil; 
+        finalLabel = 'Visitas';
       } else if (label === 'Vendas') {
         finalVal = total.compras;
       }
