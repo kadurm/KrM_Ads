@@ -36,10 +36,9 @@ function getTrueLeads(actions) {
   const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
-  const customContact = getMetric(actions, 'offsite_conversion.fb_pixel_custom');
   const fbContact = getMetric(actions, 'contact');
-  // NUNCA incluir view_content aqui, pois ele infla leads com visualizações de página/produto
-  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + customContact + fbContact;
+  // REMOVIDO: offsite_conversion.fb_pixel_custom e view_content para evitar inflação de leads frios
+  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact;
 }
 
 function getSocialActions(actions) {
@@ -487,7 +486,7 @@ export async function POST(request) {
         update: {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0,
-          visitas_perfil: Math.max(getMetric(item.actions, 'onsite_conversion.instagram_profile_visit'), parseInt(item.inline_link_clicks) || 0),
+          visitas_perfil: (parseInt(item.inline_link_clicks) || 0) + getMetric(item.actions, 'outbound_click'),
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
@@ -497,7 +496,7 @@ export async function POST(request) {
           campanha_id: camp.id, data: dataInsight,
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
           cliques: parseInt(item.clicks) || 0,
-          visitas_perfil: Math.max(getMetric(item.actions, 'onsite_conversion.instagram_profile_visit'), parseInt(item.inline_link_clicks) || 0),
+          visitas_perfil: (parseInt(item.inline_link_clicks) || 0) + getMetric(item.actions, 'outbound_click'),
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
