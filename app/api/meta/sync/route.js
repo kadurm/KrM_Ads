@@ -115,6 +115,12 @@ export async function GET(request) {
 
     if (!cliente && !metaAccountTotals) return NextResponse.json({ success: true, metrics: [], criativos: [] });
 
+    const lastMetric = await prisma.metricaCampanha.findFirst({
+      where: { campanha: { cliente_id: cliente.id } },
+      orderBy: { data: 'desc' }
+    });
+    const lastSyncDate = lastMetric ? lastMetric.data.toISOString().split('T')[0] : null;
+
     const dateUntil = until ? new Date(until + 'T23:59:59') : new Date();
     const dateSince = since ? new Date(since + 'T00:00:00') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
 
@@ -346,7 +352,8 @@ export async function GET(request) {
 
     const totalReach = metaAccountTotals ? parseInt(metaAccountTotals.reach) : metrics.reduce((a,c)=>a+c.alcance, 0);
 
-    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach });
+    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach, lastSyncDate });
+S
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
@@ -396,9 +403,25 @@ export async function POST(request) {
     }
 
     const commonQuery = { access_token: ACCESS_TOKEN, limit: '1000' };
-    const todayStr = new Date().toISOString().split('T')[0]; 
-    if (until === todayStr && since === todayStr) commonQuery.date_preset = 'today';
-    else commonQuery.time_range = JSON.stringify({ since, until });
+
+    // --- Sliding Window: Guarantee the last 5 days are always synced to avoid gaps ---
+    let finalSince = since;
+    let finalUntil = until;
+
+    const today = new Date();
+    const fiveDaysAgo = new Date();
+    fiveDaysAgo.setDate(today.getDate() - 5);
+    const fiveDaysAgoStr = fiveDaysAgo.toISOString().split('T')[0];
+
+    if (!since || (since && new Date(since) > fiveDaysAgo)) {
+      finalSince = fiveDaysAgoStr;
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (finalUntil === todayStr && finalSince === todayStr) commonQuery.date_preset = 'today';
+    else commonQuery.time_range = JSON.stringify({ since: finalSince, until: finalUntil });
+
+    console.log(`[MetaSync] Syncing range: ${finalSince} to ${finalUntil || todayStr}`);
 
     const [metaCampsRes, campaignRes, adInsightRes, adsMetaRes] = await Promise.all([
       fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' })),
