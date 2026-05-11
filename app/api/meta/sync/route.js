@@ -52,8 +52,9 @@ function getSocialActions(actions) {
 }
 
 const getLeadLabel = (m) => {
-  if (m.conversas_leads > 0) return 'Leads';
   const obj = m.objetivo || '';
+  if (m.isVisitas) return 'Visitas';
+  if (m.conversas_leads > 0) return 'Leads';
   if (obj.includes('TRAFFIC')) return 'Cliques no Link';
   if (obj.includes('AWARENESS') || obj.includes('REACH')) return 'Alcance';
   if (obj.includes('ENGAGEMENT')) return 'Engajamentos';     
@@ -153,7 +154,8 @@ export async function GET(request) {
         total.alcance = metaCampReachMap.get(camp.nome_gerado);
       }
 
-      const label = getLeadLabel({ ...total, objetivo: camp.objetivo });
+      const isVisitas = camp.nome_gerado.includes('[05]') || (camp.objetivo === 'OUTCOME_TRAFFIC' && camp.nome_gerado.toLowerCase().includes('perfil'));
+      const label = getLeadLabel({ ...total, objetivo: camp.objetivo, isVisitas });
       let finalVal = total.conversas_leads;
       let finalLabel = label;
 
@@ -169,7 +171,7 @@ export async function GET(request) {
       } else if (camp.nome_gerado.includes('[02]') || label === 'Engajamentos') {
         finalVal = total.engajamentoTotal;
         finalLabel = 'Engajamentos';
-      } else if (camp.nome_gerado.includes('[05]')) {        
+      } else if (isVisitas) {        
         finalVal = Math.round(total.visitas_perfil * 0.792); 
         finalLabel = 'Visitas';
       } else if (label === 'Vendas') {
