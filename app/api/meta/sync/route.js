@@ -464,8 +464,8 @@ export async function POST(request) {
 
     const [metaCampsRes, campaignRes, adInsightRes, adsMetaRes] = await Promise.all([
       fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),  
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,actions,action_values', level: 'ad', time_increment: '1' })),        
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),  
+      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values', level: 'ad', time_increment: '1' })),        
       fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
     ]);
 
@@ -509,12 +509,21 @@ export async function POST(request) {
         localCampMap.set(camp.meta_id, camp);
       }
       const dataInsight = new Date(item.date_start + 'T00:00:00');
+      const linkClicks = parseInt(item.inline_link_clicks) || 0;
+      const outboundClicks = Array.isArray(item.outbound_clicks) 
+        ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0)
+        : 0;
+      const nativeVisits = getMetric(item.actions, 'onsite_conversion.instagram_profile_visit');
+      
+      // Padrão Ouro: Visitas = Maior valor entre Visitas Nativas ou (Cliques no Link - Cliques de Saída)
+      const totalVisitas = nativeVisits || Math.max(0, linkClicks - outboundClicks);
+
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
-          cliques: parseInt(item.inline_link_clicks) || 0,
-          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit'),
+          cliques: linkClicks,
+          visitas_perfil: totalVisitas,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
@@ -523,8 +532,8 @@ export async function POST(request) {
         create: {
           campanha_id: camp.id, data: dataInsight,
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
-          cliques: parseInt(item.inline_link_clicks) || 0,
-          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit'),
+          cliques: linkClicks,
+          visitas_perfil: totalVisitas,
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
@@ -566,7 +575,7 @@ export async function POST(request) {
           },
           create: {
             criativo_id: criativo.id, data: dataInsight, impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0,
-            cliques: parseInt(row.clicks) || 0, ctr: parseFloat(row.inline_link_click_ctr) || 0,
+            cliques: parseInt(row.inline_link_clicks) || 0, ctr: parseFloat(row.inline_link_click_ctr) || 0,
             valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'),
             reacoes_sociais: getSocialActions(row.actions)
           }
