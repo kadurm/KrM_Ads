@@ -14,7 +14,8 @@
       "Bash(git commit -m 'fix: correct timezone drift and disable cache in meta sync to ensure metric stability *)",
       "Bash(git push *)",
       "Bash(npx prisma *)",
-      "Bash(git commit -m 'fix: implement sliding window sync and last-sync tracking for meta metrics *)"
+      "Bash(git commit -m 'fix: implement sliding window sync and last-sync tracking for meta metrics *)",
+      "Bash(echo 'const { PrismaClient } = require\\(\"@prisma/client\"\\); *)"
     ]
   }
 }

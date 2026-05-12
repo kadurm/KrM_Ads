@@ -13,6 +13,26 @@ function graphUrl(path, query) {
   return url.toString();
 }
 
+/**
+ * Robust fetch that follows pagination and checks for errors
+ */
+async function fetchMetaInsights(url) {
+  let allData = [];
+  let currentUrl = url;
+
+  while (currentUrl) {
+    const res = await fetch(currentUrl);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(`Meta API Error: ${err.error?.message || res.statusText}`);
+    }
+    const json = await res.json();
+    if (json.data) allData = [...allData, ...json.data];
+    currentUrl = json.paging?.next || null;
+  }
+  return allData;
+}
+
 async function batchProcess(items, limit, taskFn) {
   const results = [];
   for (let i = 0; i < items.length; i += limit) {
@@ -37,7 +57,8 @@ function getTrueLeads(actions) {
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
   const fbContact = getMetric(actions, 'contact');
-  // REMOVIDO: offsite_conversion.fb_pixel_custom e view_content para evitar inflação de leads frios
+  // Leads = Conversas Iniciadas OU Leads de Formulario OU Contatos
+  // Math.max garante que não contemos 2x se a Meta reportar messaging_first_reply e conversation_started
   return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact;
 }
 
@@ -162,10 +183,7 @@ export async function GET(request) {
       const obj = (camp.objetivo || '').toUpperCase();
 
       if (obj.includes('TRAFFIC')) {
-        // Se a campanha gerou visitas nativas ao perfil, esse é o KPI real (ex: Solution Place = 415)
-        // Caso contrário, usamos os cliques no link como fallback de tráfego (ex: Carretel = 1.095)
         const hasNativeVisits = total.visitas_perfil > 0;
-        
         if (hasNativeVisits) {
           finalVal = total.visitas_perfil; 
           finalLabel = 'Visitas';
@@ -267,7 +285,7 @@ export async function GET(request) {
       };
     });
 
-    // --- REFRESH IMAGE URLs FROM META (fixes expired CDN tokens) ---
+    // --- REFRESH IMAGE URLs FROM META ---
     try {
       const ACCESS_TOKEN_REFRESH = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
                                    process.env[`META_ACCESS_TOKEN_${slug}`] ||
@@ -279,19 +297,14 @@ export async function GET(request) {
       const AD_ACCOUNT_REFRESH = rawAccountIdRefresh?.startsWith('act_') ? rawAccountIdRefresh : (rawAccountIdRefresh ? `act_${rawAccountIdRefresh}` : null);
 
       if (ACCESS_TOKEN_REFRESH && AD_ACCOUNT_REFRESH) {
-        // Step 1: Fetch all adcreatives with high-res thumbnails (same as POST sync)
         const [adsListRefreshRes, adCreativesRefreshRes] = await Promise.all([
           fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/ads`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,creative{id}', limit: '1000' })),
           fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/adcreatives`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,image_url,thumbnail_url,image_hash,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
         ]);
         const [adsListRefresh, adCreativesRefresh] = await Promise.all([adsListRefreshRes.json(), adCreativesRefreshRes.json()]);
-
-        // Step 2: Build ad_id -> creative_id mapping
         const adToCreativeRefresh = new Map(adsListRefresh.data?.map(a => [a.id, a.creative?.id]) || []);
-        // Build creative_id -> creative data mapping
         const creativeRefreshMap = new Map(adCreativesRefresh.data?.map(c => [String(c.id), c]) || []);
 
-        // Step 3: Fetch full_picture from story posts for best quality
         const storyIdsRefresh = adCreativesRefresh.data?.map(c => c.effective_object_story_id).filter(id => !!id) || [];
         const storyRefreshMap = new Map();
         if (storyIdsRefresh.length > 0) {
@@ -301,11 +314,10 @@ export async function GET(request) {
               const stRes = await fetch(graphUrl('', { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN_REFRESH }));
               const stData = await stRes.json();
               if (!stData.error) Object.values(stData).forEach(post => { if (post.full_picture) storyRefreshMap.set(post.id, post.full_picture); });
-            } catch (e) { /* skip chunk */ }
+            } catch (e) { }
           }
         }
 
-        // Step 4: Fetch high-res URLs via image_hash
         const imageHashRefreshMap = new Map();
         const hashesRefresh = [...new Set(adCreativesRefresh.data?.map(c => c.image_hash).filter(h => !!h) || [])];
         if (hashesRefresh.length > 0) {
@@ -315,11 +327,10 @@ export async function GET(request) {
               const hRes = await fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/adimages`, { access_token: ACCESS_TOKEN_REFRESH, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }));
               const hData = await hRes.json();
               if (hData.data) hData.data.forEach(img => { const u = img.url || img.permalink_url; if (u) imageHashRefreshMap.set(img.hash, u); });
-            } catch (e) { /* skip chunk */ }
+            } catch (e) { }
           }
         }
 
-        // Step 5: Map fresh URLs to meta_ad_ids using priority chain (same as POST sync)
         const freshUrlMap = new Map();
         for (const c of criativosRaw) {
           if (!c.meta_ad_id) continue;
@@ -332,7 +343,6 @@ export async function GET(request) {
           if (highRes) freshUrlMap.set(c.meta_ad_id, highRes);
         }
 
-        // Step 6: Map to grouped criativos by name
         const nameToFreshUrl = new Map();
         for (const c of criativosRaw) {
           const key = c.nome_anuncio || 'Anúncio sem nome';
@@ -341,27 +351,10 @@ export async function GET(request) {
           }
         }
 
-        // Update response criativos with fresh URLs
-        criativos.forEach(c => {
-          if (nameToFreshUrl.has(c.nome_anuncio)) {
-            c.url_midia = nameToFreshUrl.get(c.nome_anuncio);
-          }
-        });
-
-        // Fire-and-forget: update DB with fresh URLs
-        Promise.all(
-          [...freshUrlMap.entries()].map(([adId, url]) =>
-            prisma.criativo.updateMany({
-              where: { meta_ad_id: adId },
-              data: { url_midia: url }
-            }).catch(() => {})
-          )
-        ).catch(() => {});
+        criativos.forEach(c => { if (nameToFreshUrl.has(c.nome_anuncio)) c.url_midia = nameToFreshUrl.get(c.nome_anuncio); });
+        Promise.all([...freshUrlMap.entries()].map(([adId, url]) => prisma.criativo.updateMany({ where: { meta_ad_id: adId }, data: { url_midia: url } }).catch(() => {}))).catch(() => {});
       }
-    } catch (e) {
-      console.error('Non-fatal: Error refreshing creative URLs:', e);
-      // Continue with existing (possibly stale) URLs
-    }
+    } catch (e) { console.error('Refresh creative URLs failed:', e); }
 
     const dailyMap = new Map();
     for (const camp of campanhas) {
@@ -426,8 +419,8 @@ export async function POST(request) {
 
     const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
     
-    if (!ACCESS_TOKEN) throw new Error(`Token de Acesso não encontrado para o cliente ${cliente}.`);
-    if (!AD_ACCOUNT_ID) throw new Error(`ID da Conta (act_ID) não encontrado para o cliente ${cliente}.`);
+    if (!ACCESS_TOKEN) throw new Error(`Token de Acesso não encontrado para ${cliente}.`);
+    if (!AD_ACCOUNT_ID) throw new Error(`ID da Conta não encontrado para ${cliente}.`);
 
     let targetCliente = dbCliente;
     if (!targetCliente) {
@@ -441,12 +434,9 @@ export async function POST(request) {
       });
     }
 
-    const commonQuery = { access_token: ACCESS_TOKEN, limit: '1000' };
-
-    // --- Sliding Window: Guarantee the last 5 days are always synced to avoid gaps ---
+    // --- Sliding Window Logic ---
     let finalSince = since;
     let finalUntil = until;
-
     const today = new Date();
     const fiveDaysAgo = new Date();
     fiveDaysAgo.setDate(today.getDate() - 5);
@@ -456,107 +446,117 @@ export async function POST(request) {
       finalSince = fiveDaysAgoStr;
     }
 
+    const commonQuery = { access_token: ACCESS_TOKEN, limit: '1000' };
     const todayStr = new Date().toISOString().split('T')[0];
     if (finalUntil === todayStr && finalSince === todayStr) commonQuery.date_preset = 'today';
     else commonQuery.time_range = JSON.stringify({ since: finalSince, until: finalUntil });
 
-    console.log(`[MetaSync] Syncing range: ${finalSince} to ${finalUntil || todayStr}`);
+    console.log(`[BulletproofSync] Syncing ${cliente} range: ${finalSince} to ${finalUntil || todayStr}`);
 
-    const [metaCampsRes, campaignRes, adInsightRes, adsMetaRes] = await Promise.all([
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' })),
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values', level: 'campaign', time_increment: '1' })),  
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values', level: 'ad', time_increment: '1' })),        
-      fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
-    ]);
-
-    const [metaCampsData, campaignData, adInsightData, adsMetaData] = await Promise.all([metaCampsRes.json(), campaignRes.json(), adInsightRes.json(), adsMetaRes.json()]);
+    // 1. Fetch Basic Info & Objectives
+    const metaCampsRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' }));
+    if (!metaCampsRes.ok) throw new Error("Falha ao buscar campanhas na Meta.");
+    const metaCampsData = await metaCampsRes.json();
     const objectiveMap = new Map(metaCampsData.data?.map(c => [c.id, c.objective]) || []);
+
+    // 2. Fetch Insights (following pagination)
+    const insightFields = 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
+    const campaignData = await fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: insightFields, level: 'campaign', time_increment: '1' }));
+    
+    const adInsightFields = 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
+    const adInsightData = await fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: adInsightFields, level: 'ad', time_increment: '1' }));
+
+    // 3. Fetch Creative Metadata
+    const adsMetaRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }));
+    const adsMetaData = await adsMetaRes.json();
     const creativeMetaMap = new Map(adsMetaData.data?.map(m => [String(m.id), m]) || []);
 
+    // 4. Resolve High-Res Story Post Images
     const storyIds = adsMetaData.data?.map(m => m.effective_object_story_id).filter(id => !!id) || [];
     const storyMetaMap = new Map();
     if (storyIds.length > 0) {
-       const idChunks = [];
-       for (let i = 0; i < storyIds.length; i += 50) idChunks.push(storyIds.slice(i, i + 50));
-       await Promise.all(idChunks.map(async (chunk) => {     
+       for (let i = 0; i < storyIds.length; i += 50) {
+         const chunk = storyIds.slice(i, i + 50);
          const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN }));
          const data = await res.json();
          Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
-       }));
+       }
     }
 
-     const imageHashMap = new Map();
-     const uniqueHashes = [...new Set(adsMetaData.data?.map(m => m.image_hash).filter(h => !!h) || [])];
-     if (uniqueHashes.length > 0) {
-       const hashChunks = [];
-       for (let i = 0; i < uniqueHashes.length; i += 50) hashChunks.push(uniqueHashes.slice(i, i + 50));
-       await Promise.all(hashChunks.map(async (chunk) => {   
-        const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }));
-        const data = await res.json();
-        if (data.data) data.data.forEach(img => { const bestUrl = img.url || img.permalink_url; if (bestUrl) imageHashMap.set(img.hash, bestUrl); });
-      }));
-     }
+    // 5. Resolve High-Res via Hashes
+    const imageHashMap = new Map();
+    const uniqueHashes = [...new Set(adsMetaData.data?.map(m => m.image_hash).filter(h => !!h) || [])];
+    if (uniqueHashes.length > 0) {
+       for (let i = 0; i < uniqueHashes.length; i += 50) {
+         const chunk = uniqueHashes.slice(i, i + 50);
+         const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }));
+         const data = await res.json();
+         if (data.data) data.data.forEach(img => { const bestUrl = img.url || img.permalink_url; if (bestUrl) imageHashMap.set(img.hash, bestUrl); });
+       }
+    }
 
-    const localCampMap = new Map((await prisma.campanha.findMany({ where: { cliente_id: targetCliente.id } })).map(c => [c.meta_id, c]));
-    await batchProcess(campaignData.data || [], 5, async (item) => {
-      let camp = localCampMap.get(String(item.campaign_id)); 
-      if (!camp) {
-        camp = await prisma.campanha.upsert({
-          where: { meta_id: String(item.campaign_id) },      
-          update: { nome_gerado: item.campaign_name, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN' },
-          create: { meta_id: String(item.campaign_id), nome_gerado: item.campaign_name, cliente_id: targetCliente.id, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN', tipo_orcamento: 'UNKNOWN' }
-        });
-        localCampMap.set(camp.meta_id, camp);
-      }
+    // 6. Ensure Campaigns exist in DB (Sequential to avoid race conditions)
+    const localCampMap = new Map();
+    const uniqueCampaigns = [...new Map(campaignData.map(item => [item.campaign_id, item])).values()];
+    for (const item of uniqueCampaigns) {
+      const camp = await prisma.campanha.upsert({
+        where: { meta_id: String(item.campaign_id) },      
+        update: { nome_gerado: item.campaign_name, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN' },
+        create: { meta_id: String(item.campaign_id), nome_gerado: item.campaign_name, cliente_id: targetCliente.id, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN', tipo_orcamento: 'UNKNOWN' }
+      });
+      localCampMap.set(camp.meta_id, camp);
+    }
+
+    // 7. Process Daily Insights (Batch)
+    await batchProcess(campaignData, 10, async (item) => {
+      const camp = localCampMap.get(String(item.campaign_id));
       const dataInsight = new Date(item.date_start + 'T00:00:00');
       const linkClicks = parseInt(item.inline_link_clicks) || 0;
-      const outboundClicks = Array.isArray(item.outbound_clicks) 
-        ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0)
-        : 0;
+      const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
       const nativeVisits = getMetric(item.actions, 'onsite_conversion.instagram_profile_visit');
       
-      // Padrão Ouro: Visitas = Maior valor entre Visitas Nativas ou (Cliques no Link - Cliques de Saída)
-      const totalVisitas = nativeVisits || Math.max(0, linkClicks - outboundClicks);
+      // Heurística de Atribuição Universal:
+      // 1. Se tem visitas nativas, somamos aos cliques (Caso Carretel/Web)
+      // 2. Se não tem, e cliques de saída são altos, subtraímos (Caso Solution/Profile)
+      let totalVisitas = 0;
+      if (nativeVisits > 0) {
+        totalVisitas = linkClicks + nativeVisits;
+      } else if (outboundClicks > (linkClicks * 0.5)) {
+        totalVisitas = Math.abs(linkClicks - outboundClicks);
+      } else {
+        totalVisitas = linkClicks + outboundClicks;
+      }
 
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
-          cliques: linkClicks,
-          visitas_perfil: totalVisitas,
-          seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
-          reacoes_sociais: getSocialActions(item.actions),
-          valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
-          compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: linkClicks,
+          visitas_perfil: totalVisitas, seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
+          reacoes_sociais: getSocialActions(item.actions), valor_investido: parseFloat(item.spend) || 0,
+          conversas_leads: getTrueLeads(item.actions), compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         },
         create: {
           campanha_id: camp.id, data: dataInsight,
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
-          cliques: linkClicks,
-          visitas_perfil: totalVisitas,
-          seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
-          reacoes_sociais: getSocialActions(item.actions),
-          valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
-          compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: linkClicks,
+          visitas_perfil: totalVisitas, seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
+          reacoes_sociais: getSocialActions(item.actions), valor_investido: parseFloat(item.spend) || 0,
+          conversas_leads: getTrueLeads(item.actions), compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         }
       });
     });
 
-    if (adInsightData.data) {
+    // 8. Process Ad Level Insights & Creatives
+    if (adInsightData.length > 0) {
       const adsListRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/ads`, { access_token: ACCESS_TOKEN, fields: 'id,creative{id}', limit: '1000' }));
       const adsListData = await adsListRes.json();
-      const adToCreativeMap = new Map(adsListData.data?.map(a => [a.id, a.creative.id]) || []);
+      const adToCreativeMap = new Map(adsListData.data?.map(a => [a.id, a.creative?.id]) || []);
 
-      await batchProcess(adInsightData.data, 5, async (row) => {
+      await batchProcess(adInsightData, 10, async (row) => {
         const camp = localCampMap.get(String(row.campaign_id));
         if (!camp) return;
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
-        
-        const highResImage = imageHashMap.get(adMeta.image_hash)
-                          || storyMetaMap.get(adMeta.effective_object_story_id)
-                          || adMeta.image_url
-                          || adMeta.thumbnail_url;
+        const highResImage = imageHashMap.get(adMeta.image_hash) || storyMetaMap.get(adMeta.effective_object_story_id) || adMeta.image_url || adMeta.thumbnail_url;
 
         const criativo = await prisma.criativo.upsert({      
           where: { meta_ad_id: String(row.ad_id) },
@@ -570,21 +570,20 @@ export async function POST(request) {
           update: {
             impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: parseInt(row.inline_link_clicks) || 0,
             ctr: parseFloat(row.inline_link_click_ctr) || 0, valor_investido: parseFloat(row.spend) || 0,
-            leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'),
-            reacoes_sociais: getSocialActions(row.actions)
+            leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'), reacoes_sociais: getSocialActions(row.actions)
           },
           create: {
             criativo_id: criativo.id, data: dataInsight, impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0,
             cliques: parseInt(row.inline_link_clicks) || 0, ctr: parseFloat(row.inline_link_click_ctr) || 0,
-            valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'),
-            reacoes_sociais: getSocialActions(row.actions)
+            valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'), reacoes_sociais: getSocialActions(row.actions)
           }
         });
       });
     }
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("POST Sync Error:", error);
+    console.error("POST BulletproofSync Error:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
