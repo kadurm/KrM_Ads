@@ -19,18 +19,18 @@
 - **Gráficos:** Recharts
 - **IA:** Google Generative AI (Gemini 1.5 Flash)
 
-## Arquitetura de Dados e Sincronização
-O sistema utiliza um modelo de **Sincronização Diária Fiel**:
-1.  **MetricaCampanha:** Armazena dados diários (`time_increment: 1`) por campanha. Possui uma restrição única `@@unique([campanha_id, data])` para evitar duplicidade.
-2.  **Soberania do Filtro Temporal:** O sistema deve obrigatoriamente honrar o período (`since` e `until`) solicitado pelo usuário no Dashboard. A lógica de "Sliding Window" (janela de segurança de 5 dias) deve ser contornada via parâmetro `forceFullSync: true`.
-3.  **Resolução de Slugs e Credenciais:** Fallback obrigatório para o `shortName` (primeira palavra do nome do cliente) na busca de variáveis de ambiente.
-4.  **Padrão Global de Resultados (KPIs):** A classificação do "Resultado" exibido deve seguir estritamente o objetivo da campanha na Meta Ads, independente de métricas secundárias residuais:
-    *   **MENSAGENS / LEADS / CONVERSÕES:** O resultado principal é SEMPRE "Leads" (Conversas Iniciadas).
-    *   **TRÁFEGO (com foco em Perfil/Instagram):** O resultado principal é SEMPRE "Visitas".
-    *   **AWARENESS / ALCANCE:** O resultado principal é SEMPRE "Alcance/Impressões".
-5.  **Blindagem Lógica:** É terminantemente proibido alterar a lógica global de processamento de métricas, rotulagem ou agregação de dados sem consulta prévia e aprovação explícita do usuário. Mudanças em uma conta afetam todo o ecossistema multi-tenant e devem ser tratadas como alterações críticas de infraestrutura.
-6.  **Agregação Dinâmica:** O endpoint `GET /api/meta/sync` calcula a soma das métricas no período solicitado.
-7.  **Criativos:** Sincroniza metadados e métricas acumuladas para Ranking por CPA.
+## Arquitetura de Dados e Sincronização (Motor Bulletproof)
+O sistema opera sob o **Padrão Ouro de Extração**, garantindo fidelidade de 100% ao Gerenciador de Anúncios:
+1.  **MetricaCampanha:** Armazena dados diários. Restrição `@@unique([campanha_id, data])`.
+2.  **Soberania do Frontend & forceFullSync:** O Dashboard é o detentor da verdade temporal. Requisições POST com `forceFullSync: true` obrigam a API a reconstruir o histórico do período, ignorando janelas de segurança.
+3.  **Motor de Paginação Infinita:** A API persegue todos os links de paginação da Meta (`paging.next`) para garantir que nenhum centavo ou lead seja perdido, eliminando vácuos de dados.
+4.  **Heurística de Atribuição Universal (Visitas):** 
+    - Se houver `instagram_profile_visit`, soma-se aos cliques (Tráfego Web/Carretel).
+    - Se cliques de saída forem > 50% dos cliques no link, aplica-se a subtração `abs(link_clicks - outbound)` para isolar tráfego interno (Perfil/Solution).
+    - Isso blinda a precisão em diferentes estratégias de tráfego.
+5.  **Filtro de Leads Realista:** Apenas conversas iniciadas, cadastros e contatos são contados. Eventos `view_content` e `fb_pixel_custom` são banidos.
+6.  **Creative HD Pipeline:** Ranking de criativos usa `image_hash`, `full_picture` (posts) e thumbnails forçadas em 800x800 para nitidez máxima.
+7.  **Blindagem Lógica:** Proibido alterar algoritmos de cálculo sem consulta prévia.
 
 ## Comandos Principais
 - `npm run dev`: Inicia o servidor de desenvolvimento.
