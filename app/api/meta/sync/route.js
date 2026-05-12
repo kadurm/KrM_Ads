@@ -162,8 +162,17 @@ export async function GET(request) {
       const obj = (camp.objetivo || '').toUpperCase();
 
       if (obj.includes('TRAFFIC')) {
-        finalVal = total.visitas_perfil; 
-        finalLabel = 'Visitas';
+        // Se a campanha gerou visitas nativas ao perfil, esse é o KPI real (ex: Solution Place = 415)
+        // Caso contrário, usamos os cliques no link como fallback de tráfego (ex: Carretel = 1.095)
+        const hasNativeVisits = total.visitas_perfil > 0;
+        
+        if (hasNativeVisits) {
+          finalVal = total.visitas_perfil; 
+          finalLabel = 'Visitas';
+        } else {
+          finalVal = total.cliques;
+          finalLabel = 'Cliques no Link';
+        }
         cpr = finalVal > 0 ? (total.valor_investido / finalVal) : 0;
       } else if (obj.includes('AWARENESS') || obj.includes('REACH')) {
         finalVal = total.impressoes;
@@ -504,8 +513,8 @@ export async function POST(request) {
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
-          cliques: parseInt(item.clicks) || 0,
-          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || ((parseInt(item.inline_link_clicks) || 0) + getMetric(item.actions, 'outbound_click')),
+          cliques: parseInt(item.inline_link_clicks) || 0,
+          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit'),
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
@@ -514,8 +523,8 @@ export async function POST(request) {
         create: {
           campanha_id: camp.id, data: dataInsight,
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0,
-          cliques: parseInt(item.clicks) || 0,
-          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit') || ((parseInt(item.inline_link_clicks) || 0) + getMetric(item.actions, 'outbound_click')),
+          cliques: parseInt(item.inline_link_clicks) || 0,
+          visitas_perfil: getMetric(item.actions, 'onsite_conversion.instagram_profile_visit'),
           seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions),
           valor_investido: parseFloat(item.spend) || 0, conversas_leads: getTrueLeads(item.actions),
@@ -550,7 +559,7 @@ export async function POST(request) {
         return prisma.metricaCriativo.upsert({
           where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },
           update: {
-            impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: parseInt(row.clicks) || 0,
+            impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: parseInt(row.inline_link_clicks) || 0,
             ctr: parseFloat(row.inline_link_click_ctr) || 0, valor_investido: parseFloat(row.spend) || 0,
             leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'),
             reacoes_sociais: getSocialActions(row.actions)
