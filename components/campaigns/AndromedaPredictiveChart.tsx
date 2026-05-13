@@ -14,8 +14,8 @@ const AndromedaPredictiveChart: React.FC<Props> = ({ campaign }) => {
 
   if (data.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center p-8 bg-slate-900/50 rounded-3xl border border-dashed border-slate-800">
-        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+      <div className="h-full flex items-center justify-center p-8 bg-zinc-900/50 rounded-3xl border border-dashed border-zinc-800">
+        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">
           Aguardando histórico real para cálculo preditivo.
         </p>
       </div>
@@ -75,12 +75,12 @@ const AndromedaPredictiveChart: React.FC<Props> = ({ campaign }) => {
       </ResponsiveContainer>
       <div className="flex justify-between mt-2 px-2">
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-          <span className="text-[8px] font-black text-slate-500 uppercase">Probabilidade</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          <span className="text-[8px] font-black text-zinc-500 uppercase">Probabilidade</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-          <span className="text-[8px] font-black text-slate-500 uppercase">ROAS Real</span>
+          <span className="text-[8px] font-black text-zinc-500 uppercase">ROAS Real</span>
         </div>
       </div>
     </div>

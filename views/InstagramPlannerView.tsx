@@ -118,12 +118,12 @@ export default function InstagramPlannerView({ cliente }) {
     <div className="max-w-6xl mx-auto py-10 space-y-10 animate-in fade-in duration-700">
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
         <div className="space-y-2">
-          <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Content Planner</p>
+          <p className="text-amber-500 text-[10px] font-black uppercase tracking-[0.4em]">Content Planner</p>
           <h1 className="text-5xl font-black text-white tracking-tighter uppercase flex items-center gap-4">
-            Planner KrM <Calendar className="text-blue-500" size={40} />
+            Planner KrM <Calendar className="text-amber-500" size={40} />
           </h1>
-          <p className="text-slate-500 font-medium uppercase text-[10px] tracking-widest flex items-center gap-2">
-            <Smartphone size={12} className="text-blue-500/50" /> Programação nativa para Instagram e Reels
+          <p className="text-zinc-500 font-medium uppercase text-[10px] tracking-widest flex items-center gap-2">
+            <Smartphone size={12} className="text-amber-500/50" /> Programação nativa para Instagram e Reels
           </p>
         </div>
       </div>
@@ -141,11 +141,11 @@ export default function InstagramPlannerView({ cliente }) {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
         {/* LADO ESQUERDO: FORMULÁRIO */}
         <div className="lg:col-span-3 space-y-8">
-          <div className="bg-slate-900/50 rounded-[3rem] border border-slate-800 p-10 space-y-8 shadow-2xl backdrop-blur-md">
+          <div className="bg-zinc-900/50 rounded-[3rem] border border-zinc-800 p-10 space-y-8 shadow-2xl backdrop-blur-md">
             
             {/* TIPO DE POST */}
             <div className="space-y-4">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Tipo de Conteúdo</label>
+              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Tipo de Conteúdo</label>
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { id: 'FEED', label: 'Feed', icon: Layout },
@@ -157,8 +157,8 @@ export default function InstagramPlannerView({ cliente }) {
                     onClick={() => setActiveType(type.id)}
                     className={`p-6 rounded-3xl border transition-all flex flex-col items-center gap-3 ${
                       activeType === type.id 
-                        ? 'bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-900/20' 
-                        : 'bg-slate-950 border-slate-800 text-slate-500 hover:border-slate-600'
+                        ? 'bg-amber-600 border-amber-500 text-white shadow-xl shadow-amber-900/20' 
+                        : 'bg-zinc-950 border-zinc-800 text-zinc-500 hover:border-zinc-600'
                     }`}
                   >
                     <type.icon size={24} />
@@ -171,10 +171,10 @@ export default function InstagramPlannerView({ cliente }) {
             {/* FONTE DA MÍDIA */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Mídia do Post</label>
-                <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
-                  <button onClick={() => setSourceType('url')} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${sourceType === 'url' ? 'bg-slate-800 text-blue-400' : 'text-slate-600'}`}>Link Público</button>
-                  <button onClick={() => setSourceType('upload')} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${sourceType === 'upload' ? 'bg-slate-800 text-blue-400' : 'text-slate-600'}`}>Fazer Upload</button>
+                <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Mídia do Post</label>
+                <div className="flex bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+                  <button onClick={() => setSourceType('url')} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${sourceType === 'url' ? 'bg-zinc-800 text-amber-400' : 'text-zinc-600'}`}>Link Público</button>
+                  <button onClick={() => setSourceType('upload')} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${sourceType === 'upload' ? 'bg-zinc-800 text-amber-400' : 'text-zinc-600'}`}>Fazer Upload</button>
                 </div>
               </div>
 
@@ -185,57 +185,57 @@ export default function InstagramPlannerView({ cliente }) {
                     value={mediaUrl} 
                     onChange={e => setMediaUrl(e.target.value)}
                     placeholder="Cole a URL pública da imagem ou vídeo..." 
-                    className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-200 outline-none focus:border-blue-600/50 transition-all pl-14"
+                    className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-2xl p-5 text-sm text-zinc-200 outline-none focus:border-amber-600/50 transition-all pl-14"
                   />
-                  <LinkIcon className="absolute left-5 top-5 text-slate-600" size={20} />
+                  <LinkIcon className="absolute left-5 top-5 text-zinc-600" size={20} />
                 </div>
               ) : (
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-32 bg-slate-950 border-2 border-dashed border-slate-800 rounded-3xl flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-blue-600/50 transition-all group"
+                  className="w-full h-32 bg-zinc-950 border-2 border-dashed border-zinc-800 rounded-3xl flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-amber-600/50 transition-all group"
                 >
                   <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*,video/*" />
                   {isUploading ? (
-                    <Loader2 className="animate-spin text-blue-500" size={32} />
+                    <Loader2 className="animate-spin text-amber-500" size={32} />
                   ) : (
                     <>
-                      <Upload className="text-slate-700 group-hover:text-blue-500 transition-colors" size={32} />
-                      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest group-hover:text-slate-400">Clique para selecionar arquivo</p>
+                      <Upload className="text-zinc-700 group-hover:text-amber-500 transition-colors" size={32} />
+                      <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400">Clique para selecionar arquivo</p>
                     </>
                   )}
                 </div>
               )}
-              <p className="text-[9px] text-slate-600 font-bold uppercase tracking-tighter flex items-center gap-1.5">
+              <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-tighter flex items-center gap-1.5">
                 <Info size={10} /> Formatos aceitos: JPG, PNG, MP4, MOV. Aspecto recomendado: 4:5 ou 9:16.
               </p>
             </div>
 
             {/* LEGENDA */}
             <div className="space-y-4">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Legenda (Caption)</label>
+              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Legenda (Caption)</label>
               <textarea 
                 value={caption}
                 onChange={e => setCaption(e.target.value)}
                 placeholder="Escreva algo impactante para este post..."
-                className="w-full h-40 bg-slate-950 border-2 border-slate-800 rounded-3xl p-6 text-sm text-slate-200 outline-none focus:border-blue-600/50 transition-all resize-none leading-relaxed"
+                className="w-full h-40 bg-zinc-950 border-2 border-zinc-800 rounded-3xl p-6 text-sm text-zinc-200 outline-none focus:border-amber-600/50 transition-all resize-none leading-relaxed"
               />
             </div>
 
             {/* OPÇÕES DE ENVIO */}
-            <div className="pt-6 border-t border-slate-800 space-y-6">
-              <div className="flex items-center justify-between bg-slate-950 p-6 rounded-3xl border border-slate-800">
+            <div className="pt-6 border-t border-zinc-800 space-y-6">
+              <div className="flex items-center justify-between bg-zinc-950 p-6 rounded-3xl border border-zinc-800">
                 <div className="flex items-center gap-4">
-                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${scheduleMode ? 'bg-purple-600/10 text-purple-500' : 'bg-blue-600/10 text-blue-500'}`}>
+                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${scheduleMode ? 'bg-purple-600/10 text-purple-500' : 'bg-amber-600/10 text-amber-500'}`}>
                       <Clock size={24} />
                    </div>
                    <div>
                       <h4 className="text-sm font-black text-white uppercase tracking-tighter">Agendamento Nativo</h4>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Programar postagem via Meta</p>
+                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Programar postagem via Meta</p>
                    </div>
                 </div>
                 <button 
                   onClick={() => setScheduleMode(!scheduleMode)}
-                  className={`w-14 h-8 rounded-full relative transition-all ${scheduleMode ? 'bg-blue-600' : 'bg-slate-800'}`}
+                  className={`w-14 h-8 rounded-full relative transition-all ${scheduleMode ? 'bg-amber-600' : 'bg-zinc-800'}`}
                 >
                   <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${scheduleMode ? 'left-7' : 'left-1 shadow-md'}`}></div>
                 </button>
@@ -244,21 +244,21 @@ export default function InstagramPlannerView({ cliente }) {
               {scheduleMode && (
                 <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-4 duration-500">
                    <div className="space-y-2">
-                      <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest ml-1">Data da Publicação</label>
+                      <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest ml-1">Data da Publicação</label>
                       <input 
                         type="date" 
                         value={scheduleDate}
                         onChange={e => setScheduleDate(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50" 
+                        className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-amber-600/50" 
                       />
                    </div>
                    <div className="space-y-2">
-                      <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest ml-1">Horário (Fuso Local)</label>
+                      <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest ml-1">Horário (Fuso Local)</label>
                       <input 
                         type="time" 
                         value={scheduleTime}
                         onChange={e => setScheduleTime(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50" 
+                        className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-amber-600/50" 
                       />
                    </div>
                 </div>
@@ -269,8 +269,8 @@ export default function InstagramPlannerView({ cliente }) {
                 disabled={isSubmitting || !mediaUrl}
                 className={`w-full py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center justify-center gap-3 shadow-2xl ${
                   isSubmitting || !mediaUrl 
-                    ? 'bg-slate-800 text-slate-600 cursor-not-allowed' 
-                    : scheduleMode ? 'bg-purple-600 text-white shadow-purple-900/20 hover:bg-purple-700' : 'bg-blue-600 text-white shadow-blue-900/20 hover:bg-blue-700'
+                    ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' 
+                    : scheduleMode ? 'bg-purple-600 text-white shadow-purple-900/20 hover:bg-purple-700' : 'bg-amber-600 text-white shadow-amber-900/20 hover:bg-amber-700'
                 }`}
               >
                 {isSubmitting ? (
@@ -289,9 +289,9 @@ export default function InstagramPlannerView({ cliente }) {
         {/* LADO DIREITO: PREVIEW */}
         <div className="lg:col-span-2">
           <div className="sticky top-10 space-y-6">
-            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">Preview do Post</h3>
+            <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-4">Preview do Post</h3>
             
-            <div className="bg-black w-full max-w-[320px] mx-auto rounded-[3rem] border-[8px] border-slate-900 shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden aspect-[9/18.5] relative">
+            <div className="bg-black w-full max-w-[320px] mx-auto rounded-[3rem] border-[8px] border-zinc-900 shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden aspect-[9/18.5] relative">
               
               {/* STATUS BAR MOCK */}
               <div className="h-10 w-full flex justify-between items-center px-6 pt-2">
@@ -306,14 +306,14 @@ export default function InstagramPlannerView({ cliente }) {
               <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-[2px]">
-                    <div className="w-full h-full rounded-full bg-slate-900 border border-black flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter">KrM</div>
+                    <div className="w-full h-full rounded-full bg-zinc-900 border border-black flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter">KrM</div>
                   </div>
                   <span className="text-[10px] font-bold text-white uppercase tracking-tight">{cliente || 'Empresa'}</span>
                 </div>
               </div>
 
               {/* CONTENT AREA */}
-              <div className={`w-full bg-slate-900/50 flex items-center justify-center overflow-hidden ${activeType === 'STORY' || activeType === 'REELS' ? 'h-[75%]' : 'aspect-square'}`}>
+              <div className={`w-full bg-zinc-900/50 flex items-center justify-center overflow-hidden ${activeType === 'STORY' || activeType === 'REELS' ? 'h-[75%]' : 'aspect-square'}`}>
                 {mediaUrl ? (
                   isVideo ? (
                     <video src={mediaUrl} className="w-full h-full object-cover" autoPlay muted loop />
@@ -354,9 +354,9 @@ export default function InstagramPlannerView({ cliente }) {
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full"></div>
             </div>
 
-            <div className="bg-blue-600/5 p-6 rounded-3xl border border-blue-500/10 flex items-start gap-4 mx-4">
-              <Sparkles size={20} className="text-blue-500 flex-shrink-0 mt-1" />
-              <p className="text-[10px] text-blue-400/80 leading-relaxed font-medium">
+            <div className="bg-amber-600/5 p-6 rounded-3xl border border-amber-500/10 flex items-start gap-4 mx-4">
+              <Sparkles size={20} className="text-amber-500 flex-shrink-0 mt-1" />
+              <p className="text-[10px] text-amber-400/80 leading-relaxed font-medium">
                 O Planner KrM utiliza a infraestrutura de Business Account da Meta. Postagens agendadas podem ser gerenciadas também pelo seu Meta Business Suite.
               </p>
             </div>

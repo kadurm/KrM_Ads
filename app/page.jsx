@@ -320,7 +320,7 @@ export default function App() {
           const [y, m, d] = val.split('-');
           const span = document.createElement('span');
           span.innerText = `${d}/${m}/${y}`;
-          span.className = "text-blue-400 font-bold ml-1";
+          span.className = "text-amber-400 font-bold ml-1";
           input.parentNode.replaceChild(span, input);
         }
       });
@@ -682,7 +682,7 @@ export default function App() {
 
   const getShortcutClass = (id) => {
     const base = "px-3 py-1.5 text-[11px] font-bold rounded transition-all";
-    return activeShortcut === id ? `${base} bg-slate-700 text-blue-400 shadow-md border border-blue-500/20` : `${base} text-slate-400 hover:bg-slate-700/50`;
+    return activeShortcut === id ? `${base} bg-zinc-700 text-amber-400 shadow-md border border-amber-500/20` : `${base} text-zinc-400 hover:bg-zinc-700/50`;
   };
 
   const dadosGrafico = React.useMemo(() => {
@@ -787,11 +787,11 @@ export default function App() {
   const roas = investimento > 0 ? (faturamento / investimento).toFixed(2) : 0;
 
   return (
-    <div className="flex h-screen bg-slate-950 font-sans text-slate-100 overflow-hidden">
+    <div className="flex h-screen bg-zinc-950 font-sans text-zinc-100 overflow-hidden">
       
       {/* SIDEBAR REORGANIZADA */}
-      <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 shadow-2xl">
-        <div className="p-6 border-b border-slate-800">
+      <aside className="w-64 bg-zinc-900 border-r border-zinc-800 flex flex-col flex-shrink-0 shadow-2xl">
+        <div className="p-6 border-b border-zinc-800">
           <h1 className="text-2xl font-bold flex items-center gap-3">
             <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-11 h-11 object-contain" /> KrM Ads
           </h1>
@@ -800,15 +800,15 @@ export default function App() {
         <div className="flex-1 overflow-y-auto">
           {/* SEÇÃO GLOBAL */}
           <div className="px-4 pt-6 pb-2">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">Administração Global</p>
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest px-3 mb-2">Administração Global</p>
             <nav className="space-y-1">
-              <button onClick={() => setActiveTab('clientes')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'clientes' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => setActiveTab('clientes')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'clientes' ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/20' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <Users size={16} /> Gerenciar Empresas
               </button>
-              <button onClick={() => { setActiveTab('portfolio'); loadPortfolio(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'portfolio' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => { setActiveTab('portfolio'); loadPortfolio(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'portfolio' ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/20' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <LayoutGrid size={16} /> Visão de Portfólio
               </button>
-              <button onClick={() => setActiveTab('financeiro-global')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'financeiro-global' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => setActiveTab('financeiro-global')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'financeiro-global' ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/20' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <PieChart size={16} /> Financeiro Global
               </button>
             </nav>
@@ -816,44 +816,44 @@ export default function App() {
 
           {/* SEÇÃO WORKSPACE (CLIENTE) */}
           <div className="px-4 pt-4">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">Workspace: {clienteSelecionado || '...'}</p>
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest px-3 mb-2">Workspace: {clienteSelecionado || '...'}</p>
             <nav className="space-y-1">
-              <button onClick={() => setActiveTab('relatorios')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'relatorios' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => setActiveTab('relatorios')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'relatorios' ? 'bg-zinc-800 text-amber-400 border border-amber-500/10' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <FileText size={16} /> Auditoria de Resultados
               </button>
-              <button onClick={() => { setActiveTab('campanhas'); loadCampaigns(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'campanhas' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => { setActiveTab('campanhas'); loadCampaigns(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'campanhas' ? 'bg-zinc-800 text-amber-400 border border-amber-500/10' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <Megaphone size={16} /> Campanhas (Meta)
               </button>
-              <button onClick={() => { setActiveTab('crm'); loadLeads(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'crm' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => { setActiveTab('crm'); loadLeads(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'crm' ? 'bg-zinc-800 text-amber-400 border border-amber-500/10' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <Database size={16} /> CRM / Extrato
               </button>
-              <button onClick={() => setActiveTab('pagamentos')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'pagamentos' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => setActiveTab('pagamentos')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'pagamentos' ? 'bg-zinc-800 text-amber-400 border border-amber-500/10' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <CreditCard size={16} /> Pagamentos
               </button>
-              <button onClick={() => setActiveTab('creative-lab')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'creative-lab' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => setActiveTab('creative-lab')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'creative-lab' ? 'bg-zinc-800 text-amber-400 border border-amber-500/10' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <Sparkles size={16} /> Creative Lab (IA)
               </button>
-              <button onClick={() => setActiveTab('tracking')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'tracking' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => setActiveTab('tracking')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'tracking' ? 'bg-zinc-800 text-amber-400 border border-amber-500/10' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <Target size={16} /> Trackamento (Pixel)
               </button>
-              <button onClick={() => setActiveTab('radar')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'radar' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => setActiveTab('radar')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'radar' ? 'bg-zinc-800 text-amber-400 border border-amber-500/10' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <Instagram size={16} /> Radar Instagram
               </button>
-              <button onClick={() => setActiveTab('planner')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'planner' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => setActiveTab('planner')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'planner' ? 'bg-zinc-800 text-amber-400 border border-amber-500/10' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
                 <CalendarDays size={16} /> Planner Instagram
               </button>
             </nav>
           </div>
         </div>
 
-        <div className="p-4 border-t border-slate-800">
-           <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
-              <div className="w-11 h-11 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/20 overflow-hidden shadow-lg">
+        <div className="p-4 border-t border-zinc-800">
+           <div className="bg-zinc-800/50 p-3 rounded-xl border border-zinc-700 flex items-center gap-3">
+              <div className="w-11 h-11 bg-amber-600/20 rounded-lg flex items-center justify-center border border-amber-500/20 overflow-hidden shadow-lg">
                 <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-full h-full object-cover scale-125" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-bold text-white truncate">Operador KrM</p>
-                <p className="text-[8px] text-slate-500 font-bold uppercase">Sessão Ativa</p>
+                <p className="text-[8px] text-zinc-500 font-bold uppercase">Sessão Ativa</p>
               </div>
            </div>
         </div>
@@ -861,14 +861,14 @@ export default function App() {
 
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* HEADER SUPERIOR MODERNIZADO */}
-        <header className="h-20 bg-slate-900/50 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-10 flex-shrink-0 z-50">
+        <header className="h-20 bg-zinc-900/50 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-10 flex-shrink-0 z-50">
           <div className="flex items-center gap-4">
-             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
-               <Briefcase className="text-blue-400" size={18} />
+             <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+               <Briefcase className="text-amber-400" size={18} />
              </div>
              <div>
-               <h2 className="font-black uppercase tracking-[0.2em] text-[10px] text-slate-500">Workspace</h2>
-               <p className="text-xs font-bold text-slate-300">Ambiente de Operação KrM Ads</p>
+               <h2 className="font-black uppercase tracking-[0.2em] text-[10px] text-zinc-500">Workspace</h2>
+               <p className="text-xs font-bold text-zinc-300">Ambiente de Operação KrM Ads</p>
              </div>
           </div>
 
@@ -876,32 +876,32 @@ export default function App() {
           <div className="relative" ref={selectorRef}>
             <button 
               onClick={() => setShowClientSelector(!showClientSelector)}
-              className="group flex items-center gap-3 bg-slate-800/40 hover:bg-slate-800/80 p-2.5 px-5 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all duration-300 shadow-xl"
+              className="group flex items-center gap-3 bg-zinc-800/40 hover:bg-zinc-800/80 p-2.5 px-5 rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all duration-300 shadow-xl"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-[10px] font-black text-white shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-600 to-indigo-700 flex items-center justify-center text-[10px] font-black text-white shadow-lg shadow-amber-900/20 group-hover:scale-105 transition-transform">
                 {clienteSelecionado?.substring(0, 2).toUpperCase()}
               </div>
               <div className="text-left">
-                <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Empresa Selecionada</span>
-                <span className="block text-[11px] font-black text-blue-400 uppercase truncate max-w-[180px]">
+                <span className="block text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">Empresa Selecionada</span>
+                <span className="block text-[11px] font-black text-amber-400 uppercase truncate max-w-[180px]">
                   {clienteSelecionado || 'Selecionar Cliente'}
                 </span>
               </div>
-              <ChevronDown className={`text-slate-500 group-hover:text-blue-400 transition-all ${showClientSelector ? 'rotate-180' : ''}`} size={16} />
+              <ChevronDown className={`text-zinc-500 group-hover:text-amber-400 transition-all ${showClientSelector ? 'rotate-180' : ''}`} size={16} />
             </button>
 
             {/* DROPDOWN MENU */}
             {showClientSelector && (
-              <div className="absolute right-0 mt-4 w-72 bg-slate-900/95 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="absolute right-0 mt-4 w-72 bg-zinc-900/95 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="p-4 border-b border-white/5">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={14} />
                     <input 
                       type="text" 
                       placeholder="Buscar empresa..."
                       value={clientSearch}
                       onChange={(e) => setClientSearch(e.target.value)}
-                      className="w-full bg-slate-800/50 border border-white/5 rounded-xl py-2 pl-10 pr-4 text-xs text-slate-300 outline-none focus:border-blue-500/30 transition-all"
+                      className="w-full bg-zinc-800/50 border border-white/5 rounded-xl py-2 pl-10 pr-4 text-xs text-zinc-300 outline-none focus:border-amber-500/30 transition-all"
                       autoFocus
                     />
                   </div>
@@ -920,42 +920,42 @@ export default function App() {
                         }}
                         className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 group/item ${
                           clienteSelecionado === c.nome 
-                            ? 'bg-blue-600/20 border border-blue-500/30' 
+                            ? 'bg-amber-600/20 border border-amber-500/30' 
                             : 'hover:bg-white/5 border border-transparent'
                         }`}
                       >
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-black transition-all ${
                           clienteSelecionado === c.nome 
-                            ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' 
-                            : 'bg-slate-800 text-slate-500 group-hover/item:bg-slate-700 group-hover/item:text-slate-300'
+                            ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' 
+                            : 'bg-zinc-800 text-zinc-500 group-hover/item:bg-zinc-700 group-hover/item:text-zinc-300'
                         }`}>
                           {c.nome.substring(0, 2).toUpperCase()}
                         </div>
                         <div className="text-left">
                           <span className={`block text-[11px] font-bold uppercase transition-colors ${
-                            clienteSelecionado === c.nome ? 'text-blue-400' : 'text-slate-400 group-hover/item:text-slate-200'
+                            clienteSelecionado === c.nome ? 'text-amber-400' : 'text-zinc-400 group-hover/item:text-zinc-200'
                           }`}>
                             {c.nome}
                           </span>
-                          <span className="text-[9px] text-slate-600 uppercase font-medium">Conta: {c.meta_ads_account_id?.substring(0, 8)}...</span>
+                          <span className="text-[9px] text-zinc-600 uppercase font-medium">Conta: {c.meta_ads_account_id?.substring(0, 8)}...</span>
                         </div>
                         {clienteSelecionado === c.nome && (
-                          <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                          <div className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
                         )}
                       </button>
                     ))}
                   
                   {clientesDisponiveis.filter(c => c.nome.toLowerCase().includes(clientSearch.toLowerCase())).length === 0 && (
                     <div className="p-8 text-center">
-                      <p className="text-xs text-slate-500 italic">Nenhuma empresa encontrada</p>
+                      <p className="text-xs text-zinc-500 italic">Nenhuma empresa encontrada</p>
                     </div>
                   )}
                 </div>
                 
-                <div className="p-3 bg-slate-800/30 border-t border-white/5">
+                <div className="p-3 bg-zinc-800/30 border-t border-white/5">
                    <button 
                     onClick={() => { setActiveTab('clientes'); setShowClientSelector(false); }}
-                    className="w-full py-2.5 rounded-xl border border-dashed border-slate-700 hover:border-blue-500/50 text-[10px] font-bold text-slate-500 hover:text-blue-400 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-xl border border-dashed border-zinc-700 hover:border-amber-500/50 text-[10px] font-bold text-zinc-500 hover:text-amber-400 transition-all flex items-center justify-center gap-2"
                    >
                      <Plus size={12} /> Gerenciar Empresas
                    </button>
@@ -979,11 +979,11 @@ export default function App() {
             <div ref={reportRef} className="space-y-6">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Performance Global</h1>
-                  <p className="text-slate-500 text-sm mt-1">Dados auditados: <strong>{clienteSelecionado}</strong></p>
+                  <h1 className="text-3xl font-bold text-zinc-100 tracking-tight">Performance Global</h1>
+                  <p className="text-zinc-500 text-sm mt-1">Dados auditados: <strong>{clienteSelecionado}</strong></p>
                 </div>
-                <div className="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-sm flex-wrap">
-                  <div className="flex gap-1 bg-slate-800 p-1 rounded-lg">
+                <div className="flex items-center gap-3 bg-zinc-900 p-2 rounded-xl border border-zinc-800 shadow-sm flex-wrap">
+                  <div className="flex gap-1 bg-zinc-800 p-1 rounded-lg">
                     {[
                       { id: 'hoje', label: 'Hoje' },
                       { id: 'ontem', label: 'Ontem' },
@@ -995,36 +995,36 @@ export default function App() {
                     ))}
                   </div>
                   <div className="flex items-center gap-2">
-                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[11px] font-bold text-slate-300 p-1.5 rounded-lg border border-slate-700 outline-none" />
-                    <span className="text-slate-600 text-xs">→</span>
-                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[11px] font-bold text-slate-300 p-1.5 rounded-lg border border-slate-700 outline-none" />
+                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-zinc-800 text-[11px] font-bold text-zinc-300 p-1.5 rounded-lg border border-zinc-700 outline-none" />
+                    <span className="text-zinc-600 text-xs">→</span>
+                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-zinc-800 text-[11px] font-bold text-zinc-300 p-1.5 rounded-lg border border-zinc-700 outline-none" />
                   </div>
-                  <button onClick={handleSync} disabled={isSyncing} title={isSyncing ? 'Sincronizando...' : 'Sincronizar Dados'} className="p-2 px-3 bg-blue-600/20 text-blue-400 rounded-lg font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all">
+                  <button onClick={handleSync} disabled={isSyncing} title={isSyncing ? 'Sincronizando...' : 'Sincronizar Dados'} className="p-2 px-3 bg-amber-600/20 text-amber-400 rounded-lg font-bold border border-amber-500/20 hover:bg-amber-600/30 transition-all">
                     <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
                   </button>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
-                  <div className="text-xl font-black mt-1 text-slate-100">R$ {investimento}</div>
+                <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
+                  <div className="text-xl font-black mt-1 text-zinc-100">R$ {investimento}</div>
                 </div>
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
+                <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 border-l-4 border-l-emerald-500 shadow-xl">
                   <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento real</span>
                   <div className="flex items-center gap-1 mt-1">
 
 
-                    <span className="text-xl font-black text-slate-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
+                    <span className="text-xl font-black text-zinc-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
                   </div>
                 </div>
-                <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
-                  <span className="text-[10px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
+                <div className="bg-amber-600 p-6 rounded-2xl shadow-xl shadow-amber-900/40 text-white">
+                  <span className="text-[10px] font-bold text-amber-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
                   <div className="text-2xl font-black mt-1">{roas}x</div>
                 </div>
-                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
-                  <div className="text-xl font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
+                <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase flex items-center gap-2 tracking-wider"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
+                  <div className="text-xl font-black mt-1 text-zinc-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
                 </div>
                 <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
                   <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
@@ -1033,11 +1033,11 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                <div className="lg:col-span-3 bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl">
-                  <h3 className="text-sm font-bold uppercase text-slate-500 mb-10 flex items-center gap-2"><TrendingUp size={16} className="text-blue-500"/> Funil de Jornada do Cliente</h3>
+                <div className="lg:col-span-3 bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+                  <h3 className="text-sm font-bold uppercase text-zinc-500 mb-10 flex items-center gap-2"><TrendingUp size={16} className="text-amber-500"/> Funil de Jornada do Cliente</h3>
                   <div className="flex flex-col items-center space-y-4">
                     {[
-                      { label: 'Impressões (Topo)', val: relatorioDados.reduce((a,c)=>a+c.rawImpressoes,0), color: 'bg-blue-600', icon: <Eye size={14}/> },
+                      { label: 'Impressões (Topo)', val: relatorioDados.reduce((a,c)=>a+c.rawImpressoes,0), color: 'bg-amber-600', icon: <Eye size={14}/> },
                       { label: 'Alcance', val: totalReachReal, color: 'bg-sky-500', icon: <Target size={14}/> },
                       { label: 'Engajamento (Meio)', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas+c.rawReacoes,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
                       { label: 'Interesse (Leads)', val: relatorioDados.reduce((a,c)=>a+c.leads,0), color: 'bg-purple-500', icon: <Plus size={14}/> },
@@ -1048,18 +1048,18 @@ export default function App() {
                       return (
                         <div key={i} className="w-full flex flex-col items-center" style={{ maxWidth: `${funnelWidth}%` }}>
                           <div className="w-full flex justify-between text-[10px] font-black uppercase mb-1.5 px-2">
-                            <span className="flex items-center gap-1.5 text-slate-400">{s.icon} {s.label}</span>
-                            <span className="text-slate-200">{s.val.toLocaleString()}</span>
+                            <span className="flex items-center gap-1.5 text-zinc-400">{s.icon} {s.label}</span>
+                            <span className="text-zinc-200">{s.val.toLocaleString()}</span>
                           </div>
                           <div className={`w-full h-8 ${s.color} rounded-lg shadow-lg shadow-black/40 border border-white/5 transition-all duration-500`}></div>
-                          {i < arr.length -1 && <div className="h-4 w-px bg-slate-800 my-1"></div>}
+                          {i < arr.length -1 && <div className="h-4 w-px bg-zinc-800 my-1"></div>}
                         </div>
                       );
                     })}
                   </div>
                 </div>
-                <div className="lg:col-span-2 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl flex flex-col">
-                  <h3 className="text-xs font-bold uppercase text-slate-500 mb-8 text-center">Distribuição de verba</h3>
+                <div className="lg:col-span-2 bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-2xl flex flex-col">
+                  <h3 className="text-xs font-bold uppercase text-zinc-500 mb-8 text-center">Distribuição de verba</h3>
                   <div className="flex-1 flex items-center justify-center">
                     <ResponsiveContainer width="100%" height={280}>
                       <BarChart data={dadosGrafico} layout="vertical" margin={{ top: 5, right: 60, left: 10, bottom: 5 }}>
@@ -1085,12 +1085,12 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-                <div className="p-6 border-b border-slate-800 flex justify-between items-center"><h3 className="font-bold uppercase text-xs tracking-widest text-slate-400">Detalhamento por Objetivo</h3></div>
+              <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
+                <div className="p-6 border-b border-zinc-800 flex justify-between items-center"><h3 className="font-bold uppercase text-xs tracking-widest text-zinc-400">Detalhamento por Objetivo</h3></div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-800/50 text-[10px] font-black uppercase text-slate-500">
+                      <tr className="bg-zinc-800/50 text-[10px] font-black uppercase text-zinc-500">
                         <th className="p-4 text-center">Campanha</th>
                         <th className="p-4">Resultado do Objetivo</th>
                         <th className="p-4 text-right">Investimento</th>
@@ -1099,10 +1099,10 @@ export default function App() {
                     </thead>
                     <tbody className="divide-y divide-slate-800">
                       {relatorioDados.map((row, i) => (
-                        <tr key={i} className="hover:bg-slate-800/30 transition-colors">
-                          <td className="p-4"><div className="text-xs font-bold text-blue-400">{row.nome}</div><div className="text-[9px] text-slate-600 font-bold uppercase">{row.objetivo}</div></td>
+                        <tr key={i} className="hover:bg-zinc-800/30 transition-colors">
+                          <td className="p-4"><div className="text-xs font-bold text-amber-400">{row.nome}</div><div className="text-[9px] text-zinc-600 font-bold uppercase">{row.objetivo}</div></td>
                           <td className="p-4"><span className="text-xs font-bold text-white uppercase">{row.resultadoBruto?.toLocaleString()}</span></td>
-                          <td className="p-4 text-right font-bold text-sm text-slate-100">{row.valor}</td>
+                          <td className="p-4 text-right font-bold text-sm text-zinc-100">{row.valor}</td>
                           <td className="p-4 text-right font-bold text-sm text-emerald-400">{row.cpr}</td>
                         </tr>
                       ))}
@@ -1112,8 +1112,8 @@ export default function App() {
               </div>
 
               {dailyData.length > 0 && (
-                <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-2xl">
-                  <h3 className="font-bold uppercase text-xs tracking-widest text-slate-400 mb-6">Evolução Diária do Período</h3>
+                <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 shadow-2xl">
+                  <h3 className="font-bold uppercase text-xs tracking-widest text-zinc-400 mb-6">Evolução Diária do Período</h3>
                   <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={dailyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -1131,8 +1131,8 @@ export default function App() {
                 </div>
               )}
 
-              <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-slate-100"><ImageIcon className="text-blue-500" /> Ranking de Criativos</h3>
-              <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado.</p>
+              <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-zinc-100"><ImageIcon className="text-amber-500" /> Ranking de Criativos</h3>
+              <p className="text-zinc-500 text-xs mb-4">Ordenado pelo menor custo por resultado.</p>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[...criativosDados]
                   .map(c => ({ ...c, _cpa: segmento === 'inside_sales' ? (c.leads > 0 ? c.valor_investido / c.leads : Infinity) : (c.compras > 0 ? c.valor_investido / c.compras : Infinity) }))
@@ -1149,7 +1149,7 @@ export default function App() {
                        </div>
                      );
                      if (rank === 1 && cpa > 0) return (
-                       <div className="absolute top-3 left-3 bg-gradient-to-br from-slate-200 via-slate-400 to-slate-500 p-2 rounded-xl shadow-[0_0_20px_rgba(148,163,184,0.3)] border border-slate-100/50 z-10 flex items-center justify-center">
+                       <div className="absolute top-3 left-3 bg-gradient-to-br from-zinc-200 via-zinc-400 to-zinc-500 p-2 rounded-xl shadow-[0_0_20px_rgba(148,163,184,0.3)] border border-zinc-100/50 z-10 flex items-center justify-center">
                          <Medal size={18} className="text-white drop-shadow-md" />
                        </div>
                      );
@@ -1161,11 +1161,11 @@ export default function App() {
                      return null;
                    };
 
-                   const borderHighlight = idx === 0 && cpa > 0 ? 'border-yellow-500/40 shadow-yellow-900/10' : idx === 1 && cpa > 0 ? 'border-slate-400/30' : idx === 2 && cpa > 0 ? 'border-orange-500/30' : 'border-slate-800';
+                   const borderHighlight = idx === 0 && cpa > 0 ? 'border-yellow-500/40 shadow-yellow-900/10' : idx === 1 && cpa > 0 ? 'border-zinc-400/30' : idx === 2 && cpa > 0 ? 'border-orange-500/30' : 'border-zinc-800';
                    
                    return (
-                     <div key={c.id} className={`bg-slate-900 rounded-3xl border ${borderHighlight} overflow-hidden group hover:border-blue-500/50 transition-all flex flex-col h-full shadow-2xl relative`}>
-                       <div className="h-64 bg-slate-950 flex items-center justify-center relative overflow-hidden">
+                     <div key={c.id} className={`bg-zinc-900 rounded-3xl border ${borderHighlight} overflow-hidden group hover:border-amber-500/50 transition-all flex flex-col h-full shadow-2xl relative`}>
+                       <div className="h-64 bg-zinc-950 flex items-center justify-center relative overflow-hidden">
                          {c.url_midia ? (
                             <img
                               src={c.url_midia}
@@ -1174,45 +1174,45 @@ export default function App() {
                               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                          ) : (
-                            <ImageIcon className="text-slate-800" size={48} />
+                            <ImageIcon className="text-zinc-800" size={48} />
                          )}
                          {getRankBadge(idx)}
                          <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-black text-white uppercase border border-white/10 tracking-widest">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
                        </div>
                        <div className="p-6 flex-1 flex flex-col">
-                         <div className="text-[12px] font-black text-slate-100 line-clamp-1 mb-4 uppercase tracking-tighter group-hover:text-blue-400 transition-colors">{c.nome_anuncio}</div>
+                         <div className="text-[12px] font-black text-zinc-100 line-clamp-1 mb-4 uppercase tracking-tighter group-hover:text-amber-400 transition-colors">{c.nome_anuncio}</div>
                          <div className="grid grid-cols-2 gap-2 mb-5">
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center">
-                             <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Alcance</span>
-                             <span className="text-[10px] font-bold text-slate-100">{c.alcance?.toLocaleString()}</span>
+                           <div className="bg-zinc-950/50 p-2.5 rounded-xl border border-zinc-800 flex flex-col items-center">
+                             <span className="text-[7px] font-black text-zinc-500 uppercase tracking-widest mb-1 opacity-60">Alcance</span>
+                             <span className="text-[10px] font-bold text-zinc-100">{c.alcance?.toLocaleString()}</span>
                            </div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center">
-                             <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Impressões</span>
-                             <span className="text-[10px] font-bold text-slate-100">{c.impressoes?.toLocaleString()}</span>
+                           <div className="bg-zinc-950/50 p-2.5 rounded-xl border border-zinc-800 flex flex-col items-center">
+                             <span className="text-[7px] font-black text-zinc-500 uppercase tracking-widest mb-1 opacity-60">Impressões</span>
+                             <span className="text-[10px] font-bold text-zinc-100">{c.impressoes?.toLocaleString()}</span>
                            </div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center">
-                             <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">Gasto</span>
-                             <span className="text-[10px] font-bold text-slate-100">R$ {parseFloat(c.valor_investido).toFixed(2)}</span>
+                           <div className="bg-zinc-950/50 p-2.5 rounded-xl border border-zinc-800 flex flex-col items-center">
+                             <span className="text-[7px] font-black text-zinc-500 uppercase tracking-widest mb-1 opacity-60">Gasto</span>
+                             <span className="text-[10px] font-bold text-zinc-100">R$ {parseFloat(c.valor_investido).toFixed(2)}</span>
                            </div>
-                           <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center">
-                             <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-60">{segmento === 'inside_sales' ? 'Leads' : 'Vendas'}</span>
+                           <div className="bg-zinc-950/50 p-2.5 rounded-xl border border-zinc-800 flex flex-col items-center">
+                             <span className="text-[7px] font-black text-zinc-500 uppercase tracking-widest mb-1 opacity-60">{segmento === 'inside_sales' ? 'Leads' : 'Vendas'}</span>
                              <span className="text-[10px] font-bold text-emerald-400">{segmento === 'inside_sales' ? c.leads : c.compras}</span>
                            </div>
                          </div>
-                         <div className={`w-full py-3 ${cpa > 0 && idx < 3 ? 'bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.3)]' : 'bg-slate-800'} text-white rounded-2xl text-center text-[10px] font-black uppercase tracking-[0.2em] mt-auto border border-white/10`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
+                         <div className={`w-full py-3 ${cpa > 0 && idx < 3 ? 'bg-amber-600 shadow-[0_0_20px_rgba(37,99,235,0.3)]' : 'bg-zinc-800'} text-white rounded-2xl text-center text-[10px] font-black uppercase tracking-[0.2em] mt-auto border border-white/10`}>CPA: {cpa > 0 ? `R$ ${cpa.toFixed(2)}` : '-'}</div>
                        </div>
                      </div>
                    );
                 })}
               </div>
 
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mt-8 shadow-2xl DiagnosticHeader">
-                <div className="p-6 border-b border-slate-800 flex justify-between items-center"><h3 className="font-bold flex items-center gap-2"><Sparkles className="text-purple-400" size={18} /> Diagnóstico de Campanhas</h3><button onClick={handleGerarIA} disabled={isGenerating} className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold p-2 px-6 rounded-lg transition-all shadow-lg shadow-purple-900/20">{isGenerating ? 'Analisando...' : 'Gerar Diagnóstico'}</button></div>
-                <div className="p-6 DiagnosticContent"><textarea className="w-full h-64 bg-slate-950 border-none rounded-xl p-4 text-sm text-slate-300 resize-none outline-none focus:ring-1 focus:ring-purple-500" readOnly value={analiseIA} placeholder="A análise estratégica baseada nos dados auditados aparecerá aqui..."></textarea></div>
+              <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden mt-8 shadow-2xl DiagnosticHeader">
+                <div className="p-6 border-b border-zinc-800 flex justify-between items-center"><h3 className="font-bold flex items-center gap-2"><Sparkles className="text-purple-400" size={18} /> Diagnóstico de Campanhas</h3><button onClick={handleGerarIA} disabled={isGenerating} className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold p-2 px-6 rounded-lg transition-all shadow-lg shadow-purple-900/20">{isGenerating ? 'Analisando...' : 'Gerar Diagnóstico'}</button></div>
+                <div className="p-6 DiagnosticContent"><textarea className="w-full h-64 bg-zinc-950 border-none rounded-xl p-4 text-sm text-zinc-300 resize-none outline-none focus:ring-1 focus:ring-purple-500" readOnly value={analiseIA} placeholder="A análise estratégica baseada nos dados auditados aparecerá aqui..."></textarea></div>
               </div>
 
               <div className="flex justify-end gap-4 pb-12">
-                <button onClick={handleExportPDF} className="p-3 px-8 bg-slate-800 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-slate-700 transition-all text-slate-300 border border-slate-700 shadow-lg shadow-black/20 flex-shrink-0"><Download size={18} /> Exportar PDF</button>
+                <button onClick={handleExportPDF} className="p-3 px-8 bg-zinc-800 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-zinc-700 transition-all text-zinc-300 border border-zinc-700 shadow-lg shadow-black/20 flex-shrink-0"><Download size={18} /> Exportar PDF</button>
                 <button className="p-3 px-8 bg-[#25D366] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-green-900/20 flex-shrink-0"><MessageCircle size={18} /> WhatsApp</button>
               </div>
             </div>
@@ -1223,15 +1223,15 @@ export default function App() {
                {/* PORTFOLIO HEADER */}
                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
                  <div className="space-y-2">
-                    <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Master Administration</p>
+                    <p className="text-amber-500 text-[10px] font-black uppercase tracking-[0.4em]">Master Administration</p>
                     <h1 className="text-5xl font-black text-white tracking-tighter uppercase">Visão de Portfólio</h1>
-                    <p className="text-slate-500 font-medium uppercase text-[10px] tracking-widest flex items-center gap-2">
-                      <Shield size={12} className="text-blue-500/50" /> Consolidado Global de Performance e LTV
+                    <p className="text-zinc-500 font-medium uppercase text-[10px] tracking-widest flex items-center gap-2">
+                      <Shield size={12} className="text-amber-500/50" /> Consolidado Global de Performance e LTV
                     </p>
                  </div>
                  
-                 <div className="flex items-center gap-3 bg-slate-900/50 p-2 rounded-2xl border border-slate-800 shadow-sm backdrop-blur-md">
-                    <div className="flex gap-1 bg-slate-950 p-1 rounded-xl">
+                 <div className="flex items-center gap-3 bg-zinc-900/50 p-2 rounded-2xl border border-zinc-800 shadow-sm backdrop-blur-md">
+                    <div className="flex gap-1 bg-zinc-950 p-1 rounded-xl">
                       {[
                         { id: '7d', label: '7 Dias' },
                         { id: '30d', label: '30 Dias' },
@@ -1240,12 +1240,12 @@ export default function App() {
                         <button key={s.id} onClick={() => { handleShortcut(s.id); loadPortfolio(); }} className={getShortcutClass(s.id)}>{s.label}</button>
                       ))}
                     </div>
-                    <div className="flex items-center gap-2 px-2 border-l border-slate-800 ml-2">
-                      <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="bg-transparent text-[11px] font-bold text-slate-300 p-2 outline-none" />
-                      <span className="text-slate-700">→</span>
-                      <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="bg-transparent text-[11px] font-bold text-slate-300 p-2 outline-none" />
+                    <div className="flex items-center gap-2 px-2 border-l border-zinc-800 ml-2">
+                      <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="bg-transparent text-[11px] font-bold text-zinc-300 p-2 outline-none" />
+                      <span className="text-zinc-700">→</span>
+                      <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="bg-transparent text-[11px] font-bold text-zinc-300 p-2 outline-none" />
                     </div>
-                    <button onClick={loadPortfolio} className="p-3 bg-blue-600/10 text-blue-500 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                    <button onClick={loadPortfolio} className="p-3 bg-amber-600/10 text-amber-500 rounded-xl hover:bg-amber-600 hover:text-white transition-all">
                       <RefreshCw size={16} className={portfolioLoading ? 'animate-spin' : ''} />
                     </button>
                  </div>
@@ -1253,8 +1253,8 @@ export default function App() {
 
                {portfolioLoading ? (
                  <div className="py-40 flex flex-col items-center justify-center gap-6">
-                    <Loader2 className="animate-spin text-blue-600" size={48} />
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Agregando dados de todas as contas...</p>
+                    <Loader2 className="animate-spin text-amber-600" size={48} />
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Agregando dados de todas as contas...</p>
                  </div>
                ) : portfolioData && (
                  <>
@@ -1266,14 +1266,14 @@ export default function App() {
                        { label: 'Total de Leads', value: portfolioData.global.totalLeads.toLocaleString(), sub: 'Volume captado', icon: Users, color: 'purple' },
                        { label: 'ROAS Global', value: `${(portfolioData.global.totalRevenue / (portfolioData.global.totalSpend || 1)).toFixed(2)}x`, sub: 'Eficiência de portfólio', icon: TrendingUp, color: 'amber' },
                      ].map((kpi, i) => (
-                       <div key={i} className="bg-slate-900/40 p-8 rounded-[2.5rem] border border-slate-800 flex items-center gap-6 group hover:border-blue-500/30 transition-all">
+                       <div key={i} className="bg-zinc-900/40 p-8 rounded-[2.5rem] border border-zinc-800 flex items-center gap-6 group hover:border-amber-500/30 transition-all">
                           <div className={`w-14 h-14 rounded-2xl bg-${kpi.color}-600/10 text-${kpi.color}-500 flex items-center justify-center shadow-inner`}>
                             <kpi.icon size={28} />
                           </div>
                           <div>
-                            <p className="text-[9px] font-black uppercase text-slate-600 tracking-widest">{kpi.label}</p>
+                            <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest">{kpi.label}</p>
                             <p className="text-2xl font-black text-white">{kpi.value}</p>
-                            <p className="text-[9px] font-bold text-slate-500 uppercase mt-1">{kpi.sub}</p>
+                            <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">{kpi.sub}</p>
                           </div>
                        </div>
                      ))}
@@ -1281,9 +1281,9 @@ export default function App() {
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                      {/* CHART SETORES */}
-                     <div className="lg:col-span-1 bg-slate-900/40 p-8 rounded-[2.5rem] border border-slate-800 space-y-8">
+                     <div className="lg:col-span-1 bg-zinc-900/40 p-8 rounded-[2.5rem] border border-zinc-800 space-y-8">
                         <div className="flex items-center gap-3">
-                           <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                           <div className="w-1.5 h-6 bg-amber-600 rounded-full"></div>
                            <h3 className="text-sm font-black text-white uppercase tracking-widest">Divisão por Setor</h3>
                         </div>
                         <div className="h-72">
@@ -1301,8 +1301,8 @@ export default function App() {
                         </div>
                         <div className="space-y-4">
                            {portfolioData.sectors.map((s, idx) => (
-                             <div key={idx} className="flex justify-between items-center p-4 bg-slate-950/50 rounded-2xl border border-slate-800">
-                                <span className="text-[10px] font-black text-slate-400 uppercase">{s.sector}</span>
+                             <div key={idx} className="flex justify-between items-center p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800">
+                                <span className="text-[10px] font-black text-zinc-400 uppercase">{s.sector}</span>
                                 <span className="text-xs font-black text-white">R$ {s.spend.toLocaleString()}</span>
                              </div>
                            ))}
@@ -1310,19 +1310,19 @@ export default function App() {
                      </div>
 
                      {/* TABELA DE CLIENTES */}
-                     <div className="lg:col-span-2 bg-slate-900/40 p-8 rounded-[2.5rem] border border-slate-800 space-y-8 overflow-hidden">
+                     <div className="lg:col-span-2 bg-zinc-900/40 p-8 rounded-[2.5rem] border border-zinc-800 space-y-8 overflow-hidden">
                         <div className="flex justify-between items-center">
                            <div className="flex items-center gap-3">
                               <div className="w-1.5 h-6 bg-emerald-600 rounded-full"></div>
                               <h3 className="text-sm font-black text-white uppercase tracking-widest">Performance Individual</h3>
                            </div>
-                           <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{portfolioData.clients.length} Contas Ativas</span>
+                           <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">{portfolioData.clients.length} Contas Ativas</span>
                         </div>
 
                         <div className="overflow-x-auto">
                            <table className="w-full text-left border-collapse">
                               <thead>
-                                 <tr className="text-[10px] font-black uppercase text-slate-600 tracking-widest border-b border-slate-800">
+                                 <tr className="text-[10px] font-black uppercase text-zinc-600 tracking-widest border-b border-zinc-800">
                                     <th className="pb-6">Cliente</th>
                                     <th className="pb-6">Setor</th>
                                     <th className="pb-6 text-right">Investimento</th>
@@ -1337,14 +1337,14 @@ export default function App() {
                                    <tr key={c.id} className="group hover:bg-white/5 transition-all">
                                       <td className="py-5 font-black text-white text-xs uppercase tracking-tight">{c.nome}</td>
                                       <td className="py-5">
-                                         <span className="px-3 py-1 bg-slate-950 border border-slate-800 rounded-full text-[9px] font-black text-slate-500 uppercase">{c.setor}</span>
+                                         <span className="px-3 py-1 bg-zinc-950 border border-zinc-800 rounded-full text-[9px] font-black text-zinc-500 uppercase">{c.setor}</span>
                                       </td>
-                                      <td className="py-5 text-right font-mono text-xs text-blue-400 font-bold">R$ {c.spend.toLocaleString()}</td>
-                                      <td className="py-5 text-right text-xs font-black text-slate-300">{c.leads}</td>
-                                      <td className="py-5 text-right text-xs font-black text-slate-300">R$ {c.cac.toFixed(2)}</td>
+                                      <td className="py-5 text-right font-mono text-xs text-amber-400 font-bold">R$ {c.spend.toLocaleString()}</td>
+                                      <td className="py-5 text-right text-xs font-black text-zinc-300">{c.leads}</td>
+                                      <td className="py-5 text-right text-xs font-black text-zinc-300">R$ {c.cac.toFixed(2)}</td>
                                       <td className="py-5 text-right font-mono text-xs text-emerald-400 font-bold">R$ {c.revenue.toLocaleString()}</td>
                                       <td className="py-5 text-right">
-                                         <div className={`inline-block px-3 py-1 rounded-lg text-[10px] font-black ${c.roas > 3 ? 'bg-emerald-600/20 text-emerald-500' : 'bg-blue-600/10 text-blue-500'}`}>
+                                         <div className={`inline-block px-3 py-1 rounded-lg text-[10px] font-black ${c.roas > 3 ? 'bg-emerald-600/20 text-emerald-500' : 'bg-amber-600/10 text-amber-500'}`}>
                                             {c.roas.toFixed(2)}x
                                          </div>
                                       </td>
@@ -1364,20 +1364,20 @@ export default function App() {
             <div className="max-w-5xl mx-auto py-6 space-y-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-100 font-sans tracking-tight">Administração de Empresas</h1>
-                  <p className="text-slate-500 text-sm mt-1">Gerenciamento global de contas e contextos estratégicos.</p>
+                  <h1 className="text-3xl font-bold text-zinc-100 font-sans tracking-tight">Administração de Empresas</h1>
+                  <p className="text-zinc-500 text-sm mt-1">Gerenciamento global de contas e contextos estratégicos.</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
                     onClick={() => handleTriggerDeepLearning(null)}
                     disabled={isDeepLearningLoading}
-                    className="p-3 px-6 bg-slate-800 border border-slate-700 text-blue-400 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-slate-700 transition-all disabled:opacity-50 shadow-xl"
+                    className="p-3 px-6 bg-zinc-800 border border-zinc-700 text-amber-400 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-zinc-700 transition-all disabled:opacity-50 shadow-xl"
                   >
 
                     {isDeepLearningLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
                     Acionar Deep Learning
                   </button>
-                  <button onClick={() => setShowNovoClienteForm(true)} className="p-3 px-6 bg-blue-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-xl shadow-blue-900/20 hover:bg-blue-700 transition-all border border-blue-500/20">
+                  <button onClick={() => setShowNovoClienteForm(true)} className="p-3 px-6 bg-amber-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-xl shadow-amber-900/20 hover:bg-amber-700 transition-all border border-amber-500/20">
                     <Plus size={18} /> Vincular Nova Conta
                   </button>
                 </div>
@@ -1385,21 +1385,21 @@ export default function App() {
               {/* LISTA DE CLIENTES */}
               <div className="grid grid-cols-1 gap-4">
                 {clientesDisponiveis.map(cliente => (
-                  <div key={cliente.id} className="bg-slate-900 rounded-3xl border border-slate-800 p-6 flex items-center justify-between group hover:border-slate-600 transition-all shadow-xl">
+                  <div key={cliente.id} className="bg-zinc-900 rounded-3xl border border-zinc-800 p-6 flex items-center justify-between group hover:border-zinc-600 transition-all shadow-xl">
                     <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg">
+                      <div className="w-14 h-14 bg-gradient-to-br from-amber-600 to-amber-800 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg">
                         {cliente.nome.charAt(0)}
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-100 text-lg">{cliente.nome}</h3>
-                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1 opacity-70">Account ID: {cliente.meta_ads_account_id}</p>
+                        <h3 className="font-bold text-zinc-100 text-lg">{cliente.nome}</h3>
+                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1 opacity-70">Account ID: {cliente.meta_ads_account_id}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <button onClick={() => { setPerfilCliente(cliente); loadHistorico(cliente.id); }} className="p-3 px-6 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-slate-700 shadow-lg">
-                        <Settings size={16} className="text-blue-400" /> Perfil & Estratégia
+                      <button onClick={() => { setPerfilCliente(cliente); loadHistorico(cliente.id); }} className="p-3 px-6 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-zinc-700 shadow-lg">
+                        <Settings size={16} className="text-amber-400" /> Perfil & Estratégia
                       </button>
-                      <button onClick={() => setEditingCliente(cliente)} className="p-3 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-2xl transition-all border border-slate-700">
+                      <button onClick={() => setEditingCliente(cliente)} className="p-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 rounded-2xl transition-all border border-zinc-700">
                         <Pencil size={18} />
                       </button>
                       <button onClick={() => handleDeleteCliente(cliente.id)} className="p-3 bg-red-600/10 hover:bg-red-600/20 text-red-500 rounded-2xl transition-all border border-red-500/10">
@@ -1413,40 +1413,40 @@ export default function App() {
               {/* FORMULÁRIO DE NOVO CLIENTE (MODAL) */}
               {showNovoClienteForm && (
                 <div className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center z-50 p-4">
-                  <div className="bg-slate-900 w-full max-w-xl rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-                     <div className="p-10 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
+                  <div className="bg-zinc-900 w-full max-w-xl rounded-[2.5rem] border border-zinc-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+                     <div className="p-10 border-b border-zinc-800 flex justify-between items-center bg-zinc-800/20">
                         <div>
                           <h2 className="text-3xl font-black text-white tracking-tighter">Vincular Conta</h2>
-                          <p className="text-slate-500 text-sm mt-1">Conecte o Meta Ads de uma nova empresa.</p>
+                          <p className="text-zinc-500 text-sm mt-1">Conecte o Meta Ads de uma nova empresa.</p>
                         </div>
-                        <button onClick={() => setShowNovoClienteForm(false)} className="p-3 hover:bg-slate-800 rounded-2xl transition-all text-slate-400"><X size={28}/></button>
+                        <button onClick={() => setShowNovoClienteForm(false)} className="p-3 hover:bg-zinc-800 rounded-2xl transition-all text-zinc-400"><X size={28}/></button>
                      </div>
                      <form onSubmit={handleAddCliente} className="p-10 space-y-8">
                         <div className="grid grid-cols-1 gap-8">
                           <div>
-                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-3 tracking-[0.2em]">Identificação da Empresa</label>
-                            <input type="text" required value={novoCliente.nome} onChange={e => setNovoCliente({...novoCliente, nome: e.target.value})} className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-100 outline-none focus:border-blue-600 transition-all shadow-inner" placeholder="Ex: Solution Place" />
+                            <label className="block text-[10px] font-black text-zinc-500 uppercase mb-3 tracking-[0.2em]">Identificação da Empresa</label>
+                            <input type="text" required value={novoCliente.nome} onChange={e => setNovoCliente({...novoCliente, nome: e.target.value})} className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-2xl p-5 text-sm text-zinc-100 outline-none focus:border-amber-600 transition-all shadow-inner" placeholder="Ex: Solution Place" />
                           </div>
                           <div>
-                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-3 tracking-[0.2em]">Meta Ad Account ID</label>
-                            <input type="text" required value={novoCliente.accountId} onChange={e => setNovoCliente({...novoCliente, accountId: e.target.value})} className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-100 outline-none focus:border-blue-600 transition-all shadow-inner" placeholder="act_861875509414758" />
+                            <label className="block text-[10px] font-black text-zinc-500 uppercase mb-3 tracking-[0.2em]">Meta Ad Account ID</label>
+                            <input type="text" required value={novoCliente.accountId} onChange={e => setNovoCliente({...novoCliente, accountId: e.target.value})} className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-2xl p-5 text-sm text-zinc-100 outline-none focus:border-amber-600 transition-all shadow-inner" placeholder="act_861875509414758" />
                           </div>
                           <div>
-                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-3 tracking-[0.2em]">Meta Access Token</label>
-                            <input type="password" required value={novoCliente.token} onChange={e => setNovoCliente({...novoCliente, token: e.target.value})} className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-100 outline-none focus:border-blue-600 transition-all shadow-inner" placeholder="EAAYYES5..." />
+                            <label className="block text-[10px] font-black text-zinc-500 uppercase mb-3 tracking-[0.2em]">Meta Access Token</label>
+                            <input type="password" required value={novoCliente.token} onChange={e => setNovoCliente({...novoCliente, token: e.target.value})} className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-2xl p-5 text-sm text-zinc-100 outline-none focus:border-amber-600 transition-all shadow-inner" placeholder="EAAYYES5..." />
                           </div>
                           <div>
-                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-3 tracking-[0.2em]">Meta Pixel / Dataset ID</label>
-                            <input type="text" value={novoCliente.pixelId} onChange={e => setNovoCliente({...novoCliente, pixelId: e.target.value})} className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-5 text-sm text-slate-100 outline-none focus:border-blue-600 transition-all shadow-inner" placeholder="123456789..." />
+                            <label className="block text-[10px] font-black text-zinc-500 uppercase mb-3 tracking-[0.2em]">Meta Pixel / Dataset ID</label>
+                            <input type="text" value={novoCliente.pixelId} onChange={e => setNovoCliente({...novoCliente, pixelId: e.target.value})} className="w-full bg-zinc-950 border-2 border-zinc-800 rounded-2xl p-5 text-sm text-zinc-100 outline-none focus:border-amber-600 transition-all shadow-inner" placeholder="123456789..." />
                           </div>
                           </div>
-                        <div className="bg-blue-600/5 p-6 rounded-3xl border border-blue-500/10 flex items-start gap-4">
-                           <Sparkles size={24} className="text-blue-500 flex-shrink-0 mt-1" />
-                           <p className="text-xs text-blue-400/80 leading-relaxed font-medium">
+                        <div className="bg-amber-600/5 p-6 rounded-3xl border border-amber-500/10 flex items-start gap-4">
+                           <Sparkles size={24} className="text-amber-500 flex-shrink-0 mt-1" />
+                           <p className="text-xs text-amber-400/80 leading-relaxed font-medium">
                              O sistema criará automaticamente uma instância de inteligência (Agent) para esta conta, pronta para ser treinada com o contexto estratégico da marca.
                            </p>
                         </div>
-                        <button type="submit" disabled={isAddingCliente} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black p-5 rounded-2xl transition-all shadow-2xl shadow-blue-900/40 flex items-center justify-center gap-3 uppercase tracking-widest text-xs">
+                        <button type="submit" disabled={isAddingCliente} className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black p-5 rounded-2xl transition-all shadow-2xl shadow-amber-900/40 flex items-center justify-center gap-3 uppercase tracking-widest text-xs">
                           {isAddingCliente ? <><Loader2 size={20} className="animate-spin" /> Vinculando...</> : <><Check size={20} /> Confirmar Vínculo</>}
                         </button>
                      </form>
@@ -1457,29 +1457,29 @@ export default function App() {
               {/* MODAL DE EDIÇÃO BÁSICA */}
               {editingCliente && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-                  <div className="bg-slate-900 w-full max-w-md rounded-[2rem] border border-slate-800 shadow-2xl overflow-hidden">
-                    <div className="p-8 border-b border-slate-800 flex justify-between items-center">
+                  <div className="bg-zinc-900 w-full max-w-md rounded-[2rem] border border-zinc-800 shadow-2xl overflow-hidden">
+                    <div className="p-8 border-b border-zinc-800 flex justify-between items-center">
                       <h3 className="font-black text-lg uppercase tracking-tight">Editar Dados</h3>
-                      <button onClick={() => setEditingCliente(null)} className="p-2 hover:bg-slate-800 rounded-xl transition-all"><X size={20}/></button>
+                      <button onClick={() => setEditingCliente(null)} className="p-2 hover:bg-zinc-800 rounded-xl transition-all"><X size={20}/></button>
                     </div>
                     <div className="p-8 space-y-6">
                       <div>
-                        <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Nome da Empresa</label>
-                        <input type="text" value={editingCliente.nome} onChange={e => setEditingCliente({...editingCliente, nome: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" />
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase mb-2 tracking-widest">Nome da Empresa</label>
+                        <input type="text" value={editingCliente.nome} onChange={e => setEditingCliente({...editingCliente, nome: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-sm outline-none focus:border-amber-500 shadow-inner" />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">ID da Conta</label>
-                        <input type="text" value={editingCliente.meta_ads_account_id} onChange={e => setEditingCliente({...editingCliente, meta_ads_account_id: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" />
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase mb-2 tracking-widest">ID da Conta</label>
+                        <input type="text" value={editingCliente.meta_ads_account_id} onChange={e => setEditingCliente({...editingCliente, meta_ads_account_id: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-sm outline-none focus:border-amber-500 shadow-inner" />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Access Token da Meta</label>
-                        <input type="password" value={editingCliente.meta_access_token || ''} onChange={e => setEditingCliente({...editingCliente, meta_access_token: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" placeholder="EAAYYES5..." />
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase mb-2 tracking-widest">Access Token da Meta</label>
+                        <input type="password" value={editingCliente.meta_access_token || ''} onChange={e => setEditingCliente({...editingCliente, meta_access_token: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-sm outline-none focus:border-amber-500 shadow-inner" placeholder="EAAYYES5..." />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Meta Pixel / Dataset ID</label>
-                        <input type="text" value={editingCliente.meta_pixel_id || ''} onChange={e => setEditingCliente({...editingCliente, meta_pixel_id: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" placeholder="123456789..." />
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase mb-2 tracking-widest">Meta Pixel / Dataset ID</label>
+                        <input type="text" value={editingCliente.meta_pixel_id || ''} onChange={e => setEditingCliente({...editingCliente, meta_pixel_id: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-sm outline-none focus:border-amber-500 shadow-inner" placeholder="123456789..." />
                       </div>
-                      <button onClick={() => handleUpdateCliente(editingCliente)} className="w-full bg-blue-600 p-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20">Salvar Alterações</button>
+                      <button onClick={() => handleUpdateCliente(editingCliente)} className="w-full bg-amber-600 p-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-amber-700 transition-all shadow-xl shadow-amber-900/20">Salvar Alterações</button>
                     </div>
                   </div>
                 </div>
@@ -1487,16 +1487,16 @@ export default function App() {
 
               {/* PERFIL E CONTEXTO ESTRATÉGICO */}
               {perfilCliente && (
-                <div className="fixed inset-0 bg-slate-950 z-50 flex flex-col animate-in slide-in-from-bottom duration-500">
-                   <header className="h-20 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-10">
+                <div className="fixed inset-0 bg-zinc-950 z-50 flex flex-col animate-in slide-in-from-bottom duration-500">
+                   <header className="h-20 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between px-10">
                       <div className="flex items-center gap-6">
-                        <button onClick={() => setPerfilCliente(null)} className="p-3 hover:bg-slate-800 rounded-2xl transition-all text-slate-400 group">
+                        <button onClick={() => setPerfilCliente(null)} className="p-3 hover:bg-zinc-800 rounded-2xl transition-all text-zinc-400 group">
                            <X size={24} className="group-hover:text-white transition-colors" />
                         </button>
-                        <div className="h-10 w-px bg-slate-800" />
+                        <div className="h-10 w-px bg-zinc-800" />
                         <div>
                           <h2 className="font-black text-xl text-white tracking-tighter uppercase">{perfilCliente.nome}</h2>
-                          <p className="text-[10px] text-blue-500 font-black uppercase tracking-[0.2em] mt-0.5 flex items-center gap-2">
+                          <p className="text-[10px] text-amber-500 font-black uppercase tracking-[0.2em] mt-0.5 flex items-center gap-2">
                              <Sparkles size={12} /> Treinamento do Agent Strategist
                           </p>
                         </div>
@@ -1505,7 +1505,7 @@ export default function App() {
                         <button 
                           onClick={() => handleTriggerDeepLearning(perfilCliente.id)}
                           disabled={isDeepLearningLoading}
-                          className="p-3 px-6 bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 disabled:opacity-50"
+                          className="p-3 px-6 bg-amber-600/10 border border-amber-500/20 text-amber-400 hover:bg-amber-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 disabled:opacity-50"
                         >
                           {isDeepLearningLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
                           Treinar Andromeda agora
@@ -1516,62 +1516,62 @@ export default function App() {
                       </div>
                    </header>
                    <div className="flex-1 overflow-hidden flex">
-                      <div className="w-[400px] border-r border-slate-800 p-12 space-y-12 overflow-y-auto bg-slate-900/30">
+                      <div className="w-[400px] border-r border-zinc-800 p-12 space-y-12 overflow-y-auto bg-zinc-900/30">
                         <div>
-                          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6 opacity-60">Configurações Operacionais</h4>
+                          <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-6 opacity-60">Configurações Operacionais</h4>
                           <div className="space-y-4">
-                            <div className="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 shadow-xl">
-                               <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-50">ID no Ecossistema Meta</p>
-                               <p className="text-sm font-mono text-blue-400 font-bold">{perfilCliente.meta_ads_account_id}</p>
+                            <div className="bg-zinc-900/80 p-6 rounded-3xl border border-zinc-800 shadow-xl">
+                               <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1 opacity-50">ID no Ecossistema Meta</p>
+                               <p className="text-sm font-mono text-amber-400 font-bold">{perfilCliente.meta_ads_account_id}</p>
                             </div>
-                            <div className="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 shadow-xl">
-                               <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 opacity-50">Início do Auditor KrM</p>
-                               <p className="text-sm text-slate-300 font-bold">{new Date(perfilCliente.criado_em).toLocaleDateString('pt-BR', { dateStyle: 'long' })}</p>
+                            <div className="bg-zinc-900/80 p-6 rounded-3xl border border-zinc-800 shadow-xl">
+                               <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1 opacity-50">Início do Auditor KrM</p>
+                               <p className="text-sm text-zinc-300 font-bold">{new Date(perfilCliente.criado_em).toLocaleDateString('pt-BR', { dateStyle: 'long' })}</p>
                             </div>
                           </div>
                         </div>
 
                         {/* HISTÓRICO DE VERSÕES */}
                         <div>
-                          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6 opacity-60">Save Points (Histórico)</h4>
+                          <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-6 opacity-60">Save Points (Histórico)</h4>
                           <div className="space-y-3">
                              {historicoContexto.length === 0 ? (
-                               <p className="text-[10px] text-slate-700 font-bold uppercase italic">Nenhum save point registrado.</p>
+                               <p className="text-[10px] text-zinc-700 font-bold uppercase italic">Nenhum save point registrado.</p>
                              ) : historicoContexto.map((v, i) => (
-                               <div key={v.id} className="bg-slate-950/40 p-4 rounded-2xl border border-slate-800 flex justify-between items-center group hover:border-blue-500/30 transition-all cursor-pointer" onClick={() => handleRestoreContext(v)}>
+                               <div key={v.id} className="bg-zinc-950/40 p-4 rounded-2xl border border-zinc-800 flex justify-between items-center group hover:border-amber-500/30 transition-all cursor-pointer" onClick={() => handleRestoreContext(v)}>
                                   <div>
-                                     <p className="text-[10px] font-black text-slate-400 uppercase">{new Date(v.criado_em).toLocaleDateString('pt-BR')}</p>
-                                     <p className="text-[9px] text-slate-600 font-bold">{new Date(v.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                     <p className="text-[10px] font-black text-zinc-400 uppercase">{new Date(v.criado_em).toLocaleDateString('pt-BR')}</p>
+                                     <p className="text-[9px] text-zinc-600 font-bold">{new Date(v.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
                                   </div>
                                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                     <span className="text-[8px] font-black text-blue-500 uppercase">Restaurar</span>
-                                     <RefreshCw size={12} className="text-blue-500" />
+                                     <span className="text-[8px] font-black text-amber-500 uppercase">Restaurar</span>
+                                     <RefreshCw size={12} className="text-amber-500" />
                                   </div>
                                </div>
                              ))}
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 p-8 rounded-[2.5rem] border border-blue-500/20 relative group">
-                          <Sparkles className="absolute -top-4 -right-4 text-blue-500/10 group-hover:scale-125 transition-transform duration-1000" size={120} />
+                        <div className="bg-gradient-to-br from-amber-600/10 to-purple-600/10 p-8 rounded-[2.5rem] border border-amber-500/20 relative group">
+                          <Sparkles className="absolute -top-4 -right-4 text-amber-500/10 group-hover:scale-125 transition-transform duration-1000" size={120} />
                           <h4 className="text-xs font-black text-white mb-4 flex items-center gap-2 uppercase tracking-widest">Guia do Agente IA</h4>
-                          <p className="text-[13px] text-slate-400 leading-relaxed relative z-10 font-medium italic">
+                          <p className="text-[13px] text-zinc-400 leading-relaxed relative z-10 font-medium italic">
                             "Este conteúdo é a base do conhecimento do Gemini 2.5 Flash para este cliente. O que você escrever ao lado definirá como cada gráfico, métrica e gargalo de funil será interpretado."
                           </p>
                         </div>
                       </div>
-                      <div className="flex-1 bg-slate-950 p-12 flex flex-col">
+                      <div className="flex-1 bg-zinc-950 p-12 flex flex-col">
                         <div className="flex items-center justify-between mb-8">
-                           <div className="flex items-center gap-3 text-slate-500 bg-slate-900/80 p-4 px-8 rounded-2xl border border-slate-800 shadow-xl">
-                             <FileText size={18} className="text-blue-500" />
-                             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-300">knowledge_base / agent.md</span>
+                           <div className="flex items-center gap-3 text-zinc-500 bg-zinc-900/80 p-4 px-8 rounded-2xl border border-zinc-800 shadow-xl">
+                             <FileText size={18} className="text-amber-500" />
+                             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-300">knowledge_base / agent.md</span>
                            </div>
-                           <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest">Linguagem: Markdown — Processamento: Gemini 2.5 Flash</p>
+                           <p className="text-[10px] text-zinc-600 font-black uppercase tracking-widest">Linguagem: Markdown — Processamento: Gemini 2.5 Flash</p>
                         </div>
                         <textarea 
                           value={perfilCliente.insights || ''} 
                           onChange={e => setPerfilCliente({...perfilCliente, insights: e.target.value})}
-                          className="flex-1 bg-slate-900/20 border-2 border-slate-800/50 rounded-[3rem] p-12 text-base text-slate-200 font-mono resize-none outline-none focus:border-blue-600/30 shadow-[0_0_100px_rgba(0,0,0,0.5)] leading-relaxed transition-all"
+                          className="flex-1 bg-zinc-900/20 border-2 border-zinc-800/50 rounded-[3rem] p-12 text-base text-zinc-200 font-mono resize-none outline-none focus:border-amber-600/30 shadow-[0_0_100px_rgba(0,0,0,0.5)] leading-relaxed transition-all"
                           placeholder="# Defina os objetivos estratégicos, o tom de voz e os KPIs críticos desta empresa..."
                         />
                       </div>
@@ -1586,9 +1586,9 @@ export default function App() {
                <div className="flex justify-between items-end">
                  <div>
                     <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Extrato CRM</h1>
-                    <p className="text-slate-500 font-medium mt-1 uppercase text-[10px] tracking-widest">Gestão de Leads e Vendas Reais — Workspace: {clienteSelecionado}</p>
+                    <p className="text-zinc-500 font-medium mt-1 uppercase text-[10px] tracking-widest">Gestão de Leads e Vendas Reais — Workspace: {clienteSelecionado}</p>
                  </div>
-                 <button onClick={() => { setEditingLead(null); setNewLead({ nome: '', contato: '', status: 'NOVO', valor: '0', origem: '' }); setShowLeadModal(true); }} className="p-3 px-6 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 transition-all shadow-2xl shadow-blue-900/30 border border-blue-500/20">
+                 <button onClick={() => { setEditingLead(null); setNewLead({ nome: '', contato: '', status: 'NOVO', valor: '0', origem: '' }); setShowLeadModal(true); }} className="p-3 px-6 bg-amber-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-amber-700 transition-all shadow-2xl shadow-amber-900/30 border border-amber-500/20">
                    <Plus size={16} /> Novo Registro
                  </button>
                </div>
@@ -1601,12 +1601,12 @@ export default function App() {
                    { label: 'Fechamentos', value: leadsList.filter(l => l.status === 'FECHADO').length, icon: Check, color: 'emerald' },
                    { label: 'Valor em Pipeline', value: `R$ ${leadsList.reduce((acc, curr) => acc + parseFloat(curr.valor), 0).toLocaleString()}`, icon: DollarSign, color: 'blue' },
                  ].map((stat, i) => (
-                   <div key={i} className="bg-slate-900 p-6 rounded-[2rem] border border-slate-800 shadow-xl flex items-center gap-4">
+                   <div key={i} className="bg-zinc-900 p-6 rounded-[2rem] border border-zinc-800 shadow-xl flex items-center gap-4">
                      <div className={`p-4 rounded-2xl bg-${stat.color}-600/10 text-${stat.color}-400 shadow-inner`}>
                        <stat.icon size={24} />
                      </div>
                      <div>
-                       <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{stat.label}</p>
+                       <p className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">{stat.label}</p>
                        <p className="text-xl font-black text-white">{stat.value}</p>
                      </div>
                    </div>
@@ -1615,14 +1615,14 @@ export default function App() {
 
                {leadsLoading ? (
                  <div className="flex items-center justify-center py-32 flex-col gap-6">
-                   <Loader2 className="animate-spin text-blue-600" size={48} />
-                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">Acessando Banco de Dados KrM...</p>
+                   <Loader2 className="animate-spin text-amber-600" size={48} />
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Acessando Banco de Dados KrM...</p>
                  </div>
                ) : (
-                 <div className="bg-slate-900 rounded-[2.5rem] border border-slate-800 overflow-hidden shadow-2xl">
+                 <div className="bg-zinc-900 rounded-[2.5rem] border border-zinc-800 overflow-hidden shadow-2xl">
                    <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
+                        <tr className="bg-zinc-950/50 text-[10px] font-black uppercase text-zinc-500 tracking-widest border-b border-zinc-800">
                           <th className="p-6">Lead</th>
                           <th className="p-6">Contato</th>
                           <th className="p-6">Status</th>
@@ -1633,27 +1633,27 @@ export default function App() {
                       </thead>
                       <tbody className="divide-y divide-slate-800/50">
                         {leadsList.map(lead => (
-                          <tr key={lead.id} className="hover:bg-slate-800/30 transition-all group">
+                          <tr key={lead.id} className="hover:bg-zinc-800/30 transition-all group">
                             <td className="p-6">
-                              <p className="text-sm font-bold text-slate-200">{lead.nome}</p>
-                              <p className="text-[9px] text-slate-600 font-bold uppercase">{new Date(lead.data).toLocaleDateString()}</p>
+                              <p className="text-sm font-bold text-zinc-200">{lead.nome}</p>
+                              <p className="text-[9px] text-zinc-600 font-bold uppercase">{new Date(lead.data).toLocaleDateString()}</p>
                             </td>
-                            <td className="p-6 text-xs text-slate-400 font-medium">{lead.contato || '-'}</td>
+                            <td className="p-6 text-xs text-zinc-400 font-medium">{lead.contato || '-'}</td>
                             <td className="p-6">
                               <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
                                 lead.status === 'FECHADO' ? 'bg-emerald-600/10 text-emerald-400' :
                                 lead.status === 'PERDIDO' ? 'bg-red-600/10 text-red-400' :
                                 lead.status === 'NEGOCIACAO' ? 'bg-amber-600/10 text-amber-400' :
-                                'bg-blue-600/10 text-blue-400'
+                                'bg-amber-600/10 text-amber-400'
                               }`}>
                                 {lead.status}
                               </span>
                             </td>
-                            <td className="p-6 text-xs text-slate-500 italic">{lead.origem || 'Direto'}</td>
-                            <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {parseFloat(lead.valor).toFixed(2)}</td>
+                            <td className="p-6 text-xs text-zinc-500 italic">{lead.origem || 'Direto'}</td>
+                            <td className="p-6 text-right font-mono text-sm font-bold text-zinc-100">R$ {parseFloat(lead.valor).toFixed(2)}</td>
                             <td className="p-6 text-right">
-                               <button onClick={() => { setEditingLead(lead); setNewLead({...lead, valor: lead.valor.toString()}); setShowLeadModal(true); }} className="p-3 text-slate-600 hover:text-blue-400 transition-all"><Pencil size={16} /></button>
-                               <button onClick={() => handleDeleteLead(lead.id)} className="p-3 text-slate-600 hover:text-red-400 transition-all"><Trash2 size={16} /></button>
+                               <button onClick={() => { setEditingLead(lead); setNewLead({...lead, valor: lead.valor.toString()}); setShowLeadModal(true); }} className="p-3 text-zinc-600 hover:text-amber-400 transition-all"><Pencil size={16} /></button>
+                               <button onClick={() => handleDeleteLead(lead.id)} className="p-3 text-zinc-600 hover:text-red-400 transition-all"><Trash2 size={16} /></button>
                             </td>
                           </tr>
                         ))}
@@ -1664,30 +1664,30 @@ export default function App() {
 
                {/* MODAL LEAD */}
                {showLeadModal && (
-                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-slate-900 w-full max-w-lg rounded-[3rem] border border-slate-800 shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden">
-                       <div className="p-10 border-b border-slate-800 flex justify-between items-center bg-slate-950/30">
+                 <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="bg-zinc-900 w-full max-w-lg rounded-[3rem] border border-zinc-800 shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden">
+                       <div className="p-10 border-b border-zinc-800 flex justify-between items-center bg-zinc-950/30">
                          <div>
                            <h3 className="text-xl font-black text-white tracking-tighter uppercase">{editingLead ? 'Editar Registro' : 'Novo Lead / Venda'}</h3>
-                           <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">Gestão de Relacionamento e Receita</p>
+                           <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">Gestão de Relacionamento e Receita</p>
                          </div>
-                         <button onClick={() => setShowLeadModal(false)} className="p-3 hover:bg-slate-800 rounded-2xl text-slate-500 transition-all"><X size={20}/></button>
+                         <button onClick={() => setShowLeadModal(false)} className="p-3 hover:bg-zinc-800 rounded-2xl text-zinc-500 transition-all"><X size={20}/></button>
                        </div>
                        <form onSubmit={handleSaveLead} className="p-10 space-y-6">
                          <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nome do Cliente</label>
-                              <input required type="text" value={newLead.nome} onChange={e => setNewLead({...newLead, nome: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all" />
+                              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Nome do Cliente</label>
+                              <input required type="text" value={newLead.nome} onChange={e => setNewLead({...newLead, nome: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-amber-600/50 transition-all" />
                             </div>
                             <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Contato</label>
-                              <input type="text" value={newLead.contato} onChange={e => setNewLead({...newLead, contato: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all" placeholder="Tel ou Email" />
+                              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Contato</label>
+                              <input type="text" value={newLead.contato} onChange={e => setNewLead({...newLead, contato: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-amber-600/50 transition-all" placeholder="Tel ou Email" />
                             </div>
                          </div>
                          <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Status</label>
-                              <select value={newLead.status} onChange={e => setNewLead({...newLead, status: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all appearance-none">
+                              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Status</label>
+                              <select value={newLead.status} onChange={e => setNewLead({...newLead, status: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-amber-600/50 transition-all appearance-none">
                                 <option value="NOVO">Novo Lead</option>
                                 <option value="CONTATO">Em Contato</option>
                                 <option value="NEGOCIACAO">Em Negociação</option>
@@ -1696,19 +1696,19 @@ export default function App() {
                               </select>
                             </div>
                             <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Valor do Negócio (R$)</label>
-                              <input type="number" value={newLead.valor} onChange={e => setNewLead({...newLead, valor: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-blue-400 font-bold outline-none focus:border-blue-600/50 transition-all" />
+                              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Valor do Negócio (R$)</label>
+                              <input type="number" value={newLead.valor} onChange={e => setNewLead({...newLead, valor: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-sm text-amber-400 font-bold outline-none focus:border-amber-600/50 transition-all" />
                             </div>
                          </div>
                          <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Origem / Campanha</label>
-                            <input type="text" value={newLead.origem} onChange={e => setNewLead({...newLead, origem: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-blue-600/50 transition-all" placeholder="Ex: Campanha de Abril" />
+                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Origem / Campanha</label>
+                            <input type="text" value={newLead.origem} onChange={e => setNewLead({...newLead, origem: e.target.value})} className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-sm text-white outline-none focus:border-amber-600/50 transition-all" placeholder="Ex: Campanha de Abril" />
                          </div>
                          <div className="pt-4 flex gap-4">
-                           <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-900/20">
+                           <button type="submit" className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-xl shadow-amber-900/20">
                              {editingLead ? 'Salvar Alterações' : 'Criar Registro'}
                            </button>
-                           <button type="button" onClick={() => setShowLeadModal(false)} className="px-8 bg-slate-800 text-slate-400 font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-slate-700 transition-all">
+                           <button type="button" onClick={() => setShowLeadModal(false)} className="px-8 bg-zinc-800 text-zinc-400 font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-zinc-700 transition-all">
                              Cancelar
                            </button>
                          </div>
@@ -1723,16 +1723,16 @@ export default function App() {
             <div className="max-w-[1400px] mx-auto py-10 px-8 space-y-10 animate-in fade-in duration-500">
                <div className="flex justify-between items-end">
                  <div className="space-y-2">
-                    <p className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">Intelligence Module</p>
+                    <p className="text-amber-500 text-[10px] font-black uppercase tracking-[0.4em]">Intelligence Module</p>
                     <h1 className="text-5xl font-black text-white tracking-tighter uppercase">Creative Lab</h1>
-                    <p className="text-slate-500 font-medium uppercase text-[10px] tracking-widest">Treinamento Contextual e Engenharia de Criativos Campeões</p>
+                    <p className="text-zinc-500 font-medium uppercase text-[10px] tracking-widest">Treinamento Contextual e Engenharia de Criativos Campeões</p>
                  </div>
-                 <div className="flex items-center gap-4 bg-slate-900/50 p-4 rounded-3xl border border-slate-800">
+                 <div className="flex items-center gap-4 bg-zinc-900/50 p-4 rounded-3xl border border-zinc-800">
                     <div className="text-right">
-                       <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Andromeda Power</p>
-                       <p className="text-xs font-bold text-blue-400">92% Precision Score</p>
+                       <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Andromeda Power</p>
+                       <p className="text-xs font-bold text-amber-400">92% Precision Score</p>
                     </div>
-                    <Sparkles className="text-blue-500" size={24} />
+                    <Sparkles className="text-amber-500" size={24} />
                  </div>
                </div>
 
@@ -1740,9 +1740,9 @@ export default function App() {
                  {/* LISTA DE CAMPEÕES */}
                  <div className="lg:col-span-2 space-y-6">
                     <div className="flex items-center gap-4 mb-8">
-                       <div className="h-px flex-1 bg-slate-800"></div>
-                       <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Select Champion Ad for Learning</span>
-                       <div className="h-px flex-1 bg-slate-800"></div>
+                       <div className="h-px flex-1 bg-zinc-800"></div>
+                       <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Select Champion Ad for Learning</span>
+                       <div className="h-px flex-1 bg-zinc-800"></div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1751,13 +1751,13 @@ export default function App() {
                         .sort((a, b) => b.ctr - a.ctr)
                         .slice(0, 8)
                         .map(creative => (
-                          <div key={creative.id} className={`group relative p-6 rounded-[2rem] bg-slate-900 border transition-all duration-500 cursor-pointer ${selectedChampion?.id === creative.id ? 'border-blue-500 shadow-[0_0_50px_rgba(59,130,246,0.2)] scale-[1.02]' : 'border-slate-800 hover:border-slate-700'}`} onClick={() => setSelectedChampion(creative)}>
+                          <div key={creative.id} className={`group relative p-6 rounded-[2rem] bg-zinc-900 border transition-all duration-500 cursor-pointer ${selectedChampion?.id === creative.id ? 'border-amber-500 shadow-[0_0_50px_rgba(59,130,246,0.2)] scale-[1.02]' : 'border-zinc-800 hover:border-zinc-700'}`} onClick={() => setSelectedChampion(creative)}>
                              <div className="flex gap-4">
-                                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex-shrink-0">
+                                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 flex-shrink-0">
                                    {creative.url_midia ? (
                                      <img src={creative.url_midia} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Creative" />
                                    ) : (
-                                     <div className="w-full h-full flex items-center justify-center text-slate-800"><ImageIcon size={32} /></div>
+                                     <div className="w-full h-full flex items-center justify-center text-zinc-800"><ImageIcon size={32} /></div>
                                    )}
                                 </div>
                                 <div className="flex-1 space-y-2">
@@ -1767,12 +1767,12 @@ export default function App() {
                                    </div>
                                    <div className="grid grid-cols-2 gap-4">
                                       <div>
-                                         <p className="text-[8px] font-black text-slate-600 uppercase">CTR Real</p>
-                                         <p className="text-sm font-black text-slate-200">{creative.ctr?.toFixed(2)}%</p>
+                                         <p className="text-[8px] font-black text-zinc-600 uppercase">CTR Real</p>
+                                         <p className="text-sm font-black text-zinc-200">{creative.ctr?.toFixed(2)}%</p>
                                       </div>
                                       <div>
-                                         <p className="text-[8px] font-black text-slate-600 uppercase">Leads</p>
-                                         <p className="text-sm font-black text-slate-200">{creative.leads}</p>
+                                         <p className="text-[8px] font-black text-zinc-600 uppercase">Leads</p>
+                                         <p className="text-sm font-black text-zinc-200">{creative.leads}</p>
                                       </div>
                                    </div>
                                 </div>
@@ -1781,7 +1781,7 @@ export default function App() {
                              <button 
                                onClick={(e) => { e.stopPropagation(); handleGenerateCreativeBriefing(creative); }}
                                disabled={isGeneratingBriefing}
-                               className="w-full mt-6 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-blue-500 hover:bg-blue-600 hover:text-white hover:border-blue-500 transition-all flex items-center justify-center gap-3"
+                               className="w-full mt-6 py-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-amber-500 hover:bg-amber-600 hover:text-white hover:border-amber-500 transition-all flex items-center justify-center gap-3"
                              >
                                {isGeneratingBriefing && selectedChampion?.id === creative.id ? (
                                  <><Loader2 className="animate-spin" size={14} /> Analisando Padrões...</>
@@ -1797,50 +1797,50 @@ export default function App() {
                  {/* RESULTADOS IA */}
                  <div className="space-y-6">
                     <div className="sticky top-10 space-y-6">
-                       <div className="p-8 bg-slate-900 border-2 border-slate-800 rounded-[3rem] shadow-2xl relative overflow-hidden min-h-[600px]">
+                       <div className="p-8 bg-zinc-900 border-2 border-zinc-800 rounded-[3rem] shadow-2xl relative overflow-hidden min-h-[600px]">
                           {isGeneratingBriefing ? (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-md z-10 gap-6 p-10 text-center">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/80 backdrop-blur-md z-10 gap-6 p-10 text-center">
                                <div className="relative">
-                                  <div className="w-20 h-24 border-4 border-blue-500/20 rounded-2xl animate-pulse"></div>
-                                  <Sparkles className="absolute -top-4 -right-4 text-blue-500 animate-bounce" size={32} />
+                                  <div className="w-20 h-24 border-4 border-amber-500/20 rounded-2xl animate-pulse"></div>
+                                  <Sparkles className="absolute -top-4 -right-4 text-amber-500 animate-bounce" size={32} />
                                </div>
                                <div>
                                   <h4 className="text-lg font-black text-white uppercase tracking-tighter">Processando Inteligência</h4>
-                                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">Mapeando gatilhos mentais e ganchos de alta retenção...</p>
+                                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-2">Mapeando gatilhos mentais e ganchos de alta retenção...</p>
                                </div>
-                               <Loader2 className="animate-spin text-blue-500" size={32} />
+                               <Loader2 className="animate-spin text-amber-500" size={32} />
                             </div>
                           ) : creativeBriefings ? (
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
                                <div className="flex items-center gap-4">
-                                  <div className="w-12 h-12 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20">
+                                  <div className="w-12 h-12 bg-amber-600/20 rounded-2xl flex items-center justify-center text-amber-500 border border-amber-500/20">
                                      <Zap size={24} />
                                   </div>
                                   <div>
                                      <h3 className="text-xl font-black text-white tracking-tighter uppercase">Novos Briefings</h3>
-                                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Gerado por Andromeda Engine</p>
+                                     <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Gerado por Andromeda Engine</p>
                                   </div>
                                </div>
 
                                <div className="space-y-6">
                                   {Array.isArray(creativeBriefings) ? creativeBriefings.map((brief, idx) => (
-                                    <div key={idx} className="p-6 bg-slate-950 border border-slate-800 rounded-2xl space-y-4 hover:border-blue-500/30 transition-all">
+                                    <div key={idx} className="p-6 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-4 hover:border-amber-500/30 transition-all">
                                        <div className="flex justify-between items-center">
-                                          <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Variação {idx + 1}</span>
-                                          <button className="text-slate-600 hover:text-white transition-all"><Copy size={14}/></button>
+                                          <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Variação {idx + 1}</span>
+                                          <button className="text-zinc-600 hover:text-white transition-all"><Copy size={14}/></button>
                                        </div>
                                        <h4 className="text-xs font-black text-white uppercase">{brief.titulo || brief.v_titulo || "Briefing de Escala"}</h4>
                                        <div className="space-y-2">
-                                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Estrutura Visual</p>
-                                          <p className="text-[11px] text-slate-400 leading-relaxed italic">{brief.estrutura_visual || brief.visual}</p>
+                                          <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Estrutura Visual</p>
+                                          <p className="text-[11px] text-zinc-400 leading-relaxed italic">{brief.estrutura_visual || brief.visual}</p>
                                        </div>
                                        <div className="space-y-2">
-                                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Copy Sugerida</p>
-                                          <p className="text-[12px] text-slate-200 leading-relaxed font-medium whitespace-pre-wrap">{brief.nova_copy || brief.copy}</p>
+                                          <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Copy Sugerida</p>
+                                          <p className="text-[12px] text-zinc-200 leading-relaxed font-medium whitespace-pre-wrap">{brief.nova_copy || brief.copy}</p>
                                        </div>
                                     </div>
                                   )) : (
-                                    <div className="text-slate-300 text-sm whitespace-pre-wrap font-medium leading-relaxed bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                                    <div className="text-zinc-300 text-sm whitespace-pre-wrap font-medium leading-relaxed bg-zinc-950 p-6 rounded-2xl border border-zinc-800">
                                        {creativeBriefings}
                                     </div>
                                   )}
@@ -1848,10 +1848,10 @@ export default function App() {
                             </div>
                           ) : (
                             <div className="h-full flex flex-col items-center justify-center text-center p-10 space-y-6 opacity-40">
-                               <Layout size={64} className="text-slate-800" />
+                               <Layout size={64} className="text-zinc-800" />
                                <div>
-                                  <h4 className="text-lg font-black text-slate-700 uppercase tracking-tighter">Laboratório Vazio</h4>
-                                  <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest mt-2">Selecione um criativo campeão à esquerda para iniciar o treinamento da IA.</p>
+                                  <h4 className="text-lg font-black text-zinc-700 uppercase tracking-tighter">Laboratório Vazio</h4>
+                                  <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-2">Selecione um criativo campeão à esquerda para iniciar o treinamento da IA.</p>
                                </div>
                             </div>
                           )}
@@ -1865,13 +1865,13 @@ export default function App() {
           {activeTab === 'campanhas' && (
             <div className="max-w-[1400px] mx-auto py-10 px-8 space-y-8">
               {/* CAMPAIGN LEVEL DATE FILTER */}
-              <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-900/40 p-6 rounded-[2rem] border border-slate-800/50 backdrop-blur-md">
+              <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-zinc-900/40 p-6 rounded-[2rem] border border-zinc-800/50 backdrop-blur-md">
                 <div>
                   <h2 className="text-xl font-black text-white uppercase tracking-tighter">Gestão de Performance</h2>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Fonte: Meta Ads Graph API • {clienteSelecionado}</p>
+                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Fonte: Meta Ads Graph API • {clienteSelecionado}</p>
                 </div>
-                <div className="flex items-center gap-3 bg-slate-950 p-2 rounded-2xl border border-slate-800 shadow-sm flex-wrap">
-                  <div className="flex gap-1 bg-slate-900 p-1 rounded-xl">
+                <div className="flex items-center gap-3 bg-zinc-950 p-2 rounded-2xl border border-zinc-800 shadow-sm flex-wrap">
+                  <div className="flex gap-1 bg-zinc-900 p-1 rounded-xl">
                     {[
                       { id: 'hoje', label: 'Hoje' },
                       { id: 'ontem', label: 'Ontem' },
@@ -1883,11 +1883,11 @@ export default function App() {
                     ))}
                   </div>
                   <div className="flex items-center gap-2 px-2">
-                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-900 text-[11px] font-bold text-slate-300 p-2 rounded-xl border border-slate-800 outline-none focus:border-blue-500/50 transition-all" />
-                    <span className="text-slate-600 text-xs">→</span>
-                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-900 text-[11px] font-bold text-slate-300 p-2 rounded-xl border border-slate-800 outline-none focus:border-blue-500/50 transition-all" />
+                    <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} className="bg-zinc-900 text-[11px] font-bold text-zinc-300 p-2 rounded-xl border border-zinc-800 outline-none focus:border-amber-500/50 transition-all" />
+                    <span className="text-zinc-600 text-xs">→</span>
+                    <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-zinc-900 text-[11px] font-bold text-zinc-300 p-2 rounded-xl border border-zinc-800 outline-none focus:border-amber-500/50 transition-all" />
                   </div>
-                  <button onClick={handleSync} disabled={isSyncing} title="Sincronizar" className="p-2.5 px-4 bg-blue-600/20 text-blue-400 rounded-xl font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all">
+                  <button onClick={handleSync} disabled={isSyncing} title="Sincronizar" className="p-2.5 px-4 bg-amber-600/20 text-amber-400 rounded-xl font-bold border border-amber-500/20 hover:bg-amber-600/30 transition-all">
                     <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} />
                   </button>
                 </div>

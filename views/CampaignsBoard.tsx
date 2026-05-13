@@ -110,10 +110,10 @@ export const CampaignsBoard: React.FC<Props> = ({
   if (loading && campaigns.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 animate-pulse">
-        <Loader2 className="animate-spin text-blue-600" size={48} strokeWidth={1.5} />
+        <Loader2 className="animate-spin text-amber-600" size={48} strokeWidth={1.5} />
         <div className="text-center">
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Andromeda Sync</p>
-          <p className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">Sincronizando com motor Andromeda e validando eventos CAPI...</p>
+          <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-1">Sincronizando com motor Andromeda e validando eventos CAPI...</p>
         </div>
       </div>
     );
@@ -123,9 +123,9 @@ export const CampaignsBoard: React.FC<Props> = ({
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
       {/* ADVANCED TOOLBAR */}
-      <div className="flex flex-wrap items-center justify-between gap-6 bg-slate-900/20 p-6 rounded-[2rem] border border-slate-800/50 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-6 bg-zinc-900/20 p-6 rounded-[2rem] border border-zinc-800/50 backdrop-blur-md">
         <div className="flex items-center gap-6">
-           <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+           <div className="flex items-center gap-2 bg-zinc-950 p-1 rounded-2xl border border-zinc-800">
               {[
                 { id: 'campaign', label: 'Campaigns' },
                 { id: 'adset', label: 'Ad Sets' },
@@ -136,7 +136,7 @@ export const CampaignsBoard: React.FC<Props> = ({
                   onClick={() => handleTabClick(lvl.id)}
                   className={`
                     px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
-                    ${level === lvl.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-500 hover:text-white'}
+                    ${level === lvl.id ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/40' : 'text-zinc-500 hover:text-white'}
                   `}
                 >
                   {lvl.label}
@@ -146,13 +146,13 @@ export const CampaignsBoard: React.FC<Props> = ({
 
            {selectedIds.length > 0 && (
              <div className="flex items-center gap-4 animate-in fade-in zoom-in duration-300">
-                <div className="h-8 w-px bg-slate-800" />
-                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                <div className="h-8 w-px bg-zinc-800" />
+                <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">
                   {selectedIds.length} Selected
                 </span>
                 <button 
                   onClick={onClearSelection}
-                  className="text-[10px] font-black text-slate-500 hover:text-red-400 uppercase tracking-widest transition-all"
+                  className="text-[10px] font-black text-zinc-500 hover:text-red-400 uppercase tracking-widest transition-all"
                 >
                   Clear
                 </button>
@@ -162,17 +162,17 @@ export const CampaignsBoard: React.FC<Props> = ({
 
         <div className="flex items-center gap-4 flex-1 max-w-3xl">
            <div className="relative flex-1 group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors" size={16} />
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-amber-500 transition-colors" size={16} />
               <input 
                 type="text" 
                 placeholder="Search Andromeda database..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl py-4 pl-14 pr-6 text-[11px] text-white outline-none focus:border-blue-600/50 transition-all font-medium"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl py-4 pl-14 pr-6 text-[11px] text-white outline-none focus:border-amber-600/50 transition-all font-medium"
               />
            </div>
 
-           <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+           <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-2xl border border-zinc-800">
             {[
               { id: 'ALL', label: 'Todas' },
               { id: 'DELIVERY', label: 'Veiculadas' },
@@ -183,7 +183,7 @@ export const CampaignsBoard: React.FC<Props> = ({
                 onClick={() => setStatusFilter(f.id)}
                 className={`
                   px-4 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all
-                  ${statusFilter === f.id ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}
+                  ${statusFilter === f.id ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-400'}
                 `}
               >
                 {f.label}
@@ -200,7 +200,7 @@ export const CampaignsBoard: React.FC<Props> = ({
                <span className="text-[9px] font-black uppercase tracking-widest">Initialize New Protocol</span>
              </button>
 
-             <button onClick={onRefresh} className="w-12 h-12 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-600 hover:text-white transition-all">
+             <button onClick={onRefresh} className="w-12 h-12 bg-zinc-950 border border-zinc-800 rounded-xl flex items-center justify-center text-zinc-600 hover:text-white transition-all">
                 <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
              </button>
            </div>
@@ -208,13 +208,13 @@ export const CampaignsBoard: React.FC<Props> = ({
       </div>
 
       {filteredCampaigns.length === 0 && !loading ? (
-        <div className="bg-slate-900/10 border-2 border-dashed border-slate-800 rounded-[3rem] p-24 text-center flex flex-col items-center gap-6">
-          <div className="w-16 h-16 bg-slate-950 rounded-2xl flex items-center justify-center text-slate-800 border border-slate-800">
+        <div className="bg-zinc-900/10 border-2 border-dashed border-zinc-800 rounded-[3rem] p-24 text-center flex flex-col items-center gap-6">
+          <div className="w-16 h-16 bg-zinc-950 rounded-2xl flex items-center justify-center text-zinc-800 border border-zinc-800">
             <Database size={24} />
           </div>
           <div className="space-y-1">
             <h3 className="text-lg font-black text-white uppercase tracking-tighter">Database Vazia</h3>
-            <p className="text-[10px] text-slate-600 uppercase tracking-widest font-bold">Protocolos Andromeda sem registros ativos</p>
+            <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-bold">Protocolos Andromeda sem registros ativos</p>
           </div>
           <button 
             onClick={() => setIsBuilderOpen(true)}
