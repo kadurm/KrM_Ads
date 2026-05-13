@@ -14,8 +14,8 @@ const AndromedaPredictiveChart: React.FC<Props> = ({ campaign }) => {
 
   if (data.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center p-8 bg-zinc-900/50 rounded-3xl border border-dashed border-zinc-800">
-        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest text-center">
+      <div className="h-full flex items-center justify-center p-8 bg-slate-900/50 rounded-3xl border border-dashed border-slate-800">
+        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
           Aguardando histórico real para cálculo preditivo.
         </p>
       </div>
@@ -28,15 +28,15 @@ const AndromedaPredictiveChart: React.FC<Props> = ({ campaign }) => {
         <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="colorProb" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorRoas" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} opacity={0.5} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} opacity={0.5} />
           <XAxis 
             dataKey="date" 
             hide 
@@ -44,9 +44,9 @@ const AndromedaPredictiveChart: React.FC<Props> = ({ campaign }) => {
           <YAxis hide domain={[0, 'auto']} />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: '#18181b', 
+              backgroundColor: '#0f172a', 
               borderRadius: '16px', 
-              border: '1px solid #27272a',
+              border: '1px solid #1e293b',
               fontSize: '10px',
               fontWeight: 'bold',
               color: '#fff'
@@ -56,7 +56,7 @@ const AndromedaPredictiveChart: React.FC<Props> = ({ campaign }) => {
           <Area 
             type="monotone" 
             dataKey="probability" 
-            stroke="#f59e0b" 
+            stroke="#3b82f6" 
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorProb)" 
@@ -65,7 +65,7 @@ const AndromedaPredictiveChart: React.FC<Props> = ({ campaign }) => {
           <Area 
             type="monotone" 
             dataKey="roas" 
-            stroke="#f97316" 
+            stroke="#a855f7" 
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorRoas)" 
@@ -75,12 +75,12 @@ const AndromedaPredictiveChart: React.FC<Props> = ({ campaign }) => {
       </ResponsiveContainer>
       <div className="flex justify-between mt-2 px-2">
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          <span className="text-[8px] font-black text-zinc-500 uppercase">Probabilidade</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+          <span className="text-[8px] font-black text-slate-500 uppercase">Probabilidade</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-          <span className="text-[8px] font-black text-zinc-500 uppercase">ROAS Real</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+          <span className="text-[8px] font-black text-slate-500 uppercase">ROAS Real</span>
         </div>
       </div>
     </div>

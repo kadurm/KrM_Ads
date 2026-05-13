@@ -175,9 +175,9 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
   // --- ANDROMEDA INSIGHT COMPONENT ---
   const AndromedaInsight = ({ text }: { text: string }) => (
-    <div className="flex items-start gap-2 p-3 bg-amber-600/5 border border-amber-500/20 rounded-xl mt-2">
-      <Zap size={12} className="text-amber-500 mt-0.5 shrink-0" />
-      <p className="text-[9px] font-bold text-amber-400/80 leading-tight uppercase tracking-tight">
+    <div className="flex items-start gap-2 p-3 bg-blue-600/5 border border-blue-500/20 rounded-xl mt-2">
+      <Zap size={12} className="text-blue-500 mt-0.5 shrink-0" />
+      <p className="text-[9px] font-bold text-blue-400/80 leading-tight uppercase tracking-tight">
         Andromeda Intelligence: <span className="text-white/70">{text}</span>
       </p>
     </div>
@@ -204,7 +204,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     }[level] || [];
 
     return (
-      <div className="flex gap-1 p-1 bg-zinc-950/50 rounded-2xl border border-zinc-800/50 mb-6">
+      <div className="flex gap-1 p-1 bg-slate-950/50 rounded-2xl border border-slate-800/50 mb-6">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -212,7 +212,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
             onClick={() => setActiveTab(tab.id)}
             className={`
               flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
-              ${activeTab === tab.id ? 'bg-amber-600 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-400'}
+              ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}
             `}
           >
             <tab.icon size={14} />
@@ -228,7 +228,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
       return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="space-y-3">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
               Select Strategic Objective {isEdit && <span className="text-amber-500 ml-2">(Locked after creation)</span>}
             </label>
             <div className={`grid grid-cols-2 md:grid-cols-3 gap-3 ${isEdit ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}>
@@ -238,11 +238,11 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                   onClick={() => !isEdit && setFormData({ ...formData, objective: obj.id })}
                   className={`
                     cursor-pointer p-4 rounded-2xl border transition-all group
-                    ${formData.objective === obj.id ? 'bg-amber-600/10 border-amber-500' : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'}
+                    ${formData.objective === obj.id ? 'bg-blue-600/10 border-blue-500' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}
                   `}
                 >
-                  <obj.icon size={20} className={formData.objective === obj.id ? 'text-amber-500' : 'text-zinc-600 group-hover:text-zinc-400'} />
-                  <p className={`text-[11px] font-black mt-3 uppercase tracking-tighter ${formData.objective === obj.id ? 'text-white' : 'text-zinc-400'}`}>
+                  <obj.icon size={20} className={formData.objective === obj.id ? 'text-blue-500' : 'text-slate-600 group-hover:text-slate-400'} />
+                  <p className={`text-[11px] font-black mt-3 uppercase tracking-tighter ${formData.objective === obj.id ? 'text-white' : 'text-slate-400'}`}>
                     {obj.label}
                   </p>
                 </div>
@@ -257,21 +257,21 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     if (activeTab === 'budget') {
       return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="bg-zinc-950/50 border border-zinc-800 rounded-[2rem] p-6 space-y-6">
+          <div className="bg-slate-950/50 border border-slate-800 rounded-[2rem] p-6 space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-600/20 rounded-xl flex items-center justify-center text-amber-500">
+                <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center text-blue-500">
                   <Zap size={18} />
                 </div>
                 <div>
                   <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Advantage+ Campaign Budget</h4>
-                  <p className="text-[9px] text-zinc-500 uppercase font-bold">Machine Learning dynamic allocation (CBO)</p>
+                  <p className="text-[9px] text-slate-500 uppercase font-bold">Machine Learning dynamic allocation (CBO)</p>
                 </div>
               </div>
               <button 
                 type="button"
                 onClick={() => setFormData({ ...formData, advantage_plus_budget: !formData.advantage_plus_budget })}
-                className={`w-12 h-6 rounded-full relative transition-all ${formData.advantage_plus_budget ? 'bg-amber-600' : 'bg-zinc-800'}`}
+                className={`w-12 h-6 rounded-full relative transition-all ${formData.advantage_plus_budget ? 'bg-blue-600' : 'bg-slate-800'}`}
               >
                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.advantage_plus_budget ? 'right-1' : 'left-1'}`} />
               </button>
@@ -279,24 +279,24 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
             <div className="space-y-4">
               <div className="space-y-2">
-                 <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Daily Budget (BRL)</label>
+                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Daily Budget (BRL)</label>
                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-700 font-black text-[11px]">R$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 font-black text-[11px]">R$</span>
                     <input 
                       type="number" 
                       value={formData.daily_budget}
                       onChange={(e) => setFormData({ ...formData, daily_budget: Number(e.target.value) })}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 pl-12 text-[13px] text-amber-400 outline-none focus:border-amber-600/50 transition-all font-black"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 pl-12 text-[13px] text-blue-400 outline-none focus:border-blue-600/50 transition-all font-black"
                     />
                  </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Bid Strategy</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Bid Strategy</label>
                 <select 
                   value={formData.bid_strategy}
                   onChange={(e) => setFormData({ ...formData, bid_strategy: e.target.value })}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-amber-600/50 transition-all"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all"
                 >
                   <option value="LOWEST_COST_WITHOUT_CAP">Lowest Cost (Recommended)</option>
                   <option value="COST_CAP">Cost Cap</option>
@@ -317,14 +317,14 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                 Optimization Goal {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
               </label>
               <select 
                 disabled={isEdit}
                 value={formData.optimization_goal}
                 onChange={(e) => setFormData({ ...formData, optimization_goal: e.target.value })}
-                className={`w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-amber-600/50 transition-all ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <option value="REACH">REACH</option>
                 <option value="IMPRESSIONS">IMPRESSIONS</option>
@@ -334,14 +334,14 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                 Billing Event {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
               </label>
               <select 
                 disabled={isEdit}
                 value={formData.billing_event}
                 onChange={(e) => setFormData({ ...formData, billing_event: e.target.value })}
-                className={`w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-amber-600/50 transition-all ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <option value="IMPRESSIONS">Impressions (Recommended)</option>
                 <option value="LINK_CLICKS">Link Clicks (CPC)</option>
@@ -351,25 +351,25 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1 flex items-center gap-2">
-                <Layers size={12} className="text-zinc-600" /> Start Time
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                <Layers size={12} className="text-slate-600" /> Start Time
               </label>
               <input 
                 type="datetime-local" 
                 value={formData.start_time}
                 onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-amber-600/50"
+                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-blue-600/50"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1 flex items-center gap-2">
-                <Layers size={12} className="text-zinc-600" /> End Time (Optional)
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                <Layers size={12} className="text-slate-600" /> End Time (Optional)
               </label>
               <input 
                 type="datetime-local" 
                 value={formData.end_time}
                 onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-amber-600/50"
+                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-blue-600/50"
               />
             </div>
           </div>
@@ -383,25 +383,25 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           
           {/* Accordion 1: Demographics */}
-          <div className={`p-6 bg-zinc-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'demographics' ? 'border-amber-500/50' : 'border-zinc-800'}`}>
+          <div className={`p-6 bg-slate-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'demographics' ? 'border-blue-500/50' : 'border-slate-800'}`}>
             <div 
               className="flex items-center justify-between cursor-pointer group"
               onClick={() => toggleSection('demographics')}
             >
               <div className="flex items-center gap-3">
-                <Globe size={16} className={expandedSection === 'demographics' ? 'text-amber-500' : 'text-zinc-500'} />
+                <Globe size={16} className={expandedSection === 'demographics' ? 'text-blue-500' : 'text-slate-500'} />
                 <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Location & Demographics</h4>
               </div>
-              {expandedSection === 'demographics' ? <ChevronDown size={16} className="text-zinc-500" /> : <ChevronRight size={16} className="text-zinc-500" />}
+              {expandedSection === 'demographics' ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
             </div>
             
             {expandedSection === 'demographics' && (
-              <div className="space-y-6 mt-6 pt-6 border-t border-zinc-800/50 animate-in slide-in-from-top-2 duration-300">
+              <div className="space-y-6 mt-6 pt-6 border-t border-slate-800/50 animate-in slide-in-from-top-2 duration-300">
                 <div className="space-y-1">
-                  <span className="text-[8px] font-black text-zinc-600 uppercase">Countries</span>
-                  <div className="flex flex-wrap gap-2 p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
+                  <span className="text-[8px] font-black text-slate-600 uppercase">Countries</span>
+                  <div className="flex flex-wrap gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl">
                     {formData.targeting.geo_locations.countries.map((c: string) => (
-                      <span key={c} className="px-3 py-1 bg-amber-600/20 text-amber-400 rounded-full text-[9px] font-black border border-amber-500/30 flex items-center gap-2">
+                      <span key={c} className="px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-[9px] font-black border border-blue-500/30 flex items-center gap-2">
                         {c} <X size={10} className="cursor-pointer" />
                       </span>
                     ))}
@@ -410,29 +410,29 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Age Range</span>
+                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Age Range</span>
                     <div className="flex items-center gap-3">
                        <input 
                          type="number" 
                          value={formData.targeting.age_min}
                          onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, age_min: Number(e.target.value) } })}
-                         className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-[11px] text-center text-white outline-none focus:border-amber-500/50" 
+                         className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-center text-white outline-none focus:border-blue-500/50" 
                        />
-                       <span className="text-zinc-700 font-bold">-</span>
+                       <span className="text-slate-700 font-bold">-</span>
                        <input 
                          type="number" 
                          value={formData.targeting.age_max}
                          onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, age_max: Number(e.target.value) } })}
-                         className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-[11px] text-center text-white outline-none focus:border-amber-500/50" 
+                         className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-center text-white outline-none focus:border-blue-500/50" 
                        />
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Gender</span>
+                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Gender</span>
                     <select 
                       value={formData.targeting.genders?.[0] || 'ALL'}
                       onChange={(e) => setFormData({ ...formData, targeting: { ...formData.targeting, genders: e.target.value === 'ALL' ? undefined : [Number(e.target.value)] } })}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-[11px] text-white outline-none focus:border-amber-500/50"
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-[11px] text-white outline-none focus:border-blue-500/50"
                     >
                       <option value="ALL">All Genders</option>
                       <option value="1">Men</option>
@@ -445,31 +445,31 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
           </div>
 
           {/* Accordion 2: Detailed Targeting */}
-          <div className={`p-6 bg-zinc-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'detailed' ? 'border-orange-500/50' : 'border-zinc-800'}`}>
+          <div className={`p-6 bg-slate-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'detailed' ? 'border-purple-500/50' : 'border-slate-800'}`}>
             <div 
               className="flex items-center justify-between cursor-pointer group"
               onClick={() => toggleSection('detailed')}
             >
               <div className="flex items-center gap-3">
-                <Users size={16} className={expandedSection === 'detailed' ? 'text-orange-500' : 'text-zinc-500'} />
+                <Users size={16} className={expandedSection === 'detailed' ? 'text-purple-500' : 'text-slate-500'} />
                 <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Detailed Targeting</h4>
               </div>
-              {expandedSection === 'detailed' ? <ChevronDown size={16} className="text-zinc-500" /> : <ChevronRight size={16} className="text-zinc-500" />}
+              {expandedSection === 'detailed' ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
             </div>
 
             {expandedSection === 'detailed' && (
-              <div className="space-y-4 mt-6 pt-6 border-t border-zinc-800/50 animate-in slide-in-from-top-2 duration-300">
+              <div className="space-y-4 mt-6 pt-6 border-t border-slate-800/50 animate-in slide-in-from-top-2 duration-300">
                 <div className="relative group">
                   <input 
                     type="text"
                     placeholder="Search interests, behaviors..."
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 pl-12 text-[11px] text-white outline-none focus:border-orange-500/50"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl p-4 pl-12 text-[11px] text-white outline-none focus:border-purple-500/50"
                   />
-                  <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
+                  <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
                 </div>
-                <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2 opacity-50">
-                   <AlertCircle size={20} className="text-zinc-700" />
-                   <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Advanced Targeting UI Module Loading...</p>
+                <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center gap-2 opacity-50">
+                   <AlertCircle size={20} className="text-slate-700" />
+                   <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Advanced Targeting UI Module Loading...</p>
                 </div>
                 <AndromedaInsight text="Públicos BROAD (sem interesses) convertem 22% melhor em escala." />
               </div>
@@ -482,25 +482,25 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     if (activeTab === 'placements') {
       return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="bg-zinc-950/50 border border-zinc-800 rounded-[2rem] p-6 space-y-6">
+          <div className="bg-slate-950/50 border border-slate-800 rounded-[2rem] p-6 space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Zap size={18} className="text-amber-500" />
+                <Zap size={18} className="text-blue-500" />
                 <div>
                   <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Advantage+ Placements</h4>
-                  <p className="text-[9px] text-zinc-500 uppercase font-bold">Automatic distribution across Meta ecosystem</p>
+                  <p className="text-[9px] text-slate-500 uppercase font-bold">Automatic distribution across Meta ecosystem</p>
                 </div>
               </div>
-              <div className="w-12 h-6 rounded-full bg-amber-600 relative">
+              <div className="w-12 h-6 rounded-full bg-blue-600 relative">
                 <div className="absolute top-1 right-1 w-4 h-4 bg-white rounded-full" />
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-3">
               {['Facebook', 'Instagram', 'Messenger', 'Audience Network'].map(p => (
-                <div key={p} className="p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-all">
-                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{p}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]" />
+                <div key={p} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between group hover:border-slate-700 transition-all">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{p}</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
                 </div>
               ))}
             </div>
@@ -517,7 +517,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                 Facebook Page ID {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
               </label>
               <input 
@@ -526,11 +526,11 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                 value={formData.creative.object_story_spec.page_id}
                 onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, page_id: e.target.value } } })}
                 placeholder="Enter Page ID"
-                className={`w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-amber-600/50 ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                 Instagram Account ID {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
               </label>
               <input 
@@ -539,7 +539,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                 value={formData.creative.object_story_spec.instagram_actor_id}
                 onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, instagram_actor_id: e.target.value } } })}
                 placeholder="Enter Instagram ID (Optional)"
-                className={`w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-orange-600/50 ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-purple-600/50 ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
           </div>
@@ -553,22 +553,22 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           
           {/* Accordion 1: Media Configuration */}
-          <div className={`p-6 bg-zinc-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'media' ? 'border-amber-500/50' : 'border-zinc-800'}`}>
+          <div className={`p-6 bg-slate-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'media' ? 'border-blue-500/50' : 'border-slate-800'}`}>
             <div 
               className="flex items-center justify-between cursor-pointer group"
               onClick={() => toggleSection('media')}
             >
               <div className="flex items-center gap-3">
-                <ImageIcon size={16} className={expandedSection === 'media' ? 'text-amber-500' : 'text-zinc-500'} />
+                <ImageIcon size={16} className={expandedSection === 'media' ? 'text-blue-500' : 'text-slate-500'} />
                 <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Media Configuration</h4>
               </div>
-              {expandedSection === 'media' ? <ChevronDown size={16} className="text-zinc-500" /> : <ChevronRight size={16} className="text-zinc-500" />}
+              {expandedSection === 'media' ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
             </div>
 
             {expandedSection === 'media' && (
-              <div className="space-y-4 mt-6 pt-6 border-t border-zinc-800/50 animate-in slide-in-from-top-2 duration-300">
+              <div className="space-y-4 mt-6 pt-6 border-t border-slate-800/50 animate-in slide-in-from-top-2 duration-300">
                 <div className="space-y-2">
-                   <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
                      <ImageIcon size={12} /> Media Hash / Video ID
                    </label>
                    <input 
@@ -576,7 +576,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                      value={formData.creative.object_story_spec.link_data.image_hash || ''}
                      onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, image_hash: e.target.value } } } })}
                      placeholder="Enter Asset ID or Hash"
-                     className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-amber-600/50 font-mono"
+                     className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 font-mono"
                    />
                 </div>
                 <AndromedaInsight text="Anúncios de vídeo (Reels) têm 3x mais engajamento que estáticos em 2026." />
@@ -585,27 +585,27 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
           </div>
 
           {/* Accordion 2: Ad Copy & Messaging */}
-          <div className={`p-6 bg-zinc-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'copy' ? 'border-amber-500/50' : 'border-zinc-800'}`}>
+          <div className={`p-6 bg-slate-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'copy' ? 'border-blue-500/50' : 'border-slate-800'}`}>
             <div 
               className="flex items-center justify-between cursor-pointer group"
               onClick={() => toggleSection('copy')}
             >
               <div className="flex items-center gap-3">
-                <Type size={16} className={expandedSection === 'copy' ? 'text-amber-500' : 'text-zinc-500'} />
+                <Type size={16} className={expandedSection === 'copy' ? 'text-blue-500' : 'text-slate-500'} />
                 <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Ad Copy & Messaging</h4>
               </div>
-              {expandedSection === 'copy' ? <ChevronDown size={16} className="text-zinc-500" /> : <ChevronRight size={16} className="text-zinc-500" />}
+              {expandedSection === 'copy' ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
             </div>
 
             {expandedSection === 'copy' && (
-              <div className="space-y-6 mt-6 pt-6 border-t border-zinc-800/50 animate-in slide-in-from-top-2 duration-300">
+              <div className="space-y-6 mt-6 pt-6 border-t border-slate-800/50 animate-in slide-in-from-top-2 duration-300">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest ml-1">Primary Text</span>
+                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Primary Text</span>
                     <textarea 
                       value={formData.creative.object_story_spec.link_data.message}
                       onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, message: e.target.value } } } })}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-[12px] text-white min-h-[100px] resize-none focus:border-amber-600/50 outline-none transition-all"
+                      className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[12px] text-white min-h-[100px] resize-none focus:border-blue-600/50 outline-none transition-all"
                       placeholder="Capture attention with your main copy..."
                     />
                     <AndromedaInsight text="Textos primários com menos de 280 caracteres perfomam 15% melhor." />
@@ -613,19 +613,19 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
                   <div className="grid grid-cols-2 gap-4">
                      <div className="space-y-2">
-                        <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest ml-1">Headline</span>
+                        <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Headline</span>
                         <input 
                           type="text" 
                           placeholder="Short catchy title"
-                          className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-amber-500/50"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-blue-500/50"
                         />
                      </div>
                      <div className="space-y-2">
-                        <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest ml-1">CTA Type</span>
+                        <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">CTA Type</span>
                         <select 
                           value={formData.creative.object_story_spec.link_data.call_to_action.type}
                           onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, call_to_action: { ...formData.creative.object_story_spec.link_data.call_to_action, type: e.target.value } } } } })}
-                          className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-amber-500/50"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] text-white outline-none focus:border-blue-500/50"
                         >
                           <option value="LEARN_MORE">Learn More</option>
                           <option value="CONTACT_US">Contact Us</option>
@@ -646,7 +646,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     if (activeTab === 'tracking') {
       return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="p-6 bg-zinc-950/50 border border-zinc-800 rounded-[2rem] space-y-6">
+          <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-[2rem] space-y-6">
             <div className="flex items-center gap-3">
               <MousePointer2 size={16} className="text-emerald-500" />
               <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Tracking & URL Parameters</h4>
@@ -654,21 +654,21 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
 
             <div className="space-y-4">
                <div className="space-y-2">
-                  <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest ml-1">Destination URL</span>
+                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Destination URL</span>
                   <input 
                     type="text" 
                     value={formData.creative.object_story_spec.link_data.link}
                     onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, link_data: { ...formData.creative.object_story_spec.link_data, link: e.target.value } } } })}
                     placeholder="https://yourlandingpage.com"
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-[11px] text-amber-400 outline-none"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] text-blue-400 outline-none"
                   />
                </div>
                <div className="space-y-2">
-                  <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest ml-1">URL Parameters (UTM)</span>
+                  <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">URL Parameters (UTM)</span>
                   <input 
                     type="text" 
                     placeholder="utm_source={{site_source_name}}&utm_campaign={{campaign.name}}..."
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-[11px] text-zinc-400 font-mono outline-none"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] text-slate-400 font-mono outline-none"
                   />
                </div>
             </div>
@@ -682,21 +682,21 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* BACKDROP */}
-      <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-xl" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" onClick={onClose} />
 
       {/* MODAL */}
-      <div className="relative w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+      <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
         <div className="p-8 space-y-8 max-h-[90vh] overflow-y-auto">
           
           {/* HEADER */}
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em]">Andromeda Protocol</p>
+              <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Andromeda Protocol</p>
               <h2 className="text-2xl font-black text-white tracking-tighter uppercase">
                 {isEdit ? 'Update Existing' : 'Initialize New'} {level === 'campaign' ? 'Campaign' : level === 'adset' ? 'Ad Set' : 'Ad'}
               </h2>
             </div>
-            <button onClick={onClose} className="w-10 h-10 bg-zinc-950 border border-zinc-800 rounded-xl flex items-center justify-center text-zinc-500 hover:text-white transition-all">
+            <button onClick={onClose} className="w-10 h-10 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-500 hover:text-white transition-all">
               <X size={20} />
             </button>
           </div>
@@ -704,14 +704,14 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
           <form onSubmit={handleHandleSubmit} className="space-y-6">
             {/* NAME INPUT */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Identification</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Identification</label>
               <input 
                 required
                 type="text" 
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder={`Ex: [ANDROMEDA] - ${level.toUpperCase()} 01`}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-amber-600/50 transition-all font-medium"
+                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-blue-600/50 transition-all font-medium"
               />
             </div>
 
@@ -724,11 +724,11 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
             </div>
 
             {/* ACTIONS */}
-            <div className="flex gap-4 pt-4 sticky bottom-0 bg-zinc-900 py-4 border-t border-zinc-800/50">
+            <div className="flex gap-4 pt-4 sticky bottom-0 bg-slate-900 py-4 border-t border-slate-800/50">
               <button 
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-4 rounded-2xl border border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:bg-zinc-800/50 transition-all"
+                className="flex-1 py-4 rounded-2xl border border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-800/50 transition-all"
               >
                 Cancel Protocol
               </button>

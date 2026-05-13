@@ -38,9 +38,9 @@ export const CampaignBentoCard: React.FC<Props> = ({
   // Level Specific UI Helpers
   const renderLevelBadge = () => {
     const label = isCampaign ? 'Campaign' : isAdSet ? 'Ad Set' : 'Ad';
-    const color = isCampaign ? 'text-amber-500' : isAdSet ? 'text-orange-500' : 'text-emerald-500';
+    const color = isCampaign ? 'text-blue-500' : isAdSet ? 'text-purple-500' : 'text-emerald-500';
     return (
-      <span className={`px-2 py-0.5 bg-zinc-950 rounded-full text-[7px] font-black ${color} uppercase tracking-widest border border-zinc-800`}>
+      <span className={`px-2 py-0.5 bg-slate-950 rounded-full text-[7px] font-black ${color} uppercase tracking-widest border border-slate-800`}>
         {label}
       </span>
     );
@@ -52,13 +52,13 @@ export const CampaignBentoCard: React.FC<Props> = ({
         if (!isAd) onNavigate?.(campaign.id);
       }}
       className={`
-        group relative p-6 rounded-[2rem] bg-zinc-900/40 backdrop-blur-3xl border transition-all duration-500 cursor-pointer
-        ${isCritical ? 'border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.1)]' : 'border-zinc-800 hover:border-zinc-700'}
+        group relative p-6 rounded-[2rem] bg-slate-900/40 backdrop-blur-3xl border transition-all duration-500 cursor-pointer
+        ${isCritical ? 'border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.1)]' : 'border-slate-800 hover:border-slate-700'}
         hover:scale-[1.02] active:scale-[0.98]
     `}>
       
       {/* GLOW EFFECT */}
-      <div className={`absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-gradient-to-br from-amber-600/5 to-transparent`} />
+      <div className={`absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-gradient-to-br from-blue-600/5 to-transparent`} />
 
       <div className="relative z-10 space-y-6">
         
@@ -73,7 +73,7 @@ export const CampaignBentoCard: React.FC<Props> = ({
               }}
               className={`
                 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all cursor-pointer mt-1
-                ${isSelected ? 'bg-amber-600 border-amber-500 shadow-[0_0_10px_rgba(37,99,235,0.4)]' : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'}
+                ${isSelected ? 'bg-blue-600 border-blue-500 shadow-[0_0_10px_rgba(37,99,235,0.4)]' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}
               `}
             >
               {isSelected && <Check size={14} className="text-white" strokeWidth={4} />}
@@ -83,8 +83,8 @@ export const CampaignBentoCard: React.FC<Props> = ({
               <div className="flex items-center gap-3">
                 {renderLevelBadge()}
                 <div className="flex items-center gap-1.5">
-                  <div className={`w-1 h-1 rounded-full ${campaign.capi_status === 'HEALTHY' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-zinc-700'}`} />
-                  <span className="text-[7px] font-bold text-zinc-600 uppercase tracking-widest">CAPI</span>
+                  <div className={`w-1 h-1 rounded-full ${campaign.capi_status === 'HEALTHY' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-slate-700'}`} />
+                  <span className="text-[7px] font-bold text-slate-600 uppercase tracking-widest">CAPI</span>
                 </div>
               </div>
               <h3 className="text-base font-black text-white tracking-tighter uppercase leading-tight">
@@ -99,7 +99,7 @@ export const CampaignBentoCard: React.FC<Props> = ({
                 e.stopPropagation();
                 onEdit?.(campaign);
               }}
-              className="w-10 h-10 bg-zinc-950 text-zinc-600 border border-zinc-800 rounded-xl flex items-center justify-center hover:text-white transition-all"
+              className="w-10 h-10 bg-slate-950 text-slate-600 border border-slate-800 rounded-xl flex items-center justify-center hover:text-white transition-all"
             >
               <Edit3 size={16} />
             </button>
@@ -108,7 +108,7 @@ export const CampaignBentoCard: React.FC<Props> = ({
                 e.stopPropagation();
                 onUpdate(campaign.id, { status: campaign.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE' });
               }}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${campaign.status === 'ACTIVE' ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/40' : 'bg-zinc-950 text-zinc-700 border border-zinc-800'}`}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${campaign.status === 'ACTIVE' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'bg-slate-950 text-slate-700 border border-slate-800'}`}
             >
               {campaign.status === 'ACTIVE' ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
             </button>
@@ -118,24 +118,24 @@ export const CampaignBentoCard: React.FC<Props> = ({
         {/* --- LEVEL SPECIFIC CONTENT --- */}
 
         {isAd && (
-          <div className="flex gap-4 p-4 bg-zinc-950/60 rounded-2xl border border-zinc-800/50">
+          <div className="flex gap-4 p-4 bg-slate-950/60 rounded-2xl border border-slate-800/50">
             {campaign.creative?.thumbnail_url ? (
               <img 
                 src={campaign.creative.thumbnail_url} 
                 alt="Ad Preview" 
-                className="w-16 h-16 rounded-lg object-cover border border-zinc-800"
+                className="w-16 h-16 rounded-lg object-cover border border-slate-800"
               />
             ) : (
-              <div className="w-16 h-16 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-800 border border-zinc-800">
+              <div className="w-16 h-16 rounded-lg bg-slate-900 flex items-center justify-center text-slate-800 border border-slate-800">
                 <ImageIcon size={20} />
               </div>
             )}
             <div className="flex-1 space-y-2">
-               <p className="text-[9px] text-zinc-400 font-medium line-clamp-2 leading-relaxed italic">
+               <p className="text-[9px] text-slate-400 font-medium line-clamp-2 leading-relaxed italic">
                  "{campaign.creative?.object_story_spec?.link_data?.message || 'No copy found for this asset.'}"
                </p>
                <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-black text-amber-500 uppercase tracking-widest">
+                  <span className="text-[8px] font-black text-blue-500 uppercase tracking-widest">
                     {campaign.creative?.object_story_spec?.link_data?.call_to_action?.type?.replace('_', ' ') || 'LEARN MORE'}
                   </span>
                </div>
@@ -145,15 +145,15 @@ export const CampaignBentoCard: React.FC<Props> = ({
 
         {isAdSet && (
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800/50 space-y-1">
-              <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Demographics</span>
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/50 space-y-1">
+              <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Demographics</span>
               <p className="text-[10px] font-bold text-white uppercase tracking-tight">
                 {campaign.targeting?.age_min || 18}-{campaign.targeting?.age_max || 65}+ • {campaign.targeting?.genders?.[0] === 1 ? 'Men' : campaign.targeting?.genders?.[0] === 2 ? 'Women' : 'All'}
               </p>
             </div>
-            <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800/50 space-y-1">
-              <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Optimization</span>
-              <p className="text-[10px] font-bold text-amber-400 uppercase tracking-tight">
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/50 space-y-1">
+              <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Optimization</span>
+              <p className="text-[10px] font-bold text-blue-400 uppercase tracking-tight">
                 {campaign.optimization_goal?.replace('_', ' ') || 'REACH'}
               </p>
             </div>
@@ -163,22 +163,22 @@ export const CampaignBentoCard: React.FC<Props> = ({
         {/* 2026 METRICS */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[7px] font-black uppercase tracking-widest text-zinc-600">
+            <div className="flex justify-between text-[7px] font-black uppercase tracking-widest text-slate-600">
               <span>Hook Rate</span>
-              <span className="text-amber-400">{campaign.hook_rate !== undefined ? `${hookRate.toFixed(1)}%` : '—'}</span>
+              <span className="text-blue-400">{campaign.hook_rate !== undefined ? `${hookRate.toFixed(1)}%` : '—'}</span>
             </div>
-            <div className="h-1 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800">
-              <div className="h-full bg-amber-500 transition-all duration-1000" style={{ width: `${hookRate}%` }} />
+            <div className="h-1 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div className="h-full bg-blue-500 transition-all duration-1000" style={{ width: `${hookRate}%` }} />
             </div>
           </div>
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[7px] font-black uppercase tracking-widest text-zinc-600">
+            <div className="flex justify-between text-[7px] font-black uppercase tracking-widest text-slate-600">
               <span>Ad Fatigue</span>
               <span className={fatigueScore > 70 ? 'text-red-500' : 'text-emerald-500'}>
                 {campaign.creative_fatigue_score !== undefined ? `${fatigueScore}%` : 'N/A'}
               </span>
             </div>
-            <div className="h-1 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800">
+            <div className="h-1 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
               <div className={`h-full transition-all duration-1000 ${fatigueScore > 70 ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${fatigueScore}%` }} />
             </div>
           </div>
@@ -188,13 +188,13 @@ export const CampaignBentoCard: React.FC<Props> = ({
         {!isAd && <AndromedaPredictiveChart campaign={campaign} />}
 
         {/* CPMR ALERT PANEL */}
-        <div className={`p-4 rounded-2xl border flex items-center justify-between ${isCritical ? 'bg-amber-500/5 border-amber-500/20' : 'bg-zinc-950/40 border-zinc-800'}`}>
+        <div className={`p-4 rounded-2xl border flex items-center justify-between ${isCritical ? 'bg-amber-500/5 border-amber-500/20' : 'bg-slate-950/40 border-slate-800'}`}>
           <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isCritical ? 'bg-amber-500/20 text-amber-500' : 'bg-zinc-800 text-zinc-500'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isCritical ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-800 text-slate-500'}`}>
                {isCritical ? <AlertTriangle size={14} /> : <Activity size={14} />}
             </div>
             <div>
-              <p className="text-[7px] font-black text-zinc-600 uppercase tracking-widest">CPMr Andromeda</p>
+              <p className="text-[7px] font-black text-slate-600 uppercase tracking-widest">CPMr Andromeda</p>
               <p className={`text-base font-black ${isCritical ? 'text-amber-500' : 'text-white'}`}>
                 {campaign.cpmr !== undefined ? `R$ ${cpmr.toFixed(2)}` : 'R$ 0.00'}
               </p>
@@ -204,37 +204,37 @@ export const CampaignBentoCard: React.FC<Props> = ({
         </div>
 
         {/* GEM CONTROLS (Safety Guaranteed) */}
-        <div className="pt-3 grid grid-cols-2 gap-3 border-t border-zinc-800/50">
-          <div className="flex items-center justify-between p-2 bg-zinc-950/60 rounded-xl border border-zinc-800">
-             <ShieldCheck size={12} className={campaign.multi_advertiser_ads_enabled ? 'text-amber-500' : 'text-zinc-700'} />
+        <div className="pt-3 grid grid-cols-2 gap-3 border-t border-slate-800/50">
+          <div className="flex items-center justify-between p-2 bg-slate-950/60 rounded-xl border border-slate-800">
+             <ShieldCheck size={12} className={campaign.multi_advertiser_ads_enabled ? 'text-blue-500' : 'text-slate-700'} />
              <button 
                onClick={() => onUpdate(campaign.id, { multi_advertiser_ads_enabled: !campaign.multi_advertiser_ads_enabled })}
-               className={`w-6 h-3 rounded-full relative transition-all ${campaign.multi_advertiser_ads_enabled ? 'bg-amber-600' : 'bg-zinc-800'}`}
+               className={`w-6 h-3 rounded-full relative transition-all ${campaign.multi_advertiser_ads_enabled ? 'bg-blue-600' : 'bg-slate-800'}`}
              >
                <div className={`absolute top-0.5 w-2 h-2 bg-white rounded-full transition-all ${campaign.multi_advertiser_ads_enabled ? 'right-0.5' : 'left-0.5'}`} />
              </button>
           </div>
-          <div className="flex items-center justify-between p-2 bg-zinc-950/60 rounded-xl border border-zinc-800">
-             <Fingerprint size={12} className={campaign.is_synthetic_content ? 'text-orange-500' : 'text-zinc-700'} />
+          <div className="flex items-center justify-between p-2 bg-slate-950/60 rounded-xl border border-slate-800">
+             <Fingerprint size={12} className={campaign.is_synthetic_content ? 'text-purple-500' : 'text-slate-700'} />
              <input 
                type="checkbox"
                checked={!!campaign.is_synthetic_content}
                onChange={() => onUpdate(campaign.id, { is_synthetic_content: !campaign.is_synthetic_content })}
-               className="w-3 h-3 rounded border-zinc-800 bg-zinc-900 checked:bg-orange-600 focus:ring-0 transition-all cursor-pointer"
+               className="w-3 h-3 rounded border-slate-800 bg-slate-900 checked:bg-purple-600 focus:ring-0 transition-all cursor-pointer"
              />
           </div>
         </div>
 
         {/* BUDGET INPUT */}
         <div className="relative group/input">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-700 font-black text-[10px]">R$</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 font-black text-[10px]">R$</span>
           <input 
             type="number" 
             value={campaign.daily_budget || 0}
             onChange={(e) => onUpdate(campaign.id, { daily_budget: Number(e.target.value) })}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-3 pl-10 text-[10px] font-black text-amber-400 outline-none focus:border-amber-500/50 transition-all"
+            className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-3 pl-10 text-[10px] font-black text-blue-400 outline-none focus:border-blue-500/50 transition-all"
           />
-          <Zap size={12} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-800 group-hover/input:text-amber-500" />
+          <Zap size={12} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-800 group-hover/input:text-blue-500" />
         </div>
 
       </div>
