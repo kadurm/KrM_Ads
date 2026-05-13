@@ -23,7 +23,7 @@ import {
   Cell
 } from 'recharts';
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+const COLORS = ['#f59e0b', '#10b981', '#f59e0b', '#ef4444', '#eab308', '#ec4899'];
 
 export function GlobalFinancialView({ startDate, endDate }: any) {
   const [loading, setLoading] = useState(true);
@@ -139,7 +139,7 @@ export function GlobalFinancialView({ startDate, endDate }: any) {
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold' }}
+                  contentStyle={{ backgroundColor: '#18181b', border: 'none', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -160,7 +160,7 @@ export function GlobalFinancialView({ startDate, endDate }: any) {
       <div className="bg-zinc-900 rounded-[3rem] border border-zinc-800 overflow-hidden shadow-2xl">
         <div className="p-8 border-b border-zinc-800 flex justify-between items-center">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-600/10 flex items-center justify-center text-purple-500">
+                <div className="w-10 h-10 rounded-xl bg-orange-600/10 flex items-center justify-center text-orange-500">
                     <CreditCard size={20} />
                 </div>
                 <h3 className="font-black text-lg uppercase tracking-tighter">Últimas Transações (Global)</h3>

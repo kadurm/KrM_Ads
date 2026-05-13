@@ -445,13 +445,13 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
           </div>
 
           {/* Accordion 2: Detailed Targeting */}
-          <div className={`p-6 bg-zinc-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'detailed' ? 'border-purple-500/50' : 'border-zinc-800'}`}>
+          <div className={`p-6 bg-zinc-950/50 border transition-all duration-300 rounded-[2rem] ${expandedSection === 'detailed' ? 'border-orange-500/50' : 'border-zinc-800'}`}>
             <div 
               className="flex items-center justify-between cursor-pointer group"
               onClick={() => toggleSection('detailed')}
             >
               <div className="flex items-center gap-3">
-                <Users size={16} className={expandedSection === 'detailed' ? 'text-purple-500' : 'text-zinc-500'} />
+                <Users size={16} className={expandedSection === 'detailed' ? 'text-orange-500' : 'text-zinc-500'} />
                 <h4 className="text-[11px] font-black text-white uppercase tracking-tight">Detailed Targeting</h4>
               </div>
               {expandedSection === 'detailed' ? <ChevronDown size={16} className="text-zinc-500" /> : <ChevronRight size={16} className="text-zinc-500" />}
@@ -463,7 +463,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                   <input 
                     type="text"
                     placeholder="Search interests, behaviors..."
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 pl-12 text-[11px] text-white outline-none focus:border-purple-500/50"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 pl-12 text-[11px] text-white outline-none focus:border-orange-500/50"
                   />
                   <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
                 </div>
@@ -500,7 +500,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
               {['Facebook', 'Instagram', 'Messenger', 'Audience Network'].map(p => (
                 <div key={p} className="p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-between group hover:border-zinc-700 transition-all">
                   <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{p}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_#3b82f6]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]" />
                 </div>
               ))}
             </div>
@@ -539,7 +539,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                 value={formData.creative.object_story_spec.instagram_actor_id}
                 onChange={(e) => setFormData({ ...formData, creative: { ...formData.creative, object_story_spec: { ...formData.creative.object_story_spec, instagram_actor_id: e.target.value } } })}
                 placeholder="Enter Instagram ID (Optional)"
-                className={`w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-purple-600/50 ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-[13px] text-white outline-none focus:border-orange-600/50 ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
           </div>

@@ -38,7 +38,7 @@ export const CampaignBentoCard: React.FC<Props> = ({
   // Level Specific UI Helpers
   const renderLevelBadge = () => {
     const label = isCampaign ? 'Campaign' : isAdSet ? 'Ad Set' : 'Ad';
-    const color = isCampaign ? 'text-amber-500' : isAdSet ? 'text-purple-500' : 'text-emerald-500';
+    const color = isCampaign ? 'text-amber-500' : isAdSet ? 'text-orange-500' : 'text-emerald-500';
     return (
       <span className={`px-2 py-0.5 bg-zinc-950 rounded-full text-[7px] font-black ${color} uppercase tracking-widest border border-zinc-800`}>
         {label}
@@ -215,12 +215,12 @@ export const CampaignBentoCard: React.FC<Props> = ({
              </button>
           </div>
           <div className="flex items-center justify-between p-2 bg-zinc-950/60 rounded-xl border border-zinc-800">
-             <Fingerprint size={12} className={campaign.is_synthetic_content ? 'text-purple-500' : 'text-zinc-700'} />
+             <Fingerprint size={12} className={campaign.is_synthetic_content ? 'text-orange-500' : 'text-zinc-700'} />
              <input 
                type="checkbox"
                checked={!!campaign.is_synthetic_content}
                onChange={() => onUpdate(campaign.id, { is_synthetic_content: !campaign.is_synthetic_content })}
-               className="w-3 h-3 rounded border-zinc-800 bg-zinc-900 checked:bg-purple-600 focus:ring-0 transition-all cursor-pointer"
+               className="w-3 h-3 rounded border-zinc-800 bg-zinc-900 checked:bg-orange-600 focus:ring-0 transition-all cursor-pointer"
              />
           </div>
         </div>

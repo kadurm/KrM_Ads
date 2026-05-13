@@ -185,7 +185,7 @@ src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"
       <div className="bg-zinc-900 p-8 rounded-[3rem] border border-zinc-800 shadow-2xl">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-600/10 flex items-center justify-center text-purple-500">
+            <div className="w-10 h-10 rounded-xl bg-orange-600/10 flex items-center justify-center text-orange-500">
               <Code2 size={20} />
             </div>
             <h3 className="font-black text-lg uppercase tracking-tighter">Instalação no Site (Pixel Base)</h3>

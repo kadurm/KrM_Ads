@@ -225,7 +225,7 @@ export default function InstagramPlannerView({ cliente }) {
             <div className="pt-6 border-t border-zinc-800 space-y-6">
               <div className="flex items-center justify-between bg-zinc-950 p-6 rounded-3xl border border-zinc-800">
                 <div className="flex items-center gap-4">
-                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${scheduleMode ? 'bg-purple-600/10 text-purple-500' : 'bg-amber-600/10 text-amber-500'}`}>
+                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${scheduleMode ? 'bg-orange-600/10 text-orange-500' : 'bg-amber-600/10 text-amber-500'}`}>
                       <Clock size={24} />
                    </div>
                    <div>
@@ -270,7 +270,7 @@ export default function InstagramPlannerView({ cliente }) {
                 className={`w-full py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center justify-center gap-3 shadow-2xl ${
                   isSubmitting || !mediaUrl 
                     ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' 
-                    : scheduleMode ? 'bg-purple-600 text-white shadow-purple-900/20 hover:bg-purple-700' : 'bg-amber-600 text-white shadow-amber-900/20 hover:bg-amber-700'
+                    : scheduleMode ? 'bg-orange-600 text-white shadow-orange-900/20 hover:bg-orange-700' : 'bg-amber-600 text-white shadow-amber-900/20 hover:bg-amber-700'
                 }`}
               >
                 {isSubmitting ? (
@@ -305,7 +305,7 @@ export default function InstagramPlannerView({ cliente }) {
               {/* INSTAGRAM HEADER MOCK */}
               <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-[2px]">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-orange-600 p-[2px]">
                     <div className="w-full h-full rounded-full bg-zinc-900 border border-black flex items-center justify-center text-[10px] font-black text-white uppercase tracking-tighter">KrM</div>
                   </div>
                   <span className="text-[10px] font-bold text-white uppercase tracking-tight">{cliente || 'Empresa'}</span>

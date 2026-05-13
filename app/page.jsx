@@ -878,7 +878,7 @@ export default function App() {
               onClick={() => setShowClientSelector(!showClientSelector)}
               className="group flex items-center gap-3 bg-zinc-800/40 hover:bg-zinc-800/80 p-2.5 px-5 rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all duration-300 shadow-xl"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-600 to-indigo-700 flex items-center justify-center text-[10px] font-black text-white shadow-lg shadow-amber-900/20 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-600 to-yellow-700 flex items-center justify-center text-[10px] font-black text-white shadow-lg shadow-amber-900/20 group-hover:scale-105 transition-transform">
                 {clienteSelecionado?.substring(0, 2).toUpperCase()}
               </div>
               <div className="text-left">
@@ -1038,9 +1038,9 @@ export default function App() {
                   <div className="flex flex-col items-center space-y-4">
                     {[
                       { label: 'Impressões (Topo)', val: relatorioDados.reduce((a,c)=>a+c.rawImpressoes,0), color: 'bg-amber-600', icon: <Eye size={14}/> },
-                      { label: 'Alcance', val: totalReachReal, color: 'bg-sky-500', icon: <Target size={14}/> },
-                      { label: 'Engajamento (Meio)', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas+c.rawReacoes,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
-                      { label: 'Interesse (Leads)', val: relatorioDados.reduce((a,c)=>a+c.leads,0), color: 'bg-purple-500', icon: <Plus size={14}/> },
+                      { label: 'Alcance', val: totalReachReal, color: 'bg-amber-500', icon: <Target size={14}/> },
+                      { label: 'Engajamento (Meio)', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas+c.rawReacoes,0), color: 'bg-yellow-500', icon: <MousePointerClick size={14}/> },
+                      { label: 'Interesse (Leads)', val: relatorioDados.reduce((a,c)=>a+c.leads,0), color: 'bg-orange-500', icon: <Plus size={14}/> },
                       { label: 'Conversão (Fundo)', val: relatorioDados.reduce((a,c)=>a+c.compras,0), color: 'bg-emerald-500', icon: <ShoppingCart size={14}/> }
                     ].map((s, i, arr) => {
                       const max = arr[0].val || 1;
@@ -1064,11 +1064,11 @@ export default function App() {
                     <ResponsiveContainer width="100%" height={280}>
                       <BarChart data={dadosGrafico} layout="vertical" margin={{ top: 5, right: 60, left: 10, bottom: 5 }}>
                         <XAxis type="number" hide/>
-                        <YAxis dataKey="nome" type="category" tick={{fontSize:9, fill:'#64748b'}} width={100} />
-                        <Tooltip cursor={{fill:'#1e293b'}} contentStyle={{backgroundColor:'#0f172a', border:'none', borderRadius:'8px'}} formatter={(v) => [`R$ ${parseFloat(v).toFixed(2)}`, 'Gasto']} />
+                        <YAxis dataKey="nome" type="category" tick={{fontSize:9, fill:'#a1a1aa'}} width={100} />
+                        <Tooltip cursor={{fill:'#27272a'}} contentStyle={{backgroundColor:'#18181b', border:'none', borderRadius:'8px'}} formatter={(v) => [`R$ ${parseFloat(v).toFixed(2)}`, 'Gasto']} />
                         <Bar 
                           dataKey="rawValor" 
-                          fill="#3b82f6" 
+                          fill="#f59e0b" 
                           radius={[0,4,4,0]} 
                           label={{ 
                             position: 'right', 
@@ -1116,14 +1116,14 @@ export default function App() {
                   <h3 className="font-bold uppercase text-xs tracking-widest text-zinc-400 mb-6">Evolução Diária do Período</h3>
                   <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={dailyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                      <XAxis dataKey="data" tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={v => { const [,m,d] = v.split('-'); return `${d}/${m}`; }} />
-                      <YAxis yAxisId="left" tick={{ fontSize: 10, fill: '#64748b' }} />
-                      <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: '#64748b' }} />
-                      <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }} labelFormatter={v => { const [y,m,d] = v.split('-'); return `${d}/${m}/${y}`; }} formatter={(value, name) => { if (name === 'Investimento' || name === 'CPL') return [`R$ ${value.toFixed(2)}`, name]; return [value, name]; }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                      <XAxis dataKey="data" tick={{ fontSize: 10, fill: '#a1a1aa' }} tickFormatter={v => { const [,m,d] = v.split('-'); return `${d}/${m}`; }} />
+                      <YAxis yAxisId="left" tick={{ fontSize: 10, fill: '#a1a1aa' }} />
+                      <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: '#a1a1aa' }} />
+                      <Tooltip contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '12px', fontSize: '12px' }} labelFormatter={v => { const [y,m,d] = v.split('-'); return `${d}/${m}/${y}`; }} formatter={(value, name) => { if (name === 'Investimento' || name === 'CPL') return [`R$ ${value.toFixed(2)}`, name]; return [value, name]; }} />
                       <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
-                      <Line yAxisId="left" type="monotone" dataKey="mensagens" name="Leads" stroke="#8b5cf6" strokeWidth={2.5} dot={{ r: 3, fill: '#8b5cf6' }} activeDot={{ r: 5 }} />
-                      <Line yAxisId="right" type="monotone" dataKey="investimento" name="Investimento" stroke="#3b82f6" strokeWidth={2.5} dot={{ r: 3, fill: '#3b82f6' }} activeDot={{ r: 5 }} />
+                      <Line yAxisId="left" type="monotone" dataKey="mensagens" name="Leads" stroke="#eab308" strokeWidth={2.5} dot={{ r: 3, fill: '#eab308' }} activeDot={{ r: 5 }} />
+                      <Line yAxisId="right" type="monotone" dataKey="investimento" name="Investimento" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 3, fill: '#f59e0b' }} activeDot={{ r: 5 }} />
                       <Line yAxisId="right" type="monotone" dataKey="cpl" name="CPL" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
 
                     </LineChart>
@@ -1207,8 +1207,8 @@ export default function App() {
               </div>
 
               <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden mt-8 shadow-2xl DiagnosticHeader">
-                <div className="p-6 border-b border-zinc-800 flex justify-between items-center"><h3 className="font-bold flex items-center gap-2"><Sparkles className="text-purple-400" size={18} /> Diagnóstico de Campanhas</h3><button onClick={handleGerarIA} disabled={isGenerating} className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold p-2 px-6 rounded-lg transition-all shadow-lg shadow-purple-900/20">{isGenerating ? 'Analisando...' : 'Gerar Diagnóstico'}</button></div>
-                <div className="p-6 DiagnosticContent"><textarea className="w-full h-64 bg-zinc-950 border-none rounded-xl p-4 text-sm text-zinc-300 resize-none outline-none focus:ring-1 focus:ring-purple-500" readOnly value={analiseIA} placeholder="A análise estratégica baseada nos dados auditados aparecerá aqui..."></textarea></div>
+                <div className="p-6 border-b border-zinc-800 flex justify-between items-center"><h3 className="font-bold flex items-center gap-2"><Sparkles className="text-orange-400" size={18} /> Diagnóstico de Campanhas</h3><button onClick={handleGerarIA} disabled={isGenerating} className="bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold p-2 px-6 rounded-lg transition-all shadow-lg shadow-orange-900/20">{isGenerating ? 'Analisando...' : 'Gerar Diagnóstico'}</button></div>
+                <div className="p-6 DiagnosticContent"><textarea className="w-full h-64 bg-zinc-950 border-none rounded-xl p-4 text-sm text-zinc-300 resize-none outline-none focus:ring-1 focus:ring-orange-500" readOnly value={analiseIA} placeholder="A análise estratégica baseada nos dados auditados aparecerá aqui..."></textarea></div>
               </div>
 
               <div className="flex justify-end gap-4 pb-12">
@@ -1290,12 +1290,12 @@ export default function App() {
                            <ResponsiveContainer width="100%" height="100%">
                               <BarChart data={portfolioData.sectors} layout="vertical">
                                  <XAxis type="number" hide />
-                                 <YAxis dataKey="sector" type="category" width={100} axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 10, fontWeight: 'bold'}} />
+                                 <YAxis dataKey="sector" type="category" width={100} axisLine={false} tickLine={false} tick={{fill: '#a1a1aa', fontSize: 10, fontWeight: 'bold'}} />
                                  <Tooltip 
-                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px' }}
+                                    contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '16px' }}
                                     itemStyle={{ color: '#fff', fontSize: '12px' }}
                                  />
-                                 <Bar dataKey="spend" fill="#3b82f6" radius={[0, 10, 10, 0]} barSize={20} />
+                                 <Bar dataKey="spend" fill="#f59e0b" radius={[0, 10, 10, 0]} barSize={20} />
                               </BarChart>
                            </ResponsiveContainer>
                         </div>
@@ -1552,7 +1552,7 @@ export default function App() {
                           </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-amber-600/10 to-purple-600/10 p-8 rounded-[2.5rem] border border-amber-500/20 relative group">
+                        <div className="bg-gradient-to-br from-amber-600/10 to-orange-600/10 p-8 rounded-[2.5rem] border border-amber-500/20 relative group">
                           <Sparkles className="absolute -top-4 -right-4 text-amber-500/10 group-hover:scale-125 transition-transform duration-1000" size={120} />
                           <h4 className="text-xs font-black text-white mb-4 flex items-center gap-2 uppercase tracking-widest">Guia do Agente IA</h4>
                           <p className="text-[13px] text-zinc-400 leading-relaxed relative z-10 font-medium italic">
