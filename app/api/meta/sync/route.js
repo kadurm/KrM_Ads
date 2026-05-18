@@ -167,7 +167,7 @@ export async function GET(request) {
         conversas_leads: acc.conversas_leads + m.conversas_leads,
         valor_investido: acc.valor_investido + Number(m.valor_investido),
         compras: acc.compras + m.compras,
-        valor_compras: acc.valor_compras + Number(m.valor_compras || 0),
+        valor_compras: acc.valor_compras + Number(m.valor_compras || 0) + Number(m.faturamento_manual || 0),
         reacoes_sociais: acc.reacoes_sociais + m.reacoes_sociais,
         engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores + m.reacoes_sociais)
       }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0, reacoes_sociais: 0 });     
