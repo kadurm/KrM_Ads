@@ -57,9 +57,10 @@ function getTrueLeads(actions) {
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
   const fbContact = getMetric(actions, 'contact');
-  // Leads = Conversas Iniciadas OU Leads de Formulario OU Contatos
+  const customPixel = getMetric(actions, 'offsite_conversion.fb_pixel_custom');
+  // Leads = Conversas Iniciadas OU Leads de Formulario OU Contatos OU Custom Pixel
   // Math.max garante que não contemos 2x se a Meta reportar messaging_first_reply e conversation_started
-  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact;
+  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact + customPixel;
 }
 
 function getSocialActions(actions) {
