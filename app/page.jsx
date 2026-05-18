@@ -635,7 +635,7 @@ export default function App() {
         const res = await fetch('/api/meta/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ since: startDate, until: endDate, cliente: clienteSelecionado }),
+          body: JSON.stringify({ since: startDate, until: endDate, cliente: clienteSelecionado, forceFullSync: true }),
         });
         const data = await res.json();
         if (!data.success && !cancelled) {

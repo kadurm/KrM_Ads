@@ -92,7 +92,7 @@ export async function GET(request) {
     if (!clienteNome) return NextResponse.json({ success: false, error: "Cliente não especificado" }, { status: 400 });   
 
     const slug = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
-    const shortName = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(' ')[0];
+    const shortName = clienteNome.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(' ')[0].replace(/[^a-zA-Z0-9]/g, '');
     
     const cliente = await prisma.cliente.findFirst({ 
       where: { 
@@ -297,15 +297,14 @@ export async function GET(request) {
       const AD_ACCOUNT_REFRESH = rawAccountIdRefresh?.startsWith('act_') ? rawAccountIdRefresh : (rawAccountIdRefresh ? `act_${rawAccountIdRefresh}` : null);
 
       if (ACCESS_TOKEN_REFRESH && AD_ACCOUNT_REFRESH) {
-        const [adsListRefreshRes, adCreativesRefreshRes] = await Promise.all([
-          fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/ads`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,creative{id}', limit: '1000' })),
-          fetch(graphUrl(`${AD_ACCOUNT_REFRESH}/adcreatives`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,image_url,thumbnail_url,image_hash,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
+        const [adsListRefreshData, adCreativesRefreshData] = await Promise.all([
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_REFRESH}/ads`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,creative{id}', limit: '1000' })),
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_REFRESH}/adcreatives`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,image_url,thumbnail_url,image_hash,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
         ]);
-        const [adsListRefresh, adCreativesRefresh] = await Promise.all([adsListRefreshRes.json(), adCreativesRefreshRes.json()]);
-        const adToCreativeRefresh = new Map(adsListRefresh.data?.map(a => [a.id, a.creative?.id]) || []);
-        const creativeRefreshMap = new Map(adCreativesRefresh.data?.map(c => [String(c.id), c]) || []);
+        const adToCreativeRefresh = new Map(adsListRefreshData?.map(a => [a.id, a.creative?.id]) || []);
+        const creativeRefreshMap = new Map(adCreativesRefreshData?.map(c => [String(c.id), c]) || []);
 
-        const storyIdsRefresh = adCreativesRefresh.data?.map(c => c.effective_object_story_id).filter(id => !!id) || [];
+        const storyIdsRefresh = adCreativesRefreshData?.map(c => c.effective_object_story_id).filter(id => !!id) || [];
         const storyRefreshMap = new Map();
         if (storyIdsRefresh.length > 0) {
           for (let i = 0; i < storyIdsRefresh.length; i += 50) {
@@ -319,7 +318,7 @@ export async function GET(request) {
         }
 
         const imageHashRefreshMap = new Map();
-        const hashesRefresh = [...new Set(adCreativesRefresh.data?.map(c => c.image_hash).filter(h => !!h) || [])];
+        const hashesRefresh = [...new Set(adCreativesRefreshData?.map(c => c.image_hash).filter(h => !!h) || [])];
         if (hashesRefresh.length > 0) {
           for (let i = 0; i < hashesRefresh.length; i += 50) {
             const chunk = hashesRefresh.slice(i, i + 50);
@@ -392,7 +391,7 @@ export async function POST(request) {
     if (!cliente) return NextResponse.json({ success: false, error: "Cliente não fornecido" }, { status: 400 });
 
     const slug = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
-    const shortName = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(' ')[0];
+    const shortName = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(' ')[0].replace(/[^a-zA-Z0-9]/g, '');
 
     const dbCliente = await prisma.cliente.findFirst({ 
       where: { 
