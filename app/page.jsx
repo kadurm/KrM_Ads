@@ -68,7 +68,12 @@ function formatDateLocal(d) {
 
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('relatorios');
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('krm_active_tab') || 'relatorios';
+    }
+    return 'relatorios';
+  });
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [clientesDisponiveis, setClientesDisponiveis] = useState([]);
   
@@ -155,6 +160,18 @@ export default function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (clienteSelecionado && typeof window !== 'undefined') {
+      localStorage.setItem('krm_cliente_selecionado', clienteSelecionado);
+    }
+  }, [clienteSelecionado]);
+
+  useEffect(() => {
+    if (activeTab && typeof window !== 'undefined') {
+      localStorage.setItem('krm_active_tab', activeTab);
+    }
+  }, [activeTab]);
+
   const reportRef = useRef(null);
 
   const loadPortfolio = async () => {
@@ -187,7 +204,11 @@ export default function App() {
       const data = await res.json();
       if (data.success) {
         setClientesDisponiveis(data.clientes);
-        if (data.clientes.length > 0 && !clienteSelecionado) {
+        const savedCliente = typeof window !== 'undefined' ? localStorage.getItem('krm_cliente_selecionado') : null;
+        
+        if (savedCliente && data.clientes.some(c => c.nome === savedCliente)) {
+          setClienteSelecionado(savedCliente);
+        } else if (data.clientes.length > 0 && !clienteSelecionado) {
           setClienteSelecionado(data.clientes[0].nome);
         }
       }
