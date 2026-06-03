@@ -18,7 +18,7 @@ export const metadata = {
   openGraph: {
     title: 'KrM Ads | Inteligência em Meta Ads',
     description: 'Performance de elite com tecnologia preditiva Andromeda.',
-    url: 'https://krmads.com.br',
+    url: 'https://ads.krmcorp.com.br',
     siteName: 'KrM Ads',
     locale: 'pt_BR',
     type: 'website',

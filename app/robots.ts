@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/atendimento/'],
     },
-    sitemap: 'https://krmads.com.br/sitemap.xml',
+    sitemap: 'https://ads.krmcorp.com.br/sitemap.xml',
   };
 }

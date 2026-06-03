@@ -195,8 +195,9 @@ export default function AtendimentoPage() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Usuário</label>
+              <label htmlFor="login-username" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Usuário</label>
               <input 
+                id="login-username"
                 required 
                 type="text" 
                 value={loginUsername} 
@@ -206,8 +207,9 @@ export default function AtendimentoPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Senha</label>
+              <label htmlFor="login-password" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Senha</label>
               <input 
+                id="login-password"
                 required 
                 type="password" 
                 value={loginPassword} 
@@ -225,6 +227,7 @@ export default function AtendimentoPage() {
             )}
 
             <button 
+              id="login-submit-btn"
               type="submit" 
               disabled={isLoggingIn}
               className="w-full bg-red-700 hover:bg-red-600 text-white py-5 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-red-950/40 active:scale-95 transition-all border border-red-600/30 flex items-center justify-center gap-2 disabled:opacity-50"
@@ -269,6 +272,7 @@ export default function AtendimentoPage() {
                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Live</span>
             </div>
             <button 
+              id="btn-logout"
               onClick={handleLogout}
               className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-950/40 active:scale-95 transition-all"
               title="Sair"
@@ -284,6 +288,7 @@ export default function AtendimentoPage() {
           <div className="relative flex-1 group">
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-red-500 transition-colors" size={20} />
             <input 
+              id="search-input"
               type="text" 
               placeholder="Localizar lead por nome..."
               value={searchTerm}
@@ -292,6 +297,7 @@ export default function AtendimentoPage() {
             />
           </div>
           <button 
+            id="btn-add-lead"
             onClick={() => setShowAddLead(true)}
             className="w-16 h-16 bg-red-700 text-white rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-red-950/50 hover:scale-105 hover:bg-red-600 active:scale-95 transition-all border border-red-600/30"
           >
@@ -404,12 +410,13 @@ export default function AtendimentoPage() {
                     
                     <form onSubmit={handleAddNota} className="relative">
                        <textarea 
+                         id="note-textarea"
                          value={novaNota}
                          onChange={e => setNovaNota(e.target.value)}
                          placeholder="Descreva o atendimento aqui..."
                          className="w-full bg-slate-950 border border-slate-900 rounded-[2rem] p-6 pr-16 text-sm text-white outline-none focus:border-red-800/40 min-h-[120px] resize-none shadow-inner"
                        />
-                       <button className="absolute right-4 bottom-4 w-12 h-12 bg-red-700 text-white rounded-2xl flex items-center justify-center shadow-xl hover:bg-red-600 active:scale-90 transition-all border border-red-600/20">
+                       <button id="send-note-btn" type="submit" className="absolute right-4 bottom-4 w-12 h-12 bg-red-700 text-white rounded-2xl flex items-center justify-center shadow-xl hover:bg-red-600 active:scale-90 transition-all border border-red-600/20">
                          <Send size={20}/>
                        </button>
                     </form>
@@ -449,18 +456,18 @@ export default function AtendimentoPage() {
               </div>
               <form onSubmit={handleAddLead} className="space-y-6">
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Nome do Prospect</label>
-                    <input required value={newLead.nome} onChange={e => setNewLead({...newLead, nome: e.target.value})} type="text" className="w-full bg-slate-950 border border-slate-900 rounded-2xl p-5 text-base text-white outline-none focus:border-red-800/40 transition-all" placeholder="Nome Completo" />
+                    <label htmlFor="new-lead-name" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Nome do Prospect</label>
+                    <input id="new-lead-name" required value={newLead.nome} onChange={e => setNewLead({...newLead, nome: e.target.value})} type="text" className="w-full bg-slate-950 border border-slate-900 rounded-2xl p-5 text-base text-white outline-none focus:border-red-800/40 transition-all" placeholder="Nome Completo" />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">WhatsApp / Contato</label>
-                    <input required value={newLead.contato} onChange={e => setNewLead({...newLead, contato: e.target.value})} type="text" className="w-full bg-slate-950 border border-slate-900 rounded-2xl p-5 text-base text-white outline-none focus:border-red-800/40 transition-all" placeholder="55 00 00000-0000" />
+                    <label htmlFor="new-lead-contact" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">WhatsApp / Contato</label>
+                    <input id="new-lead-contact" required value={newLead.contato} onChange={e => setNewLead({...newLead, contato: e.target.value})} type="text" className="w-full bg-slate-950 border border-slate-900 rounded-2xl p-5 text-base text-white outline-none focus:border-red-800/40 transition-all" placeholder="55 00 00000-0000" />
                  </div>
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Origem da Entrada</label>
-                    <input value={newLead.origem} onChange={e => setNewLead({...newLead, origem: e.target.value})} type="text" className="w-full bg-slate-950 border border-slate-900 rounded-2xl p-5 text-base text-white outline-none focus:border-red-800/40 transition-all" placeholder="Ex: Canal Solution" />
+                    <label htmlFor="new-lead-origin" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Origem da Entrada</label>
+                    <input id="new-lead-origin" value={newLead.origem} onChange={e => setNewLead({...newLead, origem: e.target.value})} type="text" className="w-full bg-slate-950 border border-slate-900 rounded-2xl p-5 text-base text-white outline-none focus:border-red-800/40 transition-all" placeholder="Ex: Canal Solution" />
                  </div>
-                 <button type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-6 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-red-950/40 mt-6 active:scale-95 transition-all border border-red-600/30">
+                 <button id="btn-register-lead" type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-6 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-red-950/40 mt-6 active:scale-95 transition-all border border-red-600/30">
                    Registrar no Solution Hub
                  </button>
               </form>
