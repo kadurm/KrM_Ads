@@ -1,6 +1,11 @@
 export const metadata = {
   title: 'CRM - Solution Place',
   description: 'Painel operacional de gestão de leads e relacionamento da Solution Place. Acesso restrito.',
+  icons: {
+    icon: '/solutionplace_logo.jpeg',
+    shortcut: '/solutionplace_logo.jpeg',
+    apple: '/solutionplace_logo.jpeg',
+  },
   robots: {
     index: false,
     follow: false,
