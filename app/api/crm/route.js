@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
+import { sendWhatsAppMessage } from '../whatsapp/send/route';
 
 const prisma = new PrismaClient();
 
@@ -116,6 +117,14 @@ export async function POST(request) {
       await sendCapiEvent(clienteDb, lead, 'Purchase');
     } else {
       await sendCapiEvent(clienteDb, lead, 'Lead');
+    }
+
+    // Gatilho WhatsApp Boas-vindas
+    if (lead.status === 'NOVO' && lead.contato) {
+      const welcomeMessage = `Olá ${lead.nome}! Recebemos o seu contato. Um de nossos especialistas em blindagem falará com você em breve.`;
+      sendWhatsAppMessage(clienteDb, lead.contato, welcomeMessage).catch(err => {
+        console.error('[CRM POST WhatsApp Welcome Error]', err);
+      });
     }
 
     return NextResponse.json({ success: true, lead });

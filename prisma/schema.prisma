@@ -19,6 +19,9 @@ model Cliente {
   meta_pixel_id       String?     @default("")
   setor               String?     @default("Geral")
   insights            String?     @default("")
+  whatsapp_instance_url   String? @default("")
+  whatsapp_instance_name  String? @default("")
+  whatsapp_instance_token String? @default("")
   campanhas           Campanha[]
   relatorios          Relatorio[]
   leads               Lead[]
