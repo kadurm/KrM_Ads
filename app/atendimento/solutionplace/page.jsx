@@ -22,7 +22,8 @@ import {
   Building,
   LayoutDashboard,
   Megaphone,
-  Database
+  Database,
+  LogOut
 } from 'lucide-react';
 
 export default function AtendimentoPage() {
@@ -37,8 +38,58 @@ export default function AtendimentoPage() {
   const [showAddLead, setShowAddLead] = useState(false);
   const [newLead, setNewLead] = useState({ nome: '', contato: '', origem: 'Canal Solution' });
 
+  // Authentication States
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    if (typeof window !== 'undefined') {
+      const session = sessionStorage.getItem('solution_session');
+      if (session === 'authenticated') {
+        setIsAuthenticated(true);
+      }
+    }
+  }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setIsLoggingIn(true);
+    try {
+      const res = await fetch('/api/auth/solution', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: loginUsername, password: loginPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem('solution_session', 'authenticated');
+        setIsAuthenticated(true);
+      } else {
+        setAuthError(data.error || 'Credenciais inválidas.');
+      }
+    } catch (err) {
+      setAuthError('Falha na comunicação com o servidor.');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('solution_session');
+    setIsAuthenticated(false);
+    setLoginUsername('');
+    setLoginPassword('');
+    setAuthError('');
+  };
+
   const loadLeads = useCallback(async () => {
-    if (!clienteUrl) return;
+    if (!clienteUrl || !isAuthenticated) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteUrl)}`);
@@ -50,11 +101,13 @@ export default function AtendimentoPage() {
     } finally {
       setLoading(false);
     }
-  }, [clienteUrl]);
+  }, [clienteUrl, isAuthenticated]);
 
   useEffect(() => {
-    loadLeads();
-  }, [loadLeads]);
+    if (isAuthenticated) {
+      loadLeads();
+    }
+  }, [loadLeads, isAuthenticated]);
 
   const handleUpdateStatus = async (leadId, newStatus) => {
     try {
@@ -120,6 +173,77 @@ export default function AtendimentoPage() {
     l.contato?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (!isMounted) return null;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#0a0b0e] text-slate-100 font-sans flex items-center justify-center p-6 relative overflow-hidden">
+        {/* Ambient Glows */}
+        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-red-950/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-red-950/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="w-full max-w-md bg-[#11131a]/85 backdrop-blur-md rounded-[3rem] p-10 border border-[#1b1c24] shadow-2xl relative z-10 space-y-8">
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 bg-[#1b1c24] rounded-3xl flex items-center justify-center overflow-hidden border border-red-900/30 shadow-inner mx-auto">
+              <img src="/solutionplace_logo.jpeg" alt="Solution Place Logo" className="w-full h-full object-cover" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black tracking-tighter text-white uppercase">Acesso Restrito</h2>
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Solution Place Operational Hub</p>
+            </div>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Usuário</label>
+              <input 
+                required 
+                type="text" 
+                value={loginUsername} 
+                onChange={e => setLoginUsername(e.target.value)} 
+                className="w-full bg-slate-950 border border-slate-900 rounded-2xl p-5 text-base text-white outline-none focus:border-red-800/40 transition-all" 
+                placeholder="Insira seu usuário" 
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Senha</label>
+              <input 
+                required 
+                type="password" 
+                value={loginPassword} 
+                onChange={e => setLoginPassword(e.target.value)} 
+                className="w-full bg-slate-950 border border-slate-900 rounded-2xl p-5 text-base text-white outline-none focus:border-red-800/40 transition-all" 
+                placeholder="••••••••" 
+              />
+            </div>
+
+            {authError && (
+              <div className="bg-red-950/20 border border-red-900/30 rounded-2xl p-4 flex items-center gap-3 text-red-400 text-xs font-semibold animate-shake">
+                <AlertCircle size={18} className="shrink-0" />
+                <span>{authError}</span>
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={isLoggingIn}
+              className="w-full bg-red-700 hover:bg-red-600 text-white py-5 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-red-950/40 active:scale-95 transition-all border border-red-600/30 flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="animate-spin" size={16} />
+                  <span>Verificando...</span>
+                </>
+              ) : (
+                <span>Entrar no Hub</span>
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0b0e] text-slate-100 font-sans pb-20 relative overflow-hidden">
       {/* Efeitos de Iluminação de Fundo (Ambient Glows) */}
@@ -139,9 +263,18 @@ export default function AtendimentoPage() {
                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">Painel de Operações Solution</p>
              </div>
           </div>
-          <div className="flex items-center gap-2 bg-slate-900/60 p-1.5 px-4 rounded-full border border-slate-800">
-             <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse shadow-glow" />
-             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Live</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-slate-900/60 p-1.5 px-4 rounded-full border border-slate-800">
+               <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse shadow-glow" />
+               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Live</span>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-950/40 active:scale-95 transition-all"
+              title="Sair"
+            >
+              <LogOut size={16} />
+            </button>
           </div>
         </div>
       </header>
