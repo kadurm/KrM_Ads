@@ -12,6 +12,7 @@ import {
   Settings,
   Plus,
   Sparkles,
+  AlertTriangle,
   Download,
   MessageCircle,
   TrendingUp,
@@ -49,6 +50,7 @@ import {
   PieChart,
   Instagram,
   ShieldCheck,
+  Menu,
   } from 'lucide-react';
 import { CampaignsBoard } from '@/views/CampaignsBoard';
 import { PaymentsView } from '@/views/PaymentsView';
@@ -111,6 +113,7 @@ export default function App() {
   const [totalReachReal, setTotalReachReal] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [mensagemPainel, setMensagemPainel] = useState(null);
+  const [auditResult, setAuditResult] = useState(null);
   const [campaignsList, setCampaignsList] = useState([]);
   const [campaignsLoading, setCampaignsLoading] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState(null);
@@ -149,8 +152,32 @@ export default function App() {
   const [clientSearch, setClientSearch] = useState('');
   const selectorRef = useRef(null);
 
+  // Mobile Responsiveness States
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Auto-close sidebar on tab change
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [activeTab]);
+
+  // Authentication States (Cuidado com chaves expostas - validação robusta server-side)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   useEffect(() => {
     setIsMounted(true);
+    
+    // Check if session is already active in sessionStorage
+    if (typeof window !== 'undefined') {
+      const session = sessionStorage.getItem('krm_session');
+      if (session === 'authenticated') {
+        setIsAuthenticated(true);
+      }
+    }
+
     const handleClickOutside = (event) => {
       if (selectorRef.current && !selectorRef.current.contains(event.target)) {
         setShowClientSelector(false);
@@ -159,6 +186,39 @@ export default function App() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setIsLoggingIn(true);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: loginUsername, password: loginPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem('krm_session', 'authenticated');
+        setIsAuthenticated(true);
+      } else {
+        setAuthError(data.error || 'Credenciais inválidas.');
+      }
+    } catch (err) {
+      setAuthError('Falha na comunicação com o servidor de segurança.');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('krm_session');
+    setIsAuthenticated(false);
+    setLoginUsername('');
+    setLoginPassword('');
+    setAuthError('');
+  };
+
 
   useEffect(() => {
     if (clienteSelecionado && typeof window !== 'undefined') {
@@ -616,6 +676,7 @@ export default function App() {
       if (data.totalReach) setTotalReachReal(data.totalReach);
       if (data.criativos) setCriativosDados(data.criativos);
       if (data.dailyMetrics) setDailyData(data.dailyMetrics);
+      setAuditResult(data.audit || null);
 
     } catch (e) {
       setMensagemPainel({ tipo: 'erro', texto: 'Falha ao carregar métricas.' });
@@ -650,7 +711,12 @@ export default function App() {
     if (!clienteSelecionado) return;
     let cancelled = false;
     const autoSync = async () => {
-      if (isSyncing) { loadMetrics(); return; }
+      // 1. Carrega imediatamente os dados cacheados do banco de dados para evitar tela vazia ou dados anteriores
+      await loadMetrics();
+      
+      // 2. Se já estiver em andamento um sync, não dispara outra chamada de sync
+      if (isSyncing) return;
+      
       setIsSyncing(true);
       try {
         const res = await fetch('/api/meta/sync', {
@@ -667,6 +733,8 @@ export default function App() {
       } finally {
         if (!cancelled) setIsSyncing(false);
       }
+      
+      // 3. Atualiza os dados com a sincronização mais recente da Meta
       if (!cancelled) await loadMetrics();
     };
     autoSync();
@@ -807,11 +875,95 @@ export default function App() {
 
   const roas = investimento > 0 ? (faturamento / investimento).toFixed(2) : 0;
 
+  if (!isMounted) {
+    return (
+      <div className="flex h-screen w-screen bg-slate-950 items-center justify-center">
+        <Loader2 className="animate-spin text-blue-600" size={40} />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="relative min-h-screen w-screen bg-slate-950 flex items-center justify-center overflow-hidden font-sans">
+        {/* Glow Spheres */}
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse duration-[8s]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] animate-pulse duration-[12s]" />
+
+        <div className="relative w-full max-w-md mx-4 z-10">
+          <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/80 rounded-[3rem] p-10 sm:p-12 shadow-[0_0_80px_rgba(0,0,0,0.6)] flex flex-col items-center">
+            {/* Branding Logo */}
+            <div className="w-20 h-20 bg-blue-600/10 border border-blue-500/20 rounded-[2rem] flex items-center justify-center mb-6 shadow-2xl">
+              <ShieldCheck className="text-blue-500" size={40} />
+            </div>
+
+            <h2 className="text-3xl font-black tracking-tight text-white uppercase text-center">KrM Ads</h2>
+            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest text-center mt-1.5 mb-10">SaaS Operational Hub</p>
+
+            <form onSubmit={handleLogin} className="w-full space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-2">Usuário de Acesso</label>
+                <input 
+                  required
+                  type="text" 
+                  value={loginUsername}
+                  onChange={e => setLoginUsername(e.target.value)}
+                  className="w-full bg-slate-950/60 border border-slate-800/80 rounded-2xl p-5 text-sm text-white outline-none focus:border-blue-600/50 focus:ring-4 ring-blue-600/5 transition-all"
+                  placeholder="Nome de usuário" 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-2">Senha de Segurança</label>
+                <input 
+                  required
+                  type="password" 
+                  value={loginPassword}
+                  onChange={e => setLoginPassword(e.target.value)}
+                  className="w-full bg-slate-950/60 border border-slate-800/80 rounded-2xl p-5 text-sm text-white outline-none focus:border-blue-600/50 focus:ring-4 ring-blue-600/5 transition-all"
+                  placeholder="••••••••" 
+                />
+              </div>
+
+              {authError && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-4 rounded-2xl flex items-center gap-3 mt-4">
+                  <div className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 animate-ping" />
+                  <p className="font-bold">{authError}</p>
+                </div>
+              )}
+
+              <button 
+                type="submit" 
+                disabled={isLoggingIn}
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-900/40 mt-8 active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                {isLoggingIn ? (
+                  <>
+                    <Loader2 className="animate-spin" size={16} />
+                    Validando Acesso...
+                  </>
+                ) : 'Acessar Andromeda Hub'}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-slate-950 font-sans text-slate-100 overflow-hidden">
+
+      {/* Overlay to close sidebar on mobile */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
       
       {/* SIDEBAR REORGANIZADA */}
-      <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 shadow-2xl">
+      <aside className={`fixed md:relative z-50 h-screen md:h-auto w-64 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 shadow-2xl transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="p-6 border-b border-slate-800">
           <h1 className="text-2xl font-bold flex items-center gap-3">
             <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-11 h-11 object-contain" /> KrM Ads
@@ -868,28 +1020,45 @@ export default function App() {
         </div>
 
         <div className="p-4 border-t border-slate-800">
-           <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
-              <div className="w-11 h-11 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/20 overflow-hidden shadow-lg">
-                <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-full h-full object-cover scale-125" />
+           <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 bg-blue-600/20 rounded-lg flex items-center justify-center border border-blue-500/20 overflow-hidden shadow-lg flex-shrink-0">
+                  <img src="/LogoKrM_Final_Extreme.png" alt="KrM Logo" className="w-full h-full object-cover scale-125" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold text-white truncate">Operador KrM</p>
+                  <p className="text-[8px] text-slate-500 font-bold uppercase">Sessão Ativa</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold text-white truncate">Operador KrM</p>
-                <p className="text-[8px] text-slate-500 font-bold uppercase">Sessão Ativa</p>
-              </div>
+              <button 
+                onClick={handleLogout}
+                title="Sair do Painel"
+                className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all flex-shrink-0"
+              >
+                <X size={14} />
+              </button>
            </div>
         </div>
       </aside>
 
+
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* HEADER SUPERIOR MODERNIZADO */}
-        <header className="h-20 bg-slate-900/50 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-10 flex-shrink-0 z-50">
-          <div className="flex items-center gap-4">
-             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+        <header className="h-20 bg-slate-900/50 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-3 md:px-10 flex-shrink-0 z-40">
+          <div className="flex items-center gap-2 md:gap-4">
+             <button 
+               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+               className="md:hidden p-2 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center flex-shrink-0"
+               title="Menu principal"
+             >
+               <Menu size={20} />
+             </button>
+             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20 hidden sm:block">
                <Briefcase className="text-blue-400" size={18} />
              </div>
              <div>
                <h2 className="font-black uppercase tracking-[0.2em] text-[10px] text-slate-500">Workspace</h2>
-               <p className="text-xs font-bold text-slate-300">Ambiente de Operação KrM Ads</p>
+               <p className="text-xs font-bold text-slate-300 hidden sm:block">Ambiente de Operação KrM Ads</p>
              </div>
           </div>
 
@@ -897,18 +1066,18 @@ export default function App() {
           <div className="relative" ref={selectorRef}>
             <button 
               onClick={() => setShowClientSelector(!showClientSelector)}
-              className="group flex items-center gap-3 bg-slate-800/40 hover:bg-slate-800/80 p-2.5 px-5 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all duration-300 shadow-xl"
+              className="group flex items-center gap-1.5 sm:gap-3 bg-slate-800/40 hover:bg-slate-800/80 p-1.5 sm:p-2.5 px-3 sm:px-5 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all duration-300 shadow-xl"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-[10px] font-black text-white shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform">
-                {clienteSelecionado?.substring(0, 2).toUpperCase()}
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-[10px] font-black text-white shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform flex-shrink-0">
+                {clienteSelecionado ? clienteSelecionado.substring(0, 2).toUpperCase() : 'KM'}
               </div>
               <div className="text-left">
-                <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Empresa Selecionada</span>
-                <span className="block text-[11px] font-black text-blue-400 uppercase truncate max-w-[180px]">
+                <span className="hidden sm:block text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Empresa Selecionada</span>
+                <span className="block text-[10px] sm:text-[11px] font-black text-blue-400 uppercase truncate max-w-[100px] sm:max-w-[180px]">
                   {clienteSelecionado || 'Selecionar Cliente'}
                 </span>
               </div>
-              <ChevronDown className={`text-slate-500 group-hover:text-blue-400 transition-all ${showClientSelector ? 'rotate-180' : ''}`} size={16} />
+              <ChevronDown className="text-slate-500 group-hover:text-blue-400 transition-all flex-shrink-0" size={16} />
             </button>
 
             {/* DROPDOWN MENU */}
@@ -986,8 +1155,15 @@ export default function App() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 md:space-y-6">
           
+          {isSyncing && (
+             <div className="p-4 rounded-xl font-bold text-xs flex items-center gap-2 bg-blue-600/10 text-blue-400 border border-blue-500/20 animate-pulse">
+               <RefreshCw size={14} className="animate-spin" />
+               Sincronizando dados em tempo real com o Meta Ads...
+             </div>
+           )}
+
           {mensagemPainel && (
             <div className={`p-4 rounded-xl font-bold text-xs flex items-center gap-2 ${mensagemPainel.tipo === 'erro' ? 'bg-red-600/20 text-red-400 border border-red-500/20' : 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/20'}`}>
               {mensagemPainel.tipo === 'erro' ? <X size={14} /> : <Check size={14} />}
@@ -1000,7 +1176,28 @@ export default function App() {
             <div ref={reportRef} className="space-y-6">
               <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Performance Global</h1>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Performance Global</h1>
+                    {auditResult && (
+                      <div className={`self-start sm:self-auto flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border backdrop-blur-md transition-all ${
+                        auditResult.verified 
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                          : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30 animate-pulse'
+                      }`}>
+                        {auditResult.verified ? (
+                          <>
+                            <ShieldCheck size={12} className="text-emerald-400" />
+                            Garantia KrM: 100% Auditado
+                          </>
+                        ) : (
+                          <>
+                            <AlertTriangle size={12} className="text-yellow-400 animate-bounce" />
+                            Auditoria: Divergência de R$ {auditResult.discrepancySpend.toFixed(2)} (Ajustando...)
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <p className="text-slate-500 text-sm mt-1">Dados auditados: <strong>{clienteSelecionado}</strong></p>
                 </div>
                 <div className="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-sm flex-wrap">
@@ -1026,7 +1223,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
                   <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
                   <div className="text-xl font-black mt-1 text-slate-100">R$ {investimento}</div>
@@ -1154,7 +1351,7 @@ export default function App() {
 
               <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-slate-100"><ImageIcon className="text-blue-500" /> Ranking de Criativos</h3>
               <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado.</p>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[...criativosDados]
                   .map(c => ({ ...c, _cpa: segmento === 'inside_sales' ? (c.leads > 0 ? c.valor_investido / c.leads : Infinity) : (c.compras > 0 ? c.valor_investido / c.compras : Infinity) }))
                   .sort((a, b) => a._cpa - b._cpa)

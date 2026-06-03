@@ -256,49 +256,51 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
             <div className="animate-in fade-in duration-500">
               {renderKPIs()}
               <div className="bg-slate-900 rounded-[2rem] border border-slate-800 overflow-hidden shadow-2xl">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
-                      <th className="p-6">Data</th>
-                      <th className="p-6">Descrição</th>
-                      <th className="p-6">Status</th>
-                      <th className="p-6 text-right">Valor</th>
-                      <th className="p-6 text-center">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/50">
-                    {data.transacoes.map(t => (
-                      <tr key={t.id} className="hover:bg-slate-800/30 transition-all">
-                        <td className="p-6 text-xs text-slate-400 font-bold">{new Date(t.criado_em).toLocaleDateString()}</td>
-                        <td className="p-6">
-                          <div className="flex flex-col">
-                            <span className="text-[8px] font-black uppercase text-blue-500 mb-1 tracking-tighter">{t.categoria}</span>
-                            <p className="text-sm font-bold text-slate-200">{t.descricao}</p>
-                            <p className="text-[9px] text-slate-500 font-black uppercase">{t.referencia}</p>
-                          </div>
-                        </td>
-                        <td className="p-6">
-                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                            t.status === 'PAGO' ? 'bg-emerald-600/10 text-emerald-400' :
-                            t.status === 'VENCIDO' ? 'bg-red-600/10 text-red-400' :
-                            t.status === 'CANCELADO' ? 'bg-slate-600/10 text-slate-400' :
-                            'bg-amber-600/10 text-amber-400'
-                          }`}>
-                            {t.status}
-                          </span>
-                        </td>
-                        <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {parseFloat(t.valor).toFixed(2)}</td>
-                        <td className="p-6 text-center">
-                          {t.status === 'PENDENTE' && (
-                            <button onClick={() => updateTransacaoStatus(t.id, 'PAGO')} className="p-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 rounded-lg text-[9px] font-black uppercase tracking-widest mr-2">
-                              Marcar Pago
-                            </button>
-                          )}
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[700px]">
+                    <thead>
+                      <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
+                        <th className="p-6">Data</th>
+                        <th className="p-6">Descrição</th>
+                        <th className="p-6">Status</th>
+                        <th className="p-6 text-right">Valor</th>
+                        <th className="p-6 text-center">Ações</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/50">
+                      {data.transacoes.map(t => (
+                        <tr key={t.id} className="hover:bg-slate-800/30 transition-all">
+                          <td className="p-6 text-xs text-slate-400 font-bold">{new Date(t.criado_em).toLocaleDateString()}</td>
+                          <td className="p-6">
+                            <div className="flex flex-col">
+                              <span className="text-[8px] font-black uppercase text-blue-500 mb-1 tracking-tighter">{t.categoria}</span>
+                              <p className="text-sm font-bold text-slate-200">{t.descricao}</p>
+                              <p className="text-[9px] text-slate-500 font-black uppercase">{t.referencia}</p>
+                            </div>
+                          </td>
+                          <td className="p-6">
+                            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                              t.status === 'PAGO' ? 'bg-emerald-600/10 text-emerald-400' :
+                              t.status === 'VENCIDO' ? 'bg-red-600/10 text-red-400' :
+                              t.status === 'CANCELADO' ? 'bg-slate-600/10 text-slate-400' :
+                              'bg-amber-600/10 text-amber-400'
+                            }`}>
+                              {t.status}
+                            </span>
+                          </td>
+                          <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {parseFloat(t.valor).toFixed(2)}</td>
+                          <td className="p-6 text-center">
+                            {t.status === 'PENDENTE' && (
+                              <button onClick={() => updateTransacaoStatus(t.id, 'PAGO')} className="p-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 rounded-lg text-[9px] font-black uppercase tracking-widest mr-2">
+                                Marcar Pago
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -326,37 +328,39 @@ export function PaymentsView({ clienteName, startDate, endDate }: any) {
 
           {activeSubTab === 'notas' && (
             <div className="bg-slate-900 rounded-[2rem] border border-slate-800 overflow-hidden shadow-2xl animate-in fade-in duration-500">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
-                    <th className="p-6">Número</th>
-                    <th className="p-6">Emissão</th>
-                    <th className="p-6">Descrição</th>
-                    <th className="p-6 text-right">Valor</th>
-                    <th className="p-6 text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/50">
-                  {notas.map(n => (
-                    <tr key={n.id} className="hover:bg-slate-800/30 transition-all">
-                      <td className="p-6 font-mono text-sm font-bold text-blue-400">#{String(n.numero).padStart(5, '0')}</td>
-                      <td className="p-6 text-xs text-slate-400 font-bold">{new Date(n.criado_em).toLocaleDateString()}</td>
-                      <td className="p-6 text-sm font-bold text-slate-200">{n.descricao}</td>
-                      <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {parseFloat(n.valor).toFixed(2)}</td>
-                      <td className="p-6 text-center">
-                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${n.status === 'EMITIDA' ? 'bg-emerald-600/10 text-emerald-400' : 'bg-red-600/10 text-red-400'}`}>
-                          {n.status}
-                        </span>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[700px]">
+                  <thead>
+                    <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
+                      <th className="p-6">Número</th>
+                      <th className="p-6">Emissão</th>
+                      <th className="p-6">Descrição</th>
+                      <th className="p-6 text-right">Valor</th>
+                      <th className="p-6 text-center">Status</th>
                     </tr>
-                  ))}
-                  {notas.length === 0 && (
-                     <tr>
-                        <td colSpan={5} className="p-10 text-center text-slate-500 font-bold text-sm">Nenhuma Nota Fiscal emitida neste período.</td>
-                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/50">
+                    {notas.map(n => (
+                      <tr key={n.id} className="hover:bg-slate-800/30 transition-all">
+                        <td className="p-6 font-mono text-sm font-bold text-blue-400">#{String(n.numero).padStart(5, '0')}</td>
+                        <td className="p-6 text-xs text-slate-400 font-bold">{new Date(n.criado_em).toLocaleDateString()}</td>
+                        <td className="p-6 text-sm font-bold text-slate-200">{n.descricao}</td>
+                        <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {parseFloat(n.valor).toFixed(2)}</td>
+                        <td className="p-6 text-center">
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${n.status === 'EMITIDA' ? 'bg-emerald-600/10 text-emerald-400' : 'bg-red-600/10 text-red-400'}`}>
+                            {n.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                    {notas.length === 0 && (
+                       <tr>
+                          <td colSpan={5} className="p-10 text-center text-slate-500 font-bold text-sm">Nenhuma Nota Fiscal emitida neste período.</td>
+                       </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </>

@@ -125,19 +125,20 @@ export async function GET(request) {
 
       if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
         const tr = JSON.stringify({ since, until });
-        const [accRes, campRes, adRes] = await Promise.all([
-          fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'reach,spend,impressions,actions,action_values', level: 'account' })),
-          fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'campaign_name,reach', level: 'campaign', limit: '100' })),
-          fetch(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'ad_name,reach', level: 'ad', limit: '500' }))
+        const [accData, campData, adData] = await Promise.all([
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'reach,spend,impressions,actions,action_values', level: 'account' })),
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'campaign_id,reach', level: 'campaign', limit: '100' })),
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'ad_id,reach', level: 'ad', limit: '500' }))
         ]);
-        const accJson = await accRes.json();
-        if (accJson.data && accJson.data[0]) metaAccountTotals = accJson.data[0];
+        if (accData && accData[0]) metaAccountTotals = accData[0];
         
-        const campJson = await campRes.json();
-        if (campJson.data) campJson.data.forEach(c => metaCampReachMap.set(c.campaign_name, parseInt(c.reach) || 0));
+        if (campData) {
+          campData.forEach(c => metaCampReachMap.set(String(c.campaign_id), parseInt(c.reach) || 0));
+        }
 
-        const adJson = await adRes.json();
-        if (adJson.data) adJson.data.forEach(a => metaAdReachMap.set(a.ad_name, parseInt(a.reach) || 0));
+        if (adData) {
+          adData.forEach(a => metaAdReachMap.set(String(a.ad_id), parseInt(a.reach) || 0));
+        }
       }
     } catch (e) { console.error("Erro ao buscar totais reais na Meta:", e); }
 
@@ -172,8 +173,8 @@ export async function GET(request) {
         engajamentoTotal: acc.engajamentoTotal + (m.cliques + m.visitas_perfil + m.seguidores + m.reacoes_sociais)
       }), { impressoes: 0, alcance: 0, cliques: 0, visitas_perfil: 0, seguidores: 0, conversas_leads: 0, valor_investido: 0, compras: 0, valor_compras: 0, engajamentoTotal: 0, reacoes_sociais: 0 });     
 
-      if (metaCampReachMap.has(camp.nome_gerado)) {
-        total.alcance = metaCampReachMap.get(camp.nome_gerado);
+      if (metaCampReachMap.has(String(camp.meta_id))) {
+        total.alcance = metaCampReachMap.get(String(camp.meta_id));
       }
 
       let finalVal = 0;
@@ -255,15 +256,21 @@ export async function GET(request) {
 
       if (stats.impressoes === 0 && stats.valor_investido === 0) continue;
 
+      let liveAlcance = stats.alcance;
+      if (c.meta_ad_id && metaAdReachMap.has(String(c.meta_ad_id))) {
+        liveAlcance = metaAdReachMap.get(String(c.meta_ad_id));
+      }
+
       if (!groupedMap.has(key)) {
         groupedMap.set(key, {
           id: c.id, nome_anuncio: key, url_midia: c.url_midia, texto_principal: c.texto_principal,
-          ...stats
+          ...stats,
+          alcance: liveAlcance
         });
       } else {
         const existing = groupedMap.get(key);
         existing.impressoes += stats.impressoes;
-        existing.alcance += stats.alcance;
+        existing.alcance += liveAlcance;
         existing.cliques += stats.cliques;
         existing.valor_investido += stats.valor_investido;   
         existing.leads += stats.leads;
@@ -275,13 +282,8 @@ export async function GET(request) {
     }
 
     const criativos = Array.from(groupedMap.values()).map(c => {
-      let finalAlcance = c.alcance;
-      if (metaAdReachMap.has(c.nome_anuncio)) {
-        finalAlcance = metaAdReachMap.get(c.nome_anuncio);
-      }
       return {
         ...c, 
-        alcance: finalAlcance,
         ctr: c.count > 0 ? c.totalCtr / c.count : 0      
       };
     });
@@ -380,7 +382,33 @@ export async function GET(request) {
 
     const totalReach = metaAccountTotals ? parseInt(metaAccountTotals.reach) : metrics.reduce((a,c)=>a+c.alcance, 0);
 
-    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach, lastSyncDate });
+    // --- AUDITORIA DE GARANTIA E CONFORMIDADE DE DADOS ---
+    const dbTotalSpend = metrics.reduce((acc, m) => acc + (parseFloat(m.valor_investido) || 0), 0);
+    const dbTotalImpressions = metrics.reduce((acc, m) => acc + (parseInt(m.impressoes) || 0), 0);
+
+    let audit = {
+      verified: false,
+      metaSpend: 0,
+      dbSpend: parseFloat(dbTotalSpend.toFixed(2)),
+      metaImpressions: 0,
+      dbImpressions: dbTotalImpressions,
+      discrepancySpend: 0,
+      discrepancyImpressions: 0
+    };
+
+    if (metaAccountTotals) {
+      audit.metaSpend = parseFloat(parseFloat(metaAccountTotals.spend || 0).toFixed(2));
+      audit.metaImpressions = parseInt(metaAccountTotals.impressions) || 0;
+      audit.discrepancySpend = parseFloat(Math.abs(audit.metaSpend - audit.dbSpend).toFixed(2));
+      audit.discrepancyImpressions = Math.abs(audit.metaImpressions - audit.dbImpressions);
+      
+      // Margem de tolerância de R$ 0.05 para arredondamentos e 0 impressões de diferença
+      if (audit.discrepancySpend <= 0.05 && audit.discrepancyImpressions === 0) {
+        audit.verified = true;
+      }
+    }
+
+    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach, lastSyncDate, audit });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

@@ -204,14 +204,14 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     }[level] || [];
 
     return (
-      <div className="flex gap-1 p-1 bg-slate-950/50 rounded-2xl border border-slate-800/50 mb-6">
+      <div className="flex flex-wrap sm:flex-nowrap gap-1 p-1 bg-slate-950/50 rounded-2xl border border-slate-800/50 mb-6">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
             className={`
-              flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+              flex-1 min-w-[80px] sm:min-w-0 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
               ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}
             `}
           >
@@ -231,7 +231,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
               Select Strategic Objective {isEdit && <span className="text-amber-500 ml-2">(Locked after creation)</span>}
             </label>
-            <div className={`grid grid-cols-2 md:grid-cols-3 gap-3 ${isEdit ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}>
+            <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 ${isEdit ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}>
               {OBJECTIVES.map((obj) => (
                 <div 
                   key={obj.id}
@@ -315,7 +315,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     if (activeTab === 'geral') {
       return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                 Optimization Goal {isEdit && <span className="text-amber-500 ml-1">(Locked)</span>}
@@ -349,7 +349,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
                 <Layers size={12} className="text-slate-600" /> Start Time
@@ -408,7 +408,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Age Range</span>
                     <div className="flex items-center gap-3">
@@ -496,7 +496,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {['Facebook', 'Instagram', 'Messenger', 'Audience Network'].map(p => (
                 <div key={p} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between group hover:border-slate-700 transition-all">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{p}</span>
@@ -611,7 +611,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
                     <AndromedaInsight text="Textos primários com menos de 280 caracteres perfomam 15% melhor." />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                      <div className="space-y-2">
                         <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Headline</span>
                         <input 
@@ -724,7 +724,7 @@ export const CampaignBuilderModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
             </div>
 
             {/* ACTIONS */}
-            <div className="flex gap-4 pt-4 sticky bottom-0 bg-slate-900 py-4 border-t border-slate-800/50">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 sticky bottom-0 bg-slate-900 py-4 border-t border-slate-800/50 z-10">
               <button 
                 type="button"
                 onClick={onClose}

@@ -123,9 +123,9 @@ export const CampaignsBoard: React.FC<Props> = ({
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
       {/* ADVANCED TOOLBAR */}
-      <div className="flex flex-wrap items-center justify-between gap-6 bg-slate-900/20 p-6 rounded-[2rem] border border-slate-800/50 backdrop-blur-md">
-        <div className="flex items-center gap-6">
-           <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 bg-slate-900/20 p-6 rounded-[2rem] border border-slate-800/50 backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+           <div className="flex items-center justify-between sm:justify-start gap-2 bg-slate-950 p-1 rounded-2xl border border-slate-800 w-full sm:w-auto">
               {[
                 { id: 'campaign', label: 'Campaigns' },
                 { id: 'adset', label: 'Ad Sets' },
@@ -135,7 +135,7 @@ export const CampaignsBoard: React.FC<Props> = ({
                   key={lvl.id}
                   onClick={() => handleTabClick(lvl.id)}
                   className={`
-                    px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+                    flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
                     ${level === lvl.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-500 hover:text-white'}
                   `}
                 >
@@ -146,7 +146,7 @@ export const CampaignsBoard: React.FC<Props> = ({
 
            {selectedIds.length > 0 && (
              <div className="flex items-center gap-4 animate-in fade-in zoom-in duration-300">
-                <div className="h-8 w-px bg-slate-800" />
+                <div className="h-8 w-px bg-slate-800 hidden sm:block" />
                 <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
                   {selectedIds.length} Selected
                 </span>
@@ -160,7 +160,7 @@ export const CampaignsBoard: React.FC<Props> = ({
            )}
         </div>
 
-        <div className="flex items-center gap-4 flex-1 max-w-3xl">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-1 w-full lg:max-w-3xl">
            <div className="relative flex-1 group">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors" size={16} />
               <input 
@@ -172,7 +172,7 @@ export const CampaignsBoard: React.FC<Props> = ({
               />
            </div>
 
-           <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+           <div className="flex items-center justify-between sm:justify-start gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800 w-full sm:w-auto">
             {[
               { id: 'ALL', label: 'Todas' },
               { id: 'DELIVERY', label: 'Veiculadas' },
@@ -182,7 +182,7 @@ export const CampaignsBoard: React.FC<Props> = ({
                 key={f.id}
                 onClick={() => setStatusFilter(f.id)}
                 className={`
-                  px-4 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all
+                  flex-1 sm:flex-none px-4 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all
                   ${statusFilter === f.id ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}
                 `}
               >
@@ -191,16 +191,16 @@ export const CampaignsBoard: React.FC<Props> = ({
             ))}
            </div>
            
-           <div className="flex items-center gap-2">
+           <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
              <button 
                onClick={() => setIsBuilderOpen(true)}
-               className="px-6 py-4 bg-white text-black rounded-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+               className="flex-1 sm:flex-none px-6 py-4 bg-white text-black rounded-2xl flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]"
              >
                <Plus size={16} strokeWidth={3} />
                <span className="text-[9px] font-black uppercase tracking-widest">Initialize New Protocol</span>
              </button>
 
-             <button onClick={onRefresh} className="w-12 h-12 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-600 hover:text-white transition-all">
+             <button onClick={onRefresh} className="w-12 h-12 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-600 hover:text-white transition-all flex-shrink-0">
                 <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
              </button>
            </div>
@@ -224,7 +224,7 @@ export const CampaignsBoard: React.FC<Props> = ({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
           {filteredCampaigns.map((campaign) => (
             <CampaignBentoCard 
               key={campaign.id} 

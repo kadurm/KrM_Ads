@@ -146,7 +146,7 @@ export default function InstagramPlannerView({ cliente }) {
             {/* TIPO DE POST */}
             <div className="space-y-4">
               <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Tipo de Conteúdo</label>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { id: 'FEED', label: 'Feed', icon: Layout },
                   { id: 'REELS', label: 'Reels', icon: PlaySquare },
@@ -242,7 +242,7 @@ export default function InstagramPlannerView({ cliente }) {
               </div>
 
               {scheduleMode && (
-                <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-4 duration-500">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in slide-in-from-top-4 duration-500">
                    <div className="space-y-2">
                       <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest ml-1">Data da Publicação</label>
                       <input 

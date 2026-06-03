@@ -54,7 +54,7 @@ export function GlobalFinancialView({ startDate, endDate }: any) {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* HEADER KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 shadow-xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <TrendingUp size={80} />
@@ -166,43 +166,45 @@ export function GlobalFinancialView({ startDate, endDate }: any) {
                 <h3 className="font-black text-lg uppercase tracking-tighter">Últimas Transações (Global)</h3>
             </div>
         </div>
-        <table className="w-full text-left border-collapse">
-            <thead>
-            <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
-                <th className="p-6">Cliente</th>
-                <th className="p-6">Data</th>
-                <th className="p-6">Descrição</th>
-                <th className="p-6 text-right">Valor</th>
-                <th className="p-6 text-center">Status</th>
-            </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/50">
-            {data.recentes.map((t: any) => (
-                <tr key={t.id} className="hover:bg-slate-800/30 transition-all">
-                <td className="p-6">
-                    <span className="text-xs font-black text-blue-400 uppercase tracking-widest">{t.cliente.nome}</span>
-                </td>
-                <td className="p-6 text-xs text-slate-400 font-bold">{new Date(t.criado_em).toLocaleDateString()}</td>
-                <td className="p-6">
-                    <div className="flex flex-col">
-                        <span className="text-[8px] font-black uppercase text-slate-500 mb-1 tracking-tighter">{t.categoria}</span>
-                        <p className="text-sm font-bold text-slate-200">{t.descricao}</p>
-                    </div>
-                </td>
-                <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {parseFloat(t.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td className="p-6 text-center">
-                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                    t.status === 'PAGO' ? 'bg-emerald-600/10 text-emerald-400' :
-                    t.status === 'VENCIDO' ? 'bg-red-600/10 text-red-400' :
-                    'bg-amber-600/10 text-amber-400'
-                    }`}>
-                    {t.status}
-                    </span>
-                </td>
-                </tr>
-            ))}
-            </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+              <tr className="bg-slate-950/50 text-[10px] font-black uppercase text-slate-500 tracking-widest border-b border-slate-800">
+                  <th className="p-6">Cliente</th>
+                  <th className="p-6">Data</th>
+                  <th className="p-6">Descrição</th>
+                  <th className="p-6 text-right">Valor</th>
+                  <th className="p-6 text-center">Status</th>
+              </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/50">
+              {data.recentes.map((t: any) => (
+                  <tr key={t.id} className="hover:bg-slate-800/30 transition-all">
+                  <td className="p-6">
+                      <span className="text-xs font-black text-blue-400 uppercase tracking-widest">{t.cliente.nome}</span>
+                  </td>
+                  <td className="p-6 text-xs text-slate-400 font-bold">{new Date(t.criado_em).toLocaleDateString()}</td>
+                  <td className="p-6">
+                      <div className="flex flex-col">
+                          <span className="text-[8px] font-black uppercase text-slate-500 mb-1 tracking-tighter">{t.categoria}</span>
+                          <p className="text-sm font-bold text-slate-200">{t.descricao}</p>
+                      </div>
+                  </td>
+                  <td className="p-6 text-right font-mono text-sm font-bold text-slate-100">R$ {parseFloat(t.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                  <td className="p-6 text-center">
+                      <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                      t.status === 'PAGO' ? 'bg-emerald-600/10 text-emerald-400' :
+                      t.status === 'VENCIDO' ? 'bg-red-600/10 text-red-400' :
+                      'bg-amber-600/10 text-amber-400'
+                      }`}>
+                      {t.status}
+                      </span>
+                  </td>
+                  </tr>
+              ))}
+              </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
