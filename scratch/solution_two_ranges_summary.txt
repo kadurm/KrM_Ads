@@ -1,0 +1,53 @@
+======================================================================
+SOLUTION PLACE - COMPARATIVO DOS ÚLTIMOS 30 DIAS
+======================================================================
+
+----------------------------------------------------------------------
+FAIXA 1: Período 05/05/2026 a 03/06/2026
+----------------------------------------------------------------------
+- Investimento Total: R$ 4907.51
+- Impressões Totais: 1193347
+- Cliques Totais: 4429
+- CTR Médio: 0.37%
+- CPC Médio: R$ 1.11
+- Leads (True Leads): 167
+- CPL Médio: R$ 29.39
+
+Desempenho por Campanha:
+  1. [OUTCOME_ENGAGEMENT] [04][KrM][ABO][Message]
+     Spend: R$ 1544.71 | Leads: 113 | CPL: R$ 13.67 | Cliques: 738
+  2. [OUTCOME_AWARENESS] [01][KrM][ABO][Impressions]
+     Spend: R$ 1316.13 | Leads: 0 | CPL: N/A | Cliques: 322
+  3. [OUTCOME_ENGAGEMENT] [09][KrM][ABO][Message]
+     Spend: R$ 674.48 | Leads: 44 | CPL: R$ 15.33 | Cliques: 186
+  4. [OUTCOME_TRAFFIC] [05][KrM][CBO][Traffic][IG]
+     Spend: R$ 664.98 | Leads: 8 | CPL: R$ 83.12 | Cliques: 2897
+  5. [OUTCOME_ENGAGEMENT] [02][KrM][ABO][Engagement]
+     Spend: R$ 503.98 | Leads: 2 | CPL: R$ 251.99 | Cliques: 268
+  6. [OUTCOME_AWARENESS] [08][KrM][ABO][Impressions][Boost]
+     Spend: R$ 203.23 | Leads: 0 | CPL: N/A | Cliques: 18
+
+----------------------------------------------------------------------
+FAIXA 2: Período 06/05/2026 a 04/06/2026
+----------------------------------------------------------------------
+- Investimento Total: R$ 4975.70
+- Impressões Totais: 1203321
+- Cliques Totais: 4425
+- CTR Médio: 0.37%
+- CPC Médio: R$ 1.12
+- Leads (True Leads): 165
+- CPL Médio: R$ 30.16
+
+Desempenho por Campanha:
+  1. [OUTCOME_ENGAGEMENT] [04][KrM][ABO][Message]
+     Spend: R$ 1481.57 | Leads: 107 | CPL: R$ 13.85 | Cliques: 678
+  2. [OUTCOME_AWARENESS] [01][KrM][ABO][Impressions]
+     Spend: R$ 1334.42 | Leads: 0 | CPL: N/A | Cliques: 321
+  3. [OUTCOME_ENGAGEMENT] [09][KrM][ABO][Message]
+     Spend: R$ 768.00 | Leads: 49 | CPL: R$ 15.67 | Cliques: 214
+  4. [OUTCOME_TRAFFIC] [05][KrM][CBO][Traffic][IG]
+     Spend: R$ 669.00 | Leads: 7 | CPL: R$ 95.57 | Cliques: 2910
+  5. [OUTCOME_ENGAGEMENT] [02][KrM][ABO][Engagement]
+     Spend: R$ 519.48 | Leads: 2 | CPL: R$ 259.74 | Cliques: 284
+  6. [OUTCOME_AWARENESS] [08][KrM][ABO][Impressions][Boost]
+     Spend: R$ 203.23 | Leads: 0 | CPL: N/A | Cliques: 18

@@ -1,0 +1,451 @@
+======================================================================
+ANALISANDO DADOS SINCRONIZADOS DA SOLUTION PLACE
+Período analisado: Últimos 30 dias (de 2026-05-06 a 2026-06-05)
+======================================================================
+Total de campanhas ativas/com métricas no período: 7
+
+--- RESUMO CONSOLIDADO DA CONTA ---
+Total Investido: R$ 18827.69
+Total Impressões: 4586789
+Total Cliques: 12255
+CTR Médio da Conta: 0.27%
+CPC Médio da Conta: R$ 1.54
+Total Leads (Conversas Iniciadas/True Leads): 685
+CPL Médio da Conta (Leads de Conversa): R$ 27.49
+Total Visitas Perfil (Atribuição Universal): 3332
+
+--- PERFORMANCE POR CAMPANHA ---
+
+1. [OUTCOME_ENGAGEMENT] [04][KrM][ABO][Message]
+   Meta ID: 120237338060320488
+   Investido: R$ 8481.63
+   Impressões: 517151 | Cliques: 3213 | CTR: 0.62%
+   Leads: 568 | CPL: R$ 14.93 | CPC: R$ 2.64
+   Visitas Perfil/Cliques Outbound: 1101
+   Criativos desta campanha com dados de performance:
+     * Anúncio: AD[03/02/26] (Meta ID: 120241681736490488)
+       - Investimento: R$ 2052.40 | Cliques: 1238 | Leads: 228 | CPL: R$ 9.00 | CTR: 0.97%
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[04/10/25] (Meta ID: 120241509954580488)
+       - Investimento: R$ 1677.20 | Cliques: 559 | Leads: 83 | CPL: R$ 20.21 | CTR: 0.46%
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[11/03/26] (Meta ID: 120241682388250488)
+       - Investimento: R$ 1125.78 | Cliques: 473 | Leads: 78 | CPL: R$ 14.43 | CTR: 0.68%
+       - Copy: "Defender 110 BLINDADA e disponível pronta-entrega você só encontra na Land Rio.  E nessa parceria de peso entre a Soluti..."
+     * Anúncio: AD[17/03/26] (Meta ID: 120241961097080488)
+       - Investimento: R$ 800.30 | Cliques: 264 | Leads: 85 | CPL: R$ 9.42 | CTR: 0.51%
+       - Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cad..."
+     * Anúncio: AD[13/02/26] (Meta ID: 120241681209020488)
+       - Investimento: R$ 738.31 | Cliques: 172 | Leads: 21 | CPL: R$ 35.16 | CTR: 0.45%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[05/05/26] (Meta ID: 120244400913650488)
+       - Investimento: R$ 381.86 | Cliques: 124 | Leads: 20 | CPL: R$ 19.09 | CTR: 0.47%
+       - Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que comp..."
+     * Anúncio: AD[13/02/26] (Meta ID: 120240788646390488)
+       - Investimento: R$ 351.52 | Cliques: 99 | Leads: 11 | CPL: R$ 31.96 | CTR: 0.48%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[31/01/26] (Meta ID: 120241681576040488)
+       - Investimento: R$ 332.85 | Cliques: 104 | Leads: 22 | CPL: R$ 15.13 | CTR: 0.39%
+       - Copy: "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se dest..."
+     * Anúncio: AD[13/05/26] (Meta ID: 120244883927130488)
+       - Investimento: R$ 308.62 | Cliques: 56 | Leads: 22 | CPL: R$ 14.03 | CTR: 0.57%
+       - Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place,..."
+     * Anúncio: AD[04/10/25] (Meta ID: 120237338060390488)
+       - Investimento: R$ 170.74 | Cliques: 47 | Leads: 1 | CPL: R$ 170.74 | CTR: 0.76%
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[13/02/26] (Meta ID: 120241495755200488)
+       - Investimento: R$ 167.24 | Cliques: 42 | Leads: 3 | CPL: R$ 55.75 | CTR: 0.62%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[11/04/26] (Meta ID: 120243373429540488)
+       - Investimento: R$ 162.47 | Cliques: 52 | Leads: 6 | CPL: R$ 27.08 | CTR: 0.62%
+       - Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  A..."
+     * Anúncio: AD[28/07/25] (Meta ID: 120241682045780488)
+       - Investimento: R$ 106.87 | Cliques: 25 | Leads: 3 | CPL: R$ 35.62 | CTR: 0.19%
+       - Copy: "Mais uma entrega técnica impecável! Hoje foi dia de entregar uma BMW blindada com excelência, em parceria com a BM Rio. ..."
+     * Anúncio: AD[03/02/26] (Meta ID: 120240533445530488)
+       - Investimento: R$ 83.63 | Cliques: 44 | Leads: 5 | CPL: R$ 16.73 | CTR: 0.96%
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[05/02/26] (Meta ID: 120240533407070488)
+       - Investimento: R$ 64.89 | Cliques: 26 | Leads: 1 | CPL: R$ 64.89 | CTR: 1.35%
+       - Copy: "Mercedes GLE 63 blindada com o Solution Air — nossa blindagem exclusiva em Tensylon.  Um material desenvolvido para quem..."
+     * Anúncio: AD[31/01/26] (Meta ID: 120240228881900488)
+       - Investimento: R$ 53.18 | Cliques: 13 | Leads: 0 | CPL: N/A | CTR: 0.90%
+       - Copy: "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se dest..."
+     * Anúncio: AD[01/05/26] (Meta ID: 120244401535990488)
+       - Investimento: R$ 39.58 | Cliques: 12 | Leads: 4 | CPL: R$ 9.90 | CTR: 0.46%
+       - Copy: "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista.   Neste Dia do Trabalho, celebramos quem bu..."
+     * Anúncio: AD[13/02/26] (Meta ID: 120241513451090488)
+       - Investimento: R$ 29.50 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.28%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[04/10/25] (Meta ID: 120241530426390488)
+       - Investimento: R$ 20.99 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.38%
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[13/02/26] (Meta ID: 120241530426400488)
+       - Investimento: R$ 15.10 | Cliques: 6 | Leads: 0 | CPL: N/A | CTR: 1.06%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[28/06/25] (Meta ID: 120239627111590488)
+       - Investimento: R$ 13.24 | Cliques: 4 | Leads: 0 | CPL: N/A | CTR: 0.72%
+       - Copy: "Mais uma entrega técnica impecável! Hoje foi dia de entregar uma BMW blindada com excelência, em parceria com a BM Rio. ..."
+     * Anúncio: AD[07/11/25] (Meta ID: 120239588715330488)
+       - Investimento: R$ 7.49 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "A Solution Place, é a principal empresa de Assistência Técnica para carros blindados no Rio de Janeiro.  Em nossa fábric..."
+     * Anúncio: AD[17/02/26] (Meta ID: 120240788698770488)
+       - Investimento: R$ 3.98 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 0.40%
+       - Copy: "Desde o início, a Solution Place nasceu com um propósito claro: elevar o padrão da blindagem no Rio de Janeiro.  Aqui, b..."
+     * Anúncio: AD[11/02/26] (Meta ID: 120240614467500488)
+       - Investimento: R$ 3.98 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Parcerias não nascem por acaso.  Elas acontecem quando visão e propósito caminham na mesma direção.  Iniciamos 2026 ao l..."
+     * Anúncio: AD[04/10/25] (Meta ID: 120241513451100488)
+       - Investimento: R$ 1.89 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+
+2. [OUTCOME_AWARENESS] [01][KrM][ABO][Impressions]
+   Meta ID: 120236136455210488
+   Investido: R$ 5021.87
+   Impressões: 3338461 | Cliques: 344 | CTR: 0.01%
+   Leads: 0 | CPL: N/A | CPC: R$ 14.60
+   Visitas Perfil/Cliques Outbound: 0
+   Criativos desta campanha com dados de performance:
+     * Anúncio: AD[11/04/26] (Meta ID: 120243375326310488)
+       - Investimento: R$ 1159.63 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  A..."
+     * Anúncio: AD[07/04/26] (Meta ID: 120242881959520488)
+       - Investimento: R$ 621.30 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "26 anos de história não se constroem por acaso.  São anos de consistência, evolução constante e compromisso real com cad..."
+     * Anúncio: AD[30/03/26] (Meta ID: 120242831928010488)
+       - Investimento: R$ 621.27 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "A excelência na blindagem automotiva começa muito antes do processo de montagem. Ela nasce no compartilhamento de conhec..."
+     * Anúncio: AD[04/04/26] (Meta ID: 120242881887580488)
+       - Investimento: R$ 621.09 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "A Solution Place e a Itália Master iniciam uma nova fase juntas.  Mais do que uma parceria, essa união representa um ali..."
+     * Anúncio: AD[17/03/26] (Meta ID: 120241753187710488)
+       - Investimento: R$ 246.87 | Cliques: 22 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cad..."
+     * Anúncio: AD[23/02/26] (Meta ID: 120241096570450488)
+       - Investimento: R$ 222.99 | Cliques: 64 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Copy: "Algumas parcerias atravessam o tempo porque são construídas sobre confiança.  Há 6 anos, Solution e BM RIO caminham junt..."
+     * Anúncio: AD[17/02/26] (Meta ID: 120240788275930488)
+       - Investimento: R$ 175.20 | Cliques: 52 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Copy: "Desde o início, a Solution Place nasceu com um propósito claro: elevar o padrão da blindagem no Rio de Janeiro.  Aqui, b..."
+     * Anúncio: AD[20/03/26] (Meta ID: 120242206385040488)
+       - Investimento: R$ 165.37 | Cliques: 9 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "Em 2025, mais de 70% dos nossos projetos já foram realizados em Tensylon. E a projeção para 2026 é ainda mais clara: ent..."
+     * Anúncio: AD[06/03/26] (Meta ID: 120241679853490488)
+       - Investimento: R$ 138.26 | Cliques: 34 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Copy: "O futuro da mobilidade já começou — e a blindagem também evoluiu.  Com o avanço dos veículos elétricos, cada projeto exi..."
+     * Anúncio: AD[02/03/26] (Meta ID: 120241680258160488)
+       - Investimento: R$ 138.01 | Cliques: 25 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Copy: "Acaba de chegar à Itália Master um Jeep Compass S que já entrega tudo o que importa desde o primeiro momento.  Blindado ..."
+     * Anúncio: AD[11/03/26] (Meta ID: 120241679169860488)
+       - Investimento: R$ 137.97 | Cliques: 40 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Copy: "Defender 110 BLINDADA e disponível pronta-entrega você só encontra na Land Rio.  E nessa parceria de peso entre a Soluti..."
+     * Anúncio: AD[11/03/26] (Meta ID: 120241753132080488)
+       - Investimento: R$ 114.15 | Cliques: 47 | Leads: 0 | CPL: N/A | CTR: 0.06%
+       - Copy: "Defender 110 BLINDADA e disponível pronta-entrega você só encontra na Land Rio.  E nessa parceria de peso entre a Soluti..."
+     * Anúncio: AD[02/03/26] (Meta ID: 120241432561070488)
+       - Investimento: R$ 99.69 | Cliques: 5 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "Acaba de chegar à Itália Master um Jeep Compass S que já entrega tudo o que importa desde o primeiro momento.  Blindado ..."
+     * Anúncio: AD[13/02/26] (Meta ID: 120240681210150488)
+       - Investimento: R$ 72.64 | Cliques: 15 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[05/02/26] (Meta ID: 120240531207840488)
+       - Investimento: R$ 71.33 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "Mercedes GLE 63 blindada com o Solution Air — nossa blindagem exclusiva em Tensylon.  Um material desenvolvido para quem..."
+     * Anúncio: AD[27/05/26] (Meta ID: 120245551273860488)
+       - Investimento: R$ 64.30 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "A DTC Automotive e a Solution Place formam uma parceria de excelência no mercado de blindados. Quando o assunto é segura..."
+     * Anúncio: AD[06/03/26] (Meta ID: 120241496167120488)
+       - Investimento: R$ 59.60 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "O futuro da mobilidade já começou — e a blindagem também evoluiu.  Com o avanço dos veículos elétricos, cada projeto exi..."
+     * Anúncio: AD[28/01/26] (Meta ID: 120240135442500488)
+       - Investimento: R$ 51.41 | Cliques: 5 | Leads: 0 | CPL: N/A | CTR: 0.02%
+       - Copy: "Parcerias sólidas não se constroem do dia para a noite.  Elas nascem do tempo, da confiança e de um padrão que se mantém..."
+     * Anúncio: AD[31/01/26] (Meta ID: 120240228976580488)
+       - Investimento: R$ 49.96 | Cliques: 5 | Leads: 0 | CPL: N/A | CTR: 0.02%
+       - Copy: "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se dest..."
+     * Anúncio: AD[10/11/25] (Meta ID: 120236987705190488)
+       - Investimento: R$ 43.90 | Cliques: 5 | Leads: 0 | CPL: N/A | CTR: 0.02%
+       - Copy: "Hugo te explica como a blindagem em Tensylon, em nossa Range Rover Sport Autobiography, deixa o carro com a dirigibilida..."
+     * Anúncio: AD[11/02/26] (Meta ID: 120240613629910488)
+       - Investimento: R$ 43.19 | Cliques: 5 | Leads: 0 | CPL: N/A | CTR: 0.02%
+       - Copy: "Parcerias não nascem por acaso.  Elas acontecem quando visão e propósito caminham na mesma direção.  Iniciamos 2026 ao l..."
+     * Anúncio: AD[26/02/26] (Meta ID: 120241266871320488)
+       - Investimento: R$ 42.48 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "O BM Rio Special Sales já começou — e com a Solution Place, o nível sobe ainda mais.  Por apenas 4 dias, a BMW de Botafo..."
+     * Anúncio: AD[20/03/26] (Meta ID: 120242205792500488)
+       - Investimento: R$ 39.03 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Em 2025, mais de 70% dos nossos projetos já foram realizados em Tensylon. E a projeção para 2026 é ainda mais clara: ent..."
+     * Anúncio: AD[19/04/26] (Meta ID: 120244396761310488)
+       - Investimento: R$ 38.03 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "O mercado de luxo exige precisão e segurança acima de tudo.  É com esse foco que a Solution Place Blindagem anuncia sua ..."
+     * Anúncio: AD2[19/04/26] (Meta ID: 120243373224610488)
+       - Investimento: R$ 37.73 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "O futuro da mobilidade e da segurança se encontram na parceria oficial entre a Solution Place e a GWM Américas.   Unimos..."
+     * Anúncio: AD[07/04/26] (Meta ID: 120243057960730488)
+       - Investimento: R$ 27.03 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "26 anos de história não se constroem por acaso.  São anos de consistência, evolução constante e compromisso real com cad..."
+     * Anúncio: AD[03/02/26] (Meta ID: 120240531361810488)
+       - Investimento: R$ 25.21 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[29/05/26] (Meta ID: 120245550840050488)
+       - Investimento: R$ 24.98 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Existem carros. E existe a Range Rover SV — o crème de la crème da Land Rover.  Quando um veículo desse nível chega à So..."
+     * Anúncio: AD[17/03/26] (Meta ID: 120241960655640488)
+       - Investimento: R$ 19.86 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cad..."
+     * Anúncio: AD[09/04/26] (Meta ID: 120243057865410488)
+       - Investimento: R$ 17.36 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Inteligência e potência definem um GWM. Segurança completa é o que a Solution Place adiciona.  Para quem vive o ritmo da..."
+     * Anúncio: AD[11/04/26] (Meta ID: 120242205442560488)
+       - Investimento: R$ 3.39 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  A..."
+     * Anúncio: AD[19/04/26] (Meta ID: 120243373066470488)
+       - Investimento: R$ 3.03 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "O mercado de luxo exige precisão e segurança acima de tudo.  É com esse foco que a Solution Place Blindagem anuncia sua ..."
+
+3. [OUTCOME_TRAFFIC] [05][KrM][CBO][Traffic][IG]
+   Meta ID: 120237338823250488
+   Investido: R$ 1948.38
+   Impressões: 434538 | Cliques: 7714 | CTR: 1.78%
+   Leads: 24 | CPL: R$ 81.18 | CPC: R$ 0.25
+   Visitas Perfil/Cliques Outbound: 1519
+   Criativos desta campanha com dados de performance:
+     * Anúncio: AD[03/02/26] (Meta ID: 120241342114390488)
+       - Investimento: R$ 1443.03 | Cliques: 6896 | Leads: 23 | CPL: R$ 62.74 | CTR: 1.89%
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[04/10/25] (Meta ID: 120237338823230488)
+       - Investimento: R$ 288.20 | Cliques: 449 | Leads: 1 | CPL: R$ 288.20 | CTR: 2.05%
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[19/04/26] (Meta ID: 120244884085410488)
+       - Investimento: R$ 122.36 | Cliques: 338 | Leads: 2 | CPL: R$ 61.18 | CTR: 1.01%
+       - Copy: "O mercado de luxo exige precisão e segurança acima de tudo.  É com esse foco que a Solution Place Blindagem anuncia sua ..."
+     * Anúncio: AD[11/04/26] (Meta ID: 120243373694880488)
+       - Investimento: R$ 76.39 | Cliques: 256 | Leads: 1 | CPL: R$ 76.39 | CTR: 1.20%
+       - Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  A..."
+     * Anúncio: AD[28/01/25] (Meta ID: 120240797672820488)
+       - Investimento: R$ 43.46 | Cliques: 92 | Leads: 0 | CPL: N/A | CTR: 1.07%
+       - Copy: "Uma entrega de sucesso para o nosso amigo, @josealdojunioroficial .  Agradecemos a confiança na Solution Place. E ficamo..."
+     * Anúncio: AD[03/02/26] (Meta ID: 120240614594890488)
+       - Investimento: R$ 12.04 | Cliques: 8 | Leads: 0 | CPL: N/A | CTR: 1.07%
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[04/10/25] (Meta ID: 120240228551250488)
+       - Investimento: R$ 9.76 | Cliques: 12 | Leads: 0 | CPL: N/A | CTR: 2.33%
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[17/02/26] (Meta ID: 120240789597760488)
+       - Investimento: R$ 7.40 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 0.40%
+       - Copy: "Desde o início, a Solution Place nasceu com um propósito claro: elevar o padrão da blindagem no Rio de Janeiro.  Aqui, b..."
+     * Anúncio: AD[05/02/26] (Meta ID: 120240614579240488)
+       - Investimento: R$ 3.06 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 1.01%
+       - Copy: "Mercedes GLE 63 blindada com o Solution Air — nossa blindagem exclusiva em Tensylon.  Um material desenvolvido para quem..."
+     * Anúncio: AD[13/02/26] (Meta ID: 120240789571540488)
+       - Investimento: R$ 2.09 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 0.82%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[28/01/26] (Meta ID: 120240135327050488)
+       - Investimento: R$ 0.01 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Parcerias sólidas não se constroem do dia para a noite.  Elas nascem do tempo, da confiança e de um padrão que se mantém..."
+
+4. [OUTCOME_ENGAGEMENT] [02][KrM][ABO][Engagement]
+   Meta ID: 120236159247340488
+   Investido: R$ 1548.88
+   Impressões: 196060 | Cliques: 585 | CTR: 0.30%
+   Leads: 3 | CPL: R$ 516.29 | CPC: R$ 2.65
+   Visitas Perfil/Cliques Outbound: 584
+   Criativos desta campanha com dados de performance:
+     * Anúncio: AD[13/05/26] (Meta ID: 120244883774740488)
+       - Investimento: R$ 502.44 | Cliques: 379 | Leads: 1 | CPL: R$ 502.44 | CTR: 0.64%
+       - Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place,..."
+     * Anúncio: AD[22/04/26] (Meta ID: 120244159824060488)
+       - Investimento: R$ 342.83 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.01%
+       - Copy: "A verdadeira sofisticação está na tranquilidade de saber que você e sua família estão protegidos, sem abrir mão do desig..."
+     * Anúncio: AD[02/03/26] (Meta ID: 120241510675010488)
+       - Investimento: R$ 205.09 | Cliques: 13 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Copy: "Revestimentos originais, transparência absoluta e a paz de espírito que você merece...."
+     * Anúncio: AD[27/02/26] (Meta ID: 120241268389460488)
+       - Investimento: R$ 179.36 | Cliques: 74 | Leads: 2 | CPL: R$ 89.68 | CTR: 0.68%
+       - Copy: "O Mix Tecnológico Solution Air.  Blindagem inteligente para máxima leveza.  O que torna a nossa blindagem única não é ap..."
+     * Anúncio: AD[18/03/26] (Meta ID: 120243375409210488)
+       - Investimento: R$ 97.93 | Cliques: 43 | Leads: 0 | CPL: N/A | CTR: 0.85%
+       - Copy: "Uma noite que reuniu grandes nomes, boas conversas e visão de futuro para o mercado automotivo.  Entre inovação, estraté..."
+     * Anúncio: AD[05/02/26] (Meta ID: 120240614423030488)
+       - Investimento: R$ 88.35 | Cliques: 50 | Leads: 0 | CPL: N/A | CTR: 0.18%
+       - Copy: "Mercedes GLE 63 blindada com o Solution Air — nossa blindagem exclusiva em Tensylon.  Um material desenvolvido para quem..."
+     * Anúncio: AD[01/05/26] (Meta ID: 120244159800290488)
+       - Investimento: R$ 58.19 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista.   Neste Dia do Trabalho, celebramos quem bu..."
+     * Anúncio: AD[26/02/26] (Meta ID: 120241270277620488)
+       - Investimento: R$ 47.10 | Cliques: 14 | Leads: 0 | CPL: N/A | CTR: 0.11%
+       - Copy: "O BM Rio Special Sales já começou — e com a Solution Place, o nível sobe ainda mais.  Por apenas 4 dias, a BMW de Botafo..."
+     * Anúncio: AD[05/05/26] (Meta ID: 120244159783750488)
+       - Investimento: R$ 25.90 | Cliques: 12 | Leads: 0 | CPL: N/A | CTR: 0.95%
+       - Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que comp..."
+     * Anúncio: AD[03/02/26] (Meta ID: 120240533548370488)
+       - Investimento: R$ 14.04 | Cliques: 6 | Leads: 0 | CPL: N/A | CTR: 0.11%
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[23/02/26] (Meta ID: 120241269206830488)
+       - Investimento: R$ 5.06 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 0.10%
+       - Copy: "Algumas parcerias atravessam o tempo porque são construídas sobre confiança.  Há 6 anos, Solution e BM RIO caminham junt..."
+     * Anúncio: AD[11/02/26] (Meta ID: 120240533517390488)
+       - Investimento: R$ 3.95 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Parcerias não nascem por acaso.  Elas acontecem quando visão e propósito caminham na mesma direção.  Iniciamos 2026 ao l..."
+     * Anúncio: AD[17/02/26] (Meta ID: 120240788943210488)
+       - Investimento: R$ 1.35 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+     * Anúncio: AD[13/02/26] (Meta ID: 120240789014860488)
+       - Investimento: R$ 1.04 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.54%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[06/03/26] (Meta ID: 120241496010770488)
+       - Investimento: R$ 0.65 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "O futuro da mobilidade já começou — e a blindagem também evoluiu.  Com o avanço dos veículos elétricos, cada projeto exi..."
+
+5. [OUTCOME_ENGAGEMENT] [09][KrM][ABO][Message]
+   Meta ID: 120245136929540488
+   Investido: R$ 1368.01
+   Impressões: 44326 | Cliques: 269 | CTR: 0.61%
+   Leads: 89 | CPL: R$ 15.37 | CPC: R$ 5.09
+   Visitas Perfil/Cliques Outbound: 8
+   Criativos desta campanha com dados de performance:
+     * Anúncio: AD[03/02/26] (Meta ID: 120245136929510488)
+       - Investimento: R$ 457.27 | Cliques: 118 | Leads: 36 | CPL: R$ 12.70 | CTR: 0.80%
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[02/05/26] (Meta ID: 120245136929750488)
+       - Investimento: R$ 384.52 | Cliques: 87 | Leads: 35 | CPL: R$ 10.99 | CTR: 0.56%
+       - Copy: "A tradição da Ford e a robustez da Megafor encontram a segurança de alto nível da Solution Place.   Agora, somos a blind..."
+     * Anúncio: AD[05/05/26] (Meta ID: 120245136929840488)
+       - Investimento: R$ 349.26 | Cliques: 43 | Leads: 10 | CPL: R$ 34.93 | CTR: 0.46%
+       - Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que comp..."
+     * Anúncio: AD[01/05/26] (Meta ID: 120245136929600488)
+       - Investimento: R$ 62.95 | Cliques: 4 | Leads: 0 | CPL: N/A | CTR: 0.28%
+       - Copy: "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista.   Neste Dia do Trabalho, celebramos quem bu..."
+     * Anúncio: AD[04/10/25] (Meta ID: 120245136929570488)
+       - Investimento: R$ 40.52 | Cliques: 3 | Leads: 2 | CPL: R$ 20.26 | CTR: 0.28%
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[02/06/26] (Meta ID: 120245683112050488)
+       - Investimento: R$ 31.22 | Cliques: 4 | Leads: 0 | CPL: N/A | CTR: 0.41%
+       - Copy: "Vidro blindado com manchas, bolhas ou dificuldade de visibilidade não é só estética. É sinal de que a proteção pode esta..."
+     * Anúncio: AD[17/03/26] (Meta ID: 120245136929550488)
+       - Investimento: R$ 24.90 | Cliques: 8 | Leads: 6 | CPL: R$ 4.15 | CTR: 1.05%
+       - Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cad..."
+     * Anúncio: AD[13/05/26] (Meta ID: 120245136929610488)
+       - Investimento: R$ 11.46 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.69%
+       - Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place,..."
+     * Anúncio: AD[20/05/26] (Meta ID: 120245683172600488)
+       - Investimento: R$ 5.01 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "O Brasil lidera o mercado mundial de blindagem automotiva, um reflexo de que a segurança se tornou prioridade absoluta n..."
+     * Anúncio: AD[28/05/26] (Meta ID: 120245683144610488)
+       - Investimento: R$ 0.90 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Proteção real não aceita improviso. Nem toda blindadora entrega o mesmo nível de segurança.   Arraste para o lado e veja..."
+
+6. [OUTCOME_AWARENESS] [08][KrM][ABO][Impressions][Boost]
+   Meta ID: 120245039643090488
+   Investido: R$ 406.46
+   Impressões: 54822 | Cliques: 0 | CTR: 0.00%
+   Leads: 0 | CPL: N/A | CPC: N/A
+   Visitas Perfil/Cliques Outbound: 0
+   Criativos desta campanha com dados de performance:
+     * Anúncio: AD[22/05/26] (Meta ID: 120245039643080488)
+       - Investimento: R$ 406.46 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Copy: "Este sábado, dia 23, a Solution Place e a Jeep Usastar têm carros blindados à pronta entrega esperando por você.  Sem es..."
+
+7. [MESSAGE] [07][KrM][CBO][Message]
+   Meta ID: 120241095876670488
+   Investido: R$ 52.46
+   Impressões: 1431 | Cliques: 130 | CTR: 9.08%
+   Leads: 1 | CPL: R$ 52.46 | CPC: R$ 0.40
+   Visitas Perfil/Cliques Outbound: 120
+   Criativos desta campanha com dados de performance:
+     * Anúncio: AD[13/02/26] (Meta ID: 120241095876700488)
+       - Investimento: R$ 52.46 | Cliques: 130 | Leads: 1 | CPL: R$ 52.46 | CTR: 9.08%
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+
+======================================================================
+RANKING GERAL DE CRIATIVOS POR NÚMERO DE LEADS
+======================================================================
+1. AD[03/02/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120241681736490488
+   Performance: Leads: 228 | Investido: R$ 2052.40 | CPL: R$ 9.00 | CTR: 0.97% | Cliques: 1238
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650787319_942977361427556_7403377220574836052_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=W8RiDw6m0YQQ7kNvwH9dO_4&_nc_oc=AdqwlaphNgG2B-P1ISYM9gDL8BFjTJLntplLuP6ibwtM6Scoh6IP-ChxxqHFvT0mO7Q&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQGwhTh9QljE35vc2en3ZaneP2Era1BcaAftv_8f2RpFPCuUOWtDGrJkiqTWBd8juS1EchIJKI16jA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8XYeg2_EeIHaRVNLkhleKoMviYeG9YyfHS-WeUGdLStA&oe=6A28146D
+   Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e e..."
+
+2. AD[17/03/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120241961097080488
+   Performance: Leads: 85 | Investido: R$ 800.30 | CPL: R$ 9.42 | CTR: 0.51% | Cliques: 264
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/655276684_809876371542087_5423899411528426280_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=PePtN5m-q8AQ7kNvwGuoba9&_nc_oc=AdoIsIFSBMveeztKuh2u-05Aq5R-SJ661RMUj6R_VdijFmo6ICA-dh5c0WAy8Izk5dQ&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQEuG-6EdgQ_mi_sFVsgn-0TTpJLEFfJ_zAzgYyKmjrgROSgK85v8cGrmsrnwzUWCRC2-fpcuzs0Xw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-wpQgllDL5VO2JkjNZdGfjO-cY4Z5z9u-QfCk0EbZSqQ&oe=6A28056A
+   Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solu..."
+
+3. AD[04/10/25] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120241509954580488
+   Performance: Leads: 83 | Investido: R$ 1677.20 | CPL: R$ 20.21 | CTR: 0.46% | Cliques: 559
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/646903647_26514545001497434_223387231843711095_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=kqs4n_ElSRoQ7kNvwGwsob6&_nc_oc=AdrpvRWPI6hA17teaCdbcasczFEtyWbGGXzhLZseTrNP8zW3N1ToyqIfjZllU5CX8uk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQEnNynG26rlGOJMgq7UxUbxZ1CxYeNdZloe9xJUWSIltWEoqCGW2xwk9ipr5MhtX-iaSaoSmBmWQA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9Dao9zXgPlJa19lYyz2tGc57C-WMYJcHkkNIT0NAMqzg&oe=6A280A27
+   Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a única blindadora boutique do mundo..."
+
+4. AD[11/03/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120241682388250488
+   Performance: Leads: 78 | Investido: R$ 1125.78 | CPL: R$ 14.43 | CTR: 0.68% | Cliques: 473
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650173988_1598730758040348_4504019949527766908_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=DGJKtG8VrmkQ7kNvwFnEIOT&_nc_oc=AdoRw_4K4n_NzatfH33nzNeVPnR169r3XZQQkt79ftAaP4L72SSOuMK-EuZFsRS7BQ8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQHdToYwRb877vJLK-9ITu0SLWBbrvl4n6-qThHB3so2pmhSXk65Nx6jl7yeiWztioogEy9VvSjBTA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8mUBhLisrF5PXFTiMmcNd967B7TBJ0y9l82Xa0basIFg&oe=6A280829
+   Copy: "Defender 110 BLINDADA e disponível pronta-entrega você só encontra na Land Rio.  E nessa parceria de peso entre a Solution Place e Land Rio nós vemos ..."
+
+5. AD[03/02/26] [Campanha: [09][KrM][ABO][Message]]
+   Meta ID: 120245136929510488
+   Performance: Leads: 36 | Investido: R$ 457.27 | CPL: R$ 12.70 | CTR: 0.80% | Cliques: 118
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707678622_2507824356331512_597206643622897622_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=VNfJDhMkbmcQ7kNvwHPcPJZ&_nc_oc=AdqW_zFOzlYTDKMsOu6Onjbs8pfoflzXxnnbO9933O5rBl8Ig5FLKoxuBkQWbQfnhpU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQEWXbLbpsoCIjtZIRecre9Y-MDlQmAud8Ecdcrq92y7ldcrQjMv4Y25cMSJg-Ahsyom3ug0rUi6yw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-HhSIf2TWUvvpv-cx6_lwkaQF4ZNGfpYPW7e6ufvEd4Q&oe=6A281B11
+   Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e e..."
+
+6. AD[02/05/26] [Campanha: [09][KrM][ABO][Message]]
+   Meta ID: 120245136929750488
+   Performance: Leads: 35 | Investido: R$ 384.52 | CPL: R$ 10.99 | CTR: 0.56% | Cliques: 87
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707433817_27472503195688735_7085877821857009806_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=NF3HDiBzvmEQ7kNvwFe9A2n&_nc_oc=AdqoyDMtL4GcBjEV0_GFhhLlxNxpxCn68s-_AY3b8PgjaO2dY_EVRvpRwuxNIQLCwQ4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQHIuRa_XeVpbNgcfq8-Fb4v2-hjPg2R5mAhlu73o4BHzUwu42ri3slrtNSnvmN0vFRdspv1ed96gw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8k7i9nSbrjISu2r4PVbg1mhqlkLh8fGAbJwxKF39PZ8Q&oe=6A281991
+   Copy: "A tradição da Ford e a robustez da Megafor encontram a segurança de alto nível da Solution Place.   Agora, somos a blindadora homologada para os clien..."
+
+7. AD[03/02/26] [Campanha: [05][KrM][CBO][Traffic][IG]]
+   Meta ID: 120241342114390488
+   Performance: Leads: 23 | Investido: R$ 1443.03 | CPL: R$ 62.74 | CTR: 1.89% | Cliques: 6896
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/645633658_708221538949963_4846070334324538461_n.jpg?_nc_cat=103&ccb=1-7&_nc_ohc=tt0DNS07ca0Q7kNvwFRvr9y&_nc_oc=AdpHkgLR8Y2gjssrYhytHOp4mW-R8D8a07V0ODt2-eD6GjQU1t4ahwGO9vaoMAm0ueI&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQEQISQVO4eyYllN9m03rufTD-rtXmiw8o9O-7quhhpZ_8fRZLQ29GYSaaA3Yo0gx_4aUZG3EVyHVQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8WAodaqTcZqk0v-mDl43Y5ULGQxgw8MQ10gbIOoBro9Q&oe=6A281344
+   Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e e..."
+
+8. AD[31/01/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120241681576040488
+   Performance: Leads: 22 | Investido: R$ 332.85 | CPL: R$ 15.13 | CTR: 0.39% | Cliques: 104
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651998110_939032495970882_8324867980948790128_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=Weqnom_QKSoQ7kNvwELi4XL&_nc_oc=Adpn80dFs9Ft0cAKsAyhTLR95nsUCW1mua53MIUpJ-fwrjBb0BJDLFibgc_WfCaorC0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQG5_N76M-6i1NZC6tn87glGVpUibTcTuP7NJfc0XHmVsS-5PNwGS-EYqR1viNpzgGB5plkqIKk_Jg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-jMNCUFH-EFdgN_Ji64HCd2_AyeiQM7T4Q5A1bAtJHmg&oe=6A280730
+   Copy: "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se destaca em qualquer cenário.  Em p..."
+
+9. AD[13/05/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120244883927130488
+   Performance: Leads: 22 | Investido: R$ 308.62 | CPL: R$ 14.03 | CTR: 0.57% | Cliques: 56
+   URL Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/7878524437210922342?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLM2l_sfF_LDqiudTeq6dwPsmUBfXGybuhcdQyDqXRaSG1Q8vdo48Tjn-_NBAy3vyXMo8PWKyhTjrtXmqIZ87pnbZsLcW6RBWyONqdN3Er2eid-FfD0GKRV67FPFXX1JCI5GFjFS1PXEqWebdyUT6qb&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_oc=AdpJ-PKHIG-febACtpKjkKNfRTCcyMnIBjqfVSgQNAyWgwvd3YyymZP83eWCgKDz4T8&ccb=13-1&oh=06_Q3-_AVENxhSfbstDi59HujRwkp1GyDWDmLAp8Sihs9fsE4L4&oe=6A24205B&_nc_sid=58080a
+   Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place, cada projeto é pensado para m..."
+
+10. AD[13/02/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120241681209020488
+   Performance: Leads: 21 | Investido: R$ 738.31 | CPL: R$ 35.16 | CTR: 0.45% | Cliques: 172
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651272321_866144803139867_3974247299021885432_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=X_VsY4oz-DMQ7kNvwHa6aRa&_nc_oc=AdrbTV7VjVGafgyT8UkO4F4-UidSdVLqzMbhufRZV7dmiS2ewr1hnE5AnXpaL0aJ0lA&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQF10OxvnENtCD1AI6QsymvrHVL8XRqx5aeRZFAEKz7jmDv0J5qFUg1THJfnZkdq2VtpArefAXw7-g&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af948PWtBafm8H7MfPX-DLlXbe910fTLei5Gin5GosbGsg&oe=6A280E87
+   Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem não quer esperar meses por segu..."
+
+11. AD[05/05/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120244400913650488
+   Performance: Leads: 20 | Investido: R$ 381.86 | CPL: R$ 19.09 | CTR: 0.47% | Cliques: 124
+   URL Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/4360003189128663965?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJMa1pI68U2ULU2KElW3cm18gJaQ6jbxnxS6W4P3VNthqbemAXAxe1tMxLLpHMVrEcnJUhEpobnuTaxwqml4n1cZ8-Q2uH2xgP6MT7W_Suf7sQ_bxp9JsVY9TaLqOZMfmwQTJCyHu7lWz1hGoxyMa7U&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_oc=Ado4Q9KwipsPkjGMXExHvDCT5qXG-9parGtu9-_dDA880TNf4CDvF2I3A2qVa8_AZVA&ccb=13-1&oh=06_Q3-_AZmFPNMliSi-aGF-MtN9xRnamOwyoE-2QeLH8zI55N5F&oe=6A24284F&_nc_sid=58080a
+   Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo p..."
+
+12. AD[13/02/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120240788646390488
+   Performance: Leads: 11 | Investido: R$ 351.52 | CPL: R$ 31.96 | CTR: 0.48% | Cliques: 99
+   URL Mídia: https://scontent-iad3-1.xx.fbcdn.net/v/t15.5256-10/629637093_746327744971352_4813440646051997497_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=Sn-URAlZU98Q7kNvwHAHeuL&_nc_oc=AdpICukRD9WeJ6QVjOngUCNWstElpG9uphmdi2bRRttodwNvEDzLNsVA1cOZmSl-sD4&_nc_zt=23&_nc_ht=scontent-iad3-1.xx&edm=ALjApogEAAAA&_nc_gid=DWqgh0OoYrpQNJnGD79kRg&_nc_tpa=Q5bMBQGyluVlbqyBmq5X5o9LDHHB4d6VaPMW8WBpIOsCWb_aH6hLxS_aiTVdPBoA4DTct3EMU98dlcKzaQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af95k5MEZ0ukRtObBTWqSjPXwnvesTnnHFBYyEGKj9d1ow&oe=6A260AD7
+   Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem não quer esperar meses por segu..."
+
+13. AD[05/05/26] [Campanha: [09][KrM][ABO][Message]]
+   Meta ID: 120245136929840488
+   Performance: Leads: 10 | Investido: R$ 349.26 | CPL: R$ 34.93 | CTR: 0.46% | Cliques: 43
+   URL Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/13392374324571417644?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQK6h508fnwCEKEybJA20XLS6W6QvklhAB6jflgJAktDKHhHn5zZaV-v3vI4uoqSQGNER-c7XUS6aIjV2HiBsdXmNejAzY4DNzYmrwPRn3ev8OZPXHRdthRQ6zpXdCbODzDVDr9ERG3CIOwSZIVeW78O&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_oc=Adrfej8ynsdut2B4rhmDOlHP0gR-FA5Um6ENQXAk3Fi5vwb5iOKPGPfTm3T009MZGlo&ccb=13-1&oh=06_Q3-_AT4mD9pRF3aqP4H0iCu020Gc5gGYTOm2rAIfDCtl31Rn&oe=6A23FCC2&_nc_sid=58080a
+   Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo p..."
+
+14. AD[11/04/26] [Campanha: [04][KrM][ABO][Message]]
+   Meta ID: 120243373429540488
+   Performance: Leads: 6 | Investido: R$ 162.47 | CPL: R$ 27.08 | CTR: 0.62% | Cliques: 52
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675684092_938855025628577_2921201367812027780_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=DQegncV_OHoQ7kNvwESBUN4&_nc_oc=AdoPH8Ctc9X8XAZpLgoQmW-XcpAPE85oHeWxdEGMEkXy0-1GGupOeFcelaMTHi_KDfs&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQEwkXzcq6BYUIEr_wFDXGXyLyRWwPe9BN3-qyjuoKXlv5Mm-PJv90kCYse-dnMCuK5YDIZe-yXiAg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-xH_9F1zJ0SllSDPv7ZOWfCYZKnaPU2k-EyInqV7sfVw&oe=6A281504
+   Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  Agora, os proprietários da marc..."
+
+15. AD[17/03/26] [Campanha: [09][KrM][ABO][Message]]
+   Meta ID: 120245136929550488
+   Performance: Leads: 6 | Investido: R$ 24.90 | CPL: R$ 4.15 | CTR: 1.05% | Cliques: 8
+   URL Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/704858185_957946770450184_8254912559419410678_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=xSt_rE4DFv8Q7kNvwG-Dv1l&_nc_oc=Adov7K2MxoEzpRX6eGTRCesmfvPqurSXQ0A43C8rlj7TfR-yHlwAzdlD8Wp4JpmROyk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=wmTyCZbRIPkfjJw9-qbj1Q&_nc_tpa=Q5bMBQF4ZqLEOJH0dF0MSQ_FFamZF6Qnm3OMOCOoSI8wpRHYAof7sWVCFuMwJf9bRK5gcvkMjGOZ6_NjXQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-mWSrvkmb381wFZSxr0RVdcjiyZZeogv5ellUSDQ4IYQ&oe=6A280491
+   Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solu..."
+

@@ -1,0 +1,385 @@
+======================================================================
+ANALISANDO DADOS REAIS DA SOLUTION PLACE (DIRETAMENTE DA META API)
+Período analisado: 2026-05-05 a 2026-06-03 (Últimos 30 dias fechados)
+======================================================================
+
+--- RESUMO CONSOLIDADO REAL DA CONTA ---
+Total Investido: R$ 4907.51
+Total Impressões: 1193347
+Total Cliques: 4429
+CTR Médio da Conta: 0.37%
+CPC Médio da Conta: R$ 1.11
+Total Leads (Conversas Iniciadas/True Leads): 167
+CPL Médio da Conta (Leads de Conversa): R$ 29.39
+
+--- PERFORMANCE REAL POR CAMPANHA ---
+
+1. [OUTCOME_ENGAGEMENT] [04][KrM][ABO][Message]
+   Meta ID: 120237338060320488
+   Investido: R$ 1544.71
+   Impressões: 98423 | Cliques: 738 | CTR: 0.75%
+   Leads: 113 | CPL: R$ 13.67 | CPC: R$ 2.09
+   Visitas Perfil (Atribuição): 59
+   Criativos desta campanha:
+     * Anúncio: AD[03/02/26] (ID: 120241681736490488)
+       - Investimento: R$ 481.14 | Cliques: 282 | Leads: 45 | CPL: R$ 10.69 | CTR: 1.06%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650787319_942977361427556_7403377220574836052_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=W8RiDw6m0YQQ7kNvwH9dO_4&_nc_oc=AdqwlaphNgG2B-P1ISYM9gDL8BFjTJLntplLuP6ibwtM6Scoh6IP-ChxxqHFvT0mO7Q&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFTOLKfdvrt5mWXIsyPXTtlQEgW3HdZ_808wxQWk8a9p2hqUP2l8YmNHv7PSKCHNo_RYdaBVp4jSg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-EbvfhkTJCf-e6C_VG8_yErKVt-6-RY0ayrb_UaD_LYw&oe=6A28146D
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[04/10/25] (ID: 120241509954580488)
+       - Investimento: R$ 252.49 | Cliques: 110 | Leads: 10 | CPL: R$ 25.25 | CTR: 0.43%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/646903647_26514545001497434_223387231843711095_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=kqs4n_ElSRoQ7kNvwGwsob6&_nc_oc=AdrpvRWPI6hA17teaCdbcasczFEtyWbGGXzhLZseTrNP8zW3N1ToyqIfjZllU5CX8uk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHU54cQL4VXHDfYMuZgOjgmLD0vg9qP75F680kqYJG64wmXCp8T-mYBmJ71iibAGmtHaCQxhdipmg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9Avw5bBo9CKBO5HppGNNbFCmuLEXg-Rg9neHMDOBkW9w&oe=6A280A27
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[17/03/26] (ID: 120241961097080488)
+       - Investimento: R$ 231.11 | Cliques: 85 | Leads: 19 | CPL: R$ 12.16 | CTR: 0.71%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/655276684_809876371542087_5423899411528426280_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=PePtN5m-q8AQ7kNvwGuoba9&_nc_oc=AdoIsIFSBMveeztKuh2u-05Aq5R-SJ661RMUj6R_VdijFmo6ICA-dh5c0WAy8Izk5dQ&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEWyc6TnDMI5vgC2otN7pJOrfFtAJWugBf7O3PEad8zf9S9g8oXle6-w3khlmo63rfTjMB4fToxWQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-Z4NHQ10uqsprvniajNODFWF5D2MiQaXIRqwqSZWvWhA&oe=6A28056A
+       - Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cad..."
+     * Anúncio: AD[11/03/26] (ID: 120241682388250488)
+       - Investimento: R$ 196.82 | Cliques: 125 | Leads: 16 | CPL: R$ 12.30 | CTR: 0.89%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650173988_1598730758040348_4504019949527766908_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=DGJKtG8VrmkQ7kNvwFnEIOT&_nc_oc=AdoRw_4K4n_NzatfH33nzNeVPnR169r3XZQQkt79ftAaP4L72SSOuMK-EuZFsRS7BQ8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEzhlF1mjwIho9pUS5z401XUFErIRoI5aLKFfj6zB-6ahl2eML7IJIs7HBtPcWhuTtf18o0CfQrQw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-6Dry9Y9NxYZoVtqjfXcfwF20562aQv5xfJ1KCU-m3pQ&oe=6A280829
+       - Copy: "Defender 110 BLINDADA e disponível pronta-entrega você só encontra na Land Rio.  E nessa parceria de peso entre a Soluti..."
+     * Anúncio: AD[05/05/26] (ID: 120244400913650488)
+       - Investimento: R$ 190.93 | Cliques: 80 | Leads: 10 | CPL: R$ 19.09 | CTR: 0.61%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/4360003189128663965?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJMa1pI68U2ULU2KElW3cm18gJaQ6jbxnxS6W4P3VNthqbemAXAxe1tMxLLpHMVrEcnJUhEpobnuTaxwqml4n1cZ8-Q2uH2xgP6MT7W_Suf7sQ_bxp9JsVY9TaLqOZMfmwQTJCyHu7lWz1hGoxyMa7U&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=Ado4Q9KwipsPkjGMXExHvDCT5qXG-9parGtu9-_dDA880TNf4CDvF2I3A2qVa8_AZVA&ccb=13-1&oh=06_Q3-_AZixCjrNphwDr-C9FrhJdY7sOL6O8ba9pCehXljHVvC1&oe=6A24284F&_nc_sid=58080a
+       - Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que comp..."
+     * Anúncio: AD[13/05/26] (ID: 120244883927130488)
+       - Investimento: R$ 154.31 | Cliques: 41 | Leads: 11 | CPL: R$ 14.03 | CTR: 0.83%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/7878524437210922342?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLM2l_sfF_LDqiudTeq6dwPsmUBfXGybuhcdQyDqXRaSG1Q8vdo48Tjn-_NBAy3vyXMo8PWKyhTjrtXmqIZ87pnbZsLcW6RBWyONqdN3Er2eid-FfD0GKRV67FPFXX1JCI5GFjFS1PXEqWebdyUT6qb&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdpJ-PKHIG-febACtpKjkKNfRTCcyMnIBjqfVSgQNAyWgwvd3YyymZP83eWCgKDz4T8&ccb=13-1&oh=06_Q3-_AT1RA8Y3Mn6Oashr_90mSoOTd4vWHtVkFSN23rHa8N2-&oe=6A24205B&_nc_sid=58080a
+       - Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place,..."
+     * Anúncio: AD[01/05/26] (ID: 120244401535990488)
+       - Investimento: R$ 19.79 | Cliques: 10 | Leads: 2 | CPL: R$ 9.89 | CTR: 0.77%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=LmrynnzMVZmlPV093G3lPA&_nc_tpa=Q5bMBQFh6s1wH4rUVYHz--2PrTPV4qO1lLQsgbNKpDuS0ccNOxLEqmiT6T6mf1oXXqNVt2b9NBrFAxwy5Q&oh=00_Af8uCxWOnn9BvWW9gt1swWc3umLneBm0X1nS-G_uM7uULw&oe=6A2812B8
+       - Copy: "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista.   Neste Dia do Trabalho, celebramos quem bu..."
+     * Anúncio: AD[11/04/26] (ID: 120243373429540488)
+       - Investimento: R$ 8.41 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 0.18%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675684092_938855025628577_2921201367812027780_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=DQegncV_OHoQ7kNvwESBUN4&_nc_oc=AdoPH8Ctc9X8XAZpLgoQmW-XcpAPE85oHeWxdEGMEkXy0-1GGupOeFcelaMTHi_KDfs&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFrDQPgtAr0dsWWmhlzF1cDixswaB383MKmcYVzEfG_r8i36AUaM4kthv6ofpb2_4QBHTPrmDNElw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-z8ao-P9NppssXI8sR4rPvtVGtP0413Tj1t6TlrvbmWA&oe=6A281504
+       - Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  A..."
+     * Anúncio: AD[13/02/26] (ID: 120241681209020488)
+       - Investimento: R$ 5.97 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.83%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651272321_866144803139867_3974247299021885432_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=X_VsY4oz-DMQ7kNvwHa6aRa&_nc_oc=AdrbTV7VjVGafgyT8UkO4F4-UidSdVLqzMbhufRZV7dmiS2ewr1hnE5AnXpaL0aJ0lA&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFg5iBglScDMs11CFtviJsev4ebkDQjO57fkui3HlGAbWVHZHOLicM7b0cHySsdzpDOn3XNWFna8Q&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-3BtfGHs-3tnUM0oe_GQrw_ez4-cp2b-RKb60TDe9plQ&oe=6A280E87
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[31/01/26] (ID: 120241681576040488)
+       - Investimento: R$ 2.81 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651998110_939032495970882_8324867980948790128_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=Weqnom_QKSoQ7kNvwELi4XL&_nc_oc=Adpn80dFs9Ft0cAKsAyhTLR95nsUCW1mua53MIUpJ-fwrjBb0BJDLFibgc_WfCaorC0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQGnmxNQEsPFEIm7AyMZglNb0h0oKETbfFzk5Ae9Q5yuvFM95LKKMxWSXk_oelXzijKb2Sd7M_4NcA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9Nnxc-5JZOVj382rQisgbTpwLAOaT6av7cFBZuX_-iZA&oe=6A280730
+       - Copy: "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se dest..."
+     * Anúncio: AD[28/07/25] (ID: 120241682045780488)
+       - Investimento: R$ 0.93 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 1.56%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/649645526_4236006956653230_387671840403335503_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=8oYpttVYbdwQ7kNvwG8PJvI&_nc_oc=AdqhOPjWBBvO0nb0mveU6CQwstxVVcVSj2UmALM6ZRxNOnsBqZGgPnFHl47NTAvY7Hg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQH8n0YceNupOGSv5kwUzxBliUeeQ2ziAgZD2bS5UTlP7eWYxFhYUfK-y1ODHLq9twrT_L5tES9a1Q&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-Jxuuo7QPRpVjT0ZpKPrt3qEVD7408IwiJo_2V1lWvZw&oe=6A28037F
+       - Copy: "Mais uma entrega técnica impecável! Hoje foi dia de entregar uma BMW blindada com excelência, em parceria com a BM Rio. ..."
+
+2. [OUTCOME_AWARENESS] [01][KrM][ABO][Impressions]
+   Meta ID: 120236136455210488
+   Investido: R$ 1316.13
+   Impressões: 823414 | Cliques: 322 | CTR: 0.04%
+   Leads: 0 | CPL: N/A | CPC: R$ 4.09
+   Visitas Perfil (Atribuição): 0
+   Criativos desta campanha:
+     * Anúncio: AD[11/04/26] (ID: 120243375326310488)
+       - Investimento: R$ 449.35 | Cliques: 127 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/673505247_27040149008916599_2832492396014832437_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=5LXd8q761iwQ7kNvwGM3wrZ&_nc_oc=AdpiHWHlTthAWvSERIPsUkb2JdYjn-iH37RQnu6u1IdIxs_ZkQrS9kkAQt3u2kFCE2c&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFVji-2IfN4AsxnVyd4JHLqLIPWksAgIA_nVCqXsADX503oxjCQI46riC4Z9ay5cGBtmkd4ve42mQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8uedIIdFT8ZanWuyxp7XTVbrhiDpcYcBjf4xoGLrPQZQ&oe=6A28116F
+       - Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  A..."
+     * Anúncio: AD[30/03/26] (ID: 120242831928010488)
+       - Investimento: R$ 209.54 | Cliques: 41 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/667788679_780921881763414_8808024094973149635_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=rTK2MakysrYQ7kNvwG6mJpu&_nc_oc=AdrpRCEjpYUgKOMA2c8EkXVTSJRN4jZnU865di9jSfSssuN582w1PSmGKGjCgK8WaYg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFXG5CBCr8UFLUtn1h7SCUGfgJLeIl7X6fFNasLJzyM_Q4YwfJCwtHNDPKBiP2KrhxdbdS0MgokKQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af93wFyp1wr3Mw5QgqwEfa3Yox-6Qu26KtHOeM3E3GbpbA&oe=6A27F7B7
+       - Copy: "A excelência na blindagem automotiva começa muito antes do processo de montagem. Ela nasce no compartilhamento de conhec..."
+     * Anúncio: AD[07/04/26] (ID: 120242881959520488)
+       - Investimento: R$ 209.51 | Cliques: 51 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/665368741_921695544039342_3550532126943911710_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=3GG65_O3lGoQ7kNvwEYWTu-&_nc_oc=AdrU0ZWn2J1Et9t1F1Zz0npnJR6Fe7gK0QWEfrVk9yC91mItfMuoL8WGBuJUmC4OnfU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEM-MqDoXhe00eepwwlqNjte5pny2Vgd_G7dcVx4V0fRiUN14MxQu9cv7QwULdVe2jQMD8pMqZSRA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-sdnFu0-6eVJSPLc4kPxZa36IsP5bddoiXLLIEtoAwTw&oe=6A281A7B
+       - Copy: "26 anos de história não se constroem por acaso.  São anos de consistência, evolução constante e compromisso real com cad..."
+     * Anúncio: AD[04/04/26] (ID: 120242881887580488)
+       - Investimento: R$ 209.35 | Cliques: 43 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668486112_1961383084770350_610292158384727445_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=RtVLAuhaf7wQ7kNvwGaDoit&_nc_oc=AdpfX7tD_-UOeR1RxZJPSW_LsbTk9Co1T42g_pW6T3LjYoDXosIsPUVlJwiWBlv772g&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQH9dU5aHOAxYDD8z0M-CbdLpZSR3Ow-5pMzVOZoZfz7N4HowhhYHJ69GKfNWkMcbuLT8gPcNlp8yw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_6psnkq9cYkPmaLosYouXflgELo_UCQtdEZ3n5KaS3Iw&oe=6A281DB9
+       - Copy: "A Solution Place e a Itália Master iniciam uma nova fase juntas.  Mais do que uma parceria, essa união representa um ali..."
+     * Anúncio: AD[27/05/26] (ID: 120245551273860488)
+       - Investimento: R$ 29.75 | Cliques: 8 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/712266754_1437328881412263_2555696475883050253_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=GnvRawCbA0AQ7kNvwElzV2v&_nc_oc=AdryOQnDSuoRy1cO49vszk3Yl57IuVMxwzTGd7Hp1mnDM0tPAty4_n3sdiItbjEwmUw&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEwl5iHpOEk6KnJlSJgijgTQsHdDpvgekP-6NQ-lrMdRBtfFlDTDRNW9ZlM7rq_jI2wBS5XPVET1w&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-VQUC5XlDeYEtg-tlOwKjbZZ_Hnjut1MXgKV_b_AYquw&oe=6A281D5B
+       - Copy: "A DTC Automotive e a Solution Place formam uma parceria de excelência no mercado de blindados. Quando o assunto é segura..."
+     * Anúncio: AD[06/03/26] (ID: 120241496167120488)
+       - Investimento: R$ 21.61 | Cliques: 6 | Leads: 0 | CPL: N/A | CTR: 0.05%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/637724089_791641753490871_4135807396682558940_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=64lOn8V8jbUQ7kNvwEP1BXm&_nc_oc=Adpmv9b96SqqhXcpmK6w2kdL8bTGAbY7fdi6EItOd0ND2w7bU8siAdJbHjNxJwD2MNc&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQGjKiD6lxkE8E4VwpDW8QXn3Xts_pfrPTPeOpCnsy-0LZH8eq6yCzz9OZWxUDKaHbDnAxTPNleL-A&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9JxKvwWK1QvYVrI7MnCKzZw6h1Y8PsihmDn04w-k4Ypw&oe=6A2805EB
+       - Copy: "O futuro da mobilidade já começou — e a blindagem também evoluiu.  Com o avanço dos veículos elétricos, cada projeto exi..."
+     * Anúncio: AD[05/02/26] (ID: 120240531207840488)
+       - Investimento: R$ 19.96 | Cliques: 4 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629833895_1643780110304135_7952940435588379436_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=AU3ECMuo0ywQ7kNvwH9R1ee&_nc_oc=AdqGgh3vC4Me5LQ2zxqi4_YVNrg0pp9o7kHyq_1fLSX7SsTW_PKd7HhmtGFG2FBr6as&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHpw2kcQicCqVxaA-_GYVYmwtUn0MS75e-nlTmseQbeqkj-ZTVQszytwy10PoCObGQYnN7oi3w57Q&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8l6CSz3JoCEtI24v6hfzKGepHFGL8dICT8Xlkw0fVVpw&oe=6A2807E2
+       - Copy: "Mercedes GLE 63 blindada com o Solution Air — nossa blindagem exclusiva em Tensylon.  Um material desenvolvido para quem..."
+     * Anúncio: AD[19/04/26] (ID: 120244396761310488)
+       - Investimento: R$ 19.34 | Cliques: 7 | Leads: 0 | CPL: N/A | CTR: 0.06%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/673681087_2253197042189471_2826278539562038627_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=d_6_YZnKf_AQ7kNvwGEWmaj&_nc_oc=AdoY5m0g_yWD-YaoeYjsYi72-EAXZAW-eTcQCZtR8wljdqRm0bZvqcqiF4UP0K079W8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEc5kaayV_kWJXoR01am4MYprksQemcSWFVCIOpT30WweL4_EwgY3nmWv-pqXUNBnj1LevE9CWHEQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9WgJuiH4eqIVvXEtRJPqKhwVNg8EYnnv1OzvnHVKbZKA&oe=6A28028A
+       - Copy: "O mercado de luxo exige precisão e segurança acima de tudo.  É com esse foco que a Solution Place Blindagem anuncia sua ..."
+     * Anúncio: AD[02/03/26] (ID: 120241432561070488)
+       - Investimento: R$ 16.59 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/648860925_1806965956957125_156209201740038482_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=k_HXcip5cckQ7kNvwFkec7u&_nc_oc=Adqyv2YXHdp9NTz49Kwn-bXxOHblW9O2O-S2BsmYCXs0fVs8pvczL5Feg_r6yu6wxl4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHBHb5pDJGrpY2m-faqFlbGgnxmjdCIn_Z6lXBv-95KLA0h4ZoU250ozhW6AeuhP2gsr8_sBBkHGg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9xWL06lmM8hxygn1c2rWKgP8rk7ExtkUA65z5Y9a7r7A&oe=6A28295D
+       - Copy: "Acaba de chegar à Itália Master um Jeep Compass S que já entrega tudo o que importa desde o primeiro momento.  Blindado ..."
+     * Anúncio: AD[26/02/26] (ID: 120241266871320488)
+       - Investimento: R$ 13.76 | Cliques: 4 | Leads: 0 | CPL: N/A | CTR: 0.06%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/646242248_1408672220411735_4154291621901996324_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=1V3_KcveDpMQ7kNvwG9WIBx&_nc_oc=AdqbsrmaESCGT0xEhd76tLSqEECNOPPJidIG1tH0GKnr12-xbjm2gr9RE2m8PzFogr8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFo2qAcE16ljhmE-cLCIwPHmSUsBtT2MiVnqCaHtugU-w7pL8VleUejaut9Rb0s2qfHMdzGnZP4rw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_ZRmP5WnM1gpqO3r9_7S0dRa7nNYnhXM8gphQvl0_b9A&oe=6A282A53
+       - Copy: "O BM Rio Special Sales já começou — e com a Solution Place, o nível sobe ainda mais.  Por apenas 4 dias, a BMW de Botafo..."
+     * Anúncio: AD[28/01/26] (ID: 120240135442500488)
+       - Investimento: R$ 13.49 | Cliques: 4 | Leads: 0 | CPL: N/A | CTR: 0.05%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t51.82787-10/624809176_18392499790146648_7368885486297448470_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=yGxpZ7O5QSQQ7kNvwFgB4eN&_nc_oc=AdrdkiSM5DfBFh2SROs1iQdqoPrTOLlx2zbVk19zevDOxYOzAFUzQTdZu187thD9Ihg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQE0aADI0K4SYu29qRcqK1K_J66NveZ0WUIk6j6KBwXDFCnfe_nZwgK6HKjMU_87GA4Yr2OoKrgDJw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af9zwOr3xdnd1J8bbb_WWChMyOlMibC370TcYGMddFgGRQ&oe=6A280BFA
+       - Copy: "Parcerias sólidas não se constroem do dia para a noite.  Elas nascem do tempo, da confiança e de um padrão que se mantém..."
+     * Anúncio: AD[31/01/26] (ID: 120240228976580488)
+       - Investimento: R$ 13.43 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/624281001_880028874761518_6436816362623015816_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=85JLvZMfaNAQ7kNvwE7p4G9&_nc_oc=AdpYVBRyaUvZ6pWhJD9MHAO03v5yTt8o8CdY-9R3byef-4OAbMH8nKc2OZdJC_cjVcQ&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHCE2y87x53xOgG_zBjm5OldPHEwftxwe-RQQM1J0FkitXyRaDNs56EW2jLQO9Knf0FVVEcp6TepA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_jSrHKZnSCZMPTqJ5s4n07vZP4c4tD7dZso1JD7vCVaA&oe=6A28255E
+       - Copy: "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se dest..."
+     * Anúncio: AD[23/02/26] (ID: 120241096570450488)
+       - Investimento: R$ 11.53 | Cliques: 5 | Leads: 0 | CPL: N/A | CTR: 0.08%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/638879747_2120494718781877_224859095593308170_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=MX2iiUzQyNEQ7kNvwGXnada&_nc_oc=Adr0dyOg9Tpz-I2vwPnHt4rLZuG9Pr7-DTRqaaRJyAlYAfZmfgg8z8UviPmb_J97jQs&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHhWkjYu2JI8iTUaEO9xZCPMS7hhUFSJa2ncCiG60iJtYuiQYoxrx6qeVcmxTKpKqGyHDXqy36PCA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9CcPcE0or86paWfzuV9KZNl0DCSWzmg3wxs7DZsFU-ew&oe=6A280C94
+       - Copy: "Algumas parcerias atravessam o tempo porque são construídas sobre confiança.  Há 6 anos, Solution e BM RIO caminham junt..."
+     * Anúncio: AD[29/05/26] (ID: 120245550840050488)
+       - Investimento: R$ 11.46 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/709526592_1967785341290961_2048060254333596573_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=_2ehtKwUGHsQ7kNvwFE29gw&_nc_oc=AdoJkKXHFLbNB2NaNTBu0rhX8mFVTKu_ilbaPoLKLwt2svq2WqrYdes_kLEDaABaRKI&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHEqW04VfIdFeN2O0BZry4GgW3wk1wal0nF9YogmVtKlCBJgayYW134fTZXkbcTA-hjQ4tarZfGng&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-FH2_NXUTtmtTDZsvdC1zO7aSavAtsx7YchC0v3yP46w&oe=6A280018
+       - Copy: "Existem carros. E existe a Range Rover SV — o crème de la crème da Land Rover.  Quando um veículo desse nível chega à So..."
+     * Anúncio: AD[20/03/26] (ID: 120242205792500488)
+       - Investimento: R$ 11.21 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.03%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668585616_2017981005765159_9032118120867387643_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=YgLI5daY6_sQ7kNvwHY2tdQ&_nc_oc=AdpMPzBlNJMJEWA_GODaVGrNrUcM5zV_UG58-hLB19eRZrBTeqa1s4cdW-3ZTww6dG0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFFqBNmAcQdFi-HwV526yz_ta_ScNHREbPx8giwa_TW5g-UqlUpZjaEdwMatcJb8uXgoXSgEAZSvQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9pHlilqjLbqk12kLdRpXCrkazWkm7m_jA1tzG2_jit6Q&oe=6A2809ED
+       - Copy: "Em 2025, mais de 70% dos nossos projetos já foram realizados em Tensylon. E a projeção para 2026 é ainda mais clara: ent..."
+     * Anúncio: AD2[19/04/26] (ID: 120243373224610488)
+       - Investimento: R$ 11.13 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675554442_26710393915223539_7941256555210528793_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=VUyj81Kw8mkQ7kNvwELzujK&_nc_oc=AdpT89yY8a_Wy1GejRQIbKyu-yQ_osbaLCEXEQjr_S-OP-dJlm6XFxB_kAQzOudVz5s&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQGh1Zb8HC0vccLl4gvskLeVIQmdiizg5R41TzKrHsit38TyMrVl2HdENoBXnZUxn-vfT1KVCT84BQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_XSoGtvPv2ee9ZrbN8mlLIjj67G-Xi5hT0YLT8mXVWCg&oe=6A281680
+       - Copy: "O futuro da mobilidade e da segurança se encontram na parceria oficial entre a Solution Place e a GWM Américas.   Unimos..."
+     * Anúncio: AD[09/04/26] (ID: 120243057865410488)
+       - Investimento: R$ 8.68 | Cliques: 4 | Leads: 0 | CPL: N/A | CTR: 0.08%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/671542131_810076702155222_1894021396699597084_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=3b5wSziR-LMQ7kNvwFugs2O&_nc_oc=AdqLVOjMAKMam7dx9x1UOgEBwen46GibWGnFM6WoSUVq21-e8vFIXAgCfRCHF8_eBl8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHxaYcldE3tkWPTfyQr5wPcxVX3X0mH5GUjOlsEpAnRj0-0yN7mKukDxPdwakzH4kMxEvAqYuAgUg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_hKvMqH7PAV51YBq00C7B5CJkb5HrGMdJrTKcxw9wbMg&oe=6A28117C
+       - Copy: "Inteligência e potência definem um GWM. Segurança completa é o que a Solution Place adiciona.  Para quem vive o ritmo da..."
+     * Anúncio: AD[13/02/26] (ID: 120240681210150488)
+       - Investimento: R$ 7.90 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.06%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629842981_1229731385966143_3680841446933143351_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=zjBLC0f2PBYQ7kNvwHX58Ie&_nc_oc=AdqOBCeCkCdhGS3tk3Zx17GDnjrB7wd1Mn3EK3kTw4O2_JVuq7VrPGDup9GNYxXxzkw&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFnL-c1itVaFBmvvfY-IaU2Mp2WddT_I79niVPgjIVr7n0oOf7vYYYtVfuhldZsVzDsE5ZHsTk_qA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_yAkacgGjo5nEDE21hgPcs75tcGhai6YuSgvwW2vxB1g&oe=6A281319
+       - Copy: "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem n..."
+     * Anúncio: AD[11/02/26] (ID: 120240613629910488)
+       - Investimento: R$ 6.77 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.05%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629629879_1189873542965888_1097787814245664169_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=jMUl4zI__AoQ7kNvwGwUprT&_nc_oc=AdoZz3M9zrqbI_6GDJgkGngw2AJpOkCA_BFmADRB4mYJWMC5d38lnA1FzetLHzK19Ko&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFuSGyx4kHzUtohMpvt_WOfub4oG2toDlCJ5kCi38m_CgzcWYpwaHOIUjHGEzGNyRa0Yrzt_FLIww&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-MokUmfpgYYY869dxYM8YYcJy-RSAUe02j4KIrUa2qPg&oe=6A281DA9
+       - Copy: "Parcerias não nascem por acaso.  Elas acontecem quando visão e propósito caminham na mesma direção.  Iniciamos 2026 ao l..."
+     * Anúncio: AD[17/03/26] (ID: 120241960655640488)
+       - Investimento: R$ 6.39 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651077219_3391709517654957_1015387871545246080_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=9Gl1HkUBYWYQ7kNvwGigJLP&_nc_oc=Adq-cJIJFXApFca8CyOMl436pFBLU72U3Xu6Qo-lP7Skmu3IbgvzXc3XE6m5os0dWsc&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEoiRKre5bMY8Gqc7lkhEjbco3IIJdUWgi1UgxNLJ5CjB6zxuvFlh8bmV6nEA4iNwXzKWu-SgHk6g&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9C-rD4l1pINZFS7skQpR3w5FYzIrf_vVTo5KFzJhM5Jw&oe=6A280DB4
+       - Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cad..."
+     * Anúncio: AD[07/04/26] (ID: 120243057960730488)
+       - Investimento: R$ 5.11 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668499425_1607449813845443_948856139242534125_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=BsSbj0IWtJYQ7kNvwFzzm-N&_nc_oc=AdrKohh2WCag6whfzH7V2GeAPbXkPOEbVTiPX6IJH4BXDPlEo41ReLXDZEJ68ebt3p0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQG08cMRamNdccn7UuhgkGvC717DGXUKio-FmD-2v2fyMmlMUUAf_wnXJjg2yLmHajLwPfTcxox_fA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af821QFGK3wDg1aRaPqa0-q6TP96dI87jUllcFpBvVS1gQ&oe=6A281E8B
+       - Copy: "26 anos de história não se constroem por acaso.  São anos de consistência, evolução constante e compromisso real com cad..."
+     * Anúncio: AD[17/02/26] (ID: 120240788275930488)
+       - Investimento: R$ 4.90 | Cliques: 1 | Leads: 0 | CPL: N/A | CTR: 0.04%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629838836_1450705173387320_364917332187931364_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=8kzqPbB4pewQ7kNvwGb6e5J&_nc_oc=AdrD1yJfIvXRvLjz5-iu2wRrUnSVc8nfBxY-7nmyMmJc363oJ3BdRxVm0OeQ84SWa1I&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEg69uUq83zm_YEEDv_lYxbK8GccSSryGYWiOVqXvBRts8EucZUwISxEaHHlQEg_3aEI9FAjWRgnw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8rspHLMwIgsQSjqpYgu1qEnho7bWGYT_oxKWukXjgZ8Q&oe=6A281E59
+       - Copy: "Desde o início, a Solution Place nasceu com um propósito claro: elevar o padrão da blindagem no Rio de Janeiro.  Aqui, b..."
+     * Anúncio: AD[03/02/26] (ID: 120240531361810488)
+       - Investimento: R$ 3.91 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.13%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629618241_934738182824800_2714717467076037799_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=llk9I1gAeawQ7kNvwGnhCec&_nc_oc=Adq99salOMU7wtolAKJw__hIo5c6Vrl9w6MWzlNTwoDi7PmYFhYAs5qGAmpafEvzS8M&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHDjoN7PQhRrl1Z0zuIQBfDFtrayVGp74QLWusbdQjqO7NNBCrFhaDvPzxHAhYexx0h3kxs_HBJpQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9w5qqHxZk2hq-jT_hiSqEeFJeuekVi02__7epA5sDZaQ&oe=6A27F783
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[11/04/26] (ID: 120242205442560488)
+       - Investimento: R$ 1.46 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/669702499_3055165748013132_2679216504818419289_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=Vk-hzdTRv0kQ7kNvwEGpxIs&_nc_oc=Adrj5tiNMzxrY7QulSdtu_JQjZyVC7oHb5CxflLIS0mJV78GuHMfCWtv_aj4I1frCuE&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQE6R3F0E1nqUVIn8YR_41SFvnKHKitB_coMvfEvNMT05IyuLs90nrKH4JQUKYABJQqxrckzezzyFQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_cbZqZKC0dDcO6oR_ebqx9ChhLAUZbIBfElzz99nLrzQ&oe=6A282787
+       - Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  A..."
+
+3. [OUTCOME_ENGAGEMENT] [09][KrM][ABO][Message]
+   Meta ID: 120245136929540488
+   Investido: R$ 674.48
+   Impressões: 21611 | Cliques: 186 | CTR: 0.86%
+   Leads: 44 | CPL: R$ 15.33 | CPC: R$ 3.63
+   Visitas Perfil (Atribuição): 4
+   Criativos desta campanha:
+     * Anúncio: AD[03/02/26] (ID: 120245136929510488)
+       - Investimento: R$ 224.44 | Cliques: 80 | Leads: 17 | CPL: R$ 13.20 | CTR: 1.13%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707678622_2507824356331512_597206643622897622_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=VNfJDhMkbmcQ7kNvwHPcPJZ&_nc_oc=AdqW_zFOzlYTDKMsOu6Onjbs8pfoflzXxnnbO9933O5rBl8Ig5FLKoxuBkQWbQfnhpU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQELf3_fdVQhLJeeibcmfmu5O9uPxED9ha-EzI6N7k_Chzz03rtm6qy8fxeX0xHIWBxCr1BtQsuPlQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8AfLSaeFm-oUS1hedoEAx3gXLkT4KiAawWfasjR9maRQ&oe=6A281B11
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[02/05/26] (ID: 120245136929750488)
+       - Investimento: R$ 192.21 | Cliques: 61 | Leads: 18 | CPL: R$ 10.68 | CTR: 0.79%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707433817_27472503195688735_7085877821857009806_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=NF3HDiBzvmEQ7kNvwFe9A2n&_nc_oc=AdqoyDMtL4GcBjEV0_GFhhLlxNxpxCn68s-_AY3b8PgjaO2dY_EVRvpRwuxNIQLCwQ4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQGdRTJ2mH2n3Mz26ocs4XV0igbOuM3IyVPAzaEgFVdCWk_BYBbHjN5AMBLR5oFf2BI5RKKgnGDjVg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_zAIWc5ei-hdlY7lEtl-fzmCy33xvLJuU0xkBdepLYdw&oe=6A281991
+       - Copy: "A tradição da Ford e a robustez da Megafor encontram a segurança de alto nível da Solution Place.   Agora, somos a blind..."
+     * Anúncio: AD[05/05/26] (ID: 120245136929840488)
+       - Investimento: R$ 175.55 | Cliques: 27 | Leads: 5 | CPL: R$ 35.11 | CTR: 0.57%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/13392374324571417644?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQK6h508fnwCEKEybJA20XLS6W6QvklhAB6jflgJAktDKHhHn5zZaV-v3vI4uoqSQGNER-c7XUS6aIjV2HiBsdXmNejAzY4DNzYmrwPRn3ev8OZPXHRdthRQ6zpXdCbODzDVDr9ERG3CIOwSZIVeW78O&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=Adrfej8ynsdut2B4rhmDOlHP0gR-FA5Um6ENQXAk3Fi5vwb5iOKPGPfTm3T009MZGlo&ccb=13-1&oh=06_Q3-_AUwVxP8y3VcuGRL1Bp6L9BpSWMtz4vRPX14AF7VH1W3f&oe=6A243502&_nc_sid=58080a
+       - Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que comp..."
+     * Anúncio: AD[01/05/26] (ID: 120245136929600488)
+       - Investimento: R$ 31.47 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 0.42%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=LmrynnzMVZmlPV093G3lPA&_nc_tpa=Q5bMBQFh6s1wH4rUVYHz--2PrTPV4qO1lLQsgbNKpDuS0ccNOxLEqmiT6T6mf1oXXqNVt2b9NBrFAxwy5Q&oh=00_Af8uCxWOnn9BvWW9gt1swWc3umLneBm0X1nS-G_uM7uULw&oe=6A2812B8
+       - Copy: "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista.   Neste Dia do Trabalho, celebramos quem bu..."
+     * Anúncio: AD[04/10/25] (ID: 120245136929570488)
+       - Investimento: R$ 18.03 | Cliques: 4 | Leads: 1 | CPL: R$ 18.03 | CTR: 0.86%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/709486415_2140790796768357_2365360772675218576_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=TKUGn6MLBE4Q7kNvwH7ViXx&_nc_oc=Adrj5TDXSzk5FgKSVMWdyaUFyADQwOtxYtoyW48lI6KJewD76F-8nkizrXkHlaYkZFM&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHyesu_n179V_EL-QQgxEdsBfY5xWet12ZJxZsSczLJf83Rw6OpLkhaJuSqJ7oy0ujFmohtppuqiA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8CZfXpBS3xWi4pJz9zXe2MaP1VRdetM4q8EHR1lPBwbw&oe=6A2817D2
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[17/03/26] (ID: 120245136929550488)
+       - Investimento: R$ 12.23 | Cliques: 4 | Leads: 3 | CPL: R$ 4.08 | CTR: 1.07%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/704858185_957946770450184_8254912559419410678_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=xSt_rE4DFv8Q7kNvwG-Dv1l&_nc_oc=Adov7K2MxoEzpRX6eGTRCesmfvPqurSXQ0A43C8rlj7TfR-yHlwAzdlD8Wp4JpmROyk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHUlN7mVl_cYRqXfCriDab_D9scg5pOGekRfWm1zlV-NUxqoxx88Fe-mAKI-te6dj8dTa3eKq9wOQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-onQ3xiRDyYQBZy8K_tPsrN8UmOyMUJ_9tcFwwP8fmjA&oe=6A280491
+       - Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cad..."
+     * Anúncio: AD[02/06/26] (ID: 120245683112050488)
+       - Investimento: R$ 10.34 | Cliques: 4 | Leads: 0 | CPL: N/A | CTR: 1.25%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/1909865980268193130?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQIKAJJ1ZPJ3pPtwVeNNNlZcYTcoL3rmUrCd2VEFXhMkbGVGeM1sskQZYpstpFqmPiBUMkH2xWU-5gssdvlvqXUHgfhrj5OfZXTYiOF4j2zecGhK3YR16eWM962N-RZB_y05UR2oWirVTtQBo0QfKg2j&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=Adpuj7wJjKbwaOYMncN5pCIIZ48pKMarmyJxiZdJ3mM_l2uzLRRdF_8WII8afYiFbcI&ccb=13-1&oh=06_Q3-_AfCKnjRuLVny2QwBVFbWB1UKp3uUm7YrUvpILaSS5x80&oe=6A240BD2&_nc_sid=58080a
+       - Copy: "Vidro blindado com manchas, bolhas ou dificuldade de visibilidade não é só estética. É sinal de que a proteção pode esta..."
+     * Anúncio: AD[13/05/26] (ID: 120245136929610488)
+       - Investimento: R$ 5.73 | Cliques: 3 | Leads: 0 | CPL: N/A | CTR: 2.07%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/13921813410645148829?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJZsZ-skjxIvXdimckrdOI3ZQCaXZ5xR-H1FrhuZO7ulRdxTYj6SRQhGeSKF9skdnvj3ClXQtZysPKtOt8V2p1E2F1iDrObW7Y9By5VgwhASjIZgP9AIjxcjxbrJiJ2ZPDhm_wa0BMGF9RhqAcerAf2&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdroT0gDvQX6GXU5BhtKlzYD049uqaujLyp8xKnPWVks0IiCw4-oGf7jdkOE_lfZ0zQ&ccb=13-1&oh=06_Q3-_AeVmakB31C27qiMV42JDmRJHQ5NP_20sobqTjpgz72XR&oe=6A241094&_nc_sid=58080a
+       - Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place,..."
+     * Anúncio: AD[20/05/26] (ID: 120245683172600488)
+       - Investimento: R$ 3.58 | Cliques: 0 | Leads: 0 | CPL: N/A | CTR: 0.00%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/14545165462543338132?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQKrur2MgGyP5TKnkNBh1BGPbjehEIjCD0n6kfiPDyJ3Qqt_oWC-nnkAfp7Bl1JPAFCVyIp_3J-CI7NZvGDWbAwXsTVeee5zcIkvJiLRPMJUswOOwYGWiFhGy9DqqS0h4IdjHFhw5KDQa5SvtRVnoDmL&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdqT2CjEL8TakxZ5aNdwCnKWNTsNXnF2O3tBdljFuK7H-oU7q7z_syDMKljaOHmSfPA&ccb=13-1&oh=06_Q3-_AWuDEIWrc1TlXZ8ZZJYR9Q__XTEUNX8PUE7McsvNT8yA&oe=6A241FF4&_nc_sid=58080a
+       - Copy: "O Brasil lidera o mercado mundial de blindagem automotiva, um reflexo de que a segurança se tornou prioridade absoluta n..."
+
+4. [OUTCOME_TRAFFIC] [05][KrM][CBO][Traffic][IG]
+   Meta ID: 120237338823250488
+   Investido: R$ 664.98
+   Impressões: 167687 | Cliques: 2897 | CTR: 1.73%
+   Leads: 8 | CPL: R$ 83.12 | CPC: R$ 0.23
+   Visitas Perfil (Atribuição): 297
+   Criativos desta campanha:
+     * Anúncio: AD[03/02/26] (ID: 120241342114390488)
+       - Investimento: R$ 557.12 | Cliques: 2625 | Leads: 7 | CPL: R$ 79.59 | CTR: 1.81%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/645633658_708221538949963_4846070334324538461_n.jpg?_nc_cat=103&ccb=1-7&_nc_ohc=tt0DNS07ca0Q7kNvwFRvr9y&_nc_oc=AdpHkgLR8Y2gjssrYhytHOp4mW-R8D8a07V0ODt2-eD6GjQU1t4ahwGO9vaoMAm0ueI&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHhMVfRzg2rnfChkky3sMwczH2mhhYlsIyM9VBnmDp5yK5RbjLjDHnKNFOuHQIbU5JfQ5ey5ty2jA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-8t7rH4ZcasYmaWPRkov0PtuSxKPMPhdRg6YmZP1g0qA&oe=6A281344
+       - Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor..."
+     * Anúncio: AD[19/04/26] (ID: 120244884085410488)
+       - Investimento: R$ 61.18 | Cliques: 167 | Leads: 1 | CPL: R$ 61.18 | CTR: 1.00%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/701700338_1029357939859668_6924190017877709848_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=sAAEcXL5fgEQ7kNvwH4bwA-&_nc_oc=AdozKUNJ6jljbk0e0VNoVPdZi7-y0-lezxjwZ1vnqXJ03KKaT4YGssQYfpLvJDsgk2M&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQGLh_SN15d5rLoDhJ4_5S8pNmvLoV6Fn6L4BRoMEm87HWQD7_XBMWMUWspHzUpqCRWvnmkBxqnlSQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_phXNj0UXclYyKbBiZ0rLev2sj9VJCP2HLCnpfWj8X2g&oe=6A282746
+       - Copy: "O mercado de luxo exige precisão e segurança acima de tudo.  É com esse foco que a Solution Place Blindagem anuncia sua ..."
+     * Anúncio: AD[04/10/25] (ID: 120237338823230488)
+       - Investimento: R$ 35.61 | Cliques: 71 | Leads: 0 | CPL: N/A | CTR: 2.24%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/587709249_814963104628023_6827438093787207872_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=ItIcKC2Es2gQ7kNvwGcMYVd&_nc_oc=Adpswzi3Dvmmn2U5_kkZClMSYcHkuaklLLtN5p7oKAhIuwxuzV_EkYWAElUVVR5dQVU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHRjWhXbLLHqf6ixFV8YjSTMOQwJkSt-ZoZU7JM8ejCo2yqcaVXMr29DF3vLSTI8JT8q7JHDS5mKA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-qPVV0x4Cc-ujNlBUkUsSvhOagehiOfiLZrBlsf0UzSA&oe=6A281A05
+       - Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a únic..."
+     * Anúncio: AD[28/01/25] (ID: 120240797672820488)
+       - Investimento: R$ 6.33 | Cliques: 12 | Leads: 0 | CPL: N/A | CTR: 0.86%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629840689_1669937947703109_7770084233723096044_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=9u5Gl4_FY64Q7kNvwFcWqmL&_nc_oc=AdrSCiV675Zi2aDFdqJ3xwlS1P-iN9DpTGCQhMxh50IEolB9a9ZhfQehGI-Hk_C7-R4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEl-rHQ1rpFghkYYXt8dP8UQVzK4LQtm3HQ3Ax8_XOprlH-kHjUsnaNSc8CB1JqNNsBkkW45kSoVw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af97VUA5LYxjJHxpRvc_iqPywHD5ebe1Jhsk8fsd0DF8iA&oe=6A27FCE7
+       - Copy: "Uma entrega de sucesso para o nosso amigo, @josealdojunioroficial .  Agradecemos a confiança na Solution Place. E ficamo..."
+     * Anúncio: AD[11/04/26] (ID: 120243373694880488)
+       - Investimento: R$ 4.74 | Cliques: 22 | Leads: 0 | CPL: N/A | CTR: 1.81%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675158503_957944020156836_278605063857638996_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=PV0BJV4-i78Q7kNvwGTmcSJ&_nc_oc=Adrt4z0JLsydLEuIiiq8KERqs3mUOjJ7MMkeRDivf4bTsPSUvgKdFX9_mQz6ASO9QP4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHQ5QP0mpNQuUH1WvMOHQGBIM0_wB_1L6QQsSOs7npAE3zoTjxl1WpBbDkrPBOFP3NFVPaxW1LBtA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-4ahsiaps-XmqudY68NOvzAITq98kkiL52kBy-Eqjnbw&oe=6A281D38
+       - Copy: "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.  A..."
+
+5. [OUTCOME_ENGAGEMENT] [02][KrM][ABO][Engagement]
+   Meta ID: 120236159247340488
+   Investido: R$ 503.98
+   Impressões: 54801 | Cliques: 268 | CTR: 0.49%
+   Leads: 2 | CPL: R$ 251.99 | CPC: R$ 1.88
+   Visitas Perfil (Atribuição): 258
+   Criativos desta campanha:
+     * Anúncio: AD[13/05/26] (ID: 120244883774740488)
+       - Investimento: R$ 248.46 | Cliques: 215 | Leads: 1 | CPL: R$ 248.46 | CTR: 0.73%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/1618544605994300576?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQL3hmOA4wTzODkEzHhiK2uCovHdV7tZr5eG8eU4OVsPa63wv7OYViqM1e90KOSQ83CizftLHjab4ZS2E9VjmeyDYHdAAs5lwV4IeGwf8ozsz4Iw0F2EiFvHEUF9Bmr_X4Yt7AmJbEB3hcHuu5E6Ypa7&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdoMuYuEQV0oA1JAn2TMf1t48KmFId0HOBCQB0sB-UN7snnXVkmbA286QJUkDqAcm70&ccb=13-1&oh=06_Q3-_ATeu9CavsxM3SmEoAonfFhZZvZzA6tPYSKoWsy36diDF&oe=6A2402C4&_nc_sid=58080a
+       - Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place,..."
+     * Anúncio: AD[22/04/26] (ID: 120244159824060488)
+       - Investimento: R$ 173.48 | Cliques: 26 | Leads: 0 | CPL: N/A | CTR: 0.14%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/688606826_2175517679897137_7318759625197982472_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=Asnqi5g70MQQ7kNvwEbMtBF&_nc_oc=AdrTo6CdMlC1RbzV4ZLg3YerAJ9iiqOl0qVbU0uEuGuWVvC90wx5I8h9kvwx1m0k0jM&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=LmrynnzMVZmlPV093G3lPA&_nc_tpa=Q5bMBQERHVQko9pLlZK7hhPulnG0UKs7ZeU3xtcRcaNP71y8FjfzzE74kqjJ9k3XD-g4assuVeoVaHYWjg&oh=00_Af_SdWezS_jYrD3H62Yc4Ovri8nhRsk6VxxuHTzJgf2Ktw&oe=6A2822BE
+       - Copy: "A verdadeira sofisticação está na tranquilidade de saber que você e sua família estão protegidos, sem abrir mão do desig..."
+     * Anúncio: AD[01/05/26] (ID: 120244159800290488)
+       - Investimento: R$ 28.08 | Cliques: 5 | Leads: 0 | CPL: N/A | CTR: 0.24%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=LmrynnzMVZmlPV093G3lPA&_nc_tpa=Q5bMBQFh6s1wH4rUVYHz--2PrTPV4qO1lLQsgbNKpDuS0ccNOxLEqmiT6T6mf1oXXqNVt2b9NBrFAxwy5Q&oh=00_Af8uCxWOnn9BvWW9gt1swWc3umLneBm0X1nS-G_uM7uULw&oe=6A2812B8
+       - Copy: "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista.   Neste Dia do Trabalho, celebramos quem bu..."
+     * Anúncio: AD[27/02/26] (ID: 120241268389460488)
+       - Investimento: R$ 17.36 | Cliques: 7 | Leads: 1 | CPL: R$ 17.36 | CTR: 0.61%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/6921839330588116179?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJn9JDoeu7JJtmzIik4CsjjaXcbPyVBXQcvVqoL0uD0nAYAOiMQI_sCVU9lqyBIJNUHJa0hKY0Sccnqm71-lGkuE77WUWrdTvtwCu750m3JQNRxjSTvqSm84TGtB1BS0_PCFsnib4N2epukNt626_c3&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdqOubRpZNHXSVqlA0xrLCA8-a3kP0lQXxtWK16lNOKnsgtG9J0ye_zH6fdRaxPoX_I&ccb=13-1&oh=06_Q3-_AYAhcRjWOqE7zQIdcN_hNM9o85So_v4CamDS--pezamL&oe=6A24210A&_nc_sid=58080a
+       - Copy: "O Mix Tecnológico Solution Air.  Blindagem inteligente para máxima leveza.  O que torna a nossa blindagem única não é ap..."
+     * Anúncio: AD[02/03/26] (ID: 120241510675010488)
+       - Investimento: R$ 14.99 | Cliques: 2 | Leads: 0 | CPL: N/A | CTR: 0.09%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/642852147_122043061582891646_3578888633097282484_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=-be4cc0C2-4Q7kNvwFxeIgn&_nc_oc=Ado921ewbdHGDrFd7JrMdjrgROmRLqGsyiKMxmKV8VNs-21Zzv5oE_jFr8mVg5ROe5c&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=LmrynnzMVZmlPV093G3lPA&_nc_tpa=Q5bMBQHb2NMXSiljLelT2fquH_6ewf1Fwmmua1oJ5-V16NImUjapyFrLn1ELT1I8VTp67gfYXbnOTG3YPg&oh=00_Af8fdMoYed9c-P_jtz-wIriigolMzpbRX_KDa2KTq9t8Ig&oe=6A28170F
+       - Copy: "Revestimentos originais, transparência absoluta e a paz de espírito que você merece...."
+     * Anúncio: AD[05/05/26] (ID: 120244159783750488)
+       - Investimento: R$ 12.95 | Cliques: 6 | Leads: 0 | CPL: N/A | CTR: 0.95%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/44789739201151172?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJTkG22DTvlIBdOcOAKynKDVeQUlsiOXEn1rJLR87U_X4WFvNAhZrVtT446UDBZLjIpwVzpZZg6TrFPkcOIJd6_mq1_2kTf5kgutY7LzWNUuXKgjkymkwXKcSIQC4poB47o7-wIO6eYrIc06M7V0N8A&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdpHRFoMjT7wJbqVCsU4e7Q054BSN60GZrIjkTUBPfTfLylJA7BB5PrwBH_KvmcF1Qw&ccb=13-1&oh=06_Q3-_AYagDlSVKmO5KUCr6-5U3gzC98Cj61NhENUfxqMkVa1U&oe=6A240646&_nc_sid=58080a
+       - Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que comp..."
+     * Anúncio: AD[18/03/26] (ID: 120243375409210488)
+       - Investimento: R$ 8.66 | Cliques: 7 | Leads: 0 | CPL: N/A | CTR: 1.44%
+       - Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/11273972017450117312?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJl-BcPHOV8FNhpbm6KPvpqFoZyPWIUOy-HgoYOiR1IC3WwQqkZcZLtf9iW5-Tv9JArylk4rrYBlOi3S48fLfbetmwW_kJ_JFhKHy4cYW4cJyeca-reEaw62s3pfcjik8vFIbr1DWgh_LqeyAPUosLp&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdrhfKQip7T7t2xNPdfZSlXMYLpxD_mnu71klPgNHLnqC3UgB5TUT-UwcDZDpRlfwHM&ccb=13-1&oh=06_Q3-_AUDUjten-V-M_JEGL6lHYUZm6nadrIdnihLyj0l2wzZF&oe=6A241C0E&_nc_sid=58080a
+       - Copy: "Uma noite que reuniu grandes nomes, boas conversas e visão de futuro para o mercado automotivo.  Entre inovação, estraté..."
+
+6. [OUTCOME_AWARENESS] [08][KrM][ABO][Impressions][Boost]
+   Meta ID: 120245039643090488
+   Investido: R$ 203.23
+   Impressões: 27411 | Cliques: 18 | CTR: 0.07%
+   Leads: 0 | CPL: N/A | CPC: R$ 11.29
+   Visitas Perfil (Atribuição): 0
+   Criativos desta campanha:
+     * Anúncio: AD[22/05/26] (ID: 120245039643080488)
+       - Investimento: R$ 203.23 | Cliques: 18 | Leads: 0 | CPL: N/A | CTR: 0.07%
+       - Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/706767365_1287451099723892_1701268760710263129_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=cym9pxrsOnEQ7kNvwHF3-2g&_nc_oc=Adpgft_lxN6tn9orhs8aTb6SNSBbgieaKt4KPnGxAuQd12a3In34nsQ-nvi4bg_oAnU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEe9TWYlVettsOUUc9XghgIHwY9xCpqk1c7Jlj4T6dF_bHvQKEbYPj2yP6zZPzPssSoILUUET0Rrg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_n9lDLJr_xNb-YhfQPmPIjXGE0gsxItE8d5Bm7tt1dYA&oe=6A281136
+       - Copy: "Este sábado, dia 23, a Solution Place e a Jeep Usastar têm carros blindados à pronta entrega esperando por você.  Sem es..."
+
+======================================================================
+RANKING GERAL DE CRIATIVOS POR NÚMERO DE LEADS (2026-05-05 A 2026-06-03)
+======================================================================
+1. AD[03/02/26] [Campanha: [04][KrM][ABO][Message]]
+   ID Meta: 120241681736490488
+   Performance: Leads: 45 | Investido: R$ 481.14 | CPL: R$ 10.69 | CTR: 1.06% | Cliques: 282
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650787319_942977361427556_7403377220574836052_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=W8RiDw6m0YQQ7kNvwH9dO_4&_nc_oc=AdqwlaphNgG2B-P1ISYM9gDL8BFjTJLntplLuP6ibwtM6Scoh6IP-ChxxqHFvT0mO7Q&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQFTOLKfdvrt5mWXIsyPXTtlQEgW3HdZ_808wxQWk8a9p2hqUP2l8YmNHv7PSKCHNo_RYdaBVp4jSg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-EbvfhkTJCf-e6C_VG8_yErKVt-6-RY0ayrb_UaD_LYw&oe=6A28146D
+   Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e e..."
+
+2. AD[17/03/26] [Campanha: [04][KrM][ABO][Message]]
+   ID Meta: 120241961097080488
+   Performance: Leads: 19 | Investido: R$ 231.11 | CPL: R$ 12.16 | CTR: 0.71% | Cliques: 85
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/655276684_809876371542087_5423899411528426280_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=PePtN5m-q8AQ7kNvwGuoba9&_nc_oc=AdoIsIFSBMveeztKuh2u-05Aq5R-SJ661RMUj6R_VdijFmo6ICA-dh5c0WAy8Izk5dQ&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEWyc6TnDMI5vgC2otN7pJOrfFtAJWugBf7O3PEad8zf9S9g8oXle6-w3khlmo63rfTjMB4fToxWQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-Z4NHQ10uqsprvniajNODFWF5D2MiQaXIRqwqSZWvWhA&oe=6A28056A
+   Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solu..."
+
+3. AD[02/05/26] [Campanha: [09][KrM][ABO][Message]]
+   ID Meta: 120245136929750488
+   Performance: Leads: 18 | Investido: R$ 192.21 | CPL: R$ 10.68 | CTR: 0.79% | Cliques: 61
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707433817_27472503195688735_7085877821857009806_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=NF3HDiBzvmEQ7kNvwFe9A2n&_nc_oc=AdqoyDMtL4GcBjEV0_GFhhLlxNxpxCn68s-_AY3b8PgjaO2dY_EVRvpRwuxNIQLCwQ4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQGdRTJ2mH2n3Mz26ocs4XV0igbOuM3IyVPAzaEgFVdCWk_BYBbHjN5AMBLR5oFf2BI5RKKgnGDjVg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_zAIWc5ei-hdlY7lEtl-fzmCy33xvLJuU0xkBdepLYdw&oe=6A281991
+   Copy: "A tradição da Ford e a robustez da Megafor encontram a segurança de alto nível da Solution Place.   Agora, somos a blindadora homologada para os clien..."
+
+4. AD[03/02/26] [Campanha: [09][KrM][ABO][Message]]
+   ID Meta: 120245136929510488
+   Performance: Leads: 17 | Investido: R$ 224.44 | CPL: R$ 13.20 | CTR: 1.13% | Cliques: 80
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707678622_2507824356331512_597206643622897622_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=VNfJDhMkbmcQ7kNvwHPcPJZ&_nc_oc=AdqW_zFOzlYTDKMsOu6Onjbs8pfoflzXxnnbO9933O5rBl8Ig5FLKoxuBkQWbQfnhpU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQELf3_fdVQhLJeeibcmfmu5O9uPxED9ha-EzI6N7k_Chzz03rtm6qy8fxeX0xHIWBxCr1BtQsuPlQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8AfLSaeFm-oUS1hedoEAx3gXLkT4KiAawWfasjR9maRQ&oe=6A281B11
+   Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e e..."
+
+5. AD[11/03/26] [Campanha: [04][KrM][ABO][Message]]
+   ID Meta: 120241682388250488
+   Performance: Leads: 16 | Investido: R$ 196.82 | CPL: R$ 12.30 | CTR: 0.89% | Cliques: 125
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650173988_1598730758040348_4504019949527766908_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=DGJKtG8VrmkQ7kNvwFnEIOT&_nc_oc=AdoRw_4K4n_NzatfH33nzNeVPnR169r3XZQQkt79ftAaP4L72SSOuMK-EuZFsRS7BQ8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQEzhlF1mjwIho9pUS5z401XUFErIRoI5aLKFfj6zB-6ahl2eML7IJIs7HBtPcWhuTtf18o0CfQrQw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-6Dry9Y9NxYZoVtqjfXcfwF20562aQv5xfJ1KCU-m3pQ&oe=6A280829
+   Copy: "Defender 110 BLINDADA e disponível pronta-entrega você só encontra na Land Rio.  E nessa parceria de peso entre a Solution Place e Land Rio nós vemos ..."
+
+6. AD[13/05/26] [Campanha: [04][KrM][ABO][Message]]
+   ID Meta: 120244883927130488
+   Performance: Leads: 11 | Investido: R$ 154.31 | CPL: R$ 14.03 | CTR: 0.83% | Cliques: 41
+   Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/7878524437210922342?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLM2l_sfF_LDqiudTeq6dwPsmUBfXGybuhcdQyDqXRaSG1Q8vdo48Tjn-_NBAy3vyXMo8PWKyhTjrtXmqIZ87pnbZsLcW6RBWyONqdN3Er2eid-FfD0GKRV67FPFXX1JCI5GFjFS1PXEqWebdyUT6qb&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdpJ-PKHIG-febACtpKjkKNfRTCcyMnIBjqfVSgQNAyWgwvd3YyymZP83eWCgKDz4T8&ccb=13-1&oh=06_Q3-_AT1RA8Y3Mn6Oashr_90mSoOTd4vWHtVkFSN23rHa8N2-&oe=6A24205B&_nc_sid=58080a
+   Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place, cada projeto é pensado para m..."
+
+7. AD[04/10/25] [Campanha: [04][KrM][ABO][Message]]
+   ID Meta: 120241509954580488
+   Performance: Leads: 10 | Investido: R$ 252.49 | CPL: R$ 25.25 | CTR: 0.43% | Cliques: 110
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/646903647_26514545001497434_223387231843711095_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=kqs4n_ElSRoQ7kNvwGwsob6&_nc_oc=AdrpvRWPI6hA17teaCdbcasczFEtyWbGGXzhLZseTrNP8zW3N1ToyqIfjZllU5CX8uk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHU54cQL4VXHDfYMuZgOjgmLD0vg9qP75F680kqYJG64wmXCp8T-mYBmJ71iibAGmtHaCQxhdipmg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9Avw5bBo9CKBO5HppGNNbFCmuLEXg-Rg9neHMDOBkW9w&oe=6A280A27
+   Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a única blindadora boutique do mundo..."
+
+8. AD[05/05/26] [Campanha: [04][KrM][ABO][Message]]
+   ID Meta: 120244400913650488
+   Performance: Leads: 10 | Investido: R$ 190.93 | CPL: R$ 19.09 | CTR: 0.61% | Cliques: 80
+   Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/4360003189128663965?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJMa1pI68U2ULU2KElW3cm18gJaQ6jbxnxS6W4P3VNthqbemAXAxe1tMxLLpHMVrEcnJUhEpobnuTaxwqml4n1cZ8-Q2uH2xgP6MT7W_Suf7sQ_bxp9JsVY9TaLqOZMfmwQTJCyHu7lWz1hGoxyMa7U&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=Ado4Q9KwipsPkjGMXExHvDCT5qXG-9parGtu9-_dDA880TNf4CDvF2I3A2qVa8_AZVA&ccb=13-1&oh=06_Q3-_AZixCjrNphwDr-C9FrhJdY7sOL6O8ba9pCehXljHVvC1&oe=6A24284F&_nc_sid=58080a
+   Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo p..."
+
+9. AD[03/02/26] [Campanha: [05][KrM][CBO][Traffic][IG]]
+   ID Meta: 120241342114390488
+   Performance: Leads: 7 | Investido: R$ 557.12 | CPL: R$ 79.59 | CTR: 1.81% | Cliques: 2625
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/645633658_708221538949963_4846070334324538461_n.jpg?_nc_cat=103&ccb=1-7&_nc_ohc=tt0DNS07ca0Q7kNvwFRvr9y&_nc_oc=AdpHkgLR8Y2gjssrYhytHOp4mW-R8D8a07V0ODt2-eD6GjQU1t4ahwGO9vaoMAm0ueI&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHhMVfRzg2rnfChkky3sMwczH2mhhYlsIyM9VBnmDp5yK5RbjLjDHnKNFOuHQIbU5JfQ5ey5ty2jA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-8t7rH4ZcasYmaWPRkov0PtuSxKPMPhdRg6YmZP1g0qA&oe=6A281344
+   Copy: "Duas BMW X1, a mesma excelência.  Na Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e e..."
+
+10. AD[05/05/26] [Campanha: [09][KrM][ABO][Message]]
+   ID Meta: 120245136929840488
+   Performance: Leads: 5 | Investido: R$ 175.55 | CPL: R$ 35.11 | CTR: 0.57% | Cliques: 27
+   Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/13392374324571417644?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQK6h508fnwCEKEybJA20XLS6W6QvklhAB6jflgJAktDKHhHn5zZaV-v3vI4uoqSQGNER-c7XUS6aIjV2HiBsdXmNejAzY4DNzYmrwPRn3ev8OZPXHRdthRQ6zpXdCbODzDVDr9ERG3CIOwSZIVeW78O&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=Adrfej8ynsdut2B4rhmDOlHP0gR-FA5Um6ENQXAk3Fi5vwb5iOKPGPfTm3T009MZGlo&ccb=13-1&oh=06_Q3-_AUwVxP8y3VcuGRL1Bp6L9BpSWMtz4vRPX14AF7VH1W3f&oe=6A243502&_nc_sid=58080a
+   Copy: "Você sabe o que está entre você e o perigo?  Blindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo p..."
+
+11. AD[17/03/26] [Campanha: [09][KrM][ABO][Message]]
+   ID Meta: 120245136929550488
+   Performance: Leads: 3 | Investido: R$ 12.23 | CPL: R$ 4.08 | CTR: 1.07% | Cliques: 4
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/704858185_957946770450184_8254912559419410678_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=xSt_rE4DFv8Q7kNvwG-Dv1l&_nc_oc=Adov7K2MxoEzpRX6eGTRCesmfvPqurSXQ0A43C8rlj7TfR-yHlwAzdlD8Wp4JpmROyk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHUlN7mVl_cYRqXfCriDab_D9scg5pOGekRfWm1zlV-NUxqoxx88Fe-mAKI-te6dj8dTa3eKq9wOQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-onQ3xiRDyYQBZy8K_tPsrN8UmOyMUJ_9tcFwwP8fmjA&oe=6A280491
+   Copy: "Sua segurança merece o olhar de especialistas.  Na Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solu..."
+
+12. AD[01/05/26] [Campanha: [04][KrM][ABO][Message]]
+   ID Meta: 120244401535990488
+   Performance: Leads: 2 | Investido: R$ 19.79 | CPL: R$ 9.89 | CTR: 0.77% | Cliques: 10
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=LmrynnzMVZmlPV093G3lPA&_nc_tpa=Q5bMBQFh6s1wH4rUVYHz--2PrTPV4qO1lLQsgbNKpDuS0ccNOxLEqmiT6T6mf1oXXqNVt2b9NBrFAxwy5Q&oh=00_Af8uCxWOnn9BvWW9gt1swWc3umLneBm0X1nS-G_uM7uULw&oe=6A2812B8
+   Copy: "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista.   Neste Dia do Trabalho, celebramos quem busca o topo com a tranquilidade..."
+
+13. AD[13/05/26] [Campanha: [02][KrM][ABO][Engagement]]
+   ID Meta: 120244883774740488
+   Performance: Leads: 1 | Investido: R$ 248.46 | CPL: R$ 248.46 | CTR: 0.73% | Cliques: 215
+   Mídia: https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/1618544605994300576?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQL3hmOA4wTzODkEzHhiK2uCovHdV7tZr5eG8eU4OVsPa63wv7OYViqM1e90KOSQ83CizftLHjab4ZS2E9VjmeyDYHdAAs5lwV4IeGwf8ozsz4Iw0F2EiFvHEUF9Bmr_X4Yt7AmJbEB3hcHuu5E6Ypa7&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_oc=AdoMuYuEQV0oA1JAn2TMf1t48KmFId0HOBCQB0sB-UN7snnXVkmbA286QJUkDqAcm70&ccb=13-1&oh=06_Q3-_ATeu9CavsxM3SmEoAonfFhZZvZzA6tPYSKoWsy36diDF&oe=6A2402C4&_nc_sid=58080a
+   Copy: "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.  Na Solution Place, cada projeto é pensado para m..."
+
+14. AD[19/04/26] [Campanha: [05][KrM][CBO][Traffic][IG]]
+   ID Meta: 120244884085410488
+   Performance: Leads: 1 | Investido: R$ 61.18 | CPL: R$ 61.18 | CTR: 1.00% | Cliques: 167
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/701700338_1029357939859668_6924190017877709848_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=sAAEcXL5fgEQ7kNvwH4bwA-&_nc_oc=AdozKUNJ6jljbk0e0VNoVPdZi7-y0-lezxjwZ1vnqXJ03KKaT4YGssQYfpLvJDsgk2M&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQGLh_SN15d5rLoDhJ4_5S8pNmvLoV6Fn6L4BRoMEm87HWQD7_XBMWMUWspHzUpqCRWvnmkBxqnlSQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_phXNj0UXclYyKbBiZ0rLev2sj9VJCP2HLCnpfWj8X2g&oe=6A282746
+   Copy: "O mercado de luxo exige precisão e segurança acima de tudo.  É com esse foco que a Solution Place Blindagem anuncia sua parceria oficial com a Lexus R..."
+
+15. AD[04/10/25] [Campanha: [09][KrM][ABO][Message]]
+   ID Meta: 120245136929570488
+   Performance: Leads: 1 | Investido: R$ 18.03 | CPL: R$ 18.03 | CTR: 0.86% | Cliques: 4
+   Mídia: https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/709486415_2140790796768357_2365360772675218576_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=TKUGn6MLBE4Q7kNvwH7ViXx&_nc_oc=Adrj5TDXSzk5FgKSVMWdyaUFyADQwOtxYtoyW48lI6KJewD76F-8nkizrXkHlaYkZFM&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=rMsCxcQVNsrH3E2uQcikcA&_nc_tpa=Q5bMBQHyesu_n179V_EL-QQgxEdsBfY5xWet12ZJxZsSczLJf83Rw6OpLkhaJuSqJ7oy0ujFmohtppuqiA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8CZfXpBS3xWi4pJz9zXe2MaP1VRdetM4q8EHR1lPBwbw&oe=6A2817D2
+   Copy: "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥  Ele veio conhecer a única blindadora boutique do mundo..."
+

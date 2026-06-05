@@ -150,8 +150,8 @@ export async function GET(request) {
     });
     const lastSyncDate = lastMetric ? lastMetric.data.toISOString().split('T')[0] : null;
 
-    const dateUntil = until ? new Date(until + 'T23:59:59') : new Date();
-    const dateSince = since ? new Date(since + 'T00:00:00') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
+    const dateUntil = until ? new Date(until + 'T23:59:59.999Z') : new Date();
+    const dateSince = since ? new Date(since + 'T00:00:00.000Z') : new Date(new Date().setDate(dateUntil.getDate() - 30));     
 
     const campanhas = await prisma.campanha.findMany({       
       where: { cliente_id: cliente.id },
@@ -538,7 +538,7 @@ export async function POST(request) {
     // 7. Process Daily Insights (Batch)
     await batchProcess(campaignData, 10, async (item) => {
       const camp = localCampMap.get(String(item.campaign_id));
-      const dataInsight = new Date(item.date_start + 'T00:00:00');
+      const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
       const linkClicks = parseInt(item.inline_link_clicks) || 0;
       const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
       const nativeVisits = getMetric(item.actions, 'onsite_conversion.instagram_profile_visit');
@@ -592,7 +592,7 @@ export async function POST(request) {
           create: { meta_ad_id: String(row.ad_id), campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body }
         });
 
-        const dataInsight = new Date(row.date_start + 'T00:00:00');
+        const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
         return prisma.metricaCriativo.upsert({
           where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },
           update: {

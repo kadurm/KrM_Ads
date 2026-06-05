@@ -1,0 +1,1312 @@
+{
+  "range1": {
+    "dates": "05/05/2026 a 03/06/2026",
+    "totalSpend": 4907.51,
+    "totalImpressions": 1193347,
+    "totalClicks": 4429,
+    "totalLeads": 167,
+    "campaigns": [
+      {
+        "name": "[01][KrM][ABO][Impressions]",
+        "campaign_id": "120236136455210488",
+        "spend": 1316.13,
+        "impressions": 823414,
+        "clicks": 322,
+        "leads": 0,
+        "objective": "OUTCOME_AWARENESS",
+        "ads": [
+          {
+            "name": "AD[28/01/26]",
+            "ad_id": "120240135442500488",
+            "spend": 13.49,
+            "impressions": 7608,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t51.82787-10/624809176_18392499790146648_7368885486297448470_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=yGxpZ7O5QSQQ7kNvwFgB4eN&_nc_oc=AdrdkiSM5DfBFh2SROs1iQdqoPrTOLlx2zbVk19zevDOxYOzAFUzQTdZu187thD9Ihg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQHQrfB9a00309R0Eg7FUrsCVf8F5OUc79xqc54Cq7UZvtPYuqQoAvjyRDg-myq0Ke0t6wTZOp_Njw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af_4IfR8jlodYltBXA1L3aM4Xr2ix-ScnzrQ-VeLwD-hvg&oe=6A280BFA",
+            "body": "Parcerias sólidas não se constroem do dia para a noite.\n\nElas nascem do tempo, da confiança e de um padrão que se mantém constante.\nAo longo dos anos, A Solution e a Land Rio caminham juntas com o mesmo compromisso: qualidade, atenção aos detalhes e decisões bem feitas.\n\nTudo pensado para um público que sabe exatamente o que quer e não abre mão de segurança, sofisticação e performance.\n\nQuando marcas que pensam parecido se encontram, o resultado é simples de perceber.\nCredibilidade, consistência e excelência em cada projeto."
+          },
+          {
+            "name": "AD[31/01/26]",
+            "ad_id": "120240228976580488",
+            "spend": 13.43,
+            "impressions": 7621,
+            "clicks": 2,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/624281001_880028874761518_6436816362623015816_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=85JLvZMfaNAQ7kNvwE7p4G9&_nc_oc=AdpYVBRyaUvZ6pWhJD9MHAO03v5yTt8o8CdY-9R3byef-4OAbMH8nKc2OZdJC_cjVcQ&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQFB6RHs9-mkRTzFQ0ugNByeAnjwxq-bpKZwlYjW8oBcQ83aQhC_iCMSEmyhvXKrmg2h2AedYk1Q4A&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9T_Utfckz9OgXFLeH0My_P-bL_ox2uVPovGxhIFNVdJg&oe=6A28255E",
+            "body": "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se destaca em qualquer cenário.\n\nEm parceria com a Solution Place, a BM Rio apresenta uma condição especial que eleva ainda mais essa experiência: última unidade com blindagem cortesia, integrada com o mesmo cuidado, refinamento e padrão que o modelo exige.\n\nUma oportunidade exclusiva para quem busca o máximo em sofisticação e tranquilidade.\n\nEntre em contato e agora mesmo e saiba tudo sobre o BMW X7 xDrive40i"
+          },
+          {
+            "name": "AD[05/02/26]",
+            "ad_id": "120240531207840488",
+            "spend": 19.96,
+            "impressions": 11686,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629833895_1643780110304135_7952940435588379436_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=AU3ECMuo0ywQ7kNvwH9R1ee&_nc_oc=AdqGgh3vC4Me5LQ2zxqi4_YVNrg0pp9o7kHyq_1fLSX7SsTW_PKd7HhmtGFG2FBr6as&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQH3qf-qrNqFi8Hcsf9Fn2HOo9Yuud9VIfb-JKnDAPXPx3i1CkGkxafZ61Jc62XE5pTLGlH82UAwqg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9ShBZeguQz2ybBqF_TGx2kWyoSoFWZ-95zq1U3fX1yPg&oe=6A2807E2",
+            "body": "Mercedes GLE 63 blindada com o Solution Air — nossa blindagem exclusiva em Tensylon.\n\nUm material desenvolvido para quem exige o máximo em proteção sem abrir mão do desempenho, do conforto e da experiência original do carro.\n\nTecnologia própria, processo rigoroso e padrão elevado em cada etapa.\n\nGLE 63 blindada pela Solution Place Blindagem. Segurança no nível do veículo."
+          },
+          {
+            "name": "AD[03/02/26]",
+            "ad_id": "120240531361810488",
+            "spend": 3.91,
+            "impressions": 2315,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629618241_934738182824800_2714717467076037799_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=llk9I1gAeawQ7kNvwGnhCec&_nc_oc=Adq99salOMU7wtolAKJw__hIo5c6Vrl9w6MWzlNTwoDi7PmYFhYAs5qGAmpafEvzS8M&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQHnMhJJ2Y6YRmt0blzx8qpl_ZW373qv7NBDVX1WfLkwjLj2JXniMhA1sOkVmfAVOZGx74sfxFR-jQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8jSoWuuWCeMLktEM9oPYXqPdQy4__LZ3dJWSV8mqqpJQ&oe=6A27F783",
+            "body": "Duas BMW X1, a mesma excelência.\n\nNa Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e eficiência, sem abrir mão da segurança e do acabamento premium.\n\nProcesso, engenharia e atenção aos detalhes.\nPorque blindar bem é respeitar o carro — e quem está dentro dele."
+          },
+          {
+            "name": "AD[11/02/26]",
+            "ad_id": "120240613629910488",
+            "spend": 6.77,
+            "impressions": 3724,
+            "clicks": 2,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629629879_1189873542965888_1097787814245664169_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=jMUl4zI__AoQ7kNvwGwUprT&_nc_oc=AdoZz3M9zrqbI_6GDJgkGngw2AJpOkCA_BFmADRB4mYJWMC5d38lnA1FzetLHzK19Ko&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQHaLLJvFniiwBQZRLEK-dejoGhy19D94ad1CKBObZzAH2LVaMyPEqKZqyLqgAOA1PfQiDMvLZLzsA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9b_JcL4_2FIbV-TKh1ihhI9dQFJrI3lb8wEhpdvfsQqw&oe=6A281DA9",
+            "body": "Parcerias não nascem por acaso.\n\nElas acontecem quando visão e propósito caminham na mesma direção.\n\nIniciamos 2026 ao lado de um dos grandes grupos automotivos do país, reunindo marcas como Ram, Ford, Jeep, Volkswagen, Jaecoo Omoda e GWM.\n\nEssa união representa mais do que um acordo comercial.\nRepresenta posicionamento. Representa nível. Representa confiança.\n\nA partir de agora, os clientes desse grupo passam a contar com a blindagem Solution Place — tecnologia diferenciada, engenharia de ponta e um padrão que conversa diretamente com quem exige mais.\n\nEstamos só começando.\nEntre em contato e conheça todos os detalhes dessa nova fase.\n\nSolution Place Factory Boutique\nA primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[13/02/26]",
+            "ad_id": "120240681210150488",
+            "spend": 7.9,
+            "impressions": 4652,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629842981_1229731385966143_3680841446933143351_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=zjBLC0f2PBYQ7kNvwHX58Ie&_nc_oc=AdqOBCeCkCdhGS3tk3Zx17GDnjrB7wd1Mn3EK3kTw4O2_JVuq7VrPGDup9GNYxXxzkw&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGpi422Uy46L-deq8Ace5iooyr7rZDES0IMyelgr5Zda26r4zbyqVheIV1qY18L26BkkaixAYPBPQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8jVqei7epJh_la-H87fQ9ouHLYxWVmaS6MkzuS81mAhg&oe=6A281319",
+            "body": "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem não quer esperar meses por segurança.\n\nMotor 2.0 Turbo com 272cv, tração 4x4 e acabamento premium em um pacote que une força, presença e proteção real para o dia a dia.\n\nBlindado, pronto e disponível agora.\nSem fila, sem prazo, sem adaptação.\n\nUSA STAR e Solution Place seguem elevando o padrão de quem exige mais do próprio carro e da própria segurança.\n\nEntre em contato e conheça de perto."
+          },
+          {
+            "name": "AD[17/02/26]",
+            "ad_id": "120240788275930488",
+            "spend": 4.9,
+            "impressions": 2753,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629838836_1450705173387320_364917332187931364_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=8kzqPbB4pewQ7kNvwGb6e5J&_nc_oc=AdrD1yJfIvXRvLjz5-iu2wRrUnSVc8nfBxY-7nmyMmJc363oJ3BdRxVm0OeQ84SWa1I&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGwTjWnI2DUq72LKeMFIN5oo4ScnfHTFI0Lo_nWQRVfAm4Nmr1XOV12lPNjiu3h3cMvw0hjK6aigw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_8dL8b7ws5p4Xjcg8XvA-2_kZkgNFC0YXrXYu9u3y3uA&oe=6A281E59",
+            "body": "Desde o início, a Solution Place nasceu com um propósito claro: elevar o padrão da blindagem no Rio de Janeiro.\n\nAqui, blindagem não é apenas técnica. É conceito.\nCada projeto une segurança real, acabamento refinado e respeito absoluto pelo cliente.\n\nDo primeiro contato à entrega, tudo é pensado para que você não contrate um serviço, mas viva uma experiência completa. Segurança, luxo e desempenho no mesmo nível de exigência.\n\nEnquanto o seu veículo recebe precisão técnica e atenção aos mínimos detalhes, você vive um ambiente que traduz quem somos: exclusividade de verdade, conforto e proximidade.\n\nAqui, atendimento não acontece atrás de balcões.\nAcontece lado a lado.\n\nSolution Place Blindagem, a primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[23/02/26]",
+            "ad_id": "120241096570450488",
+            "spend": 11.53,
+            "impressions": 6501,
+            "clicks": 5,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/638879747_2120494718781877_224859095593308170_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=MX2iiUzQyNEQ7kNvwGXnada&_nc_oc=Adr0dyOg9Tpz-I2vwPnHt4rLZuG9Pr7-DTRqaaRJyAlYAfZmfgg8z8UviPmb_J97jQs&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQH0vMfHj7peoYBTMXPnBuN6dfgRPr76vSNZr4haicqNqvOpiypTFpJ1HseM4TtCUE-Pgzd1RXoPjQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_JdEW4p2ECiUbCrzaFoMJlf7FnhbjSJgwhMC7NjxIcXg&oe=6A280C94",
+            "body": "Algumas parcerias atravessam o tempo porque são construídas sobre confiança.\n\nHá 6 anos, Solution e BM RIO caminham juntas.\nE desde então, a Zona Sul ganhou algo além de modelos icônicos da BMW e MINI circulando pelas ruas.\n\nEmpresários, médicos, advogados, pais, mães e famílias inteiras passaram a viver o conforto dos seus veículos com a tranquilidade de uma blindagem que protege o que realmente importa.\n\nBlindagem não é status.\nÉ responsabilidade.\n\nÉ cuidado com aquilo que tem valor de verdade.\n\nSeguimos juntos, mantendo o mesmo padrão de excelência, luxo e proteção.\n\nSolution Place, a primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[26/02/26]",
+            "ad_id": "120241266871320488",
+            "spend": 13.76,
+            "impressions": 7148,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/646242248_1408672220411735_4154291621901996324_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=1V3_KcveDpMQ7kNvwG9WIBx&_nc_oc=AdqbsrmaESCGT0xEhd76tLSqEECNOPPJidIG1tH0GKnr12-xbjm2gr9RE2m8PzFogr8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEyTpKG_EMZpg-phJ3vR2P6U6fUCYBm7UXfwKWfMrrnJsku9suWF_A2svA_P7xSMJIG-M1dZyIoMg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-Re1z0nhU20OcBdu2RrkGJJ9ujdwBng2S_uINNtE_Fhg&oe=6A282A53",
+            "body": "O BM Rio Special Sales já começou — e com a Solution Place, o nível sobe ainda mais.\n\nPor apenas 4 dias, a BMW de Botafogo reúne condições raras: taxa zero, descontos que podem chegar a 100 mil reais, super valorização no seu usado e oportunidades reais para você entrar no seu 2026.\n\nE para quem quer ir além da conquista, a Solution entrega o diferencial: vantagens exclusivas também na blindagem durante o evento.\n\nDocumentação inclusa para veículos usados e, para zero km, 1 ano de garantia adicional ou até 3 anos de manutenções inclusas.\n\nVocê não troca apenas de carro.\nVocê já sai com tecnologia, condição e proteção no mais alto nível.\n\nO evento já está no ar.\nSão só 4 dias.\n\nPasse na BMW de Botafogo e viva essa experiência com a BM Rio e a Solution Place."
+          },
+          {
+            "name": "AD[02/03/26]",
+            "ad_id": "120241432561070488",
+            "spend": 16.59,
+            "impressions": 9587,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/648860925_1806965956957125_156209201740038482_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=k_HXcip5cckQ7kNvwFkec7u&_nc_oc=Adqyv2YXHdp9NTz49Kwn-bXxOHblW9O2O-S2BsmYCXs0fVs8pvczL5Feg_r6yu6wxl4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEryuxYFHjjwzRVC91k54LUEBqKoIVLMeV2lCAvhYPR7gQCcjpLy9i6HQJmPUqeCM-ESJnh36rHZw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-Ygn17IMPfPFBp8kvD4Cw7CYo7Oc6KIesSNVxfmokWfQ&oe=6A28295D",
+            "body": "Acaba de chegar à Itália Master um Jeep Compass S que já entrega tudo o que importa desde o primeiro momento.\n\nBlindado pela Solution Place, homologada pela concessionária, ele reúne desempenho, sofisticação e proteção em um único projeto — pronto para quem não trabalha com espera.\n\nSem filas, sem envio para outros estados, sem meses aguardando blindagem. Aqui, você já sai com o carro pronto, no padrão que o seu nível exige.\n\nTecnologia balística certificada, acabamento premium e a segurança de um projeto assinado por quem é referência no mercado.\n\nSe você busca um SUV completo, com presença e proteção imediata, esse Compass S foi feito para você.\nItália Master e Solution Place: alto padrão em cada detalhe.\n\nSolution Place Factory Boutique. A primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[06/03/26]",
+            "ad_id": "120241496167120488",
+            "spend": 21.61,
+            "impressions": 11214,
+            "clicks": 6,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/637724089_791641753490871_4135807396682558940_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=64lOn8V8jbUQ7kNvwEP1BXm&_nc_oc=Adpmv9b96SqqhXcpmK6w2kdL8bTGAbY7fdi6EItOd0ND2w7bU8siAdJbHjNxJwD2MNc&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGhuwwATvsjueZd8vyimg2a-DDK7PG4AVm2uTbZcAakbYsG7TDEtA_kP7NPdHSj7CSazYBk2LtezA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-c2cq9vk_eN2cCWdTaVVvUTWAO4Ir9Xb4g19hFgvQIMA&oe=6A2805EB",
+            "body": "O futuro da mobilidade já começou — e a blindagem também evoluiu.\n\nCom o avanço dos veículos elétricos, cada projeto exige um desenvolvimento específico, respeitando engenharia, peso e eficiência. Não existe adaptação genérica quando falamos de tecnologia de ponta.\n\nNeste Volvo EX30 Country, aplicamos a blindagem Solution Air, com nosso Tensylon exclusivo aliado à fibra de carbono. Um conjunto pensado para manter a leveza do elétrico sem abrir mão da máxima proteção.\n\nDesign moderno, proposta sustentável e uma blindagem à altura do que há de mais atual no mercado.\n\nSe você já entrou na nova era dos elétricos, a sua proteção também precisa evoluir.\nNa Solution, cada blindagem é desenvolvida de forma única, com precisão e responsabilidade.\n\nSolution Place Factory Boutique, a primeira blindadora boutique do mundo"
+          },
+          {
+            "name": "AD[17/03/26]",
+            "ad_id": "120241960655640488",
+            "spend": 6.39,
+            "impressions": 3553,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651077219_3391709517654957_1015387871545246080_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=9Gl1HkUBYWYQ7kNvwGigJLP&_nc_oc=Adq-cJIJFXApFca8CyOMl436pFBLU72U3Xu6Qo-lP7Skmu3IbgvzXc3XE6m5os0dWsc&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGKw5a-vXmQWK6y1DO1iWkVl1VqNBTXYTGS_rRyiVh_EuQkhNlKaWCwxWhR490TTfm3HBVr_jDYtQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_1eXWcJmtWQulqmH3kEDKcYASBMEr2bkGC-qXNRlHBqg&oe=6A280DB4",
+            "body": "Sua segurança merece o olhar de especialistas.\n\nNa Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solução de proteção ideal para o seu perfil e sua família.\n\nConheça nossos diferenciais e dê o próximo passo com quem é referência técnica no mercado de blindagens.\n\nAgende sua consultoria via mensagem direta agora mesmo."
+          },
+          {
+            "name": "AD[11/04/26]",
+            "ad_id": "120242205442560488",
+            "spend": 1.46,
+            "impressions": 746,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/669702499_3055165748013132_2679216504818419289_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=Vk-hzdTRv0kQ7kNvwEGpxIs&_nc_oc=Adrj5tiNMzxrY7QulSdtu_JQjZyVC7oHb5CxflLIS0mJV78GuHMfCWtv_aj4I1frCuE&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGcedSxvC70UfsSuXUEbcxg0TvqRgbPFRn7LfmIr4NzNzP-2eg0FwAWvnw6ZcApx6lyzOyRPbNacA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8ltQjDhiYBqhhWEFlGPbVzGuOD0mPpW0pXZbmgnB7PHg&oe=6A282787",
+            "body": "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.\n\nAgora, os proprietários da marca contam com a segurança absoluta de uma blindagem com chancela oficial, garantindo a proteção necessária sem abrir mão da tecnologia original do veículo.\n\nO padrão boutique de proteção chegou para acompanhar o futuro da sua mobilidade.\n\nSolution Place Factory Boutique: onde a excelência técnica é a prioridade máxima."
+          },
+          {
+            "name": "AD[20/03/26]",
+            "ad_id": "120242205792500488",
+            "spend": 11.21,
+            "impressions": 6092,
+            "clicks": 2,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668585616_2017981005765159_9032118120867387643_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=YgLI5daY6_sQ7kNvwHY2tdQ&_nc_oc=AdpMPzBlNJMJEWA_GODaVGrNrUcM5zV_UG58-hLB19eRZrBTeqa1s4cdW-3ZTww6dG0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGvp_xR8mbiQGKGSnZlFTedeOO441dpgvoX2Rk7jAoH6WMjcuI6GL9bJMISegVsuRqIiF_iqHokKg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8nlfejCNmCe5_aisnDSGagE65SCIwgRlQn_EZ80m3uUw&oe=6A2809ED",
+            "body": "Em 2025, mais de 70% dos nossos projetos já foram realizados em Tensylon. E a projeção para 2026 é ainda mais clara: entre 80% e 90% da nossa frota seguirá esse padrão.\n\nIsso não é tendência. É direção de mercado.\n\nDesenvolvido com tecnologia exclusiva em parceria com a COMTEC e reforçado com fibra de carbono, o Tensylon entrega um novo nível de proteção sem comprometer a performance do veículo.\n\nNa Solution Place, não existe espaço para o comum.\nTrabalhamos com o que há de mais avançado no mundo em blindagem automotiva.\n\nQuer trazer o futuro da proteção para o seu carro hoje?\nComente “Tecnologia” e fale com um especialista."
+          },
+          {
+            "name": "AD[30/03/26]",
+            "ad_id": "120242831928010488",
+            "spend": 209.54,
+            "impressions": 130119,
+            "clicks": 41,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/667788679_780921881763414_8808024094973149635_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=rTK2MakysrYQ7kNvwG6mJpu&_nc_oc=AdrpRCEjpYUgKOMA2c8EkXVTSJRN4jZnU865di9jSfSssuN582w1PSmGKGjCgK8WaYg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQFiSsfVjcLVhFXV4Tese1pfveXfnQ4ks0l7fXhFLZz42n4KCPggzeWyE3pGbL9zSwHe4oHGmzWF0w&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_9CvCMihlnlqIGOsuGvkt8Qy4-uShL-b6SZr76Rxr9Ag&oe=6A27F7B7",
+            "body": "A excelência na blindagem automotiva começa muito antes do processo de montagem. Ela nasce no compartilhamento de conhecimento e no alinhamento técnico entre quem fabrica e quem protege.\n\nNa última semana, a Solution Place Blindagem realizou uma capacitação exclusiva para os colaboradores da GWM, Omoda Jaecoo e Megafor. O objetivo foi integrar nossas tecnologias de proteção aos padrões de engenharia dessas grandes marcas, garantindo que cada cliente receba uma solução completa em segurança e performance.\n\nAcreditamos que parcerias sólidas são construídas com transparência e especialização contínua."
+          },
+          {
+            "name": "AD[04/04/26]",
+            "ad_id": "120242881887580488",
+            "spend": 209.35,
+            "impressions": 128763,
+            "clicks": 43,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668486112_1961383084770350_610292158384727445_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=RtVLAuhaf7wQ7kNvwGaDoit&_nc_oc=AdpfX7tD_-UOeR1RxZJPSW_LsbTk9Co1T42g_pW6T3LjYoDXosIsPUVlJwiWBlv772g&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEyxfMA7TdpxFphSXHWVIZt69X6nmolfnzLDZwuq3SH49nI6UGjSdsrN88bF9CB6WngpOWkR0mo9Q&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_Ez7OjR91ph1fSLp3N2gehO3V8xSZ7MJmF7QIagIeiGQ&oe=6A281DB9",
+            "body": "A Solution Place e a Itália Master iniciam uma nova fase juntas.\n\nMais do que uma parceria, essa união representa um alinhamento de propósito: oferecer aos clientes um padrão elevado de qualidade, tecnologia e segurança, sem abrir mão da originalidade e da performance do veículo.\n\nA partir de agora, a Solution Place passa a atuar como blindadora homologada, garantindo processos certificados e total integração com o padrão da concessionária.\n\nUm novo capítulo para quem valoriza excelência em cada detalhe.\n\nSolution Place Factory Boutique. A primeira blindadora boutique do mundo!"
+          },
+          {
+            "name": "AD[07/04/26]",
+            "ad_id": "120242881959520488",
+            "spend": 209.51,
+            "impressions": 129050,
+            "clicks": 51,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/665368741_921695544039342_3550532126943911710_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=3GG65_O3lGoQ7kNvwEYWTu-&_nc_oc=AdrU0ZWn2J1Et9t1F1Zz0npnJR6Fe7gK0QWEfrVk9yC91mItfMuoL8WGBuJUmC4OnfU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEyyEQBUR8gbJc_VyPM17GQh7mkfN0fnJ4dWlRostfvfuREFNacjqaOb-REx0eXXWk6-fj8lGXLRQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-_WoBfgLvyEsthE1XDOCKU8BsmYOpiCeId49rB8QDwHA&oe=6A281A7B",
+            "body": "26 anos de história não se constroem por acaso.\n\nSão anos de consistência, evolução constante e compromisso real com cada cliente que confiou no nosso trabalho.\n\nAo longo dessa trajetória, a Solution Place se consolidou como referência, unindo conhecimento técnico, inovação e um atendimento próximo, que acompanha o cliente em cada etapa.\n\nMais do que blindagem, entregamos soluções completas em segurança, com responsabilidade e padrão elevado.\n\nSeguimos evoluindo, com o mesmo propósito que nos trouxe até aqui: excelência em cada detalhe.\n\nSolution Place Blindagem.\nSolução em assistência técnica.\nSolução em segurança."
+          },
+          {
+            "name": "AD[09/04/26]",
+            "ad_id": "120243057865410488",
+            "spend": 8.68,
+            "impressions": 5034,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/671542131_810076702155222_1894021396699597084_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=3b5wSziR-LMQ7kNvwFugs2O&_nc_oc=AdqLVOjMAKMam7dx9x1UOgEBwen46GibWGnFM6WoSUVq21-e8vFIXAgCfRCHF8_eBl8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEi3fFGfI5mk674l4W-wShOJU2hTI6UFIET85-kBVr9yhQJlauLo2V6hj1-GXHQhwGn3lGL3rZyxQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8oPUZq1yCgIBwWeiRs-s2R2wivM2vfSWcCUwPvqTw_OQ&oe=6A28117C",
+            "body": "Inteligência e potência definem um GWM. Segurança completa é o que a Solution Place adiciona.\n\nPara quem vive o ritmo das grandes cidades, tecnologia só cumpre seu papel quando protege de verdade.\n\nÉ por isso que a Solution Place passa a ser parceira oficial da concessionária Américas GWM — uma união que respeita a engenharia avançada desses veículos e preserva o que há de mais moderno em performance híbrida e elétrica.\n\nNão se trata apenas de reforçar a proteção. É manter a garantia, a sofisticação e a integridade de um projeto de alta tecnologia — do jeito que ele foi concebido.\n\nO proprietário de um GWM busca o futuro. E o futuro exige a paz de espírito de estar protegido por quem é referência em qualidade boutique.\n\nSegurança inteligente e padrão absoluto, garantidos pela homologação Américas GWM e Solution Place.\n\nSolution Place Factory Boutique. A primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[07/04/26]",
+            "ad_id": "120243057960730488",
+            "spend": 5.11,
+            "impressions": 2939,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668499425_1607449813845443_948856139242534125_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=BsSbj0IWtJYQ7kNvwFzzm-N&_nc_oc=AdrKohh2WCag6whfzH7V2GeAPbXkPOEbVTiPX6IJH4BXDPlEo41ReLXDZEJ68ebt3p0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGNt7HaPzeE6oK9U2HPI-yo4XGHbtememi1x6Ppvrtbp0uUz6rFZYmiIt3PrheDYAjcV3ezjGiNRQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_UrV2O1uo3x1wm8e1NIC8wssMGRmqRbC4y3qu64qMjow&oe=6A281E8B",
+            "body": "26 anos de história não se constroem por acaso.\n\nSão anos de consistência, evolução constante e compromisso real com cada cliente que confiou no nosso trabalho.\n\nAo longo dessa trajetória, a Solution Place se consolidou como referência, unindo conhecimento técnico, inovação e um atendimento próximo, que acompanha o cliente em cada etapa.\n\nMais do que blindagem, entregamos soluções completas em segurança, com responsabilidade e padrão elevado.\n\nSeguimos evoluindo, com o mesmo propósito que nos trouxe até aqui: excelência em cada detalhe.\n\nSolution Place Blindagem.\nSolução em assistência técnica.\nSolução em segurança."
+          },
+          {
+            "name": "AD2[19/04/26]",
+            "ad_id": "120243373224610488",
+            "spend": 11.13,
+            "impressions": 6456,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675554442_26710393915223539_7941256555210528793_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=VUyj81Kw8mkQ7kNvwELzujK&_nc_oc=AdpT89yY8a_Wy1GejRQIbKyu-yQ_osbaLCEXEQjr_S-OP-dJlm6XFxB_kAQzOudVz5s&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGZm95qI2XS7gVR76AkW0dXQsA3KvzKw1r1ATHNN_uCmBJilndnOK2mGYWMQw8zsVVptKfAdPWxcA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_p9v4c4YxEhwKuoORTrGaaJNt-zHNl2hffA8FcZO5Duw&oe=6A281680",
+            "body": "O futuro da mobilidade e da segurança se encontram na parceria oficial entre a Solution Place e a GWM Américas. \n\nUnimos a tecnologia de ponta dos veículos GWM ao nosso rigor técnico de proteção para entregar uma experiência completa em segurança e performance.\n\nAgora, você pode contar com o padrão de blindagem Solution Place diretamente na GWM Américas."
+          },
+          {
+            "name": "AD[11/04/26]",
+            "ad_id": "120243375326310488",
+            "spend": 449.35,
+            "impressions": 297386,
+            "clicks": 127,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/673505247_27040149008916599_2832492396014832437_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=5LXd8q761iwQ7kNvwGM3wrZ&_nc_oc=AdpiHWHlTthAWvSERIPsUkb2JdYjn-iH37RQnu6u1IdIxs_ZkQrS9kkAQt3u2kFCE2c&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQElmpHOxem-j5p-YxpOYwns1D_plq6g8WyzGflwwZQ5qIEdhCjcAtKbbDC5_Kdas5hwsY58LG4Xlw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8R4w1pL9MbP0oRVzYTDy7B8BuHX3D6qcK84bklw1rt7A&oe=6A28116F",
+            "body": "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.\n\nAgora, os proprietários da marca contam com a segurança absoluta de uma blindagem com chancela oficial, garantindo a proteção necessária sem abrir mão da tecnologia original do veículo.\n\nO padrão boutique de proteção chegou para acompanhar o futuro da sua mobilidade.\n\nSolution Place Factory Boutique: onde a excelência técnica é a prioridade máxima."
+          },
+          {
+            "name": "AD[19/04/26]",
+            "ad_id": "120244396761310488",
+            "spend": 19.34,
+            "impressions": 11475,
+            "clicks": 7,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/673681087_2253197042189471_2826278539562038627_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=d_6_YZnKf_AQ7kNvwGEWmaj&_nc_oc=AdoY5m0g_yWD-YaoeYjsYi72-EAXZAW-eTcQCZtR8wljdqRm0bZvqcqiF4UP0K079W8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEg4asvXmoEAOkqLpK4l_dIDUaTWVQdWyivDq2zXsC5AR_xwdm4JFzySmVk1PpPfl6WZdMJ9h0PLA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_1Z7A4VmMiEkLraU8HMWt75PMjHGAu5ynB_zFVkbWBDA&oe=6A28028A",
+            "body": "O mercado de luxo exige precisão e segurança acima de tudo.\n É com esse foco que a Solution Place Blindagem anuncia sua parceria oficial com a Lexus Rio de Janeiro. \n\nUnimos a engenharia impecável da Lexus ao nosso rigor técnico para garantir que a integridade original do seu veículo seja preservada com proteção de alto nível."
+          },
+          {
+            "name": "AD[29/05/26]",
+            "ad_id": "120245550840050488",
+            "spend": 11.46,
+            "impressions": 6969,
+            "clicks": 2,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/709526592_1967785341290961_2048060254333596573_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=_2ehtKwUGHsQ7kNvwFE29gw&_nc_oc=AdoJkKXHFLbNB2NaNTBu0rhX8mFVTKu_ilbaPoLKLwt2svq2WqrYdes_kLEDaABaRKI&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQF35NZA-b9e_FKbDv0Ct8fYaQ4SOSBARlJalW_jljjX6sE9ZRX_TBpDuQ83DEPZd_2wpRNsbAVV2w&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8qhXf0fgLPuESONpBmux_A4L2liKH8kGu6Gn1vi_e5MA&oe=6A280018",
+            "body": "Existem carros. E existe a Range Rover SV — o crème de la crème da Land Rover.\n\nQuando um veículo desse nível chega à Solution Place, ele merece um tratamento à altura. Por isso preparamos um kit exclusivo: vidros Protechtor Evo 18mm, painel balístico com tecnologia Kevlar DuPont e nosso Tensylon Solution Air — com camada extra de fibra de carbono, desenvolvido especialmente para projetos como esse.\n\nEste exemplar chegou até nós através da DTC, uma das nossas parceiras no mundo automotivo. Uma relação construída na confiança mútua e no padrão que só a Solution Place entrega.\n\nSe você busca uma Range Rover exclusiva, sofisticada, tecnológica e blindada por uma blindadora certificada de fábrica — esse é o carro.\n\nSolution Place Factory Boutique. A primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[27/05/26]",
+            "ad_id": "120245551273860488",
+            "spend": 29.75,
+            "impressions": 20023,
+            "clicks": 8,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/712266754_1437328881412263_2555696475883050253_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=GnvRawCbA0AQ7kNvwElzV2v&_nc_oc=AdryOQnDSuoRy1cO49vszk3Yl57IuVMxwzTGd7Hp1mnDM0tPAty4_n3sdiItbjEwmUw&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGC-_mknE4t-GK9SXnBIbcaCI_7FESwOopyjiknPPSGUumam_70r_XJ_GmIkDXb3OxJBRbVU2GmkA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8B264zC-Wv3p3urnMZ2D2AiaDk6k3R2b7H_9ZcS85ztg&oe=6A281D5B",
+            "body": "A DTC Automotive e a Solution Place formam uma parceria de excelência no mercado de blindados. Quando o assunto é segurança, acabamento e confiabilidade, a Solution Place se destaca por ser homologada por marcas como Land Rover, BMW e diversas outras fabricantes premium, além de utilizar alguns dos materiais mais avançados do mercado.\n\nO resultado é a união perfeita entre veículos selecionados e um padrão de blindagem reconhecido pela qualidade. Se você procura exclusividade, proteção e alto nível de acabamento, escolha seu próximo carro na DTC Automotive com blindagem Solution Place!\n\n#Carros #Blindadora #Blindagem #DTC #SolutionPlace"
+          }
+        ]
+      },
+      {
+        "name": "[02][KrM][ABO][Engagement]",
+        "campaign_id": "120236159247340488",
+        "spend": 503.98,
+        "impressions": 54801,
+        "clicks": 268,
+        "leads": 2,
+        "objective": "OUTCOME_ENGAGEMENT",
+        "ads": [
+          {
+            "name": "AD[27/02/26]",
+            "ad_id": "120241268389460488",
+            "spend": 17.36,
+            "impressions": 1146,
+            "clicks": 7,
+            "leads": 1,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/6921839330588116179?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJn9JDoeu7JJtmzIik4CsjjaXcbPyVBXQcvVqoL0uD0nAYAOiMQI_sCVU9lqyBIJNUHJa0hKY0Sccnqm71-lGkuE77WUWrdTvtwCu750m3JQNRxjSTvqSm84TGtB1BS0_PCFsnib4N2epukNt626_c3&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=AdqOubRpZNHXSVqlA0xrLCA8-a3kP0lQXxtWK16lNOKnsgtG9J0ye_zH6fdRaxPoX_I&ccb=13-1&oh=06_Q3-_AZx90ZJb187d5e1O0qG_0UXchbvFq62Kzat94ZvrOHL9&oe=6A24210A&_nc_sid=58080a",
+            "body": "O Mix Tecnológico Solution Air.\n\nBlindagem inteligente para máxima leveza.\n\nO que torna a nossa blindagem única não é apenas um material isolado, mas o equilíbrio perfeito entre eles.\n\nO sistema Solution Air utiliza um mix de engenharia avançada para garantir proteção máxima, sem comprometer a performance do veículo. Unimos a resistência da Fibra de Carbono, a tecnologia do Tensylon e a confiabilidade da Aramida para entregar segurança de elite com o menor peso do mercado."
+          },
+          {
+            "name": "AD[02/03/26]",
+            "ad_id": "120241510675010488",
+            "spend": 14.99,
+            "impressions": 2351,
+            "clicks": 2,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/642852147_122043061582891646_3578888633097282484_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=-be4cc0C2-4Q7kNvwFxeIgn&_nc_oc=Ado921ewbdHGDrFd7JrMdjrgROmRLqGsyiKMxmKV8VNs-21Zzv5oE_jFr8mVg5ROe5c&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=fMO4knvXFyUSiRDXmPIe5A&_nc_tpa=Q5bMBQHw-XD8b2Kcj5bjChBcFZHtnslF24VxOSwEvXms8lkmvAB498JgCG0XsjSaCyvN89LqXm6axQES7A&oh=00_Af-6qzftMzrRaF6qT299P_VYIulT8QP9gWx3uUf5mayCtQ&oe=6A28170F",
+            "body": "Revestimentos originais, transparência absoluta e a paz de espírito que você merece."
+          },
+          {
+            "name": "AD[18/03/26]",
+            "ad_id": "120243375409210488",
+            "spend": 8.66,
+            "impressions": 485,
+            "clicks": 7,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/11273972017450117312?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJl-BcPHOV8FNhpbm6KPvpqFoZyPWIUOy-HgoYOiR1IC3WwQqkZcZLtf9iW5-Tv9JArylk4rrYBlOi3S48fLfbetmwW_kJ_JFhKHy4cYW4cJyeca-reEaw62s3pfcjik8vFIbr1DWgh_LqeyAPUosLp&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=AdrhfKQip7T7t2xNPdfZSlXMYLpxD_mnu71klPgNHLnqC3UgB5TUT-UwcDZDpRlfwHM&ccb=13-1&oh=06_Q3-_AeVhmR-hHFIq6Y0jF4uirWZC-tKKcwxDGd4E6o5DbZpI&oe=6A241C0E&_nc_sid=58080a",
+            "body": "Uma noite que reuniu grandes nomes, boas conversas e visão de futuro para o mercado automotivo.\n\nEntre inovação, estratégia e conexões, seguimos fortalecendo parcerias e ampliando o alcance da Solution Place no cenário premium."
+          },
+          {
+            "name": "AD[05/05/26]",
+            "ad_id": "120244159783750488",
+            "spend": 12.95,
+            "impressions": 631,
+            "clicks": 6,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/44789739201151172?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJTkG22DTvlIBdOcOAKynKDVeQUlsiOXEn1rJLR87U_X4WFvNAhZrVtT446UDBZLjIpwVzpZZg6TrFPkcOIJd6_mq1_2kTf5kgutY7LzWNUuXKgjkymkwXKcSIQC4poB47o7-wIO6eYrIc06M7V0N8A&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=AdpHRFoMjT7wJbqVCsU4e7Q054BSN60GZrIjkTUBPfTfLylJA7BB5PrwBH_KvmcF1Qw&ccb=13-1&oh=06_Q3-_Ae0sCelas8t8WSDBKvovwa5w9Se3nKMp-2gwdvF9k7Ze&oe=6A240646&_nc_sid=58080a",
+            "body": "Você sabe o que está entre você e o perigo?\n\nBlindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo pode mudar completamente a sua escolha.\n\nFale com nossos especialistas antes de decidir."
+          },
+          {
+            "name": "AD[01/05/26]",
+            "ad_id": "120244159800290488",
+            "spend": 28.08,
+            "impressions": 2087,
+            "clicks": 5,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=fMO4knvXFyUSiRDXmPIe5A&_nc_tpa=Q5bMBQE7KX4iXN_Ha0FnZ_SXhxIHi6Ot6-yR6cXXP_JkArWIeWbFaIss-FULUURh-J0ntdLLH6tGBqffQQ&oh=00_Af_BRXc5F3SbBKsm-qFKDj7JuU-yOZiapncpluQNNg3ADQ&oe=6A2812B8",
+            "body": "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista. \n\nNeste Dia do Trabalho, celebramos quem busca o topo com a tranquilidade de estar seguro. Na Solucion Place, entregamos a blindagem de alto padrão que o seu estilo de vida exige.\n\nSegurança absoluta para quem não para de crescer."
+          },
+          {
+            "name": "AD[22/04/26]",
+            "ad_id": "120244159824060488",
+            "spend": 173.48,
+            "impressions": 18810,
+            "clicks": 26,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/688606826_2175517679897137_7318759625197982472_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=Asnqi5g70MQQ7kNvwEbMtBF&_nc_oc=AdrTo6CdMlC1RbzV4ZLg3YerAJ9iiqOl0qVbU0uEuGuWVvC90wx5I8h9kvwx1m0k0jM&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=fMO4knvXFyUSiRDXmPIe5A&_nc_tpa=Q5bMBQHF_WAYjBrtCNmvvYlESsnp4UgqGSkuB5EuO2fBLsJRVVlgeylJ8MpSu27drOeSPoMi5ON0SwxxSg&oh=00_Af_NicvV_zkwXEAZQIPln4Yx6iDnB-tONiEK3Zt0Wewb4w&oe=6A2822BE",
+            "body": "A verdadeira sofisticação está na tranquilidade de saber que você e sua família estão protegidos, sem abrir mão do design e da performance original do seu veículo."
+          },
+          {
+            "name": "AD[13/05/26]",
+            "ad_id": "120244883774740488",
+            "spend": 248.46,
+            "impressions": 29291,
+            "clicks": 215,
+            "leads": 1,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/1618544605994300576?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQL3hmOA4wTzODkEzHhiK2uCovHdV7tZr5eG8eU4OVsPa63wv7OYViqM1e90KOSQ83CizftLHjab4ZS2E9VjmeyDYHdAAs5lwV4IeGwf8ozsz4Iw0F2EiFvHEUF9Bmr_X4Yt7AmJbEB3hcHuu5E6Ypa7&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=AdoMuYuEQV0oA1JAn2TMf1t48KmFId0HOBCQB0sB-UN7snnXVkmbA286QJUkDqAcm70&ccb=13-1&oh=06_Q3-_AR9KmOIuXldxQJtOfZ2Zj6OjfyDXJKvV-B56BZsLZG_G&oe=6A2402C4&_nc_sid=58080a",
+            "body": "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.\n\nNa Solution Place, cada projeto é pensado para manter a originalidade do veículo, preservando design, conforto e elegância sem abrir mão da segurança."
+          }
+        ]
+      },
+      {
+        "name": "[04][KrM][ABO][Message]",
+        "campaign_id": "120237338060320488",
+        "spend": 1544.71,
+        "impressions": 98423,
+        "clicks": 738,
+        "leads": 113,
+        "objective": "OUTCOME_ENGAGEMENT",
+        "ads": [
+          {
+            "name": "AD[04/10/25]",
+            "ad_id": "120241509954580488",
+            "spend": 252.49,
+            "impressions": 25328,
+            "clicks": 110,
+            "leads": 10,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/646903647_26514545001497434_223387231843711095_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=kqs4n_ElSRoQ7kNvwGwsob6&_nc_oc=AdrpvRWPI6hA17teaCdbcasczFEtyWbGGXzhLZseTrNP8zW3N1ToyqIfjZllU5CX8uk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEafGS4EtXheTqtan4e0WVdUcZNqzkjpVYJKV_8d6towaFA_Qlt1OtZwWpSg8_WTSxdjyPPAs07VQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_dqJ91lXvUPL4KNt4CphpsHZdHJKC70LTLSwZDMp7-9A&oe=6A280A27",
+            "body": "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥\n\nEle veio conhecer a única blindadora boutique do mundo, localizada no Rio de Janeiro. \nBateu um papo exclusivo com @renatoblindagemboutique e, mergulhou na experiência de luxo, exclusividade e segurança que só a Solution Place oferece. 🚘✨\n\n#SolutionPlace #BlindadoraBoutique #Mumuzinho #BlindagemDeLuxo\n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 2424-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. da Barra da Tijuca, 465 – Barra/RJ"
+          },
+          {
+            "name": "AD[13/02/26]",
+            "ad_id": "120241681209020488",
+            "spend": 5.97,
+            "impressions": 360,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651272321_866144803139867_3974247299021885432_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=X_VsY4oz-DMQ7kNvwHa6aRa&_nc_oc=AdrbTV7VjVGafgyT8UkO4F4-UidSdVLqzMbhufRZV7dmiS2ewr1hnE5AnXpaL0aJ0lA&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGTXwC4Dx2ZC-oU-Li3RmDsucaxIl4corI8RYnuQk4Na_YiUYqsVr4viV1eQejUeWAymfEeQhUE-g&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_fq0WRFxjEIVNbWC3gXts8DJCVv8fP2gpNuSZM1MPvGQ&oe=6A280E87",
+            "body": "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem não quer esperar meses por segurança.\n\nMotor 2.0 Turbo com 272cv, tração 4x4 e acabamento premium em um pacote que une força, presença e proteção real para o dia a dia.\n\nBlindado, pronto e disponível agora.\nSem fila, sem prazo, sem adaptação.\n\nUSA STAR e Solution Place seguem elevando o padrão de quem exige mais do próprio carro e da própria segurança.\n\nEntre em contato e conheça de perto."
+          },
+          {
+            "name": "AD[31/01/26]",
+            "ad_id": "120241681576040488",
+            "spend": 2.81,
+            "impressions": 125,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651998110_939032495970882_8324867980948790128_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=Weqnom_QKSoQ7kNvwELi4XL&_nc_oc=Adpn80dFs9Ft0cAKsAyhTLR95nsUCW1mua53MIUpJ-fwrjBb0BJDLFibgc_WfCaorC0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQHpQBuvHqXIp0TcWW4PuzM9oCUFtGfqjOHn2DW14O8En60Tt6wy_u99gJif1b0-J_ndlrB5Hj9hAg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_P2Nx6pNRIeAAKAia0qimAMHDLyIXtWZqdtB7V_mt5ng&oe=6A280730",
+            "body": "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se destaca em qualquer cenário.\n\nEm parceria com a Solution Place, a BM Rio apresenta uma condição especial que eleva ainda mais essa experiência: última unidade com blindagem cortesia, integrada com o mesmo cuidado, refinamento e padrão que o modelo exige.\n\nUma oportunidade exclusiva para quem busca o máximo em sofisticação e tranquilidade.\n\nEntre em contato e agora mesmo e saiba tudo sobre o BMW X7 xDrive40i"
+          },
+          {
+            "name": "AD[03/02/26]",
+            "ad_id": "120241681736490488",
+            "spend": 481.14,
+            "impressions": 26667,
+            "clicks": 282,
+            "leads": 45,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650787319_942977361427556_7403377220574836052_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=W8RiDw6m0YQQ7kNvwH9dO_4&_nc_oc=AdqwlaphNgG2B-P1ISYM9gDL8BFjTJLntplLuP6ibwtM6Scoh6IP-ChxxqHFvT0mO7Q&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGncrK9fOipdNEItPpHnFMPxDwotiuxPdxOL0fQt_zq5l9scozdBNcLeI2WOX8PYba-7SCUQJd24A&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af978Wyoy_WysZ64i1_nnZIYKbbgpLE6mq02HBonNJBRag&oe=6A28146D",
+            "body": "Duas BMW X1, a mesma excelência.\n\nNa Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e eficiência, sem abrir mão da segurança e do acabamento premium.\n\nProcesso, engenharia e atenção aos detalhes.\nPorque blindar bem é respeitar o carro — e quem está dentro dele."
+          },
+          {
+            "name": "AD[28/07/25]",
+            "ad_id": "120241682045780488",
+            "spend": 0.93,
+            "impressions": 64,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/649645526_4236006956653230_387671840403335503_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=8oYpttVYbdwQ7kNvwG8PJvI&_nc_oc=AdqhOPjWBBvO0nb0mveU6CQwstxVVcVSj2UmALM6ZRxNOnsBqZGgPnFHl47NTAvY7Hg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEI0lzbtUMHqeoOuizR0cxbCFT4ZI0_CN4hHv1_cGfkIv098QgCnKGc1gKKls4TC98FgeHIj36AbQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-zfuAOmpbJDN345lX8AFVZryVt0zJeBz6ntMv-n-pPgQ&oe=6A28037F",
+            "body": "Mais uma entrega técnica impecável!\nHoje foi dia de entregar uma BMW blindada com excelência, em parceria com a BM Rio. \n\nBlindagem de alto padrão, a nível Solution Place, com acabamento impecável, sem perder as características originais do veículo.\n\nSegurança, elegância e tecnologia — tudo em um só carro. \n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 2424-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. da Barra da Tijuca, 465 – Barra/RJ"
+          },
+          {
+            "name": "AD[11/03/26]",
+            "ad_id": "120241682388250488",
+            "spend": 196.82,
+            "impressions": 14086,
+            "clicks": 125,
+            "leads": 16,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650173988_1598730758040348_4504019949527766908_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=DGJKtG8VrmkQ7kNvwFnEIOT&_nc_oc=AdoRw_4K4n_NzatfH33nzNeVPnR169r3XZQQkt79ftAaP4L72SSOuMK-EuZFsRS7BQ8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEM7103GMCx6WBlRixWDW_lr0cnxFnUA5qDHNnmH5h0BLxEpdapnewkYXEiE00vaLuAtbA1sv8QRQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8eXt9GV6hV6FwnHWmqUGCYtn7Lsq2kEcOQ_1rs2KKHxA&oe=6A280829",
+            "body": "Defender 110 BLINDADA e disponível pronta-entrega você só encontra na Land Rio.\n\nE nessa parceria de peso entre a Solution Place e Land Rio nós vemos o resultado do alinhamento entre o luxo, força e segurança com outros olhos.\n\nSolution Place Factory Boutique, a primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[17/03/26]",
+            "ad_id": "120241961097080488",
+            "spend": 231.11,
+            "impressions": 11938,
+            "clicks": 85,
+            "leads": 19,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/655276684_809876371542087_5423899411528426280_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=PePtN5m-q8AQ7kNvwGuoba9&_nc_oc=AdoIsIFSBMveeztKuh2u-05Aq5R-SJ661RMUj6R_VdijFmo6ICA-dh5c0WAy8Izk5dQ&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGoO-VkXuLFqgSSDRoFDlLfqOe_VVfh_hI-DRkKlGWB10WitsIPgTTkdK422Ru2VGLoQKXCodQgnw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-5iQXoSzHYUaiVhPh4GBDPUAxiUK_JV2d77LUd_QEnwg&oe=6A28056A",
+            "body": "Sua segurança merece o olhar de especialistas.\n\nNa Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solução de proteção ideal para o seu perfil e sua família.\n\nConheça nossos diferenciais e dê o próximo passo com quem é referência técnica no mercado de blindagens.\n\nAgende sua consultoria via mensagem direta agora mesmo."
+          },
+          {
+            "name": "AD[11/04/26]",
+            "ad_id": "120243373429540488",
+            "spend": 8.41,
+            "impressions": 541,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675684092_938855025628577_2921201367812027780_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=DQegncV_OHoQ7kNvwESBUN4&_nc_oc=AdoPH8Ctc9X8XAZpLgoQmW-XcpAPE85oHeWxdEGMEkXy0-1GGupOeFcelaMTHi_KDfs&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQHoxMneCZgptP05SyM-OyEAOUum7w_ePEIoOvNMnBUvFRxy-5Lp5Z08KNtaJD90hAe6mxpiy8jALw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_gQjHYpKdnfn_96w24NOO08sD9L2GTwE0a_uSiNpd_SA&oe=6A281504",
+            "body": "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.\n\nAgora, os proprietários da marca contam com a segurança absoluta de uma blindagem com chancela oficial, garantindo a proteção necessária sem abrir mão da tecnologia original do veículo.\n\nO padrão boutique de proteção chegou para acompanhar o futuro da sua mobilidade.\n\nSolution Place Factory Boutique: onde a excelência técnica é a prioridade máxima."
+          },
+          {
+            "name": "AD[05/05/26]",
+            "ad_id": "120244400913650488",
+            "spend": 190.93,
+            "impressions": 13078,
+            "clicks": 80,
+            "leads": 10,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/4360003189128663965?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJMa1pI68U2ULU2KElW3cm18gJaQ6jbxnxS6W4P3VNthqbemAXAxe1tMxLLpHMVrEcnJUhEpobnuTaxwqml4n1cZ8-Q2uH2xgP6MT7W_Suf7sQ_bxp9JsVY9TaLqOZMfmwQTJCyHu7lWz1hGoxyMa7U&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=Ado4Q9KwipsPkjGMXExHvDCT5qXG-9parGtu9-_dDA880TNf4CDvF2I3A2qVa8_AZVA&ccb=13-1&oh=06_Q3-_AfzPw10ILuoq3DFPGPXuDJXUD9I3VpZYn_5GY7LUal0q&oe=6A24284F&_nc_sid=58080a",
+            "body": "Você sabe o que está entre você e o perigo?\n\nBlindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo pode mudar completamente a sua escolha.\n\nFale com nossos especialistas antes de decidir."
+          },
+          {
+            "name": "AD[01/05/26]",
+            "ad_id": "120244401535990488",
+            "spend": 19.79,
+            "impressions": 1295,
+            "clicks": 10,
+            "leads": 2,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=fMO4knvXFyUSiRDXmPIe5A&_nc_tpa=Q5bMBQE7KX4iXN_Ha0FnZ_SXhxIHi6Ot6-yR6cXXP_JkArWIeWbFaIss-FULUURh-J0ntdLLH6tGBqffQQ&oh=00_Af_BRXc5F3SbBKsm-qFKDj7JuU-yOZiapncpluQNNg3ADQ&oe=6A2812B8",
+            "body": "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista. \n\nNeste Dia do Trabalho, celebramos quem busca o topo com a tranquilidade de estar seguro. Na Solucion Place, entregamos a blindagem de alto padrão que o seu estilo de vida exige.\n\nSegurança absoluta para quem não para de crescer."
+          },
+          {
+            "name": "AD[13/05/26]",
+            "ad_id": "120244883927130488",
+            "spend": 154.31,
+            "impressions": 4941,
+            "clicks": 41,
+            "leads": 11,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/7878524437210922342?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLM2l_sfF_LDqiudTeq6dwPsmUBfXGybuhcdQyDqXRaSG1Q8vdo48Tjn-_NBAy3vyXMo8PWKyhTjrtXmqIZ87pnbZsLcW6RBWyONqdN3Er2eid-FfD0GKRV67FPFXX1JCI5GFjFS1PXEqWebdyUT6qb&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=AdpJ-PKHIG-febACtpKjkKNfRTCcyMnIBjqfVSgQNAyWgwvd3YyymZP83eWCgKDz4T8&ccb=13-1&oh=06_Q3-_AZzbr9dL8b6V6KrItu3NlO4RdEK1su-zAnz2AJMkC3Hy&oe=6A24205B&_nc_sid=58080a",
+            "body": "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.\n\nNa Solution Place, cada projeto é pensado para manter a originalidade do veículo, preservando design, conforto e elegância sem abrir mão da segurança."
+          }
+        ]
+      },
+      {
+        "name": "[05][KrM][CBO][Traffic][IG]",
+        "campaign_id": "120237338823250488",
+        "spend": 664.98,
+        "impressions": 167687,
+        "clicks": 2897,
+        "leads": 8,
+        "objective": "OUTCOME_TRAFFIC",
+        "ads": [
+          {
+            "name": "AD[04/10/25]",
+            "ad_id": "120237338823230488",
+            "spend": 35.61,
+            "impressions": 3164,
+            "clicks": 71,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/587709249_814963104628023_6827438093787207872_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=ItIcKC2Es2gQ7kNvwGcMYVd&_nc_oc=Adpswzi3Dvmmn2U5_kkZClMSYcHkuaklLLtN5p7oKAhIuwxuzV_EkYWAElUVVR5dQVU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQFQNszMDYoMXdhHkUFoaV4Q6Mro5rJr6H45ju2vlLBfrgu5hJfOeM4EBiC6ZCwsBll6Zk3lIQxvbQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-3xBq-hXZAjD5NAxGgECUxUiQ4fEcmkaE1bHhv0lEfEA&oe=6A281A05",
+            "body": "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥\n\nEle veio conhecer a única blindadora boutique do mundo, localizada no Rio de Janeiro. \nBateu um papo exclusivo com @renatoblindagemboutique e, mergulhou na experiência de luxo, exclusividade e segurança que só a Solution Place oferece. 🚘✨\n\n#SolutionPlace #BlindadoraBoutique #Mumuzinho #BlindagemDeLuxo\n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 2424-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. da Barra da Tijuca, 465 – Barra/RJ"
+          },
+          {
+            "name": "AD[28/01/25]",
+            "ad_id": "120240797672820488",
+            "spend": 6.33,
+            "impressions": 1401,
+            "clicks": 12,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629840689_1669937947703109_7770084233723096044_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=9u5Gl4_FY64Q7kNvwFcWqmL&_nc_oc=AdrSCiV675Zi2aDFdqJ3xwlS1P-iN9DpTGCQhMxh50IEolB9a9ZhfQehGI-Hk_C7-R4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQHiKER6nZqFU7nNaTNgPe8lgMU-eNPoT2w8lDuok8i-9GXXSZZJs4fd83A4SM1iQDl3Vcuc1B6eag&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9pgFDYev3IJutrD5uwBnQXGvzxTcuPrlUHlW44fcTFQg&oe=6A27FCE7",
+            "body": "Uma entrega de sucesso para o nosso amigo, @josealdojunioroficial .\n\nAgradecemos a confiança na Solution Place. E ficamos felizes que tenha gostado do resultado! \nObrigado pela visita a nossa Factory Boutique, sabemos que essa foi a primeira visita de muitas. 😃\n\nAgora mais seguro e com a garantia de uma blindagem de qualidade. \n\nE aí, qual será o próximo? 👀\n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 3219-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. do Itanhangá, 305 – Itanhangá/RJ\n\n#SolutionPlace"
+          },
+          {
+            "name": "AD[03/02/26]",
+            "ad_id": "120241342114390488",
+            "spend": 557.12,
+            "impressions": 145230,
+            "clicks": 2625,
+            "leads": 7,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/645633658_708221538949963_4846070334324538461_n.jpg?_nc_cat=103&ccb=1-7&_nc_ohc=tt0DNS07ca0Q7kNvwFRvr9y&_nc_oc=AdpHkgLR8Y2gjssrYhytHOp4mW-R8D8a07V0ODt2-eD6GjQU1t4ahwGO9vaoMAm0ueI&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGDZyWfdhBzCoABmSYFRFet_1VPpsxjCQQ0jMnbk9T1rxVP6ZNRlUwLQfA4ML56Kl3R7NxCir_0jQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_j-a1QYXKCyfsIu0ZndahObn7c0jbbufloEUJ4-FownA&oe=6A281344",
+            "body": "Duas BMW X1, a mesma excelência.\n\nNa Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e eficiência, sem abrir mão da segurança e do acabamento premium.\n\nProcesso, engenharia e atenção aos detalhes.\nPorque blindar bem é respeitar o carro — e quem está dentro dele."
+          },
+          {
+            "name": "AD[11/04/26]",
+            "ad_id": "120243373694880488",
+            "spend": 4.74,
+            "impressions": 1215,
+            "clicks": 22,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675158503_957944020156836_278605063857638996_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=PV0BJV4-i78Q7kNvwGTmcSJ&_nc_oc=Adrt4z0JLsydLEuIiiq8KERqs3mUOjJ7MMkeRDivf4bTsPSUvgKdFX9_mQz6ASO9QP4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQHLmPCrxoqdAcgQg1cmYKZNhd2RZRDhqSwR6fifkfvW9L6H3UUXKUiQehyYF_cFTb1c915HVqt_5Q&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-Xm86EyNRL1MbjiqMEkPWVvZxo2bj0V18pOjARjVuJTA&oe=6A281D38",
+            "body": "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.\n\nAgora, os proprietários da marca contam com a segurança absoluta de uma blindagem com chancela oficial, garantindo a proteção necessária sem abrir mão da tecnologia original do veículo.\n\nO padrão boutique de proteção chegou para acompanhar o futuro da sua mobilidade.\n\nSolution Place Factory Boutique: onde a excelência técnica é a prioridade máxima."
+          },
+          {
+            "name": "AD[19/04/26]",
+            "ad_id": "120244884085410488",
+            "spend": 61.18,
+            "impressions": 16677,
+            "clicks": 167,
+            "leads": 1,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/701700338_1029357939859668_6924190017877709848_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=sAAEcXL5fgEQ7kNvwH4bwA-&_nc_oc=AdozKUNJ6jljbk0e0VNoVPdZi7-y0-lezxjwZ1vnqXJ03KKaT4YGssQYfpLvJDsgk2M&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQGpmXPwexs6TjxCh6W5uMFT45KQMlS4KGKr-vMlGPZti7TuzWaXQDh1ha-3ANCVMlNfrbHqN2C9fQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af91eEYeYskJkNuZg9Tc6OepNj-WI9opiXiJfh1fXPHKzQ&oe=6A282746",
+            "body": "O mercado de luxo exige precisão e segurança acima de tudo.\n É com esse foco que a Solution Place Blindagem anuncia sua parceria oficial com a Lexus Rio de Janeiro. \n\nUnimos a engenharia impecável da Lexus ao nosso rigor técnico para garantir que a integridade original do seu veículo seja preservada com proteção de alto nível."
+          }
+        ]
+      },
+      {
+        "name": "[08][KrM][ABO][Impressions][Boost]",
+        "campaign_id": "120245039643090488",
+        "spend": 203.23,
+        "impressions": 27411,
+        "clicks": 18,
+        "leads": 0,
+        "objective": "OUTCOME_AWARENESS",
+        "ads": [
+          {
+            "name": "AD[22/05/26]",
+            "ad_id": "120245039643080488",
+            "spend": 203.23,
+            "impressions": 27411,
+            "clicks": 18,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/706767365_1287451099723892_1701268760710263129_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=cym9pxrsOnEQ7kNvwHF3-2g&_nc_oc=Adpgft_lxN6tn9orhs8aTb6SNSBbgieaKt4KPnGxAuQd12a3In34nsQ-nvi4bg_oAnU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEVhuS8qP0d94Q7JYI02eyJ2kQD3cKmiaRD9de1XzqVvXVS7VsJfZhrihsnUUZHMnhMFm2_nYSeew&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af94lAOTKM5cXvbuJqG1HDr6e5Fx56VCJBBiUiR94g4Mcw&oe=6A281136",
+            "body": "Este sábado, dia 23, a Solution Place e a Jeep Usastar têm carros blindados à pronta entrega esperando por você.\n\nSem espera. Sem burocracia. É só aparecer, ver, testar e levar.\n\nNão perca."
+          }
+        ]
+      },
+      {
+        "name": "[09][KrM][ABO][Message]",
+        "campaign_id": "120245136929540488",
+        "spend": 674.48,
+        "impressions": 21611,
+        "clicks": 186,
+        "leads": 44,
+        "objective": "OUTCOME_ENGAGEMENT",
+        "ads": [
+          {
+            "name": "AD[03/02/26]",
+            "ad_id": "120245136929510488",
+            "spend": 224.44,
+            "impressions": 7083,
+            "clicks": 80,
+            "leads": 17,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707678622_2507824356331512_597206643622897622_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=VNfJDhMkbmcQ7kNvwHPcPJZ&_nc_oc=AdqW_zFOzlYTDKMsOu6Onjbs8pfoflzXxnnbO9933O5rBl8Ig5FLKoxuBkQWbQfnhpU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQHzL4SXHbt9QPzSf0wm295Y__K_JBq0g5EaZQN6I3mWKnjBL7w41CtaQ2CjCzTrC9WS6ZHwodaKew&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_9yuE9DHAI5oFO7EjPAtVc9eFIr6VDmH0dCR6LZ_F4RA&oe=6A281B11",
+            "body": "Duas BMW X1, a mesma excelência.\n\nNa Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e eficiência, sem abrir mão da segurança e do acabamento premium.\n\nProcesso, engenharia e atenção aos detalhes.\nPorque blindar bem é respeitar o carro — e quem está dentro dele."
+          },
+          {
+            "name": "AD[17/03/26]",
+            "ad_id": "120245136929550488",
+            "spend": 12.23,
+            "impressions": 373,
+            "clicks": 4,
+            "leads": 3,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/704858185_957946770450184_8254912559419410678_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=xSt_rE4DFv8Q7kNvwG-Dv1l&_nc_oc=Adov7K2MxoEzpRX6eGTRCesmfvPqurSXQ0A43C8rlj7TfR-yHlwAzdlD8Wp4JpmROyk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQG6AXsKLOzh6MFqW3mQAqY4YYxWl5wHdlOpb794WLt4RqSaNCzQ8D_2NkyGs3caHNdaP46YjXEONA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_IFau79ro965-gj1aWQu3PUAyKm8Ap_LrBhgQOcOu8GA&oe=6A280491",
+            "body": "Sua segurança merece o olhar de especialistas.\n\nNa Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solução de proteção ideal para o seu perfil e sua família.\n\nConheça nossos diferenciais e dê o próximo passo com quem é referência técnica no mercado de blindagens.\n\nAgende sua consultoria via mensagem direta agora mesmo."
+          },
+          {
+            "name": "AD[04/10/25]",
+            "ad_id": "120245136929570488",
+            "spend": 18.03,
+            "impressions": 467,
+            "clicks": 4,
+            "leads": 1,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/709486415_2140790796768357_2365360772675218576_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=TKUGn6MLBE4Q7kNvwH7ViXx&_nc_oc=Adrj5TDXSzk5FgKSVMWdyaUFyADQwOtxYtoyW48lI6KJewD76F-8nkizrXkHlaYkZFM&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQEsX04bQJm-W6DwQK7lITe3wY4l2_DgeVgxSfKRErQarCdJAmVRsPsnOuPmA39yIcpYmUhkWWOiow&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-apS48duTd3kvZL9EGnFgznu-IVEJIJFGsdh7NIMgKdw&oe=6A2817D2",
+            "body": "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥\n\nEle veio conhecer a única blindadora boutique do mundo, localizada no Rio de Janeiro. \nBateu um papo exclusivo com @renatoblindagemboutique e, mergulhou na experiência de luxo, exclusividade e segurança que só a Solution Place oferece. 🚘✨\n\n#SolutionPlace #BlindadoraBoutique #Mumuzinho #BlindagemDeLuxo\n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 2424-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. da Barra da Tijuca, 465 – Barra/RJ"
+          },
+          {
+            "name": "AD[01/05/26]",
+            "ad_id": "120245136929600488",
+            "spend": 31.47,
+            "impressions": 721,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=fMO4knvXFyUSiRDXmPIe5A&_nc_tpa=Q5bMBQE7KX4iXN_Ha0FnZ_SXhxIHi6Ot6-yR6cXXP_JkArWIeWbFaIss-FULUURh-J0ntdLLH6tGBqffQQ&oh=00_Af_BRXc5F3SbBKsm-qFKDj7JuU-yOZiapncpluQNNg3ADQ&oe=6A2812B8",
+            "body": "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista. \n\nNeste Dia do Trabalho, celebramos quem busca o topo com a tranquilidade de estar seguro. Na Solucion Place, entregamos a blindagem de alto padrão que o seu estilo de vida exige.\n\nSegurança absoluta para quem não para de crescer."
+          },
+          {
+            "name": "AD[13/05/26]",
+            "ad_id": "120245136929610488",
+            "spend": 5.73,
+            "impressions": 145,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/13921813410645148829?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJZsZ-skjxIvXdimckrdOI3ZQCaXZ5xR-H1FrhuZO7ulRdxTYj6SRQhGeSKF9skdnvj3ClXQtZysPKtOt8V2p1E2F1iDrObW7Y9By5VgwhASjIZgP9AIjxcjxbrJiJ2ZPDhm_wa0BMGF9RhqAcerAf2&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=AdroT0gDvQX6GXU5BhtKlzYD049uqaujLyp8xKnPWVks0IiCw4-oGf7jdkOE_lfZ0zQ&ccb=13-1&oh=06_Q3-_AQVY0CUmBJy6Tr-IoXwgoVLktTPaLottAE03i7Gsdd1b&oe=6A241094&_nc_sid=58080a",
+            "body": "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.\n\nNa Solution Place, cada projeto é pensado para manter a originalidade do veículo, preservando design, conforto e elegância sem abrir mão da segurança."
+          },
+          {
+            "name": "AD[02/05/26]",
+            "ad_id": "120245136929750488",
+            "spend": 192.21,
+            "impressions": 7676,
+            "clicks": 61,
+            "leads": 18,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707433817_27472503195688735_7085877821857009806_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=NF3HDiBzvmEQ7kNvwFe9A2n&_nc_oc=AdqoyDMtL4GcBjEV0_GFhhLlxNxpxCn68s-_AY3b8PgjaO2dY_EVRvpRwuxNIQLCwQ4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_tpa=Q5bMBQFavFfe2wCyrQmZ4_BbxnMYf7m8EZe00SGwH4NhT64p3M8F_AZxkZakHbaZX5B00Dkgprr_sn_b9A&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_r5_MhiCNSmWnSLRrEoCfi-ve-JAuCI58VZOEuicYwmA&oe=6A281991",
+            "body": "A tradição da Ford e a robustez da Megafor encontram a segurança de alto nível da Solution Place. \n\nAgora, somos a blindadora homologada para os clientes Megafor, garantindo proteção de elite para toda a linha, incluindo Ranger, Raptor e Mustang.\n\nNosso compromisso é entregar engenharia de precisão que respeita a estrutura original do seu veículo.\n\nBlindar o seu Ford com a Solution Place Factory Boutique é uma decisão inteligente que valoriza a vida e o patrimônio."
+          },
+          {
+            "name": "AD[05/05/26]",
+            "ad_id": "120245136929840488",
+            "spend": 175.55,
+            "impressions": 4739,
+            "clicks": 27,
+            "leads": 5,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/13392374324571417644?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQK6h508fnwCEKEybJA20XLS6W6QvklhAB6jflgJAktDKHhHn5zZaV-v3vI4uoqSQGNER-c7XUS6aIjV2HiBsdXmNejAzY4DNzYmrwPRn3ev8OZPXHRdthRQ6zpXdCbODzDVDr9ERG3CIOwSZIVeW78O&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=Adrfej8ynsdut2B4rhmDOlHP0gR-FA5Um6ENQXAk3Fi5vwb5iOKPGPfTm3T009MZGlo&ccb=13-1&oh=06_Q3-_AWvjNAeUmuwiUczuqXpWUGF5PXmE9-vocZsVLrT-7YCv&oe=6A243502&_nc_sid=58080a",
+            "body": "Você sabe o que está entre você e o perigo?\n\nBlindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo pode mudar completamente a sua escolha.\n\nFale com nossos especialistas antes de decidir."
+          },
+          {
+            "name": "AD[02/06/26]",
+            "ad_id": "120245683112050488",
+            "spend": 10.34,
+            "impressions": 319,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/1909865980268193130?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQIKAJJ1ZPJ3pPtwVeNNNlZcYTcoL3rmUrCd2VEFXhMkbGVGeM1sskQZYpstpFqmPiBUMkH2xWU-5gssdvlvqXUHgfhrj5OfZXTYiOF4j2zecGhK3YR16eWM962N-RZB_y05UR2oWirVTtQBo0QfKg2j&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=Adpuj7wJjKbwaOYMncN5pCIIZ48pKMarmyJxiZdJ3mM_l2uzLRRdF_8WII8afYiFbcI&ccb=13-1&oh=06_Q3-_Aa5nXI3JFUozExc8JgANR9w0Lq8bHEiHC7QUYZ9ufsz8&oe=6A240BD2&_nc_sid=58080a",
+            "body": "Vidro blindado com manchas, bolhas ou dificuldade de visibilidade não é só estética. É sinal de que a proteção pode estar comprometida.\n\nA Solution Place oferece assistência técnica especializada para avaliar, diagnosticar e cuidar da sua blindagem com o rigor que ela exige.\n\nRevisão anual, visita técnica, inspeção balística. Tudo que você precisa para manter a segurança em dia."
+          },
+          {
+            "name": "AD[28/05/26]",
+            "ad_id": "120245683144610488",
+            "spend": 0.9,
+            "impressions": 21,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/14450975146440565191?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLndLoShx9Bmd9Pfr0bm4gPYc4MDhNE1YxPwf5VVFSHJhRCqM1qFz4UD_Pm6JxNVCPtvAkShsx5yfSfKnwDDmWbyAfTfqIOQuB3nr04_lI_PReVbt4y939QW-rCj4oFZgPlTeJMFqzLLqxYS9c9fWtc&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=AdruSqdVIYxDvNYcXHN6dN1fDi4fihz3hf1yOUzfkfzu1h9HRamdTt6YlZYP4_Jv0xo&ccb=13-1&oh=06_Q3-_AYShj9a6Ja3-la6Kni5e-nvdOyaqXhEPwJIau7n3wBtn&oe=6A243204&_nc_sid=58080a",
+            "body": "Proteção real não aceita improviso. Nem toda blindadora entrega o mesmo nível de segurança. \n\nArraste para o lado e veja a importância de checar as certificações, os materiais utilizados, o histórico da empresa e o suporte pós-venda antes de tomar sua decisão.\n\nA Solution reúne tecnologia certificada, tradição e atendimento premium para proteger o que é seu.\n\nFale com a gente! Clique no link da bio ou envie uma mensagem direta."
+          },
+          {
+            "name": "AD[20/05/26]",
+            "ad_id": "120245683172600488",
+            "spend": 3.58,
+            "impressions": 67,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/14545165462543338132?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQKrur2MgGyP5TKnkNBh1BGPbjehEIjCD0n6kfiPDyJ3Qqt_oWC-nnkAfp7Bl1JPAFCVyIp_3J-CI7NZvGDWbAwXsTVeee5zcIkvJiLRPMJUswOOwYGWiFhGy9DqqS0h4IdjHFhw5KDQa5SvtRVnoDmL&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=C66CHFBS2ZGPkipIDuFiig&_nc_oc=AdqT2CjEL8TakxZ5aNdwCnKWNTsNXnF2O3tBdljFuK7H-oU7q7z_syDMKljaOHmSfPA&ccb=13-1&oh=06_Q3-_AbDdkNwmNg19PWZeZ40qopI1hj4zPyr4QhfhW7NfV3JC&oe=6A241FF4&_nc_sid=58080a",
+            "body": "O Brasil lidera o mercado mundial de blindagem automotiva, um reflexo de que a segurança se tornou prioridade absoluta no dia a dia.\n\nNa Solution, você encontra atendimento premium, veículos de alto padrão e a proteção que sua família precisa.\n\nProteja o que realmente importa."
+          }
+        ]
+      }
+    ]
+  },
+  "range2": {
+    "dates": "06/05/2026 a 04/06/2026",
+    "totalSpend": 4975.7,
+    "totalImpressions": 1203321,
+    "totalClicks": 4425,
+    "totalLeads": 165,
+    "campaigns": [
+      {
+        "name": "[01][KrM][ABO][Impressions]",
+        "campaign_id": "120236136455210488",
+        "spend": 1334.42,
+        "impressions": 832048,
+        "clicks": 321,
+        "leads": 0,
+        "objective": "OUTCOME_AWARENESS",
+        "ads": [
+          {
+            "name": "AD[28/01/26]",
+            "ad_id": "120240135442500488",
+            "spend": 13.38,
+            "impressions": 7530,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t51.82787-10/624809176_18392499790146648_7368885486297448470_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=yGxpZ7O5QSQQ7kNvwFgB4eN&_nc_oc=AdrdkiSM5DfBFh2SROs1iQdqoPrTOLlx2zbVk19zevDOxYOzAFUzQTdZu187thD9Ihg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQEZKOFkWdLnEAJBlgW7NNaUq0H-XKNspi5oRi6Xe3xxf1T9czRU9sdPMnyI7JxrUBAk2q_4d8wTMg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_Af-bi6hlnMnanYMIshEeBHOFiUMvGrB9fKx94qh1lTSAig&oe=6A280BFA",
+            "body": "Parcerias sólidas não se constroem do dia para a noite.\n\nElas nascem do tempo, da confiança e de um padrão que se mantém constante.\nAo longo dos anos, A Solution e a Land Rio caminham juntas com o mesmo compromisso: qualidade, atenção aos detalhes e decisões bem feitas.\n\nTudo pensado para um público que sabe exatamente o que quer e não abre mão de segurança, sofisticação e performance.\n\nQuando marcas que pensam parecido se encontram, o resultado é simples de perceber.\nCredibilidade, consistência e excelência em cada projeto."
+          },
+          {
+            "name": "AD[31/01/26]",
+            "ad_id": "120240228976580488",
+            "spend": 12.54,
+            "impressions": 6997,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/624281001_880028874761518_6436816362623015816_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=85JLvZMfaNAQ7kNvwE7p4G9&_nc_oc=AdpYVBRyaUvZ6pWhJD9MHAO03v5yTt8o8CdY-9R3byef-4OAbMH8nKc2OZdJC_cjVcQ&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQGhqSrQVOvzbD41MNj4Mjuuclya4YSIvADjD-_K7Fw-Oejy8Lxak88Xca8o9KpgabVvBusd0xG8xA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8KSV0Tq_2cbpmde4_2GJzOZvYMdK2-NILR1lBgYRbUdQ&oe=6A28255E",
+            "body": "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se destaca em qualquer cenário.\n\nEm parceria com a Solution Place, a BM Rio apresenta uma condição especial que eleva ainda mais essa experiência: última unidade com blindagem cortesia, integrada com o mesmo cuidado, refinamento e padrão que o modelo exige.\n\nUma oportunidade exclusiva para quem busca o máximo em sofisticação e tranquilidade.\n\nEntre em contato e agora mesmo e saiba tudo sobre o BMW X7 xDrive40i"
+          },
+          {
+            "name": "AD[05/02/26]",
+            "ad_id": "120240531207840488",
+            "spend": 20.01,
+            "impressions": 11705,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629833895_1643780110304135_7952940435588379436_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=AU3ECMuo0ywQ7kNvwH9R1ee&_nc_oc=AdqGgh3vC4Me5LQ2zxqi4_YVNrg0pp9o7kHyq_1fLSX7SsTW_PKd7HhmtGFG2FBr6as&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQE_wA9R2qpOFhdDbleIqBcksRo1TtGK29gqacDwP8Th9HYfMXmaI2qxIQAiGuRZikkfWVI83X9VcQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-bdD17t6aq1phAlyXnvB73gSaqSakzdVFGbTsYqZ5cmw&oe=6A2807E2",
+            "body": "Mercedes GLE 63 blindada com o Solution Air — nossa blindagem exclusiva em Tensylon.\n\nUm material desenvolvido para quem exige o máximo em proteção sem abrir mão do desempenho, do conforto e da experiência original do carro.\n\nTecnologia própria, processo rigoroso e padrão elevado em cada etapa.\n\nGLE 63 blindada pela Solution Place Blindagem. Segurança no nível do veículo."
+          },
+          {
+            "name": "AD[03/02/26]",
+            "ad_id": "120240531361810488",
+            "spend": 3.91,
+            "impressions": 2315,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629618241_934738182824800_2714717467076037799_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=llk9I1gAeawQ7kNvwGnhCec&_nc_oc=Adq99salOMU7wtolAKJw__hIo5c6Vrl9w6MWzlNTwoDi7PmYFhYAs5qGAmpafEvzS8M&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQGtqHk1wH6l1RRHeN8nqXSp3NDK6iWgsdIJdXa8bc8lGqiZtjm_09AtPdMbHClyWfhSErJ-RaKdWA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9uPuNBPbAHOxiOaJXlr66w3soNVkem5mGzFdYhts7EVA&oe=6A27F783",
+            "body": "Duas BMW X1, a mesma excelência.\n\nNa Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e eficiência, sem abrir mão da segurança e do acabamento premium.\n\nProcesso, engenharia e atenção aos detalhes.\nPorque blindar bem é respeitar o carro — e quem está dentro dele."
+          },
+          {
+            "name": "AD[11/02/26]",
+            "ad_id": "120240613629910488",
+            "spend": 6.77,
+            "impressions": 3724,
+            "clicks": 2,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629629879_1189873542965888_1097787814245664169_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=jMUl4zI__AoQ7kNvwGwUprT&_nc_oc=AdoZz3M9zrqbI_6GDJgkGngw2AJpOkCA_BFmADRB4mYJWMC5d38lnA1FzetLHzK19Ko&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQET-SUHYQ646VfaAdOsch33OwTZe-AqdBdjjhy5ABMf_-vt7p-GbB4iKXl2678Wk1eN9MZ_C7KHZA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9kyJeKBS-CM0Uk2gETRpJvWtaY0_ooBzeYyyMJd0mNGQ&oe=6A281DA9",
+            "body": "Parcerias não nascem por acaso.\n\nElas acontecem quando visão e propósito caminham na mesma direção.\n\nIniciamos 2026 ao lado de um dos grandes grupos automotivos do país, reunindo marcas como Ram, Ford, Jeep, Volkswagen, Jaecoo Omoda e GWM.\n\nEssa união representa mais do que um acordo comercial.\nRepresenta posicionamento. Representa nível. Representa confiança.\n\nA partir de agora, os clientes desse grupo passam a contar com a blindagem Solution Place — tecnologia diferenciada, engenharia de ponta e um padrão que conversa diretamente com quem exige mais.\n\nEstamos só começando.\nEntre em contato e conheça todos os detalhes dessa nova fase.\n\nSolution Place Factory Boutique\nA primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[13/02/26]",
+            "ad_id": "120240681210150488",
+            "spend": 7.9,
+            "impressions": 4652,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629842981_1229731385966143_3680841446933143351_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=zjBLC0f2PBYQ7kNvwHX58Ie&_nc_oc=AdqOBCeCkCdhGS3tk3Zx17GDnjrB7wd1Mn3EK3kTw4O2_JVuq7VrPGDup9GNYxXxzkw&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFpqzy6GohO-F88Ho8suIeYXbfOOT_Q9pMoCLK5DCO7oyVVJpE-gKRLZCjsiTDIBRfa2-WmqwTbSg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_nBk3R8g6t1IGA4ZQAP8UA1f18n4ehmXGT--jqhc4Y_Q&oe=6A281319",
+            "body": "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem não quer esperar meses por segurança.\n\nMotor 2.0 Turbo com 272cv, tração 4x4 e acabamento premium em um pacote que une força, presença e proteção real para o dia a dia.\n\nBlindado, pronto e disponível agora.\nSem fila, sem prazo, sem adaptação.\n\nUSA STAR e Solution Place seguem elevando o padrão de quem exige mais do próprio carro e da própria segurança.\n\nEntre em contato e conheça de perto."
+          },
+          {
+            "name": "AD[17/02/26]",
+            "ad_id": "120240788275930488",
+            "spend": 4.9,
+            "impressions": 2753,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629838836_1450705173387320_364917332187931364_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=8kzqPbB4pewQ7kNvwGb6e5J&_nc_oc=AdrD1yJfIvXRvLjz5-iu2wRrUnSVc8nfBxY-7nmyMmJc363oJ3BdRxVm0OeQ84SWa1I&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQEVxG10HkqLfKTCMqzGjIcq7Twc2xkJv9_7zgeXp5nH5qf8P-3JsODNn6eUr8KdHxP0xPSga_wucA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8LDq1_zmlOeRuC1wsD67BBim6solAl_yi3FXPxKZ3EzQ&oe=6A281E59",
+            "body": "Desde o início, a Solution Place nasceu com um propósito claro: elevar o padrão da blindagem no Rio de Janeiro.\n\nAqui, blindagem não é apenas técnica. É conceito.\nCada projeto une segurança real, acabamento refinado e respeito absoluto pelo cliente.\n\nDo primeiro contato à entrega, tudo é pensado para que você não contrate um serviço, mas viva uma experiência completa. Segurança, luxo e desempenho no mesmo nível de exigência.\n\nEnquanto o seu veículo recebe precisão técnica e atenção aos mínimos detalhes, você vive um ambiente que traduz quem somos: exclusividade de verdade, conforto e proximidade.\n\nAqui, atendimento não acontece atrás de balcões.\nAcontece lado a lado.\n\nSolution Place Blindagem, a primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[23/02/26]",
+            "ad_id": "120241096570450488",
+            "spend": 10.16,
+            "impressions": 5734,
+            "clicks": 5,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/638879747_2120494718781877_224859095593308170_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=MX2iiUzQyNEQ7kNvwGXnada&_nc_oc=Adr0dyOg9Tpz-I2vwPnHt4rLZuG9Pr7-DTRqaaRJyAlYAfZmfgg8z8UviPmb_J97jQs&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFKnI9CEw7oQNO5W-JSRxbgE1rS7ZZ7iem2fXFtCQjFIZv2dHrheUEYpxJebjcckKcdcBVRk3KQIA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8zxyvTvN4EYFnNWgYPJTgccPA7Bk-KRb1f_jPH3JZ16Q&oe=6A280C94",
+            "body": "Algumas parcerias atravessam o tempo porque são construídas sobre confiança.\n\nHá 6 anos, Solution e BM RIO caminham juntas.\nE desde então, a Zona Sul ganhou algo além de modelos icônicos da BMW e MINI circulando pelas ruas.\n\nEmpresários, médicos, advogados, pais, mães e famílias inteiras passaram a viver o conforto dos seus veículos com a tranquilidade de uma blindagem que protege o que realmente importa.\n\nBlindagem não é status.\nÉ responsabilidade.\n\nÉ cuidado com aquilo que tem valor de verdade.\n\nSeguimos juntos, mantendo o mesmo padrão de excelência, luxo e proteção.\n\nSolution Place, a primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[26/02/26]",
+            "ad_id": "120241266871320488",
+            "spend": 13.76,
+            "impressions": 7148,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/646242248_1408672220411735_4154291621901996324_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=1V3_KcveDpMQ7kNvwG9WIBx&_nc_oc=AdqbsrmaESCGT0xEhd76tLSqEECNOPPJidIG1tH0GKnr12-xbjm2gr9RE2m8PzFogr8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQEhhz2rW0OeVcQ62cC-DthOHwRUjo-Vu5ufIdRsG5dPbL0Nro35fENwrDJPVACL0kLd7F0tpP94cQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8RXkr8lmPdzL1PWavhXCAwYPcc6ErmIKqxHMH7mCmX7g&oe=6A282A53",
+            "body": "O BM Rio Special Sales já começou — e com a Solution Place, o nível sobe ainda mais.\n\nPor apenas 4 dias, a BMW de Botafogo reúne condições raras: taxa zero, descontos que podem chegar a 100 mil reais, super valorização no seu usado e oportunidades reais para você entrar no seu 2026.\n\nE para quem quer ir além da conquista, a Solution entrega o diferencial: vantagens exclusivas também na blindagem durante o evento.\n\nDocumentação inclusa para veículos usados e, para zero km, 1 ano de garantia adicional ou até 3 anos de manutenções inclusas.\n\nVocê não troca apenas de carro.\nVocê já sai com tecnologia, condição e proteção no mais alto nível.\n\nO evento já está no ar.\nSão só 4 dias.\n\nPasse na BMW de Botafogo e viva essa experiência com a BM Rio e a Solution Place."
+          },
+          {
+            "name": "AD[02/03/26]",
+            "ad_id": "120241432561070488",
+            "spend": 13.98,
+            "impressions": 7992,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/648860925_1806965956957125_156209201740038482_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=k_HXcip5cckQ7kNvwFkec7u&_nc_oc=Adqyv2YXHdp9NTz49Kwn-bXxOHblW9O2O-S2BsmYCXs0fVs8pvczL5Feg_r6yu6wxl4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQHXQdN4YseDinemdpjlAmsoc47j-0kTFX_MvRX6Ts8AJymz3v5GO0HjyLT6ti5doLCmwIzSVVwQrA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-JKUy0U2HOgrEUfUolmJdZKVCMEv5cuEGn_OVnUK7hAg&oe=6A28295D",
+            "body": "Acaba de chegar à Itália Master um Jeep Compass S que já entrega tudo o que importa desde o primeiro momento.\n\nBlindado pela Solution Place, homologada pela concessionária, ele reúne desempenho, sofisticação e proteção em um único projeto — pronto para quem não trabalha com espera.\n\nSem filas, sem envio para outros estados, sem meses aguardando blindagem. Aqui, você já sai com o carro pronto, no padrão que o seu nível exige.\n\nTecnologia balística certificada, acabamento premium e a segurança de um projeto assinado por quem é referência no mercado.\n\nSe você busca um SUV completo, com presença e proteção imediata, esse Compass S foi feito para você.\nItália Master e Solution Place: alto padrão em cada detalhe.\n\nSolution Place Factory Boutique. A primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[06/03/26]",
+            "ad_id": "120241496167120488",
+            "spend": 21.61,
+            "impressions": 11214,
+            "clicks": 6,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/637724089_791641753490871_4135807396682558940_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=64lOn8V8jbUQ7kNvwEP1BXm&_nc_oc=Adpmv9b96SqqhXcpmK6w2kdL8bTGAbY7fdi6EItOd0ND2w7bU8siAdJbHjNxJwD2MNc&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQHW4GxlAhVb7AK8ohoJ5mzfNarAXjnHdlZHhwfvD_GnaFJi3Kk4weQmqIFpqUpmxslyelYCtW-qfA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-yhSi2DCmi7NTMjm13KcupCTtjXB2QNnWiNiuOpRNWCg&oe=6A2805EB",
+            "body": "O futuro da mobilidade já começou — e a blindagem também evoluiu.\n\nCom o avanço dos veículos elétricos, cada projeto exige um desenvolvimento específico, respeitando engenharia, peso e eficiência. Não existe adaptação genérica quando falamos de tecnologia de ponta.\n\nNeste Volvo EX30 Country, aplicamos a blindagem Solution Air, com nosso Tensylon exclusivo aliado à fibra de carbono. Um conjunto pensado para manter a leveza do elétrico sem abrir mão da máxima proteção.\n\nDesign moderno, proposta sustentável e uma blindagem à altura do que há de mais atual no mercado.\n\nSe você já entrou na nova era dos elétricos, a sua proteção também precisa evoluir.\nNa Solution, cada blindagem é desenvolvida de forma única, com precisão e responsabilidade.\n\nSolution Place Factory Boutique, a primeira blindadora boutique do mundo"
+          },
+          {
+            "name": "AD[17/03/26]",
+            "ad_id": "120241960655640488",
+            "spend": 5.88,
+            "impressions": 3258,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651077219_3391709517654957_1015387871545246080_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=9Gl1HkUBYWYQ7kNvwGigJLP&_nc_oc=Adq-cJIJFXApFca8CyOMl436pFBLU72U3Xu6Qo-lP7Skmu3IbgvzXc3XE6m5os0dWsc&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQHtsrlAFRaobZPk0bRNn21ZrGVHTsucP2XKBhzSH-g3QiWBjtSGvSTGpBEuBY7n6aQ8IC9xSEUc4g&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_qdOLh0VvMRNkRwCLS6pMHD9DvWe5GDXj9_lI75QQzpA&oe=6A280DB4",
+            "body": "Sua segurança merece o olhar de especialistas.\n\nNa Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solução de proteção ideal para o seu perfil e sua família.\n\nConheça nossos diferenciais e dê o próximo passo com quem é referência técnica no mercado de blindagens.\n\nAgende sua consultoria via mensagem direta agora mesmo."
+          },
+          {
+            "name": "AD[11/04/26]",
+            "ad_id": "120242205442560488",
+            "spend": 1.46,
+            "impressions": 746,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/669702499_3055165748013132_2679216504818419289_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=Vk-hzdTRv0kQ7kNvwEGpxIs&_nc_oc=Adrj5tiNMzxrY7QulSdtu_JQjZyVC7oHb5CxflLIS0mJV78GuHMfCWtv_aj4I1frCuE&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQGkev-aWzH2tBI2WRBpn-ZHq56cQM60zvctVzV4Wor5VF04KISop1ROi-rNvgKfxzk3O4D3XpACoA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8oExVC-6IstpRUPyN7nZvfR8175Vsjcy2q58xlfP0NUA&oe=6A282787",
+            "body": "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.\n\nAgora, os proprietários da marca contam com a segurança absoluta de uma blindagem com chancela oficial, garantindo a proteção necessária sem abrir mão da tecnologia original do veículo.\n\nO padrão boutique de proteção chegou para acompanhar o futuro da sua mobilidade.\n\nSolution Place Factory Boutique: onde a excelência técnica é a prioridade máxima."
+          },
+          {
+            "name": "AD[20/03/26]",
+            "ad_id": "120242205792500488",
+            "spend": 11.34,
+            "impressions": 6136,
+            "clicks": 2,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668585616_2017981005765159_9032118120867387643_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=YgLI5daY6_sQ7kNvwHY2tdQ&_nc_oc=AdpMPzBlNJMJEWA_GODaVGrNrUcM5zV_UG58-hLB19eRZrBTeqa1s4cdW-3ZTww6dG0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFCNIxGM5YfnO3e8ikU_jVcJyl8WbXoS2CyUHQymqoquuxlsf665K4TXaNTSuYOtdnNczJrdxezGA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-Zb9o9TSJgWI88dxO-cA7et8oz_ddRhySxItAr6Ti41A&oe=6A2809ED",
+            "body": "Em 2025, mais de 70% dos nossos projetos já foram realizados em Tensylon. E a projeção para 2026 é ainda mais clara: entre 80% e 90% da nossa frota seguirá esse padrão.\n\nIsso não é tendência. É direção de mercado.\n\nDesenvolvido com tecnologia exclusiva em parceria com a COMTEC e reforçado com fibra de carbono, o Tensylon entrega um novo nível de proteção sem comprometer a performance do veículo.\n\nNa Solution Place, não existe espaço para o comum.\nTrabalhamos com o que há de mais avançado no mundo em blindagem automotiva.\n\nQuer trazer o futuro da proteção para o seu carro hoje?\nComente “Tecnologia” e fale com um especialista."
+          },
+          {
+            "name": "AD[30/03/26]",
+            "ad_id": "120242831928010488",
+            "spend": 209.66,
+            "impressions": 129743,
+            "clicks": 40,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/667788679_780921881763414_8808024094973149635_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=rTK2MakysrYQ7kNvwG6mJpu&_nc_oc=AdrpRCEjpYUgKOMA2c8EkXVTSJRN4jZnU865di9jSfSssuN582w1PSmGKGjCgK8WaYg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQF-HcpMZUWBWJgGK9Vpys2HNlTnQ3bavZNue7Apo46wbnxwrIW9qJOwthBdSQye-G_JvkRcpKS-dA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_weT93OM0ZWVtf7DDkczmCkjLBixJ8Xqh119CYuMUeBQ&oe=6A27F7B7",
+            "body": "A excelência na blindagem automotiva começa muito antes do processo de montagem. Ela nasce no compartilhamento de conhecimento e no alinhamento técnico entre quem fabrica e quem protege.\n\nNa última semana, a Solution Place Blindagem realizou uma capacitação exclusiva para os colaboradores da GWM, Omoda Jaecoo e Megafor. O objetivo foi integrar nossas tecnologias de proteção aos padrões de engenharia dessas grandes marcas, garantindo que cada cliente receba uma solução completa em segurança e performance.\n\nAcreditamos que parcerias sólidas são construídas com transparência e especialização contínua."
+          },
+          {
+            "name": "AD[04/04/26]",
+            "ad_id": "120242881887580488",
+            "spend": 209.45,
+            "impressions": 128282,
+            "clicks": 41,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668486112_1961383084770350_610292158384727445_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=RtVLAuhaf7wQ7kNvwGaDoit&_nc_oc=AdpfX7tD_-UOeR1RxZJPSW_LsbTk9Co1T42g_pW6T3LjYoDXosIsPUVlJwiWBlv772g&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFw_x8_ISuGn-AYuP5xyfVTp59PTsPkpTJ9a2YH0nXXcWBfq3api2FdCHaUyyE5kh4PZ5gHbBzyIQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af99VLYI9BjpZczMUFy4PxrIT_4luvVxDyUKUNcpqaOjUQ&oe=6A281DB9",
+            "body": "A Solution Place e a Itália Master iniciam uma nova fase juntas.\n\nMais do que uma parceria, essa união representa um alinhamento de propósito: oferecer aos clientes um padrão elevado de qualidade, tecnologia e segurança, sem abrir mão da originalidade e da performance do veículo.\n\nA partir de agora, a Solution Place passa a atuar como blindadora homologada, garantindo processos certificados e total integração com o padrão da concessionária.\n\nUm novo capítulo para quem valoriza excelência em cada detalhe.\n\nSolution Place Factory Boutique. A primeira blindadora boutique do mundo!"
+          },
+          {
+            "name": "AD[07/04/26]",
+            "ad_id": "120242881959520488",
+            "spend": 209.59,
+            "impressions": 128661,
+            "clicks": 50,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/665368741_921695544039342_3550532126943911710_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=3GG65_O3lGoQ7kNvwEYWTu-&_nc_oc=AdrU0ZWn2J1Et9t1F1Zz0npnJR6Fe7gK0QWEfrVk9yC91mItfMuoL8WGBuJUmC4OnfU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQEOQmqaifirkdZtvp0H2KRNDolK1oXwcw29mmpD883OFhP7mATEn_NAQGm7BAPvyAzsHaGXEX4jeg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8P4dU4_xAd0LzKiUOe8jabZK8aTLMHBTp6dGNwdDCi-Q&oe=6A281A7B",
+            "body": "26 anos de história não se constroem por acaso.\n\nSão anos de consistência, evolução constante e compromisso real com cada cliente que confiou no nosso trabalho.\n\nAo longo dessa trajetória, a Solution Place se consolidou como referência, unindo conhecimento técnico, inovação e um atendimento próximo, que acompanha o cliente em cada etapa.\n\nMais do que blindagem, entregamos soluções completas em segurança, com responsabilidade e padrão elevado.\n\nSeguimos evoluindo, com o mesmo propósito que nos trouxe até aqui: excelência em cada detalhe.\n\nSolution Place Blindagem.\nSolução em assistência técnica.\nSolução em segurança."
+          },
+          {
+            "name": "AD[09/04/26]",
+            "ad_id": "120243057865410488",
+            "spend": 8.68,
+            "impressions": 5034,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/671542131_810076702155222_1894021396699597084_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=3b5wSziR-LMQ7kNvwFugs2O&_nc_oc=AdqLVOjMAKMam7dx9x1UOgEBwen46GibWGnFM6WoSUVq21-e8vFIXAgCfRCHF8_eBl8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFZAHHCR4jSbf7DOWav6ZD73cA4pIYRBhM8m-MJfWvITkYFlItX7oTjSckdsl4M2UKH6K3jbvwjTQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9z-0tfCkhwULluuorcI8jRQhHNt2DGbjMBHJhIPRP_VA&oe=6A28117C",
+            "body": "Inteligência e potência definem um GWM. Segurança completa é o que a Solution Place adiciona.\n\nPara quem vive o ritmo das grandes cidades, tecnologia só cumpre seu papel quando protege de verdade.\n\nÉ por isso que a Solution Place passa a ser parceira oficial da concessionária Américas GWM — uma união que respeita a engenharia avançada desses veículos e preserva o que há de mais moderno em performance híbrida e elétrica.\n\nNão se trata apenas de reforçar a proteção. É manter a garantia, a sofisticação e a integridade de um projeto de alta tecnologia — do jeito que ele foi concebido.\n\nO proprietário de um GWM busca o futuro. E o futuro exige a paz de espírito de estar protegido por quem é referência em qualidade boutique.\n\nSegurança inteligente e padrão absoluto, garantidos pela homologação Américas GWM e Solution Place.\n\nSolution Place Factory Boutique. A primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[07/04/26]",
+            "ad_id": "120243057960730488",
+            "spend": 5.11,
+            "impressions": 2939,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/668499425_1607449813845443_948856139242534125_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=BsSbj0IWtJYQ7kNvwFzzm-N&_nc_oc=AdrKohh2WCag6whfzH7V2GeAPbXkPOEbVTiPX6IJH4BXDPlEo41ReLXDZEJ68ebt3p0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFu_dD50B_4UyZ0bztTKpVWKchtsaioq6IM1aHTEsO3ob3FGwIg9OQpCgJk_NqY1-tSK1mLg4d6Ow&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-GCu54GmFXlBhsY_fToc4K1KL42C4ZdbAI7mO7JKVeHw&oe=6A281E8B",
+            "body": "26 anos de história não se constroem por acaso.\n\nSão anos de consistência, evolução constante e compromisso real com cada cliente que confiou no nosso trabalho.\n\nAo longo dessa trajetória, a Solution Place se consolidou como referência, unindo conhecimento técnico, inovação e um atendimento próximo, que acompanha o cliente em cada etapa.\n\nMais do que blindagem, entregamos soluções completas em segurança, com responsabilidade e padrão elevado.\n\nSeguimos evoluindo, com o mesmo propósito que nos trouxe até aqui: excelência em cada detalhe.\n\nSolution Place Blindagem.\nSolução em assistência técnica.\nSolução em segurança."
+          },
+          {
+            "name": "AD2[19/04/26]",
+            "ad_id": "120243373224610488",
+            "spend": 11.18,
+            "impressions": 6380,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675554442_26710393915223539_7941256555210528793_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=VUyj81Kw8mkQ7kNvwELzujK&_nc_oc=AdpT89yY8a_Wy1GejRQIbKyu-yQ_osbaLCEXEQjr_S-OP-dJlm6XFxB_kAQzOudVz5s&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFBTA8PORAuNLIj2Oy9J99EmYo-7rNaeDYrx443xYRZ8x5hDweluO4S0c9LmV4vrjtkEvdJZuiuyw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-TRpjrjITLJfhWcaFK3qfA6xi4sfcvPMx4tBgxVUyTIA&oe=6A281680",
+            "body": "O futuro da mobilidade e da segurança se encontram na parceria oficial entre a Solution Place e a GWM Américas. \n\nUnimos a tecnologia de ponta dos veículos GWM ao nosso rigor técnico de proteção para entregar uma experiência completa em segurança e performance.\n\nAgora, você pode contar com o padrão de blindagem Solution Place diretamente na GWM Américas."
+          },
+          {
+            "name": "AD[11/04/26]",
+            "ad_id": "120243375326310488",
+            "spend": 449.92,
+            "impressions": 296384,
+            "clicks": 127,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/673505247_27040149008916599_2832492396014832437_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=5LXd8q761iwQ7kNvwGM3wrZ&_nc_oc=AdpiHWHlTthAWvSERIPsUkb2JdYjn-iH37RQnu6u1IdIxs_ZkQrS9kkAQt3u2kFCE2c&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQGXm4GRTOMHWIzBDHdi6ih335AvZYsWy24Tbn68Pf6JJMXHR8QKY5fsPtC4qhexHDwXmB_0iTt6wQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8inooHiWaGYiwhYTeMcvqk30Wdk1hV2y7FKfhb1CL7-g&oe=6A28116F",
+            "body": "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.\n\nAgora, os proprietários da marca contam com a segurança absoluta de uma blindagem com chancela oficial, garantindo a proteção necessária sem abrir mão da tecnologia original do veículo.\n\nO padrão boutique de proteção chegou para acompanhar o futuro da sua mobilidade.\n\nSolution Place Factory Boutique: onde a excelência técnica é a prioridade máxima."
+          },
+          {
+            "name": "AD[19/04/26]",
+            "ad_id": "120244396761310488",
+            "spend": 19.34,
+            "impressions": 11475,
+            "clicks": 7,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/673681087_2253197042189471_2826278539562038627_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=d_6_YZnKf_AQ7kNvwGEWmaj&_nc_oc=AdoY5m0g_yWD-YaoeYjsYi72-EAXZAW-eTcQCZtR8wljdqRm0bZvqcqiF4UP0K079W8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQHKMPi-Bl8iPzD1a2RTaJTnSITpWZru8RJ0iDEq5aR8sz2bnUafJMVTgknhUB9Q6oIRzJ9Bgh0Xbw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-UlAAMn8a9cq6YRqMsFpcCKP9pDKcM3j3pxasTR2saxg&oe=6A28028A",
+            "body": "O mercado de luxo exige precisão e segurança acima de tudo.\n É com esse foco que a Solution Place Blindagem anuncia sua parceria oficial com a Lexus Rio de Janeiro. \n\nUnimos a engenharia impecável da Lexus ao nosso rigor técnico para garantir que a integridade original do seu veículo seja preservada com proteção de alto nível."
+          },
+          {
+            "name": "AD[29/05/26]",
+            "ad_id": "120245550840050488",
+            "spend": 16.86,
+            "impressions": 9999,
+            "clicks": 4,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/709526592_1967785341290961_2048060254333596573_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=_2ehtKwUGHsQ7kNvwFE29gw&_nc_oc=AdoJkKXHFLbNB2NaNTBu0rhX8mFVTKu_ilbaPoLKLwt2svq2WqrYdes_kLEDaABaRKI&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFc3XAdp1COgLWpKwyhYAiBBHhJT25jqxNCY2bFHs2NbTaVD0YO1qPIJsvDmzFH__tnocPvRpTKbQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9CvdM318E49Mg7pyXvlREFI_aFVCuBPmnvHgzayso5fA&oe=6A280018",
+            "body": "Existem carros. E existe a Range Rover SV — o crème de la crème da Land Rover.\n\nQuando um veículo desse nível chega à Solution Place, ele merece um tratamento à altura. Por isso preparamos um kit exclusivo: vidros Protechtor Evo 18mm, painel balístico com tecnologia Kevlar DuPont e nosso Tensylon Solution Air — com camada extra de fibra de carbono, desenvolvido especialmente para projetos como esse.\n\nEste exemplar chegou até nós através da DTC, uma das nossas parceiras no mundo automotivo. Uma relação construída na confiança mútua e no padrão que só a Solution Place entrega.\n\nSe você busca uma Range Rover exclusiva, sofisticada, tecnológica e blindada por uma blindadora certificada de fábrica — esse é o carro.\n\nSolution Place Factory Boutique. A primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[27/05/26]",
+            "ad_id": "120245551273860488",
+            "spend": 47.04,
+            "impressions": 31252,
+            "clicks": 13,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/712266754_1437328881412263_2555696475883050253_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=GnvRawCbA0AQ7kNvwElzV2v&_nc_oc=AdryOQnDSuoRy1cO49vszk3Yl57IuVMxwzTGd7Hp1mnDM0tPAty4_n3sdiItbjEwmUw&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQHyFE-FyqC9Z-WnYAZPd4xsZPBBk3WdX1eXV7wwyeloHE2rJc8zuOagPmAQz9K9JrCAAzSM5cj5zg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-2uWxeu9kWH1PKpWk97s8Mtcif1GtJW6R20n_VkNxjgg&oe=6A281D5B",
+            "body": "A DTC Automotive e a Solution Place formam uma parceria de excelência no mercado de blindados. Quando o assunto é segurança, acabamento e confiabilidade, a Solution Place se destaca por ser homologada por marcas como Land Rover, BMW e diversas outras fabricantes premium, além de utilizar alguns dos materiais mais avançados do mercado.\n\nO resultado é a união perfeita entre veículos selecionados e um padrão de blindagem reconhecido pela qualidade. Se você procura exclusividade, proteção e alto nível de acabamento, escolha seu próximo carro na DTC Automotive com blindagem Solution Place!\n\n#Carros #Blindadora #Blindagem #DTC #SolutionPlace"
+          }
+        ]
+      },
+      {
+        "name": "[02][KrM][ABO][Engagement]",
+        "campaign_id": "120236159247340488",
+        "spend": 519.48,
+        "impressions": 56744,
+        "clicks": 284,
+        "leads": 2,
+        "objective": "OUTCOME_ENGAGEMENT",
+        "ads": [
+          {
+            "name": "AD[27/02/26]",
+            "ad_id": "120241268389460488",
+            "spend": 17.36,
+            "impressions": 1146,
+            "clicks": 7,
+            "leads": 1,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/6921839330588116179?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJn9JDoeu7JJtmzIik4CsjjaXcbPyVBXQcvVqoL0uD0nAYAOiMQI_sCVU9lqyBIJNUHJa0hKY0Sccnqm71-lGkuE77WUWrdTvtwCu750m3JQNRxjSTvqSm84TGtB1BS0_PCFsnib4N2epukNt626_c3&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=AdqOubRpZNHXSVqlA0xrLCA8-a3kP0lQXxtWK16lNOKnsgtG9J0ye_zH6fdRaxPoX_I&ccb=13-1&oh=06_Q3-_AevLrTFLff64nFsWdcavFu-l5IISs3fEgRz8P0vNeWdq&oe=6A24210A&_nc_sid=58080a",
+            "body": "O Mix Tecnológico Solution Air.\n\nBlindagem inteligente para máxima leveza.\n\nO que torna a nossa blindagem única não é apenas um material isolado, mas o equilíbrio perfeito entre eles.\n\nO sistema Solution Air utiliza um mix de engenharia avançada para garantir proteção máxima, sem comprometer a performance do veículo. Unimos a resistência da Fibra de Carbono, a tecnologia do Tensylon e a confiabilidade da Aramida para entregar segurança de elite com o menor peso do mercado."
+          },
+          {
+            "name": "AD[02/03/26]",
+            "ad_id": "120241510675010488",
+            "spend": 15.14,
+            "impressions": 2365,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/642852147_122043061582891646_3578888633097282484_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=-be4cc0C2-4Q7kNvwFxeIgn&_nc_oc=Ado921ewbdHGDrFd7JrMdjrgROmRLqGsyiKMxmKV8VNs-21Zzv5oE_jFr8mVg5ROe5c&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=cwml5LRIfXh69GsxsqCL_Q&_nc_tpa=Q5bMBQFB2Tlecs81hm8V2e8InknbrlMsWyiCSEcCdjkgexv8CelwiuL6TaAljHd23q80SpGePBcP9FRSYg&oh=00_Af8kyUaN1B96lGe69sbK3aHDvPyJw9n71FmfNsihfZoGZg&oe=6A28170F",
+            "body": "Revestimentos originais, transparência absoluta e a paz de espírito que você merece."
+          },
+          {
+            "name": "AD[18/03/26]",
+            "ad_id": "120243375409210488",
+            "spend": 3.82,
+            "impressions": 248,
+            "clicks": 2,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/11273972017450117312?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJl-BcPHOV8FNhpbm6KPvpqFoZyPWIUOy-HgoYOiR1IC3WwQqkZcZLtf9iW5-Tv9JArylk4rrYBlOi3S48fLfbetmwW_kJ_JFhKHy4cYW4cJyeca-reEaw62s3pfcjik8vFIbr1DWgh_LqeyAPUosLp&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=AdrhfKQip7T7t2xNPdfZSlXMYLpxD_mnu71klPgNHLnqC3UgB5TUT-UwcDZDpRlfwHM&ccb=13-1&oh=06_Q3-_AX4Cg7-k7abXT79PyufwlkMrr3fpfeqrV8_Z4D-ipq-G&oe=6A241C0E&_nc_sid=58080a",
+            "body": "Uma noite que reuniu grandes nomes, boas conversas e visão de futuro para o mercado automotivo.\n\nEntre inovação, estratégia e conexões, seguimos fortalecendo parcerias e ampliando o alcance da Solution Place no cenário premium."
+          },
+          {
+            "name": "AD[05/05/26]",
+            "ad_id": "120244159783750488",
+            "spend": 12.95,
+            "impressions": 631,
+            "clicks": 6,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/44789739201151172?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJTkG22DTvlIBdOcOAKynKDVeQUlsiOXEn1rJLR87U_X4WFvNAhZrVtT446UDBZLjIpwVzpZZg6TrFPkcOIJd6_mq1_2kTf5kgutY7LzWNUuXKgjkymkwXKcSIQC4poB47o7-wIO6eYrIc06M7V0N8A&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=AdpHRFoMjT7wJbqVCsU4e7Q054BSN60GZrIjkTUBPfTfLylJA7BB5PrwBH_KvmcF1Qw&ccb=13-1&oh=06_Q3-_AazryB28fXDMkZouFc7ZShWUrw2bVyUnSN7XiJLOSk5S&oe=6A240646&_nc_sid=58080a",
+            "body": "Você sabe o que está entre você e o perigo?\n\nBlindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo pode mudar completamente a sua escolha.\n\nFale com nossos especialistas antes de decidir."
+          },
+          {
+            "name": "AD[01/05/26]",
+            "ad_id": "120244159800290488",
+            "spend": 30.11,
+            "impressions": 2232,
+            "clicks": 5,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=cwml5LRIfXh69GsxsqCL_Q&_nc_tpa=Q5bMBQE0ZqllDRmItt_13N5L9oIyRKM2o_8exfaYoPx7lww_E83I5r0beoCwxm87QKUbLhzP4fvPZJVcHg&oh=00_Af-9BGXT0TFondIgX-oqxKQFS-ib0UfDkqxeacBkVuoIYw&oe=6A2812B8",
+            "body": "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista. \n\nNeste Dia do Trabalho, celebramos quem busca o topo com a tranquilidade de estar seguro. Na Solucion Place, entregamos a blindagem de alto padrão que o seu estilo de vida exige.\n\nSegurança absoluta para quem não para de crescer."
+          },
+          {
+            "name": "AD[22/04/26]",
+            "ad_id": "120244159824060488",
+            "spend": 173.48,
+            "impressions": 18810,
+            "clicks": 26,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/688606826_2175517679897137_7318759625197982472_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=Asnqi5g70MQQ7kNvwEbMtBF&_nc_oc=AdrTo6CdMlC1RbzV4ZLg3YerAJ9iiqOl0qVbU0uEuGuWVvC90wx5I8h9kvwx1m0k0jM&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=cwml5LRIfXh69GsxsqCL_Q&_nc_tpa=Q5bMBQHaOdJnKTxDF673_du7ISiTqxFqk_nGHYpPpHNhaTCZVqcv-1OiOJdkpvEJFhDsKiSUAaXzRftdsg&oh=00_Af_gyKi5pFXG1RksIuXFV_abhEkHm788JgQ-VUbV0jJzhQ&oe=6A2822BE",
+            "body": "A verdadeira sofisticação está na tranquilidade de saber que você e sua família estão protegidos, sem abrir mão do design e da performance original do seu veículo."
+          },
+          {
+            "name": "AD[13/05/26]",
+            "ad_id": "120244883774740488",
+            "spend": 266.64,
+            "impressions": 31317,
+            "clicks": 237,
+            "leads": 1,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/1618544605994300576?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQL3hmOA4wTzODkEzHhiK2uCovHdV7tZr5eG8eU4OVsPa63wv7OYViqM1e90KOSQ83CizftLHjab4ZS2E9VjmeyDYHdAAs5lwV4IeGwf8ozsz4Iw0F2EiFvHEUF9Bmr_X4Yt7AmJbEB3hcHuu5E6Ypa7&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=AdoMuYuEQV0oA1JAn2TMf1t48KmFId0HOBCQB0sB-UN7snnXVkmbA286QJUkDqAcm70&ccb=13-1&oh=06_Q3-_AVdKZ7OGUpKyXTLHyqyG8oUEItAEj4IQ9QvlV9NDoF7q&oe=6A2402C4&_nc_sid=58080a",
+            "body": "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.\n\nNa Solution Place, cada projeto é pensado para manter a originalidade do veículo, preservando design, conforto e elegância sem abrir mão da segurança."
+          }
+        ]
+      },
+      {
+        "name": "[04][KrM][ABO][Message]",
+        "campaign_id": "120237338060320488",
+        "spend": 1481.57,
+        "impressions": 93098,
+        "clicks": 678,
+        "leads": 107,
+        "objective": "OUTCOME_ENGAGEMENT",
+        "ads": [
+          {
+            "name": "AD[04/10/25]",
+            "ad_id": "120241509954580488",
+            "spend": 227.78,
+            "impressions": 23448,
+            "clicks": 89,
+            "leads": 7,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/646903647_26514545001497434_223387231843711095_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=kqs4n_ElSRoQ7kNvwGwsob6&_nc_oc=AdrpvRWPI6hA17teaCdbcasczFEtyWbGGXzhLZseTrNP8zW3N1ToyqIfjZllU5CX8uk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQHBFTO0jspEIRLZYbfAfC5lCZEo-VqtHTjunWqSybm9wI0_kueHgEmCHOR4UBWDs7BFGY3QY5O0SA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af83OFc5rWKESXJhLROnYOptkRmBdNayZd2hzC04fyvD-g&oe=6A280A27",
+            "body": "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥\n\nEle veio conhecer a única blindadora boutique do mundo, localizada no Rio de Janeiro. \nBateu um papo exclusivo com @renatoblindagemboutique e, mergulhou na experiência de luxo, exclusividade e segurança que só a Solution Place oferece. 🚘✨\n\n#SolutionPlace #BlindadoraBoutique #Mumuzinho #BlindagemDeLuxo\n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 2424-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. da Barra da Tijuca, 465 – Barra/RJ"
+          },
+          {
+            "name": "AD[13/02/26]",
+            "ad_id": "120241681209020488",
+            "spend": 5.28,
+            "impressions": 334,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651272321_866144803139867_3974247299021885432_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=X_VsY4oz-DMQ7kNvwHa6aRa&_nc_oc=AdrbTV7VjVGafgyT8UkO4F4-UidSdVLqzMbhufRZV7dmiS2ewr1hnE5AnXpaL0aJ0lA&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFuSX6s86m3RvrFb6EMPILL8EO8F_t59liC1WCxXa0WsriNXvBiPoBQeoROLDz2mfNHs-SUsIkHaw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_L7EEeUsFNRePn3bBWDbo1TLXmDZ1YvIzNEB_7sasF3A&oe=6A280E87",
+            "body": "O novo Compass Blackhawk 2026 já chegou blindado pela Solution Place, homologada pela concessionária, pronto para quem não quer esperar meses por segurança.\n\nMotor 2.0 Turbo com 272cv, tração 4x4 e acabamento premium em um pacote que une força, presença e proteção real para o dia a dia.\n\nBlindado, pronto e disponível agora.\nSem fila, sem prazo, sem adaptação.\n\nUSA STAR e Solution Place seguem elevando o padrão de quem exige mais do próprio carro e da própria segurança.\n\nEntre em contato e conheça de perto."
+          },
+          {
+            "name": "AD[31/01/26]",
+            "ad_id": "120241681576040488",
+            "spend": 2.76,
+            "impressions": 121,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/651998110_939032495970882_8324867980948790128_n.jpg?_nc_cat=104&ccb=1-7&_nc_ohc=Weqnom_QKSoQ7kNvwELi4XL&_nc_oc=Adpn80dFs9Ft0cAKsAyhTLR95nsUCW1mua53MIUpJ-fwrjBb0BJDLFibgc_WfCaorC0&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQGUOqN40KkIQjV5Zv1WzOYFG1p0trfnTWv1GQdiRc0wGUnNV1NTxo30Yoa2g7gUuLarO1co9gqPxQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-0MQJ987lX0IN6rm-uXKJDLWoKDh0Yd8IIN0dRk2ZECg&oe=6A280730",
+            "body": "O BMW X7, o sete lugares mais luxuoso do Brasil, reúne conforto absoluto, tecnologia de ponta e uma presença que se destaca em qualquer cenário.\n\nEm parceria com a Solution Place, a BM Rio apresenta uma condição especial que eleva ainda mais essa experiência: última unidade com blindagem cortesia, integrada com o mesmo cuidado, refinamento e padrão que o modelo exige.\n\nUma oportunidade exclusiva para quem busca o máximo em sofisticação e tranquilidade.\n\nEntre em contato e agora mesmo e saiba tudo sobre o BMW X7 xDrive40i"
+          },
+          {
+            "name": "AD[03/02/26]",
+            "ad_id": "120241681736490488",
+            "spend": 458.27,
+            "impressions": 24484,
+            "clicks": 255,
+            "leads": 44,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650787319_942977361427556_7403377220574836052_n.jpg?_nc_cat=108&ccb=1-7&_nc_ohc=W8RiDw6m0YQQ7kNvwH9dO_4&_nc_oc=AdqwlaphNgG2B-P1ISYM9gDL8BFjTJLntplLuP6ibwtM6Scoh6IP-ChxxqHFvT0mO7Q&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQF4SGr-Jrf4Oa5l3fe9n0Kbs9vZflW4HnrRtJf2KGTUDTXae2NZTvNl22VarK1eFVGoxkIaBA3wbA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_Z5BsMSrhgBsz6LnDJSwXggyhXTOX6NMI390vnC77WyA&oe=6A28146D",
+            "body": "Duas BMW X1, a mesma excelência.\n\nNa Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e eficiência, sem abrir mão da segurança e do acabamento premium.\n\nProcesso, engenharia e atenção aos detalhes.\nPorque blindar bem é respeitar o carro — e quem está dentro dele."
+          },
+          {
+            "name": "AD[28/07/25]",
+            "ad_id": "120241682045780488",
+            "spend": 0.93,
+            "impressions": 63,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/649645526_4236006956653230_387671840403335503_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=8oYpttVYbdwQ7kNvwG8PJvI&_nc_oc=AdqhOPjWBBvO0nb0mveU6CQwstxVVcVSj2UmALM6ZRxNOnsBqZGgPnFHl47NTAvY7Hg&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQG5g9HkT0QC1VVONu8YfMR12M39AQ-WK1ddAkvxmOtr8Ugl0M3e0vFF0yIJO8fBqwVs6ZxW5ODxxg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8UeU2J9idrYFLtJN1kGrfI1zQ_J4rdwPz4MUkQcN0Pcg&oe=6A28037F",
+            "body": "Mais uma entrega técnica impecável!\nHoje foi dia de entregar uma BMW blindada com excelência, em parceria com a BM Rio. \n\nBlindagem de alto padrão, a nível Solution Place, com acabamento impecável, sem perder as características originais do veículo.\n\nSegurança, elegância e tecnologia — tudo em um só carro. \n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 2424-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. da Barra da Tijuca, 465 – Barra/RJ"
+          },
+          {
+            "name": "AD[11/03/26]",
+            "ad_id": "120241682388250488",
+            "spend": 182,
+            "impressions": 12855,
+            "clicks": 113,
+            "leads": 14,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/650173988_1598730758040348_4504019949527766908_n.jpg?_nc_cat=111&ccb=1-7&_nc_ohc=DGJKtG8VrmkQ7kNvwFnEIOT&_nc_oc=AdoRw_4K4n_NzatfH33nzNeVPnR169r3XZQQkt79ftAaP4L72SSOuMK-EuZFsRS7BQ8&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQEzvTQrbd8M8J_-xDZtg1vjOVyNHghBHAaQQdUqLj4V-d3UR9BTVDxerZ4OqytqmEucvZC3YG3bzA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af87SxySyouskCe8r7n4Xgez5KIxRPKAbAALfKQjyaDKKw&oe=6A280829",
+            "body": "Defender 110 BLINDADA e disponível pronta-entrega você só encontra na Land Rio.\n\nE nessa parceria de peso entre a Solution Place e Land Rio nós vemos o resultado do alinhamento entre o luxo, força e segurança com outros olhos.\n\nSolution Place Factory Boutique, a primeira blindadora boutique do mundo."
+          },
+          {
+            "name": "AD[17/03/26]",
+            "ad_id": "120241961097080488",
+            "spend": 231.11,
+            "impressions": 11938,
+            "clicks": 85,
+            "leads": 19,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/655276684_809876371542087_5423899411528426280_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=PePtN5m-q8AQ7kNvwGuoba9&_nc_oc=AdoIsIFSBMveeztKuh2u-05Aq5R-SJ661RMUj6R_VdijFmo6ICA-dh5c0WAy8Izk5dQ&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFswkLa27I6yenJWeyrZg5ZVRALjYuAhwM1J9jGN33NAOyzthLWWosgrhTQ-3qtV6jHgChiZ2XrLw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-yd7qsOML7GeXlBu9jvsNMCrJ1PLAHMzKYX4-Kah5KIg&oe=6A28056A",
+            "body": "Sua segurança merece o olhar de especialistas.\n\nNa Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solução de proteção ideal para o seu perfil e sua família.\n\nConheça nossos diferenciais e dê o próximo passo com quem é referência técnica no mercado de blindagens.\n\nAgende sua consultoria via mensagem direta agora mesmo."
+          },
+          {
+            "name": "AD[11/04/26]",
+            "ad_id": "120243373429540488",
+            "spend": 8.41,
+            "impressions": 541,
+            "clicks": 1,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675684092_938855025628577_2921201367812027780_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=DQegncV_OHoQ7kNvwESBUN4&_nc_oc=AdoPH8Ctc9X8XAZpLgoQmW-XcpAPE85oHeWxdEGMEkXy0-1GGupOeFcelaMTHi_KDfs&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQHdiuL68a9QnTvLN9z7XOdBVdPeFJhm2BaGbrZnE60sdQOtXVCvJLQ0oiGvAwg6BkTrQ9Eu4saFOQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-G4q1TDbgpz17dxEu3u-NxLShABzTSBNcSro9LYx1FDg&oe=6A281504",
+            "body": "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.\n\nAgora, os proprietários da marca contam com a segurança absoluta de uma blindagem com chancela oficial, garantindo a proteção necessária sem abrir mão da tecnologia original do veículo.\n\nO padrão boutique de proteção chegou para acompanhar o futuro da sua mobilidade.\n\nSolution Place Factory Boutique: onde a excelência técnica é a prioridade máxima."
+          },
+          {
+            "name": "AD[05/05/26]",
+            "ad_id": "120244400913650488",
+            "spend": 190.93,
+            "impressions": 13078,
+            "clicks": 80,
+            "leads": 10,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/4360003189128663965?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJMa1pI68U2ULU2KElW3cm18gJaQ6jbxnxS6W4P3VNthqbemAXAxe1tMxLLpHMVrEcnJUhEpobnuTaxwqml4n1cZ8-Q2uH2xgP6MT7W_Suf7sQ_bxp9JsVY9TaLqOZMfmwQTJCyHu7lWz1hGoxyMa7U&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=Ado4Q9KwipsPkjGMXExHvDCT5qXG-9parGtu9-_dDA880TNf4CDvF2I3A2qVa8_AZVA&ccb=13-1&oh=06_Q3-_AVqr1PP7dg9c8eAmaHjOdigqDSMOoYtaA79P5EApsAwK&oe=6A24284F&_nc_sid=58080a",
+            "body": "Você sabe o que está entre você e o perigo?\n\nBlindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo pode mudar completamente a sua escolha.\n\nFale com nossos especialistas antes de decidir."
+          },
+          {
+            "name": "AD[01/05/26]",
+            "ad_id": "120244401535990488",
+            "spend": 19.79,
+            "impressions": 1295,
+            "clicks": 10,
+            "leads": 2,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=cwml5LRIfXh69GsxsqCL_Q&_nc_tpa=Q5bMBQE0ZqllDRmItt_13N5L9oIyRKM2o_8exfaYoPx7lww_E83I5r0beoCwxm87QKUbLhzP4fvPZJVcHg&oh=00_Af-9BGXT0TFondIgX-oqxKQFS-ib0UfDkqxeacBkVuoIYw&oe=6A2812B8",
+            "body": "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista. \n\nNeste Dia do Trabalho, celebramos quem busca o topo com a tranquilidade de estar seguro. Na Solucion Place, entregamos a blindagem de alto padrão que o seu estilo de vida exige.\n\nSegurança absoluta para quem não para de crescer."
+          },
+          {
+            "name": "AD[13/05/26]",
+            "ad_id": "120244883927130488",
+            "spend": 154.31,
+            "impressions": 4941,
+            "clicks": 41,
+            "leads": 11,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/7878524437210922342?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLM2l_sfF_LDqiudTeq6dwPsmUBfXGybuhcdQyDqXRaSG1Q8vdo48Tjn-_NBAy3vyXMo8PWKyhTjrtXmqIZ87pnbZsLcW6RBWyONqdN3Er2eid-FfD0GKRV67FPFXX1JCI5GFjFS1PXEqWebdyUT6qb&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=AdpJ-PKHIG-febACtpKjkKNfRTCcyMnIBjqfVSgQNAyWgwvd3YyymZP83eWCgKDz4T8&ccb=13-1&oh=06_Q3-_AbEMTEJQXAxhkgt1Qcu2BJxPAgE9nwl5ITRtc_fHiR5v&oe=6A24205B&_nc_sid=58080a",
+            "body": "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.\n\nNa Solution Place, cada projeto é pensado para manter a originalidade do veículo, preservando design, conforto e elegância sem abrir mão da segurança."
+          }
+        ]
+      },
+      {
+        "name": "[05][KrM][CBO][Traffic][IG]",
+        "campaign_id": "120237338823250488",
+        "spend": 669,
+        "impressions": 168007,
+        "clicks": 2910,
+        "leads": 7,
+        "objective": "OUTCOME_TRAFFIC",
+        "ads": [
+          {
+            "name": "AD[04/10/25]",
+            "ad_id": "120237338823230488",
+            "spend": 36.79,
+            "impressions": 3216,
+            "clicks": 73,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/587709249_814963104628023_6827438093787207872_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=ItIcKC2Es2gQ7kNvwGcMYVd&_nc_oc=Adpswzi3Dvmmn2U5_kkZClMSYcHkuaklLLtN5p7oKAhIuwxuzV_EkYWAElUVVR5dQVU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFSA0OOCSeepgXyqKdmvTitdfZKjdq6QLbsC5b4qGHUgRN504jJLlQdvg3jG1b9uioVgZEiuMpUnQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_0tZXr37cfmFJ2XhAUpTjSCpeVloxsnkpCKuc5Q2DG6g&oe=6A281A05",
+            "body": "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥\n\nEle veio conhecer a única blindadora boutique do mundo, localizada no Rio de Janeiro. \nBateu um papo exclusivo com @renatoblindagemboutique e, mergulhou na experiência de luxo, exclusividade e segurança que só a Solution Place oferece. 🚘✨\n\n#SolutionPlace #BlindadoraBoutique #Mumuzinho #BlindagemDeLuxo\n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 2424-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. da Barra da Tijuca, 465 – Barra/RJ"
+          },
+          {
+            "name": "AD[28/01/25]",
+            "ad_id": "120240797672820488",
+            "spend": 6.41,
+            "impressions": 1411,
+            "clicks": 12,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/629840689_1669937947703109_7770084233723096044_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=9u5Gl4_FY64Q7kNvwFcWqmL&_nc_oc=AdrSCiV675Zi2aDFdqJ3xwlS1P-iN9DpTGCQhMxh50IEolB9a9ZhfQehGI-Hk_C7-R4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQGkcPVTWsbp41-7leVh4_zSmUd2yxfeieviz3x38kO7Zb8LtLpjIErie_XxImmqTqcatL6ILyvujA&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9VWZvF0DWvv8LKQMPpMiTlmxikeu4B6vDXlckGtTjxpA&oe=6A27FCE7",
+            "body": "Uma entrega de sucesso para o nosso amigo, @josealdojunioroficial .\n\nAgradecemos a confiança na Solution Place. E ficamos felizes que tenha gostado do resultado! \nObrigado pela visita a nossa Factory Boutique, sabemos que essa foi a primeira visita de muitas. 😃\n\nAgora mais seguro e com a garantia de uma blindagem de qualidade. \n\nE aí, qual será o próximo? 👀\n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 3219-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. do Itanhangá, 305 – Itanhangá/RJ\n\n#SolutionPlace"
+          },
+          {
+            "name": "AD[03/02/26]",
+            "ad_id": "120241342114390488",
+            "spend": 559.28,
+            "impressions": 145402,
+            "clicks": 2635,
+            "leads": 6,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/645633658_708221538949963_4846070334324538461_n.jpg?_nc_cat=103&ccb=1-7&_nc_ohc=tt0DNS07ca0Q7kNvwFRvr9y&_nc_oc=AdpHkgLR8Y2gjssrYhytHOp4mW-R8D8a07V0ODt2-eD6GjQU1t4ahwGO9vaoMAm0ueI&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQG8UQqo21RXXrILIf7wJ9JsL1Ogzl3jkTDviyvWQxkpY4ETvFk37iVnTfq6NlEsIf8t7l_-9sXcxw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_yRc5cBzlxQ1_c4Q_sauCLmLPEtqUiqSdAfi0ezjrMHQ&oe=6A281344",
+            "body": "Duas BMW X1, a mesma excelência.\n\nNa Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e eficiência, sem abrir mão da segurança e do acabamento premium.\n\nProcesso, engenharia e atenção aos detalhes.\nPorque blindar bem é respeitar o carro — e quem está dentro dele."
+          },
+          {
+            "name": "AD[11/04/26]",
+            "ad_id": "120243373694880488",
+            "spend": 5.34,
+            "impressions": 1301,
+            "clicks": 23,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/675158503_957944020156836_278605063857638996_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=PV0BJV4-i78Q7kNvwGTmcSJ&_nc_oc=Adrt4z0JLsydLEuIiiq8KERqs3mUOjJ7MMkeRDivf4bTsPSUvgKdFX9_mQz6ASO9QP4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFvjGTn7RRtnvMQFBxCl7lVALgilvnvAPXo9BGP1S4-_wUeL6cI8LScaxevdpl30XhbzXo5pZmGzw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9KWFCF5yGRDaEVvVS1I_GuFpYbxFrhW_ek2k7iS9tQWw&oe=6A281D38",
+            "body": "A união entre o estilo disruptivo da Omoda Jaecoo Autron e a engenharia de precisão da Solution Place já é realidade.\n\nAgora, os proprietários da marca contam com a segurança absoluta de uma blindagem com chancela oficial, garantindo a proteção necessária sem abrir mão da tecnologia original do veículo.\n\nO padrão boutique de proteção chegou para acompanhar o futuro da sua mobilidade.\n\nSolution Place Factory Boutique: onde a excelência técnica é a prioridade máxima."
+          },
+          {
+            "name": "AD[19/04/26]",
+            "ad_id": "120244884085410488",
+            "spend": 61.18,
+            "impressions": 16677,
+            "clicks": 167,
+            "leads": 1,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/701700338_1029357939859668_6924190017877709848_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=sAAEcXL5fgEQ7kNvwH4bwA-&_nc_oc=AdozKUNJ6jljbk0e0VNoVPdZi7-y0-lezxjwZ1vnqXJ03KKaT4YGssQYfpLvJDsgk2M&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQErZ9d45t5NPLJMD1J40opJmcXAetPJar_ycuy79woODKku6nmxs8VgEF6Tyhkdwf-t8ITMLEfClg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-0QIje87Qk-DrWf5WmwizUijno2JIZNvTwJYbYhlryzQ&oe=6A282746",
+            "body": "O mercado de luxo exige precisão e segurança acima de tudo.\n É com esse foco que a Solution Place Blindagem anuncia sua parceria oficial com a Lexus Rio de Janeiro. \n\nUnimos a engenharia impecável da Lexus ao nosso rigor técnico para garantir que a integridade original do seu veículo seja preservada com proteção de alto nível."
+          }
+        ]
+      },
+      {
+        "name": "[08][KrM][ABO][Impressions][Boost]",
+        "campaign_id": "120245039643090488",
+        "spend": 203.23,
+        "impressions": 27411,
+        "clicks": 18,
+        "leads": 0,
+        "objective": "OUTCOME_AWARENESS",
+        "ads": [
+          {
+            "name": "AD[22/05/26]",
+            "ad_id": "120245039643080488",
+            "spend": 203.23,
+            "impressions": 27411,
+            "clicks": 18,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/706767365_1287451099723892_1701268760710263129_n.jpg?_nc_cat=106&ccb=1-7&_nc_ohc=cym9pxrsOnEQ7kNvwHF3-2g&_nc_oc=Adpgft_lxN6tn9orhs8aTb6SNSBbgieaKt4KPnGxAuQd12a3In34nsQ-nvi4bg_oAnU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQGBe0XrlylW0SM_6TvfAJehGWXzh9ZvugeWe3q4NQHKPm8-xipn0HJBBeRmn-p2JP86YvfmZ0iodQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9H2AUIKQmlmgC6S2uTvMUEbZaLker_D413kd4okMulyA&oe=6A281136",
+            "body": "Este sábado, dia 23, a Solution Place e a Jeep Usastar têm carros blindados à pronta entrega esperando por você.\n\nSem espera. Sem burocracia. É só aparecer, ver, testar e levar.\n\nNão perca."
+          }
+        ]
+      },
+      {
+        "name": "[09][KrM][ABO][Message]",
+        "campaign_id": "120245136929540488",
+        "spend": 768,
+        "impressions": 26013,
+        "clicks": 214,
+        "leads": 49,
+        "objective": "OUTCOME_ENGAGEMENT",
+        "ads": [
+          {
+            "name": "AD[03/02/26]",
+            "ad_id": "120245136929510488",
+            "spend": 259.25,
+            "impressions": 8773,
+            "clicks": 94,
+            "leads": 21,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707678622_2507824356331512_597206643622897622_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=VNfJDhMkbmcQ7kNvwHPcPJZ&_nc_oc=AdqW_zFOzlYTDKMsOu6Onjbs8pfoflzXxnnbO9933O5rBl8Ig5FLKoxuBkQWbQfnhpU&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQFwUPxMMrSRBlDiU52YkvKQwtGFMVCIoJxMGcGff0rw6g2vQpd71gvtEd5Z4qild1CcPPtKXGI1Jw&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af9A2UxM07SZqfx92hpbd05uFRUhYQoAkHcJTXYbIodihg&oe=6A281B11",
+            "body": "Duas BMW X1, a mesma excelência.\n\nNa Solution Place, cada blindagem é pensada para preservar o que o carro tem de melhor: conforto, dirigibilidade e eficiência, sem abrir mão da segurança e do acabamento premium.\n\nProcesso, engenharia e atenção aos detalhes.\nPorque blindar bem é respeitar o carro — e quem está dentro dele."
+          },
+          {
+            "name": "AD[17/03/26]",
+            "ad_id": "120245136929550488",
+            "spend": 13.27,
+            "impressions": 417,
+            "clicks": 5,
+            "leads": 3,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/704858185_957946770450184_8254912559419410678_n.jpg?_nc_cat=100&ccb=1-7&_nc_ohc=xSt_rE4DFv8Q7kNvwG-Dv1l&_nc_oc=Adov7K2MxoEzpRX6eGTRCesmfvPqurSXQ0A43C8rlj7TfR-yHlwAzdlD8Wp4JpmROyk&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQG34FDBvsOp2acoYm2plgUh9TaqXH0fvwU4cTleSEAkxH4Yqf2d92QRI5iAY7eTo-MISTGRjddxIQ&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af_IOI9dVURBTBxHInx1OLZHVMMtbbf4KFYYq4EwtFJlBA&oe=6A280491",
+            "body": "Sua segurança merece o olhar de especialistas.\n\nNa Solution Place, nossa consultoria vai além da técnica. Analisamos cada detalhe para oferecer a solução de proteção ideal para o seu perfil e sua família.\n\nConheça nossos diferenciais e dê o próximo passo com quem é referência técnica no mercado de blindagens.\n\nAgende sua consultoria via mensagem direta agora mesmo."
+          },
+          {
+            "name": "AD[04/10/25]",
+            "ad_id": "120245136929570488",
+            "spend": 22.49,
+            "impressions": 605,
+            "clicks": 5,
+            "leads": 1,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/709486415_2140790796768357_2365360772675218576_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=TKUGn6MLBE4Q7kNvwH7ViXx&_nc_oc=Adrj5TDXSzk5FgKSVMWdyaUFyADQwOtxYtoyW48lI6KJewD76F-8nkizrXkHlaYkZFM&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQGVNH6ViB66WHeOxjlyC8Ut2hT_yxqLoPE_p9SLl_2IzKNJxmpGOeG2a4u_hMLlBVZyAFj_aezFHg&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af8LYYWQsvUl1rcPk6z-3Wli4bZ_dEBcVcWQavU7YTeY0A&oe=6A2817D2",
+            "body": "👀 Olha só quem passou aqui na Solution Place… ninguém menos que nosso amigo @mumuzinho ! 🎤🔥\n\nEle veio conhecer a única blindadora boutique do mundo, localizada no Rio de Janeiro. \nBateu um papo exclusivo com @renatoblindagemboutique e, mergulhou na experiência de luxo, exclusividade e segurança que só a Solution Place oferece. 🚘✨\n\n#SolutionPlace #BlindadoraBoutique #Mumuzinho #BlindagemDeLuxo\n\nQuer saber mais? \nEntre em contato conosco, será um prazer te atender>\n\n📞 (21) 2424-8899\n📞 (21) 99904-6060\n🚀 solutionplaceblindagem.com.br\n📍 Est. da Barra da Tijuca, 465 – Barra/RJ"
+          },
+          {
+            "name": "AD[01/05/26]",
+            "ad_id": "120245136929600488",
+            "spend": 31.48,
+            "impressions": 722,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t45.1600-4/689010697_2175516909897214_9105390025017110443_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=VH01PXuCPqAQ7kNvwFpnL2I&_nc_oc=AdrbQH3V-RUxij50d9NdjkivuqmRzd8YGGgAWnrTqIHwIYmKvqFW8x70k80wHREhvMY&_nc_zt=1&_nc_ht=scontent.fmoc4-1.fna&edm=AJcBmwoEAAAA&_nc_gid=cwml5LRIfXh69GsxsqCL_Q&_nc_tpa=Q5bMBQE0ZqllDRmItt_13N5L9oIyRKM2o_8exfaYoPx7lww_E83I5r0beoCwxm87QKUbLhzP4fvPZJVcHg&oh=00_Af-9BGXT0TFondIgX-oqxKQFS-ib0UfDkqxeacBkVuoIYw&oe=6A2812B8",
+            "body": "Seu trabalho constrói o seu legado. Nossa tecnologia protege cada conquista. \n\nNeste Dia do Trabalho, celebramos quem busca o topo com a tranquilidade de estar seguro. Na Solucion Place, entregamos a blindagem de alto padrão que o seu estilo de vida exige.\n\nSegurança absoluta para quem não para de crescer."
+          },
+          {
+            "name": "AD[13/05/26]",
+            "ad_id": "120245136929610488",
+            "spend": 5.73,
+            "impressions": 145,
+            "clicks": 3,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/13921813410645148829?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJZsZ-skjxIvXdimckrdOI3ZQCaXZ5xR-H1FrhuZO7ulRdxTYj6SRQhGeSKF9skdnvj3ClXQtZysPKtOt8V2p1E2F1iDrObW7Y9By5VgwhASjIZgP9AIjxcjxbrJiJ2ZPDhm_wa0BMGF9RhqAcerAf2&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=AdroT0gDvQX6GXU5BhtKlzYD049uqaujLyp8xKnPWVks0IiCw4-oGf7jdkOE_lfZ0zQ&ccb=13-1&oh=06_Q3-_AfMfb8f9NX2gWmzmCg_6JvTQDLx8DyTshtbW5b2ElVLV&oe=6A241094&_nc_sid=58080a",
+            "body": "Blindagem de verdade é aquela que une proteção, acabamento impecável e sofisticação em cada detalhe.\n\nNa Solution Place, cada projeto é pensado para manter a originalidade do veículo, preservando design, conforto e elegância sem abrir mão da segurança."
+          },
+          {
+            "name": "AD[02/05/26]",
+            "ad_id": "120245136929750488",
+            "spend": 223.12,
+            "impressions": 9520,
+            "clicks": 69,
+            "leads": 19,
+            "url_midia": "https://scontent.fmoc4-1.fna.fbcdn.net/v/t15.5256-10/707433817_27472503195688735_7085877821857009806_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=NF3HDiBzvmEQ7kNvwFe9A2n&_nc_oc=AdqoyDMtL4GcBjEV0_GFhhLlxNxpxCn68s-_AY3b8PgjaO2dY_EVRvpRwuxNIQLCwQ4&_nc_zt=23&_nc_ht=scontent.fmoc4-1.fna&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_tpa=Q5bMBQEZtwWTTvsUlksnYLMce2kiZNC_jNQVKsIa8tr7gXEOhxd_aP4B9vjRt3kFCVD1UenLjDkBLMBP6A&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_Af-OSz_7a5zLz3GGm8UMl1qN-W_FB1hk3BhC9cyUul2KRA&oe=6A281991",
+            "body": "A tradição da Ford e a robustez da Megafor encontram a segurança de alto nível da Solution Place. \n\nAgora, somos a blindadora homologada para os clientes Megafor, garantindo proteção de elite para toda a linha, incluindo Ranger, Raptor e Mustang.\n\nNosso compromisso é entregar engenharia de precisão que respeita a estrutura original do seu veículo.\n\nBlindar o seu Ford com a Solution Place Factory Boutique é uma decisão inteligente que valoriza a vida e o patrimônio."
+          },
+          {
+            "name": "AD[05/05/26]",
+            "ad_id": "120245136929840488",
+            "spend": 175.55,
+            "impressions": 4739,
+            "clicks": 27,
+            "leads": 5,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/13392374324571417644?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQK6h508fnwCEKEybJA20XLS6W6QvklhAB6jflgJAktDKHhHn5zZaV-v3vI4uoqSQGNER-c7XUS6aIjV2HiBsdXmNejAzY4DNzYmrwPRn3ev8OZPXHRdthRQ6zpXdCbODzDVDr9ERG3CIOwSZIVeW78O&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=Adrfej8ynsdut2B4rhmDOlHP0gR-FA5Um6ENQXAk3Fi5vwb5iOKPGPfTm3T009MZGlo&ccb=13-1&oh=06_Q3-_ARH4n7sTTikeSk_zFzdxHZyh-hUGz-S8ERCUN3FzIYvO&oe=6A243502&_nc_sid=58080a",
+            "body": "Você sabe o que está entre você e o perigo?\n\nBlindagem é uma decisão técnica, não apenas financeira. Entender o que compõe a proteção do seu veículo pode mudar completamente a sua escolha.\n\nFale com nossos especialistas antes de decidir."
+          },
+          {
+            "name": "AD[02/06/26]",
+            "ad_id": "120245683112050488",
+            "spend": 31.26,
+            "impressions": 982,
+            "clicks": 8,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/1909865980268193130?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQIKAJJ1ZPJ3pPtwVeNNNlZcYTcoL3rmUrCd2VEFXhMkbGVGeM1sskQZYpstpFqmPiBUMkH2xWU-5gssdvlvqXUHgfhrj5OfZXTYiOF4j2zecGhK3YR16eWM962N-RZB_y05UR2oWirVTtQBo0QfKg2j&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=Adpuj7wJjKbwaOYMncN5pCIIZ48pKMarmyJxiZdJ3mM_l2uzLRRdF_8WII8afYiFbcI&ccb=13-1&oh=06_Q3-_AQ8aWoST3PsVkGGAfQme34hiJQKMJUfUzg5wAicIenvN&oe=6A240BD2&_nc_sid=58080a",
+            "body": "Vidro blindado com manchas, bolhas ou dificuldade de visibilidade não é só estética. É sinal de que a proteção pode estar comprometida.\n\nA Solution Place oferece assistência técnica especializada para avaliar, diagnosticar e cuidar da sua blindagem com o rigor que ela exige.\n\nRevisão anual, visita técnica, inspeção balística. Tudo que você precisa para manter a segurança em dia."
+          },
+          {
+            "name": "AD[28/05/26]",
+            "ad_id": "120245683144610488",
+            "spend": 0.9,
+            "impressions": 21,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/14450975146440565191?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLndLoShx9Bmd9Pfr0bm4gPYc4MDhNE1YxPwf5VVFSHJhRCqM1qFz4UD_Pm6JxNVCPtvAkShsx5yfSfKnwDDmWbyAfTfqIOQuB3nr04_lI_PReVbt4y939QW-rCj4oFZgPlTeJMFqzLLqxYS9c9fWtc&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=AdruSqdVIYxDvNYcXHN6dN1fDi4fihz3hf1yOUzfkfzu1h9HRamdTt6YlZYP4_Jv0xo&ccb=13-1&oh=06_Q3-_AcmjYJZ7qhlCTvgRvAWunbxmdEjiQsdcxosKQ768aOKv&oe=6A243204&_nc_sid=58080a",
+            "body": "Proteção real não aceita improviso. Nem toda blindadora entrega o mesmo nível de segurança. \n\nArraste para o lado e veja a importância de checar as certificações, os materiais utilizados, o histórico da empresa e o suporte pós-venda antes de tomar sua decisão.\n\nA Solution reúne tecnologia certificada, tradição e atendimento premium para proteger o que é seu.\n\nFale com a gente! Clique no link da bio ou envie uma mensagem direta."
+          },
+          {
+            "name": "AD[20/05/26]",
+            "ad_id": "120245683172600488",
+            "spend": 5.01,
+            "impressions": 93,
+            "clicks": 0,
+            "leads": 0,
+            "url_midia": "https://external.fmoc4-1.fna.fbcdn.net/emg1/v/t13/14545165462543338132?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQKrur2MgGyP5TKnkNBh1BGPbjehEIjCD0n6kfiPDyJ3Qqt_oWC-nnkAfp7Bl1JPAFCVyIp_3J-CI7NZvGDWbAwXsTVeee5zcIkvJiLRPMJUswOOwYGWiFhGy9DqqS0h4IdjHFhw5KDQa5SvtRVnoDmL&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p800x800_q75_tt6&edm=ALjApogEAAAA&_nc_gid=0XiSHm4czH8l4bLp4oDVoQ&_nc_oc=AdqT2CjEL8TakxZ5aNdwCnKWNTsNXnF2O3tBdljFuK7H-oU7q7z_syDMKljaOHmSfPA&ccb=13-1&oh=06_Q3-_AT-s71tgnnJjIM-jtQk2HFIx9aZBm2ZiitwJsf2CejgB&oe=6A241FF4&_nc_sid=58080a",
+            "body": "O Brasil lidera o mercado mundial de blindagem automotiva, um reflexo de que a segurança se tornou prioridade absoluta no dia a dia.\n\nNa Solution, você encontra atendimento premium, veículos de alto padrão e a proteção que sua família precisa.\n\nProteja o que realmente importa."
+          }
+        ]
+      }
+    ]
+  }
+}

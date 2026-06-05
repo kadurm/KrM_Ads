@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
-import { sendWhatsAppMessage } from '../whatsapp/send/route';
+import { sendWhatsAppMessage } from '../../../utils/whatsapp';
 
 const prisma = new PrismaClient();
 
