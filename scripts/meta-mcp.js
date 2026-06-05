@@ -263,7 +263,7 @@ async function syncDatabase(cliente, days = 30) {
     for (const item of campaignData) {
       const camp = localCampMap.get(String(item.campaign_id));
       if (!camp) continue;
-      const dataInsight = new Date(item.date_start + 'T00:00:00');
+      const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
       const linkClicks = parseInt(item.inline_link_clicks) || 0;
       const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
       const nativeVisits = getMetric(item.actions, 'onsite_conversion.instagram_profile_visit');
