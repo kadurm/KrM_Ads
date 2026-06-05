@@ -50,6 +50,7 @@ model Lead {
   valor       Decimal  @default(0.0)
   origem      String?
   notas       Nota[]
+  agendamentos Agendamento[]
   data        DateTime @default(now())
   criado_em   DateTime @default(now())
 }
@@ -61,6 +62,17 @@ model Nota {
   texto     String
   autor     String?  // Nome do funcionário
   criado_em DateTime @default(now())
+}
+
+model Agendamento {
+  id         String   @id @default(uuid())
+  lead_id    String
+  lead       Lead     @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  tipo       String   // ex: "PRONTA_ENTREGA" ou "BLINDAGEM"
+  data_hora  DateTime
+  status     String   @default("AGENDADO") // AGENDADO, REALIZADO, CANCELADO
+  observacao String?  @db.Text
+  criado_em  DateTime @default(now())
 }
 
 model Usuario {

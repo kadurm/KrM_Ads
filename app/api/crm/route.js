@@ -72,7 +72,8 @@ export async function GET(request) {
         ]
       },
       include: {
-        notas: { orderBy: { criado_em: 'desc' } }
+        notas: { orderBy: { criado_em: 'desc' } },
+        agendamentos: { orderBy: { data_hora: 'asc' } }
       },
       orderBy: { data: 'desc' }
     });
