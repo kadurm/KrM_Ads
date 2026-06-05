@@ -38,6 +38,40 @@ export default function AtendimentoPage() {
   const [showAddLead, setShowAddLead] = useState(false);
   const [newLead, setNewLead] = useState({ nome: '', contato: '', origem: 'Canal Solution' });
 
+  // Instagram Followers and Direct Message States
+  const [filtroOrigem, setFiltroOrigem] = useState('TODOS');
+  const [sendingDirect, setSendingDirect] = useState(false);
+  const [directStatus, setDirectStatus] = useState('');
+
+  const handleSendDirect = async (leadId, mensagem) => {
+    setSendingDirect(true);
+    setDirectStatus('');
+    try {
+      const res = await fetch('/api/meta/instagram-direct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lead_id: leadId, mensagem })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDirectStatus('Mensagem Enviada!');
+        loadLeads();
+        // Update selected lead notes locally to show the history immediately
+        setSelectedLead(prev => ({
+          ...prev,
+          notas: [data.nota, ...(prev.notas || [])]
+        }));
+      } else {
+        setDirectStatus('Falha ao enviar');
+      }
+    } catch (e) {
+      setDirectStatus('Erro de Conexão');
+    } finally {
+      setSendingDirect(false);
+      setTimeout(() => setDirectStatus(''), 3000);
+    }
+  };
+
   // Authentication States
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginUsername, setLoginUsername] = useState('');
@@ -45,6 +79,7 @@ export default function AtendimentoPage() {
   const [authError, setAuthError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -168,10 +203,15 @@ export default function AtendimentoPage() {
     }
   };
 
-  const filteredLeads = leads.filter(l => 
-    l.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    l.contato?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLeads = leads.filter(l => {
+    const matchesSearch = l.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          l.contato?.toLowerCase().includes(searchTerm.toLowerCase());
+    if (filtroOrigem === 'SEGUIDORES') {
+      return matchesSearch && l.origem === 'Seguidor Instagram';
+    }
+    return matchesSearch && l.origem !== 'Seguidor Instagram';
+  });
+
 
   if (!isMounted) return null;
 
@@ -305,6 +345,24 @@ export default function AtendimentoPage() {
           </button>
         </div>
 
+        {/* Filtros de Origem */}
+        <div className="flex gap-2 bg-[#11131a]/80 p-1.5 rounded-3xl border border-[#1b1c24] w-fit shadow-md">
+          <button 
+            id="tab-leads"
+            onClick={() => setFiltroOrigem('TODOS')} 
+            className={`px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${filtroOrigem === 'TODOS' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
+          >
+            Todos os Leads
+          </button>
+          <button 
+            id="tab-seguidores"
+            onClick={() => setFiltroOrigem('SEGUIDORES')} 
+            className={`px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${filtroOrigem === 'SEGUIDORES' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
+          >
+            Seguidores Instagram
+          </button>
+        </div>
+
         <div className="space-y-4">
           {loading ? (
              <div className="flex justify-center py-20 flex-col items-center gap-4">
@@ -373,14 +431,41 @@ export default function AtendimentoPage() {
                     <h3 className="text-2xl font-black text-white tracking-tighter leading-tight">{selectedLead.nome}</h3>
                     <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-2">{selectedLead.contato || 'Sem contato cadastrado'}</p>
                     
-                    <div className="flex gap-3 mt-8 w-full">
-                       <a href={`https://wa.me/${selectedLead.contato?.replace(/\D/g,'')}`} target="_blank" className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white p-5 rounded-2xl flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest shadow-2xl shadow-emerald-900/20 active:scale-95 transition-all">
-                         <MessageCircle size={20}/> WhatsApp
-                       </a>
-                       <a href={`tel:${selectedLead.contato?.replace(/\D/g,'')}`} className="flex-1 bg-red-700 hover:bg-red-600 text-white p-5 rounded-2xl flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest shadow-2xl shadow-red-950/40 active:scale-95 transition-all border border-red-600/20">
-                         <Phone size={20}/> Ligar
-                       </a>
-                    </div>
+                    {selectedLead.origem === 'Seguidor Instagram' ? (
+                      <div className="flex flex-col gap-3 mt-8 w-full">
+                        <button 
+                          id="btn-send-welcome-direct"
+                          onClick={() => handleSendDirect(selectedLead.id, `Olá! Obrigado por seguir a Solution Place. Gostaria de conhecer nossas soluções de blindagem boutique?`)}
+                          disabled={sendingDirect}
+                          className="w-full bg-red-700 hover:bg-red-600 text-white p-5 rounded-2xl flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest shadow-2xl shadow-red-950/40 active:scale-95 transition-all border border-red-600/30 disabled:opacity-50"
+                        >
+                          {sendingDirect ? (
+                            <Loader2 className="animate-spin" size={16} />
+                          ) : (
+                            <Send size={16} />
+                          )}
+                          <span>{directStatus || 'Enviar Boas-vindas (Direct)'}</span>
+                        </button>
+                        <a 
+                          href={`https://instagram.com/${selectedLead.contato?.replace('@', '')}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="w-full bg-slate-905 hover:bg-slate-800 text-slate-300 p-5 rounded-2xl flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest shadow-inner border border-slate-800 active:scale-95 transition-all"
+                        >
+                          <Users size={16} />
+                          <span>Ver Perfil Instagram</span>
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="flex gap-3 mt-8 w-full">
+                         <a href={`https://wa.me/${selectedLead.contato?.replace(/\D/g,'')}`} target="_blank" className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white p-5 rounded-2xl flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest shadow-2xl shadow-emerald-900/20 active:scale-95 transition-all">
+                           <MessageCircle size={20}/> WhatsApp
+                         </a>
+                         <a href={`tel:${selectedLead.contato?.replace(/\D/g,'')}`} className="flex-1 bg-red-700 hover:bg-red-600 text-white p-5 rounded-2xl flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest shadow-2xl shadow-red-950/40 active:scale-95 transition-all border border-red-600/20">
+                           <Phone size={20}/> Ligar
+                         </a>
+                      </div>
+                    )}
                  </div>
 
                  <div className="space-y-4">
