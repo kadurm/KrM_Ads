@@ -95,10 +95,9 @@ function getTrueLeads(actions) {
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
   const fbContact = getMetric(actions, 'contact');
-  const customPixel = getMetric(actions, 'offsite_conversion.fb_pixel_custom');
   
-  // Leads = Max(Conversas Iniciadas) + Max(Leads Formulário) + Contatos + Custom Pixel
-  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact + customPixel;
+  // Leads = Max(Conversas Iniciadas) + Max(Leads Formulário) + Contatos
+  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact;
 }
 
 function getSocialActions(actions) {

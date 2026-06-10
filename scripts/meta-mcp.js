@@ -90,8 +90,7 @@ function getTrueLeads(actions) {
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
   const fbContact = getMetric(actions, 'contact');
-  const customPixel = getMetric(actions, 'offsite_conversion.fb_pixel_custom');
-  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact + customPixel;
+  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact;
 }
 
 // --- 3. PROVEDOR DE CREDENCIAIS ---
