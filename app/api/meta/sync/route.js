@@ -555,20 +555,23 @@ export async function POST(request) {
         totalVisitas = linkClicks + outboundClicks;
       }
 
+      const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
+      const leadsVal = isTraffic ? 0 : getTrueLeads(item.actions);
+
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: linkClicks,
           visitas_perfil: totalVisitas, seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions), valor_investido: parseFloat(item.spend) || 0,
-          conversas_leads: getTrueLeads(item.actions), compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
+          conversas_leads: leadsVal, compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         },
         create: {
           campanha_id: camp.id, data: dataInsight,
           impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: linkClicks,
           visitas_perfil: totalVisitas, seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
           reacoes_sociais: getSocialActions(item.actions), valor_investido: parseFloat(item.spend) || 0,
-          conversas_leads: getTrueLeads(item.actions), compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
+          conversas_leads: leadsVal, compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         }
       });
     });
@@ -593,17 +596,20 @@ export async function POST(request) {
         });
 
         const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
+        const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
+        const leadsVal = isTraffic ? 0 : getTrueLeads(row.actions);
+
         return prisma.metricaCriativo.upsert({
           where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },
           update: {
             impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: parseInt(row.inline_link_clicks) || 0,
             ctr: parseFloat(row.inline_link_click_ctr) || 0, valor_investido: parseFloat(row.spend) || 0,
-            leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'), reacoes_sociais: getSocialActions(row.actions)
+            leads: leadsVal, compras: getMetric(row.actions, 'purchase'), reacoes_sociais: getSocialActions(row.actions)
           },
           create: {
             criativo_id: criativo.id, data: dataInsight, impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0,
             cliques: parseInt(row.inline_link_clicks) || 0, ctr: parseFloat(row.inline_link_click_ctr) || 0,
-            valor_investido: parseFloat(row.spend) || 0, leads: getTrueLeads(row.actions), compras: getMetric(row.actions, 'purchase'), reacoes_sociais: getSocialActions(row.actions)
+            valor_investido: parseFloat(row.spend) || 0, leads: leadsVal, compras: getMetric(row.actions, 'purchase'), reacoes_sociais: getSocialActions(row.actions)
           }
         });
       });

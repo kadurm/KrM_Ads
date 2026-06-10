@@ -262,7 +262,7 @@ async function syncClient(clienteName, daysToSync = 30) {
   await batchProcess(campaignData, 15, async (item) => {
     const camp = localCampMap.get(String(item.campaign_id));
     if (!camp) return;
-    const dataInsight = new Date(item.date_start + 'T00:00:00');
+    const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
     const linkClicks = parseInt(item.inline_link_clicks) || 0;
     const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
     const nativeVisits = getMetric(item.actions, 'onsite_conversion.instagram_profile_visit');
@@ -277,6 +277,9 @@ async function syncClient(clienteName, daysToSync = 30) {
       totalVisitas = linkClicks + outboundClicks;
     }
 
+    const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
+    const leadsVal = isTraffic ? 0 : getTrueLeads(item.actions);
+
     await prisma.metricaCampanha.upsert({
       where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
       update: {
@@ -287,7 +290,7 @@ async function syncClient(clienteName, daysToSync = 30) {
         seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
         reacoes_sociais: getSocialActions(item.actions),
         valor_investido: parseFloat(item.spend) || 0,
-        conversas_leads: getTrueLeads(item.actions),
+        conversas_leads: leadsVal,
         compras: getMetric(item.actions, 'purchase'),
         valor_compras: getMetric(item.action_values, 'purchase', true)    
       },
@@ -347,7 +350,10 @@ async function syncClient(clienteName, daysToSync = 30) {
         }
       });
 
-      const dataInsight = new Date(row.date_start + 'T00:00:00');
+      const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
+      const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
+      const leadsVal = isTraffic ? 0 : getTrueLeads(row.actions);
+
       await prisma.metricaCriativo.upsert({
         where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },
         update: {
@@ -356,7 +362,7 @@ async function syncClient(clienteName, daysToSync = 30) {
           cliques: parseInt(row.inline_link_clicks) || 0,
           ctr: parseFloat(row.inline_link_click_ctr) || 0,
           valor_investido: parseFloat(row.spend) || 0,
-          leads: getTrueLeads(row.actions),
+          leads: leadsVal,
           compras: getMetric(row.actions, 'purchase'),
           reacoes_sociais: getSocialActions(row.actions)
         },
@@ -368,7 +374,7 @@ async function syncClient(clienteName, daysToSync = 30) {
           cliques: parseInt(row.inline_link_clicks) || 0,
           ctr: parseFloat(row.inline_link_click_ctr) || 0,
           valor_investido: parseFloat(row.spend) || 0,
-          leads: getTrueLeads(row.actions),
+          leads: leadsVal,
           compras: getMetric(row.actions, 'purchase'),
           reacoes_sociais: getSocialActions(row.actions)
         }
