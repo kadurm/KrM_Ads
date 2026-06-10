@@ -551,7 +551,7 @@ export async function POST(request) {
       } else if (outboundClicks > (linkClicks * 0.5)) {
         totalVisitas = Math.abs(linkClicks - outboundClicks);
       } else {
-        totalVisitas = linkClicks + outboundClicks;
+        totalVisitas = linkClicks;
       }
 
       const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');

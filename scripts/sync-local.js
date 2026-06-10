@@ -273,7 +273,7 @@ async function syncClient(clienteName, daysToSync = 30) {
     } else if (outboundClicks > (linkClicks * 0.5)) {
       totalVisitas = Math.abs(linkClicks - outboundClicks);
     } else {
-      totalVisitas = linkClicks + outboundClicks;
+      totalVisitas = linkClicks;
     }
 
     const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
@@ -413,13 +413,13 @@ async function runAllSyncs() {
         'Dr. Yuri Telles'
       ];
       for (const clientName of envClients) {
-        await syncClient(clientName, 30);
+        await syncClient(clientName, 45);
       }
     } else {
       console.log(`👥 Encontrados ${clientes.length} clientes no banco de dados.`);
       for (const c of clientes) {
         try {
-          await syncClient(c.nome, 30);
+          await syncClient(c.nome, 45);
         } catch (e) {
           console.error(`💥 Erro ao sincronizar cliente ${c.nome}:`, e.message);
         }
