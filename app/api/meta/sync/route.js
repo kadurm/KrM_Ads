@@ -240,7 +240,8 @@ export async function GET(request) {
 
     const groupedMap = new Map();
     for (const c of criativosRaw) {
-      const key = c.nome_anuncio || 'Anúncio sem nome';      
+      const rawName = c.nome_anuncio || 'Anúncio sem nome';      
+      const key = rawName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'ANUNCIOSEMNOME';
       const stats = c.metricas.reduce((acc, m) => ({
         impressoes: acc.impressoes + m.impressoes,
         alcance: Math.max(acc.alcance, m.alcance),
@@ -262,7 +263,7 @@ export async function GET(request) {
 
       if (!groupedMap.has(key)) {
         groupedMap.set(key, {
-          id: c.id, nome_anuncio: key, url_midia: c.url_midia, texto_principal: c.texto_principal,
+          id: c.id, nome_anuncio: rawName, url_midia: c.url_midia, texto_principal: c.texto_principal,
           ...stats,
           alcance: liveAlcance
         });
@@ -346,13 +347,20 @@ export async function GET(request) {
 
         const nameToFreshUrl = new Map();
         for (const c of criativosRaw) {
-          const key = c.nome_anuncio || 'Anúncio sem nome';
+          const rawKey = c.nome_anuncio || 'Anúncio sem nome';
+          const key = rawKey.replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'ANUNCIOSEMNOME';
           if (c.meta_ad_id && freshUrlMap.has(c.meta_ad_id) && !nameToFreshUrl.has(key)) {
             nameToFreshUrl.set(key, freshUrlMap.get(c.meta_ad_id));
           }
         }
 
-        criativos.forEach(c => { if (nameToFreshUrl.has(c.nome_anuncio)) c.url_midia = nameToFreshUrl.get(c.nome_anuncio); });
+        criativos.forEach(c => {
+          const rawKey = c.nome_anuncio || 'Anúncio sem nome';
+          const key = rawKey.replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'ANUNCIOSEMNOME';
+          if (nameToFreshUrl.has(key)) {
+            c.url_midia = nameToFreshUrl.get(key);
+          }
+        });
         Promise.all([...freshUrlMap.entries()].map(([adId, url]) => prisma.criativo.updateMany({ where: { meta_ad_id: adId }, data: { url_midia: url } }).catch(() => {}))).catch(() => {});
       }
     } catch (e) { console.error('Refresh creative URLs failed:', e); }
