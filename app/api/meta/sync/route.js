@@ -494,6 +494,23 @@ export async function POST(request) {
     const metaCampsData = await metaCampsRes.json();
     const objectiveMap = new Map(metaCampsData.data?.map(c => [c.id, c.objective]) || []);
 
+    // 1b. Fetch Adsets to identify destination types
+    const adsetsRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adsets`, { access_token: ACCESS_TOKEN, fields: 'campaign_id,destination_type,optimization_goal', limit: '1000' }));
+    const adsetsData = adsetsRes.ok ? await adsetsRes.json() : { data: [] };
+    const campaignDestinationMap = new Map();
+    if (adsetsData.data) {
+      adsetsData.data.forEach(adset => {
+        if (adset.campaign_id) {
+          const current = campaignDestinationMap.get(String(adset.campaign_id)) || [];
+          current.push({
+            destination_type: adset.destination_type,
+            optimization_goal: adset.optimization_goal
+          });
+          campaignDestinationMap.set(String(adset.campaign_id), current);
+        }
+      });
+    }
+
     // 2. Fetch Insights (following pagination)
     const insightFields = 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
     const campaignData = await fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: insightFields, level: 'campaign', time_increment: '1' }));
@@ -550,11 +567,18 @@ export async function POST(request) {
       const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
       const nativeVisits = getMetric(item.actions, 'onsite_conversion.instagram_profile_visit');
       
+      const isInstagramProfileCampaign = (campaignDestinationMap.get(String(item.campaign_id)) || []).some(
+        a => a.destination_type === 'INSTAGRAM_PROFILE' || a.optimization_goal === 'PROFILE_VISIT'
+      );
+
       // Heurística de Atribuição Universal:
-      // 1. Se tem visitas nativas, somamos aos cliques (Caso Carretel/Web)
-      // 2. Se não tem, e cliques de saída são altos, subtraímos (Caso Solution/Profile)
+      // 1. Se detectarmos que a campanha é nativamente focada no Perfil do Instagram, subtraímos cliques de saída dos totais (isolar cliques internos)
+      // 2. Se tem visitas nativas explícitas em actions, somamos aos cliques (Caso Carretel/Web)
+      // 3. Se não tem, e cliques de saída são altos, subtraímos (Caso Solution/Profile)
       let totalVisitas = 0;
-      if (nativeVisits > 0) {
+      if (isInstagramProfileCampaign) {
+        totalVisitas = Math.max(0, linkClicks - outboundClicks);
+      } else if (nativeVisits > 0) {
         totalVisitas = linkClicks + nativeVisits;
       } else if (outboundClicks > (linkClicks * 0.5)) {
         totalVisitas = Math.abs(linkClicks - outboundClicks);
