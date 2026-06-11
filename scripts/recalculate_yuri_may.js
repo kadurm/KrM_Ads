@@ -47,19 +47,19 @@ function getMetric(actions, type, isValue = false) {
 
 async function main() {
   const c = await prisma.cliente.findFirst({
-    where: { nome: { contains: 'Direito Direto', mode: 'insensitive' } }
+    where: { nome: { contains: 'Yuri', mode: 'insensitive' } }
   });
   if (!c) {
-    console.log('Cliente não encontrado');
+    console.log('Cliente Dr. Yuri não encontrado');
     return;
   }
 
   const token = process.env.META_ACCESS_TOKEN_GLOBAL;
-  const accountId = 'act_1621561332322856'; // Direito Direto
+  const accountId = 'act_635037056097163'; // Dr. Yuri Telles
   const since = '2026-05-01';
   const until = '2026-05-31';
 
-  console.log(`📡 Buscando dados diários de Maio da Meta para Direito Direto...`);
+  console.log(`📡 Buscando dados diários de Maio da Meta para Dr. Yuri Telles...`);
   const query = new URLSearchParams({
     access_token: token,
     limit: '1000',

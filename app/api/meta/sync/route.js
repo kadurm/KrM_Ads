@@ -1,9 +1,21 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
+
+let campaignCalibrationMap = {};
+try {
+  const calPath = path.join(process.cwd(), 'utils', 'campaign_calibration.json');
+  if (fs.existsSync(calPath)) {
+    campaignCalibrationMap = JSON.parse(fs.readFileSync(calPath, 'utf8'));
+  }
+} catch (e) {
+  console.error("Error loading campaign calibration config:", e);
+}
 
 function graphUrl(path, query) {
   const url = new URL(`https://graph.facebook.com/v21.0/${path}`);
@@ -572,11 +584,15 @@ export async function POST(request) {
       );
 
       // Heurística de Atribuição Universal:
-      // 1. Se detectarmos que a campanha é nativamente focada no Perfil do Instagram, subtraímos cliques de saída dos totais (isolar cliques internos)
-      // 2. Se tem visitas nativas explícitas em actions, somamos aos cliques (Caso Carretel/Web)
-      // 3. Se não tem, e cliques de saída são altos, subtraímos (Caso Solution/Profile)
+      // 1. Se houver calibração manual configurada para a campanha, aplicamos o fator de conversão de cliques
+      // 2. Se detectarmos que a campanha é nativamente focada no Perfil do Instagram, subtraímos cliques de saída dos totais (isolar cliques internos)
+      // 3. Se tem visitas nativas explícitas em actions, somamos aos cliques (Caso Carretel/Web)
+      // 4. Se não tem, e cliques de saída são altos, subtraímos (Caso Solution/Profile)
       let totalVisitas = 0;
-      if (isInstagramProfileCampaign) {
+      const calibrationRate = campaignCalibrationMap[String(item.campaign_id)];
+      if (calibrationRate !== undefined) {
+        totalVisitas = Math.round(linkClicks * calibrationRate);
+      } else if (isInstagramProfileCampaign) {
         totalVisitas = Math.max(0, linkClicks - outboundClicks);
       } else if (nativeVisits > 0) {
         totalVisitas = linkClicks + nativeVisits;

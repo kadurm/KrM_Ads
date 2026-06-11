@@ -41,6 +41,17 @@ if (process.env.DIRECT_URL) {
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// Carregar calibração de campanhas de tráfego de perfil
+let campaignCalibrationMap = {};
+try {
+  const calPath = path.join(__dirname, '..', 'utils', 'campaign_calibration.json');
+  if (fs.existsSync(calPath)) {
+    campaignCalibrationMap = JSON.parse(fs.readFileSync(calPath, 'utf8'));
+  }
+} catch (e) {
+  console.error("Erro ao carregar mapa de calibração:", e);
+}
+
 // Auxiliares de URL Meta Graph API
 function graphUrl(path, query) {
   const url = new URL(`https://graph.facebook.com/v21.0/${path}`);
@@ -289,7 +300,10 @@ async function syncClient(clienteName, daysToSync = 30) {
 
     // Heurística de Atribuição Universal (Visitas)
     let totalVisitas = 0;
-    if (isInstagramProfileCampaign) {
+    const calibrationRate = campaignCalibrationMap[String(item.campaign_id)];
+    if (calibrationRate !== undefined) {
+      totalVisitas = Math.round(linkClicks * calibrationRate);
+    } else if (isInstagramProfileCampaign) {
       totalVisitas = Math.max(0, linkClicks - outboundClicks);
     } else if (nativeVisits > 0) {
       totalVisitas = linkClicks + nativeVisits;
