@@ -313,8 +313,7 @@ async function syncClient(clienteName, daysToSync = 30) {
       totalVisitas = linkClicks;
     }
 
-    const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
-    const leadsVal = isTraffic ? 0 : getTrueLeads(item.actions);
+    const leadsVal = getTrueLeads(item.actions);
 
     await prisma.metricaCampanha.upsert({
       where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
@@ -387,8 +386,7 @@ async function syncClient(clienteName, daysToSync = 30) {
       });
 
       const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
-      const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
-      const leadsVal = isTraffic ? 0 : getTrueLeads(row.actions);
+      const leadsVal = getTrueLeads(row.actions);
 
       await prisma.metricaCriativo.upsert({
         where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },

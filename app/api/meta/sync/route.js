@@ -352,7 +352,7 @@ export async function GET(request) {
         isCPM: isCPM,
         campanha: { id: camp.id, nome_gerado: camp.nome_gerado, meta_id: camp.meta_id }
       };
-    }).filter(m => m.impressoes > 0 || m.valor_investido > 0);
+    }).filter(m => m.valor_investido > 0 || m.resultadoBruto > 0);
 
     const criativosRaw = await prisma.criativo.findMany({    
       where: { campanha: { cliente_id: cliente.id } },       
@@ -817,8 +817,7 @@ export async function POST(request) {
         totalVisitas = linkClicks;
       }
 
-      const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
-      const leadsVal = isTraffic ? 0 : getTrueLeads(item.actions);
+      const leadsVal = getTrueLeads(item.actions);
 
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
@@ -862,8 +861,7 @@ export async function POST(request) {
         });
 
         const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
-        const isTraffic = (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
-        const leadsVal = isTraffic ? 0 : getTrueLeads(row.actions);
+        const leadsVal = getTrueLeads(row.actions);
 
         return prisma.metricaCriativo.upsert({
           where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },

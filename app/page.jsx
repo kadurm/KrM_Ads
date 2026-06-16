@@ -1228,31 +1228,31 @@ export default function App() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
                   <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
-                  <div className="text-xl font-black mt-1 text-slate-100">R$ {investimento}</div>
+                  <div className="text-base font-black mt-1 text-slate-100">R$ {investimento}</div>
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
                   <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento real</span>
                   <div className="flex items-center gap-1 mt-1">
 
 
-                    <span className="text-xl font-black text-slate-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
+                    <span className="text-base font-black text-slate-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
                   </div>
                 </div>
                 <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
                   <span className="text-[10px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
-                  <div className="text-2xl font-black mt-1">{roas}x</div>
+                  <div className="text-base font-black mt-1">{roas}x</div>
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
                   <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
-                  <div className="text-xl font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
+                  <div className="text-base font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
                 </div>
                 <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
                   <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
-                  <div className="text-2xl font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
+                  <div className="text-base font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-pink-500 shadow-xl">
-                  <span className="text-[10px] font-bold text-pink-500 uppercase flex items-center gap-2 tracking-wider"><Instagram size={12}/> Seguidores Ganhos</span>
-                  <div className="text-xl font-black mt-1 text-slate-100">{seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString()}</div>
+                  <span className="text-[10px] font-bold text-pink-500 uppercase flex items-center gap-2 tracking-wider"><Instagram size={12}/> Seguidores</span>
+                  <div className="text-base font-black mt-1 text-slate-100">{seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString()}</div>
                 </div>
               </div>
 
