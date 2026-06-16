@@ -1192,19 +1192,10 @@ export default function App() {
                             Garantia KrM: 100% Auditado
                           </>
                         ) : (
-                          <div className="flex items-center gap-2">
+                          <>
                             <AlertTriangle size={12} className="text-yellow-400 animate-bounce" />
-                            <span>Auditoria: Divergência de R$ {auditResult.discrepancySpend.toFixed(2)}</span>
-                            <button
-                              onClick={handleSync}
-                              disabled={isSyncing}
-                              title="Força a sincronização profunda de dados históricos para este período"
-                              className="ml-1 px-2 py-0.5 bg-yellow-500/20 hover:bg-yellow-500/30 active:scale-95 text-yellow-300 border border-yellow-500/40 rounded flex items-center gap-1 cursor-pointer transition-all disabled:opacity-50 text-[9px] font-bold"
-                            >
-                              <RefreshCw size={8} className={isSyncing ? "animate-spin" : ""} />
-                              Sincronizar Forçado
-                            </button>
-                          </div>
+                            Auditoria: Divergência de R$ {auditResult.discrepancySpend.toFixed(2)} (Ajustando...)
+                          </>
                         )}
                       </div>
                     )}
