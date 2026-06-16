@@ -140,14 +140,14 @@ async function getAccountTimezone(accountId, accessToken) {
   try {
     const res = await fetch(graphUrl(accountId, {
       access_token: accessToken,
-      fields: 'timezone_name_out_id'
+      fields: 'timezone_name'
     }));
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error?.message || res.statusText);
     }
     const json = await res.json();
-    return json.timezone_name_out_id || 'America/Sao_Paulo';
+    return json.timezone_name || 'America/Sao_Paulo';
   } catch (error) {
     console.error(`[Meta API Timezone] Failed to fetch timezone for account ${accountId}:`, error);
     return 'America/Sao_Paulo';

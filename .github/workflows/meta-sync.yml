@@ -1,0 +1,51 @@
+name: Meta Ads ETL Sync
+
+on:
+  schedule:
+    # 03:00 UTC = 00:00 BRT (Horário de Brasília)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Quantidade de dias retroativos a sincronizar'
+        required: false
+        default: '7'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Run ETL Sync Worker
+        run: node scripts/meta-sync-worker.js
+        env:
+          DATABASE_URL: ${{ secrets.DIRECT_URL }}
+          DAYS_TO_SYNC: ${{ github.event.inputs.days || '7' }}
+          META_ACCESS_TOKEN_GLOBAL: ${{ secrets.META_ACCESS_TOKEN_GLOBAL }}
+          META_ACCESS_TOKEN_SOLUTION: ${{ secrets.META_ACCESS_TOKEN_SOLUTION }}
+          META_AD_ACCOUNT_ID_SOLUTION: ${{ secrets.META_AD_ACCOUNT_ID_SOLUTION }}
+          META_AD_ACCOUNT_ID_CARRETEL: ${{ secrets.META_AD_ACCOUNT_ID_CARRETEL }}
+          META_AD_ACCOUNT_ID_DIREITO: ${{ secrets.META_AD_ACCOUNT_ID_DIREITO }}
+          META_AD_ACCOUNT_ID_MIND: ${{ secrets.META_AD_ACCOUNT_ID_MIND }}
+          META_AD_ACCOUNT_ID_ORATORIA: ${{ secrets.META_AD_ACCOUNT_ID_ORATORIA }}
+          META_AD_ACCOUNT_ID_CEPEL: ${{ secrets.META_AD_ACCOUNT_ID_CEPEL }}
+          META_AD_ACCOUNT_ID_DR: ${{ secrets.META_AD_ACCOUNT_ID_DR }}
+          META_AD_ACCOUNT_ID_FULLTIME: ${{ secrets.META_AD_ACCOUNT_ID_FULLTIME }}
