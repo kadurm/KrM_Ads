@@ -195,55 +195,26 @@ async function batchProcess(items, limit, taskFn) {
 }
 
 // --- 4. FLUXO DE SINCRONIZAÇÃO POR CLIENTE ---
-async function syncClient(clienteName, daysToSync = 7) {
+async function syncClient(dbCliente, daysToSync = 7) {
   console.log(`\n======================================================`);
-  console.log(`📡 INICIANDO SINCRONIZAÇÃO: ${clienteName.toUpperCase()}`);
+  console.log(`📡 INICIANDO SINCRONIZAÇÃO: ${dbCliente.nome.toUpperCase()}`);
   console.log(`======================================================`);
   
-  const slug = clienteName.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
-  const shortName = clienteName.normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(' ')[0].replace(/[^a-zA-Z0-9]/g, '');
-  
-  // Buscar cliente no DB
-  let dbCliente = await prisma.cliente.findFirst({
-    where: {
-      OR: [
-        { nome: { equals: clienteName, mode: 'insensitive' } },
-        { slug: { equals: slug, mode: 'insensitive' } }
-      ]
-    }
-  });
+  // Utiliza as credenciais do banco de dados com fallback global para System User Token
+  const ACCESS_TOKEN = dbCliente.meta_access_token || 
+                       process.env.META_SYSTEM_USER_TOKEN || 
+                       process.env.META_ACCESS_TOKEN_GLOBAL;
 
-  const ACCESS_TOKEN = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
-                       process.env[`META_ACCESS_TOKEN_${slug}`] ||
-                       process.env[`META_ACCESS_TOKEN_${shortName.toUpperCase()}`] ||
-                       process.env[`META_ACCESS_TOKEN_${shortName}`] ||
-                       process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
-                       dbCliente?.meta_access_token;
-
-  const rawAccountId = process.env[`META_AD_ACCOUNT_ID_${slug.toUpperCase()}`] || 
-                       process.env[`META_AD_ACCOUNT_ID_${slug}`] ||
-                       process.env[`META_AD_ACCOUNT_ID_${shortName.toUpperCase()}`] ||
-                       process.env[`META_AD_ACCOUNT_ID_${shortName}`] ||
-                       dbCliente?.meta_ads_account_id;
-
+  const rawAccountId = dbCliente.meta_ads_account_id;
   const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
 
-  if (!ACCESS_TOKEN || !AD_ACCOUNT_ID) {
-    console.warn(`⚠️ Credenciais incompletas para ${clienteName}. Ignorando...`);
+  if (!ACCESS_TOKEN) {
+    console.warn(`⚠️ Token de acesso não configurado para ${dbCliente.nome}. Ignorando...`);
     return;
   }
-
-  if (!dbCliente) {
-    console.log(`📝 Criando registro de cliente para '${clienteName}' no banco...`);
-    dbCliente = await prisma.cliente.create({
-      data: {
-        nome: clienteName,
-        slug: slug,
-        meta_ads_account_id: AD_ACCOUNT_ID,
-        meta_access_token: ACCESS_TOKEN,
-        insights: `# Contexto Automático via ETL Worker`
-      }
-    });
+  if (!AD_ACCOUNT_ID) {
+    console.warn(`⚠️ ID de conta Meta Ads não configurado para ${dbCliente.nome}. Ignorando...`);
+    return;
   }
 
   // Obter Timezone
@@ -441,7 +412,7 @@ async function syncClient(clienteName, daysToSync = 7) {
     console.log(`✅ Gravadas ${countAdMetrics} métricas de anúncios no banco.`);
   }
 
-  console.log(`🎉 CLIENTE ${clienteName.toUpperCase()} SINCRONIZADO COM SUCESSO!`);
+  console.log(`🎉 CLIENTE ${dbCliente.nome.toUpperCase()} SINCRONIZADO COM SUCESSO!`);
 }
 
 // --- 5. EXECUÇÃO DO ETL GLOBAL ---
@@ -454,25 +425,19 @@ async function runAllSyncs() {
   const startTime = Date.now();
 
   try {
-    const clientes = await prisma.cliente.findMany({ select: { nome: true } });
+    const clientes = await prisma.cliente.findMany();
 
     if (clientes.length === 0) {
-      console.log('ℹ️ Nenhum cliente ativo no banco. Sincronizando clientes padrão...');
-      const fallbackClients = [
-        'Solution Place', 'Carretel Aviamentos', 'Direito Direto',
-        'Mind Gestão Empresarial', 'Oratória Delio Pinheiro',
-        'Cepel Arte Decore', 'Dr. Yuri Telles', 'Fulltime'
-      ];
-      for (const clientName of fallbackClients) {
-        await syncClient(clientName, daysToSync);
-      }
+      console.log('ℹ️ Nenhum cliente cadastrado no banco de dados.');
     } else {
-      console.log(`👥 Encontrados ${clientes.length} clientes cadastrados.`);
-      for (const c of clientes) {
+      console.log(`👥 Encontrados ${clientes.length} clientes cadastrados no banco.`);
+      
+      // Loop sequencial for...of para respeitar o pool de conexões com o banco
+      for (const cliente of clientes) {
         try {
-          await syncClient(c.nome, daysToSync);
+          await syncClient(cliente, daysToSync);
         } catch (e) {
-          console.error(`❌ Erro ao sincronizar cliente ${c.nome}:`, e.message);
+          console.error(`❌ Erro ao sincronizar cliente ${cliente.nome}:`, e.message);
         }
       }
     }

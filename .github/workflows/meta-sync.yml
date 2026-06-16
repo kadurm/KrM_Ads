@@ -39,13 +39,5 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DIRECT_URL }}
           DAYS_TO_SYNC: ${{ github.event.inputs.days || '7' }}
+          META_SYSTEM_USER_TOKEN: ${{ secrets.META_SYSTEM_USER_TOKEN }}
           META_ACCESS_TOKEN_GLOBAL: ${{ secrets.META_ACCESS_TOKEN_GLOBAL }}
-          META_ACCESS_TOKEN_SOLUTION: ${{ secrets.META_ACCESS_TOKEN_SOLUTION }}
-          META_AD_ACCOUNT_ID_SOLUTION: ${{ secrets.META_AD_ACCOUNT_ID_SOLUTION }}
-          META_AD_ACCOUNT_ID_CARRETEL: ${{ secrets.META_AD_ACCOUNT_ID_CARRETEL }}
-          META_AD_ACCOUNT_ID_DIREITO: ${{ secrets.META_AD_ACCOUNT_ID_DIREITO }}
-          META_AD_ACCOUNT_ID_MIND: ${{ secrets.META_AD_ACCOUNT_ID_MIND }}
-          META_AD_ACCOUNT_ID_ORATORIA: ${{ secrets.META_AD_ACCOUNT_ID_ORATORIA }}
-          META_AD_ACCOUNT_ID_CEPEL: ${{ secrets.META_AD_ACCOUNT_ID_CEPEL }}
-          META_AD_ACCOUNT_ID_DR: ${{ secrets.META_AD_ACCOUNT_ID_DR }}
-          META_AD_ACCOUNT_ID_FULLTIME: ${{ secrets.META_AD_ACCOUNT_ID_FULLTIME }}
