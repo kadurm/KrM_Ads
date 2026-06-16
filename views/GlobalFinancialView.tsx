@@ -54,7 +54,7 @@ export function GlobalFinancialView({ startDate, endDate }: any) {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* HEADER KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         <div className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 shadow-xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <TrendingUp size={80} />
@@ -83,6 +83,24 @@ export function GlobalFinancialView({ startDate, endDate }: any) {
           <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Ticket Médio</p>
           <p className="text-3xl font-black text-slate-100">R$ {(data.kpis.totalPago / (data.rankingClientes.length || 1)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           <p className="text-[10px] font-bold text-slate-500 mt-4 uppercase">Por cliente ativo</p>
+        </div>
+
+        <div className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 shadow-xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Users size={80} />
+          </div>
+          <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2">Instagram - Topo de Funil</p>
+          <p className="text-3xl font-black text-white">
+            {data.followersInfo?.total?.toLocaleString('pt-BR') || '0'}
+          </p>
+          <div className={`mt-4 flex items-center gap-2 font-bold ${
+            (data.followersInfo?.delta >= 0 || !data.followersInfo?.delta) ? 'text-emerald-500' : 'text-red-500'
+          }`}>
+            {(data.followersInfo?.delta >= 0 || !data.followersInfo?.delta) ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
+            <span className="text-[10px] uppercase font-black tracking-wider">
+              {data.followersInfo?.delta >= 0 ? '+' : ''}{data.followersInfo?.delta?.toLocaleString('pt-BR') || '0'} no período
+            </span>
+          </div>
         </div>
       </div>
 

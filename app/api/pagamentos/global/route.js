@@ -58,6 +58,65 @@ export async function GET(req) {
         .map(([name, value]) => ({ name, value }))
         .sort((a, b) => b.value - a.value);
 
+    // Fetch Instagram followers count details
+    const clientes = await prisma.cliente.findMany({
+      select: {
+        id: true,
+        nome: true,
+      }
+    });
+
+    let totalSeguidoresAtual = 0;
+    let totalDeltaPeriodo = 0;
+
+    for (const client of clientes) {
+      // Get the latest snapshot
+      const latestMetric = await prisma.metricaContaDiaria.findFirst({
+        where: { cliente_id: client.id },
+        orderBy: { data: 'desc' },
+        select: { followers_count: true }
+      });
+
+      const currentFollowers = latestMetric ? latestMetric.followers_count : 0;
+      totalSeguidoresAtual += currentFollowers;
+
+      // Get delta within selected date range
+      const rangeMetrics = await prisma.metricaContaDiaria.findMany({
+        where: {
+          cliente_id: client.id,
+          data: {
+            ...(since || until ? {
+              ...(since ? { gte: new Date(since + 'T00:00:00') } : {}),
+              ...(until ? { lte: new Date(until + 'T23:59:59') } : {})
+            } : {})
+          }
+        },
+        orderBy: { data: 'asc' }
+      });
+
+      let delta = 0;
+      if (rangeMetrics.length >= 2) {
+        const oldestInRange = rangeMetrics[0].followers_count;
+        const newestInRange = rangeMetrics[rangeMetrics.length - 1].followers_count;
+        delta = newestInRange - oldestInRange;
+      } else if (rangeMetrics.length === 1 && since) {
+        const previousMetric = await prisma.metricaContaDiaria.findFirst({
+          where: {
+            cliente_id: client.id,
+            data: {
+              lt: new Date(since + 'T00:00:00')
+            }
+          },
+          orderBy: { data: 'desc' },
+          select: { followers_count: true }
+        });
+        if (previousMetric) {
+          delta = rangeMetrics[0].followers_count - previousMetric.followers_count;
+        }
+      }
+      totalDeltaPeriodo += delta;
+    }
+
     return NextResponse.json({
       success: true,
       kpis: {
@@ -65,6 +124,10 @@ export async function GET(req) {
         totalPendente,
         totalVencido,
         totalGlobal: totalPago + totalPendente + totalVencido
+      },
+      followersInfo: {
+        total: totalSeguidoresAtual,
+        delta: totalDeltaPeriodo
       },
       rankingClientes,
       categoriasConsolidadas,

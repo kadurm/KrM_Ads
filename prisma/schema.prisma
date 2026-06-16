@@ -29,6 +29,7 @@ model Cliente {
   metodos_pagamento   MetodoPagamento[]
   transacoes          Transacao[]
   notas_fiscais       NotaFiscal[]
+  metricas_conta      MetricaContaDiaria[]
   criado_em           DateTime    @default(now())
 }
 
@@ -224,4 +225,15 @@ model NotaFiscal {
   status       String   @default("EMITIDA") // EMITIDA, CANCELADA
   url_pdf      String?
   criado_em    DateTime @default(now())
+}
+
+model MetricaContaDiaria {
+  id              String   @id @default(uuid())
+  cliente_id      String
+  cliente         Cliente  @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
+  data            DateTime
+  followers_count Int      @default(0)
+
+  @@unique([cliente_id, data])
+  @@index([data(sort: Desc)])
 }
