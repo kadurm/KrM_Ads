@@ -7,6 +7,7 @@ import {
 import { CampaignBentoCard } from '@/components/campaigns/CampaignBentoCard';
 import { CampaignBuilderModal } from '@/components/campaigns/CampaignBuilderModal';
 import { MetaCampaign } from '@/types/meta-campaigns';
+import { evaluateAndromedaHeuristics } from '@/utils/andromeda-heuristics';
 
 /**
  * Meta Ads 2026 - Campaigns Board View
@@ -43,18 +44,23 @@ export const CampaignsBoard: React.FC<Props> = ({
   const [editingObject, setEditingObject] = useState<MetaCampaign | null>(null);
 
   const filteredCampaigns = useMemo(() => {
-    return campaigns.filter(c => {
-      const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      let matchesStatus = true;
-      if (statusFilter === 'ACTIVE') {
-        matchesStatus = c.status === 'ACTIVE';
-      } else if (statusFilter === 'DELIVERY') {
-        matchesStatus = (c.spend || 0) > 0 || (c.impressions || 0) > 0;
-      }
-      
-      return matchesSearch && matchesStatus;
-    });
+    return campaigns
+      .filter(c => {
+        const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        let matchesStatus = true;
+        if (statusFilter === 'ACTIVE') {
+          matchesStatus = c.status === 'ACTIVE';
+        } else if (statusFilter === 'DELIVERY') {
+          matchesStatus = (c.spend || 0) > 0 || (c.impressions || 0) > 0;
+        }
+        
+        return matchesSearch && matchesStatus;
+      })
+      .map(c => {
+        const anomalies = evaluateAndromedaHeuristics(c);
+        return { ...c, anomalies };
+      });
   }, [campaigns, searchTerm, statusFilter]);
 
   const handleEdit = (obj: MetaCampaign) => {

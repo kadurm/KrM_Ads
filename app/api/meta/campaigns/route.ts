@@ -108,7 +108,7 @@ export async function GET(request: Request) {
     }
 
     const insightsFields = 'spend,impressions,actions,inline_link_click_ctr,video_p25_watched_actions';
-    const historicalFields = 'spend,purchase_roas,actions';
+    const historicalFields = 'spend,purchase_roas,actions,inline_link_click_ctr';
     
     const queryParams: Record<string, any> = {
       access_token: accessToken,
@@ -150,7 +150,8 @@ export async function GET(request: Request) {
           date: h.date_start,
           spend: parseFloat(h.spend || 0),
           purchase_roas: parseFloat(h.purchase_roas?.[0]?.value || 0),
-          results: hResults
+          results: hResults,
+          ctr: parseFloat(h.inline_link_click_ctr || 0)
         };
       });
 

@@ -35,6 +35,11 @@ export const CampaignBentoCard: React.FC<Props> = ({
   const fatigueScore = campaign.creative_fatigue_score ?? 0;
   const isCritical = cpmr > 30;
 
+  const anomalies = campaign.anomalies || [];
+  const hasCriticalAnomaly = anomalies.some(a => a.severity === 'CRITICAL');
+  const hasWarningAnomaly = anomalies.some(a => a.severity === 'WARNING');
+  const activeAnomaly = anomalies[0];
+
   // Level Specific UI Helpers
   const renderLevelBadge = () => {
     const label = isCampaign ? 'Campaign' : isAdSet ? 'Ad Set' : 'Ad';
@@ -53,12 +58,25 @@ export const CampaignBentoCard: React.FC<Props> = ({
       }}
       className={`
         group relative p-6 rounded-[2rem] bg-slate-900/40 backdrop-blur-3xl border transition-all duration-500 cursor-pointer
-        ${isCritical ? 'border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.1)]' : 'border-slate-800 hover:border-slate-700'}
+        ${hasCriticalAnomaly 
+          ? 'border-red-500/40 shadow-[0_0_40px_rgba(239,68,68,0.06)] bg-red-950/5' 
+          : hasWarningAnomaly 
+            ? 'border-amber-500/40 shadow-[0_0_40px_rgba(245,158,11,0.06)] bg-amber-950/5' 
+            : isCritical 
+              ? 'border-amber-500/30 shadow-[0_0_40px_rgba(245,158,11,0.04)]' 
+              : 'border-slate-800 hover:border-slate-700'
+        }
         hover:scale-[1.02] active:scale-[0.98]
     `}>
       
       {/* GLOW EFFECT */}
-      <div className={`absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-gradient-to-br from-blue-600/5 to-transparent`} />
+      <div className={`absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-gradient-to-br ${
+        hasCriticalAnomaly 
+          ? 'from-red-600/10' 
+          : hasWarningAnomaly 
+            ? 'from-amber-600/10' 
+            : 'from-blue-600/5'
+      } to-transparent`} />
 
       <div className="relative z-10 space-y-6">
         
@@ -79,7 +97,7 @@ export const CampaignBentoCard: React.FC<Props> = ({
               {isSelected && <Check size={14} className="text-white" strokeWidth={4} />}
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="flex items-center gap-3">
                 {renderLevelBadge()}
                 <div className="flex items-center gap-1.5">
@@ -90,6 +108,16 @@ export const CampaignBentoCard: React.FC<Props> = ({
               <h3 className="text-base font-black text-white tracking-tighter uppercase leading-tight">
                 {campaign.name || 'Untitled'}
               </h3>
+              {activeAnomaly && (
+                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider border ${
+                  activeAnomaly.severity === 'CRITICAL' 
+                    ? 'bg-red-500/10 text-red-400 border-red-500/20' 
+                    : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                }`}>
+                  <AlertTriangle size={10} className={activeAnomaly.severity === 'CRITICAL' ? 'text-red-400 animate-pulse' : 'text-amber-400'} />
+                  {activeAnomaly.recommendation}
+                </div>
+              )}
             </div>
           </div>
 

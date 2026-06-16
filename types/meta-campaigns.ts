@@ -6,6 +6,13 @@
 export type MetaStatus = 'ACTIVE' | 'PAUSED' | 'ARCHIVED' | 'DELETED';
 export type CapiStatus = 'HEALTHY' | 'WARNING' | 'CRITICAL' | 'DISCONNECTED';
 
+export interface AndromedaAnomaly {
+  type: 'SPEND' | 'CPA' | 'ROAS' | 'FATIGUE';
+  severity: 'WARNING' | 'CRITICAL';
+  message: string;
+  recommendation: string;
+}
+
 export interface MetaCampaign {
   // Guaranteed Fields (Legacy & 2026)
   id: string;
@@ -52,7 +59,11 @@ export interface MetaCampaign {
     spend: number;
     purchase_roas: number;
     results: number;
+    ctr?: number;
   }[];
+
+  // Anomalies evaluated by Andromeda Heuristics
+  anomalies?: AndromedaAnomaly[];
 
   // ANTIGRAVITY Advanced Config (Graph API 1:1)
   targeting?: MetaAdSetTargeting;
