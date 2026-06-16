@@ -94,6 +94,8 @@ model Campanha {
   metricas       MetricaCampanha[]
   criativos      Criativo[]
   criado_em      DateTime          @default(now())
+
+  @@index([cliente_id])
 }
 
 model ConjuntoAnuncio {
@@ -121,6 +123,9 @@ model Criativo {
   
   metricas        MetricaCriativo[]
   criado_em       DateTime          @default(now())
+
+  @@index([campanha_id])
+  @@index([adset_id])
 }
 
 model MetricaCriativo {
@@ -138,6 +143,7 @@ model MetricaCriativo {
   ctr             Decimal?
 
   @@unique([criativo_id, data])
+  @@index([data(sort: Desc)])
 }
 
 model MetricaCampanha {
@@ -160,6 +166,7 @@ model MetricaCampanha {
   valor_compras      Decimal? @default(0.0)
 
   @@unique([campanha_id, data])
+  @@index([data(sort: Desc)])
 }
 
 model Relatorio {

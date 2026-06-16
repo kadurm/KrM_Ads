@@ -209,12 +209,10 @@ async function syncClient(dbCliente, daysToSync = 7) {
   const AD_ACCOUNT_ID = rawAccountId?.startsWith('act_') ? rawAccountId : (rawAccountId ? `act_${rawAccountId}` : null);
 
   if (!ACCESS_TOKEN) {
-    console.warn(`⚠️ Token de acesso não configurado para ${dbCliente.nome}. Ignorando...`);
-    return;
+    throw new Error('Token de acesso não configurado');
   }
   if (!AD_ACCOUNT_ID) {
-    console.warn(`⚠️ ID de conta Meta Ads não configurado para ${dbCliente.nome}. Ignorando...`);
-    return;
+    throw new Error('ID da conta Meta Ads não configurado');
   }
 
   // Obter Timezone
@@ -415,7 +413,37 @@ async function syncClient(dbCliente, daysToSync = 7) {
   console.log(`🎉 CLIENTE ${dbCliente.nome.toUpperCase()} SINCRONIZADO COM SUCESSO!`);
 }
 
-// --- 5. EXECUÇÃO DO ETL GLOBAL ---
+// --- 5. NOTIFICAÇÃO VIA WEBHOOK ---
+async function sendWebhookNotification(summary) {
+  const webhookUrl = process.env.META_SYNC_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.log('ℹ️ Webhook URL (META_SYNC_WEBHOOK_URL) não configurada. Notificação ignorada.');
+    return;
+  }
+
+  const payload = {
+    content: summary,
+    text: summary
+  };
+
+  try {
+    const res = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      throw new Error(`Status ${res.status}: ${res.statusText}`);
+    }
+    console.log('✅ Notificação de Webhook enviada com sucesso!');
+  } catch (error) {
+    console.error('⚠️ Falha ao enviar notificação de Webhook:', error.message);
+  }
+}
+
+// --- 6. EXECUÇÃO DO ETL GLOBAL ---
 async function runAllSyncs() {
   console.log('=' .repeat(80));
   console.log('🚀 INICIANDO PIPELINE DE ETL STANDALONE DO WORKER META ADS');
@@ -423,32 +451,68 @@ async function runAllSyncs() {
 
   const daysToSync = parseInt(process.env.DAYS_TO_SYNC) || 7;
   const startTime = Date.now();
+  
+  const successClients = [];
+  const failedClients = [];
+  let totalClientes = 0;
 
   try {
     const clientes = await prisma.cliente.findMany();
+    totalClientes = clientes.length;
 
-    if (clientes.length === 0) {
+    if (totalClientes === 0) {
       console.log('ℹ️ Nenhum cliente cadastrado no banco de dados.');
     } else {
-      console.log(`👥 Encontrados ${clientes.length} clientes cadastrados no banco.`);
+      console.log(`👥 Encontrados ${totalClientes} clientes cadastrados no banco.`);
       
       // Loop sequencial for...of para respeitar o pool de conexões com o banco
       for (const cliente of clientes) {
         try {
           await syncClient(cliente, daysToSync);
+          successClients.push(cliente.nome);
         } catch (e) {
           console.error(`❌ Erro ao sincronizar cliente ${cliente.nome}:`, e.message);
+          failedClients.push({ nome: cliente.nome, erro: e.message });
         }
       }
     }
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     console.log('\n' + '='.repeat(80));
-    console.log(`🎉 PROCESSO CONCLUÍDO COM SUCESSO EM ${duration}s!`);
+    console.log(`🎉 PROCESSO CONCLUÍDO EM ${duration}s!`);
     console.log('='.repeat(80));
+
+    // Construção e disparo do webhook executivo
+    if (totalClientes > 0) {
+      const sucessoCount = successClients.length;
+      const falhaCount = failedClients.length;
+
+      let detalhesFalhas = '';
+      if (falhaCount > 0) {
+        detalhesFalhas = '⚠️ **Detalhes das Falhas:**\n' + failedClients.map(f => `• **${f.nome}**: ${f.erro}`).join('\n') + '\n\n';
+      } else {
+        detalhesFalhas = '✨ **Todos os clientes sincronizados com 100% de sucesso!**\n\n';
+      }
+
+      const summary = `📢 **[KrM Ads] Resumo Executivo - Sincronização Meta Ads**\n\n` +
+        `📊 **Status da Sincronização:**\n` +
+        `• ✅ **Sucesso:** ${sucessoCount} / ${totalClientes} clientes sincronizados\n` +
+        `• ❌ **Falhas:** ${falhaCount} cliente(s) com erros\n\n` +
+        detalhesFalhas +
+        `⏱️ **Tempo de Execução:** ${duration} segundos\n` +
+        `📅 **Janela de Sincronização:** Últimos ${daysToSync} dias`;
+
+      await sendWebhookNotification(summary);
+    }
 
   } catch (error) {
     console.error('\n💥 Erro crítico no worker:', error.message);
+    
+    // Tenta notificar o erro crítico geral
+    const generalSummary = `💥 **[KrM Ads] Erro Crítico no Worker de Sincronização**\n\n` +
+      `❌ **Erro:** ${error.message}`;
+    await sendWebhookNotification(generalSummary);
+    
     process.exit(1);
   } finally {
     await prisma.$disconnect();

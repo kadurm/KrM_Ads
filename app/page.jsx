@@ -1200,7 +1200,7 @@ export default function App() {
                   </div>
                   <p className="text-slate-500 text-sm mt-1">Dados auditados: <strong>{clienteSelecionado}</strong></p>
                 </div>
-                <div className="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-sm flex-wrap">
+                <div className="flex items-center gap-3 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-sm flex-wrap lg:flex-nowrap">
                   <div className="flex gap-1 bg-slate-800 p-1 rounded-lg">
                     {[
                       { id: 'hoje', label: 'Hoje' },
@@ -2088,7 +2088,7 @@ export default function App() {
                   <h2 className="text-xl font-black text-white uppercase tracking-tighter">Gestão de Performance</h2>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Fonte: Meta Ads Graph API • {clienteSelecionado}</p>
                 </div>
-                <div className="flex items-center gap-3 bg-slate-950 p-2 rounded-2xl border border-slate-800 shadow-sm flex-wrap">
+                <div className="flex items-center gap-3 bg-slate-950 p-2 rounded-2xl border border-slate-800 shadow-sm flex-wrap lg:flex-nowrap">
                   <div className="flex gap-1 bg-slate-900 p-1 rounded-xl">
                     {[
                       { id: 'hoje', label: 'Hoje' },
