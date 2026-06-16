@@ -25,24 +25,133 @@ function graphUrl(path, query) {
   return url.toString();
 }
 
-/**
- * Robust fetch that follows pagination and checks for errors
- */
-async function fetchMetaInsights(url) {
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+class TimeoutApproachingError extends Error {
+  constructor(message, partialData = []) {
+    super(message);
+    this.name = 'TimeoutApproachingError';
+    this.partialData = partialData;
+  }
+}
+
+async function fetchMetaWithRetry(url, options = {}, startTime = null, timeBudgetMs = null) {
+  let attempts = 0;
+  const maxAttempts = 5;
+  let delayTime = 1000;
+
+  while (attempts < maxAttempts) {
+    if (startTime && timeBudgetMs) {
+      const elapsed = performance.now() - startTime;
+      if (elapsed > timeBudgetMs - 2000) { // 2s buffer for DB saving
+        throw new TimeoutApproachingError('Vercel timeout budget approaching');
+      }
+    }
+
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const err = await res.json();
+        const errCode = err.error?.code;
+        
+        // Rate limit: 4, 17, 32, 80000, 80007, or HTTP 429
+        const isRateLimit = errCode === 4 || errCode === 17 || errCode === 32 || errCode === 80000 || errCode === 80007 || res.status === 429;
+        
+        if (isRateLimit && attempts < maxAttempts - 1) {
+          attempts++;
+          const jitter = Math.random() * 500;
+          console.warn(`[Meta API Retry] Rate limit hit (code: ${errCode}). Retrying ${attempts}/${maxAttempts} in ${delayTime + jitter}ms...`);
+          await delay(delayTime + jitter);
+          delayTime *= 2;
+          continue;
+        }
+        throw new Error(`Meta API Error: ${err.error?.message || res.statusText}`);
+      }
+      return await res.json();
+    } catch (error) {
+      if (error instanceof TimeoutApproachingError) throw error;
+      if (attempts < maxAttempts - 1) {
+        attempts++;
+        console.warn(`[Meta API Retry] Request failed: ${error.message}. Retrying ${attempts}/${maxAttempts} in ${delayTime}ms...`);
+        await delay(delayTime);
+        delayTime *= 2;
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+
+async function fetchMetaPaginated(url, startTime = null, timeBudgetMs = null) {
   let allData = [];
   let currentUrl = url;
 
   while (currentUrl) {
-    const res = await fetch(currentUrl);
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(`Meta API Error: ${err.error?.message || res.statusText}`);
+    try {
+      const json = await fetchMetaWithRetry(currentUrl, {}, startTime, timeBudgetMs);
+      if (json.data) {
+        allData = [...allData, ...json.data];
+      }
+      currentUrl = json.paging?.next || null;
+    } catch (error) {
+      if (error instanceof TimeoutApproachingError) {
+        console.warn(`[Meta API Paginated] Timeout approaching! Returning partial data of ${allData.length} items.`);
+        throw new TimeoutApproachingError('Timeout approaching during pagination', allData);
+      }
+      throw error;
     }
-    const json = await res.json();
-    if (json.data) allData = [...allData, ...json.data];
-    currentUrl = json.paging?.next || null;
   }
   return allData;
+}
+
+/**
+ * Robust fetch wrapper that preserves backward compatibility
+ */
+async function fetchMetaInsights(url) {
+  return fetchMetaPaginated(url, null, null);
+}
+
+function getLocalDateString(date, timezone) {
+  return new Intl.DateTimeFormat('sv-SE', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(date);
+}
+
+function getLocalDateNDaysAgo(timezone, daysAgo) {
+  const d = new Date();
+  const localDateStr = getLocalDateString(d, timezone);
+  const [year, month, day] = localDateStr.split('-').map(Number);
+  
+  const localDate = new Date(year, month - 1, day);
+  localDate.setDate(localDate.getDate() - daysAgo);
+  
+  const y = localDate.getFullYear();
+  const m = String(localDate.getMonth() + 1).padStart(2, '0');
+  const dayStr = String(localDate.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dayStr}`;
+}
+
+async function getAccountTimezone(accountId, accessToken) {
+  try {
+    const res = await fetch(graphUrl(accountId, {
+      access_token: accessToken,
+      fields: 'timezone_name_out_id'
+    }));
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || res.statusText);
+    }
+    const json = await res.json();
+    return json.timezone_name_out_id || 'America/Sao_Paulo';
+  } catch (error) {
+    console.error(`[Meta API Timezone] Failed to fetch timezone for account ${accountId}:`, error);
+    return 'America/Sao_Paulo';
+  }
 }
 
 async function batchProcess(items, limit, taskFn) {
@@ -434,8 +543,13 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  const startTime = performance.now();
+  
   try {
-    const { since, until, cliente, forceFullSync } = await request.json();
+    const body = await request.clone().json().catch(() => ({}));
+    const { since, until, cliente, forceFullSync, timeBudget } = body;
+    const timeBudgetMs = timeBudget || 50000; // default 50s budget
+
     if (!cliente) return NextResponse.json({ success: false, error: "Cliente não fornecido" }, { status: 400 });
 
     const slug = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -481,37 +595,94 @@ export async function POST(request) {
       });
     }
 
-    // --- Sliding Window Logic ---
+    // --- 1. Resolução do Timezone da Conta ---
+    const timezone = await getAccountTimezone(AD_ACCOUNT_ID, ACCESS_TOKEN);
+
+    // --- 2. Sliding Window com Timezone ---
     let finalSince = since;
     let finalUntil = until;
-    const today = new Date();
-    const fiveDaysAgo = new Date();
-    fiveDaysAgo.setDate(today.getDate() - 5);
-    const fiveDaysAgoStr = fiveDaysAgo.toISOString().split('T')[0];
+    const todayStr = getLocalDateString(new Date(), timezone);
 
-    if (!forceFullSync && (!since || (since && new Date(since) > fiveDaysAgo))) {
-      finalSince = fiveDaysAgoStr;
+    if (!forceFullSync) {
+      // Rolling window rígida de 7 dias para conversões tardias
+      const sevenDaysAgoStr = getLocalDateNDaysAgo(timezone, 7);
+      if (!since || new Date(since) > new Date(sevenDaysAgoStr)) {
+        finalSince = sevenDaysAgoStr;
+      }
     }
 
-    const commonQuery = { access_token: ACCESS_TOKEN, limit: '1000' };
-    const todayStr = new Date().toISOString().split('T')[0];
-    if (finalUntil === todayStr && finalSince === todayStr) commonQuery.date_preset = 'today';
-    else commonQuery.time_range = JSON.stringify({ since: finalSince, until: finalUntil });
+    if (!finalUntil) {
+      finalUntil = todayStr;
+    }
 
-    console.log(`[BulletproofSync] Syncing ${cliente} range: ${finalSince} to ${finalUntil || todayStr}`);
+    const commonQuery = { access_token: ACCESS_TOKEN, limit: '250' };
+    if (finalUntil === todayStr && finalSince === todayStr) {
+      commonQuery.date_preset = 'today';
+    } else {
+      commonQuery.time_range = JSON.stringify({ since: finalSince, until: finalUntil });
+    }
 
-    // 1. Fetch Basic Info & Objectives
-    const metaCampsRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '1000' }));
-    if (!metaCampsRes.ok) throw new Error("Falha ao buscar campanhas na Meta.");
-    const metaCampsData = await metaCampsRes.json();
-    const objectiveMap = new Map(metaCampsData.data?.map(c => [c.id, c.objective]) || []);
+    console.log(`[BulletproofSync] Syncing ${cliente} range: ${finalSince} to ${finalUntil} (Timezone: ${timezone})`);
 
-    // 1b. Fetch Adsets to identify destination types
-    const adsetsRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adsets`, { access_token: ACCESS_TOKEN, fields: 'campaign_id,destination_type,optimization_goal', limit: '1000' }));
-    const adsetsData = adsetsRes.ok ? await adsetsRes.json() : { data: [] };
+    let isPartial = false;
+    let campaignsList = [];
+    let adsetsList = [];
+    let campaignData = [];
+    let adInsightData = [];
+    let adsMetaDataList = [];
+
+    // --- 3. Coleta de Dados via Paginação Rígida com monitoramento de Timeout ---
+    try {
+      // 3.1 campaigns
+      const campaignsUrl = graphUrl(`${AD_ACCOUNT_ID}/campaigns`, { access_token: ACCESS_TOKEN, fields: 'id,name,objective', limit: '250' });
+      campaignsList = await fetchMetaPaginated(campaignsUrl, startTime, timeBudgetMs);
+
+      // 3.2 adsets
+      const adsetsUrl = graphUrl(`${AD_ACCOUNT_ID}/adsets`, { access_token: ACCESS_TOKEN, fields: 'campaign_id,destination_type,optimization_goal', limit: '250' });
+      adsetsList = await fetchMetaPaginated(adsetsUrl, startTime, timeBudgetMs);
+
+      // 3.3 campaign insights
+      const insightFields = 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
+      const campaignDataUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: insightFields, level: 'campaign', time_increment: '1' });
+      campaignData = await fetchMetaPaginated(campaignDataUrl, startTime, timeBudgetMs);
+
+      // 3.4 ad insights
+      const adInsightFields = 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
+      const adInsightDataUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: adInsightFields, level: 'ad', time_increment: '1' });
+      adInsightData = await fetchMetaPaginated(adInsightDataUrl, startTime, timeBudgetMs);
+
+      // 3.5 ad creatives list
+      const adsMetaUrl = graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { 
+        access_token: ACCESS_TOKEN, 
+        fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', 
+        thumbnail_width: 800, 
+        thumbnail_height: 800, 
+        limit: '250' 
+      });
+      adsMetaDataList = await fetchMetaPaginated(adsMetaUrl, startTime, timeBudgetMs);
+
+    } catch (err) {
+      if (err instanceof TimeoutApproachingError) {
+        isPartial = true;
+        console.warn(`[BulletproofSync] Timeout se aproximando durante a busca na Meta API. Salvando dados parciais.`);
+        if (err.partialData && Array.isArray(err.partialData)) {
+          if (campaignsList.length === 0) campaignsList = err.partialData;
+          else if (adsetsList.length === 0) adsetsList = err.partialData;
+          else if (campaignData.length === 0) campaignData = err.partialData;
+          else if (adInsightData.length === 0) adInsightData = err.partialData;
+          else if (adsMetaDataList.length === 0) adsMetaDataList = err.partialData;
+        }
+      } else {
+        throw err;
+      }
+    }
+
+    const objectiveMap = new Map(campaignsList.map(c => [c.id, c.objective]) || []);
+    const creativeMetaMap = new Map(adsMetaDataList.map(m => [String(m.id), m]) || []);
+
     const campaignDestinationMap = new Map();
-    if (adsetsData.data) {
-      adsetsData.data.forEach(adset => {
+    if (adsetsList) {
+      adsetsList.forEach(adset => {
         if (adset.campaign_id) {
           const current = campaignDestinationMap.get(String(adset.campaign_id)) || [];
           current.push({
@@ -523,46 +694,51 @@ export async function POST(request) {
       });
     }
 
-    // 2. Fetch Insights (following pagination)
-    const insightFields = 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
-    const campaignData = await fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: insightFields, level: 'campaign', time_increment: '1' }));
-    
-    const adInsightFields = 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
-    const adInsightData = await fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: adInsightFields, level: 'ad', time_increment: '1' }));
-
-    // 3. Fetch Creative Metadata
-    const adsMetaRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { access_token: ACCESS_TOKEN, fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }));
-    const adsMetaData = await adsMetaRes.json();
-    const creativeMetaMap = new Map(adsMetaData.data?.map(m => [String(m.id), m]) || []);
-
-    // 4. Resolve High-Res Story Post Images
-    const storyIds = adsMetaData.data?.map(m => m.effective_object_story_id).filter(id => !!id) || [];
+    // --- 4. Resolução de Imagens High-Res com monitoramento de Timeout ---
+    const storyIds = adsMetaDataList.map(m => m.effective_object_story_id).filter(id => !!id) || [];
     const storyMetaMap = new Map();
-    if (storyIds.length > 0) {
+    if (storyIds.length > 0 && !isPartial) {
        for (let i = 0; i < storyIds.length; i += 50) {
+         if (performance.now() - startTime > timeBudgetMs - 2000) {
+           isPartial = true;
+           break;
+         }
          const chunk = storyIds.slice(i, i + 50);
-         const res = await fetch(graphUrl(``, { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN }));
-         const data = await res.json();
-         Object.values(data).forEach(post => storyMetaMap.set(post.id, post.full_picture));
+         try {
+           const res = await fetchMetaWithRetry(graphUrl(``, { ids: chunk.join(','), fields: 'id,full_picture', access_token: ACCESS_TOKEN }), {}, startTime, timeBudgetMs);
+           Object.values(res).forEach(post => storyMetaMap.set(post.id, post.full_picture));
+         } catch (e) {
+           console.error("[BulletproofSync] Erro ao resolver imagens de posts:", e.message);
+         }
        }
     }
 
-    // 5. Resolve High-Res via Hashes
     const imageHashMap = new Map();
-    const uniqueHashes = [...new Set(adsMetaData.data?.map(m => m.image_hash).filter(h => !!h) || [])];
-    if (uniqueHashes.length > 0) {
+    const uniqueHashes = [...new Set(adsMetaDataList.map(m => m.image_hash).filter(h => !!h) || [])];
+    if (uniqueHashes.length > 0 && !isPartial) {
        for (let i = 0; i < uniqueHashes.length; i += 50) {
+         if (performance.now() - startTime > timeBudgetMs - 2000) {
+           isPartial = true;
+           break;
+         }
          const chunk = uniqueHashes.slice(i, i + 50);
-         const res = await fetch(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }));
-         const data = await res.json();
-         if (data.data) data.data.forEach(img => { const bestUrl = img.url || img.permalink_url; if (bestUrl) imageHashMap.set(img.hash, bestUrl); });
+         try {
+           const res = await fetchMetaWithRetry(graphUrl(`${AD_ACCOUNT_ID}/adimages`, { access_token: ACCESS_TOKEN, hashes: JSON.stringify(chunk), fields: 'url,permalink_url,hash' }), {}, startTime, timeBudgetMs);
+           if (res.data) res.data.forEach(img => { const bestUrl = img.url || img.permalink_url; if (bestUrl) imageHashMap.set(img.hash, bestUrl); });
+         } catch (e) {
+           console.error("[BulletproofSync] Erro ao resolver hashes de imagens:", e.message);
+         }
        }
     }
 
-    // 6. Ensure Campaigns exist in DB (Sequential to avoid race conditions)
+    // --- 5. Persistência de Dados no Banco de Dados via Prisma (Idempotência) ---
     const localCampMap = new Map();
     const uniqueCampaigns = [...new Map(campaignData.map(item => [item.campaign_id, item])).values()];
     for (const item of uniqueCampaigns) {
+      if (performance.now() - startTime > timeBudgetMs - 1500) {
+        isPartial = true;
+        break;
+      }
       const camp = await prisma.campanha.upsert({
         where: { meta_id: String(item.campaign_id) },      
         update: { nome_gerado: item.campaign_name, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN' },
@@ -571,9 +747,15 @@ export async function POST(request) {
       localCampMap.set(camp.meta_id, camp);
     }
 
-    // 7. Process Daily Insights (Batch)
+    // Processamento de métricas diárias de campanhas
     await batchProcess(campaignData, 10, async (item) => {
+      if (performance.now() - startTime > timeBudgetMs - 1500) {
+        isPartial = true;
+        return;
+      }
       const camp = localCampMap.get(String(item.campaign_id));
+      if (!camp) return;
+
       const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
       const linkClicks = parseInt(item.inline_link_clicks) || 0;
       const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
@@ -583,11 +765,7 @@ export async function POST(request) {
         a => a.destination_type === 'INSTAGRAM_PROFILE' || a.optimization_goal === 'PROFILE_VISIT'
       );
 
-      // Heurística de Atribuição Universal:
-      // 1. Se houver calibração manual configurada para a campanha, aplicamos o fator de conversão de cliques
-      // 2. Se detectarmos que a campanha é nativamente focada no Perfil do Instagram, subtraímos cliques de saída dos totais (isolar cliques internos)
-      // 3. Se tem visitas nativas explícitas em actions, somamos aos cliques (Caso Carretel/Web)
-      // 4. Se não tem, e cliques de saída são altos, subtraímos (Caso Solution/Profile)
+      // Heurística de Atribuição Universal
       let totalVisitas = 0;
       const calibrationRate = campaignCalibrationMap[String(item.campaign_id)];
       if (calibrationRate !== undefined) {
@@ -623,13 +801,17 @@ export async function POST(request) {
       });
     });
 
-    // 8. Process Ad Level Insights & Creatives
+    // Processamento de criativos e métricas de anúncios
     if (adInsightData.length > 0) {
-      const adsListRes = await fetch(graphUrl(`${AD_ACCOUNT_ID}/ads`, { access_token: ACCESS_TOKEN, fields: 'id,creative{id}', limit: '1000' }));
-      const adsListData = await adsListRes.json();
-      const adToCreativeMap = new Map(adsListData.data?.map(a => [a.id, a.creative?.id]) || []);
+      const adsListUrl = graphUrl(`${AD_ACCOUNT_ID}/ads`, { access_token: ACCESS_TOKEN, fields: 'id,creative{id}', limit: '250' });
+      const adsList = await fetchMetaPaginated(adsListUrl, startTime, timeBudgetMs).catch(() => []);
+      const adToCreativeMap = new Map(adsList.map(a => [a.id, a.creative?.id]) || []);
 
       await batchProcess(adInsightData, 10, async (row) => {
+        if (performance.now() - startTime > timeBudgetMs - 1500) {
+          isPartial = true;
+          return;
+        }
         const camp = localCampMap.get(String(row.campaign_id));
         if (!camp) return;
         const creativeId = adToCreativeMap.get(String(row.ad_id));
@@ -662,7 +844,7 @@ export async function POST(request) {
       });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, isPartial });
   } catch (error) {
     console.error("POST BulletproofSync Error:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
