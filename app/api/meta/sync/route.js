@@ -531,8 +531,9 @@ export async function GET(request) {
       audit.discrepancySpend = parseFloat(Math.abs(audit.metaSpend - audit.dbSpend).toFixed(2));
       audit.discrepancyImpressions = Math.abs(audit.metaImpressions - audit.dbImpressions);
       
-      // Margem de tolerância de R$ 0.05 para arredondamentos e 0 impressões de diferença
-      if (audit.discrepancySpend <= 0.05 && audit.discrepancyImpressions === 0) {
+      // Margem de tolerância de R$ 0.05 para spend, e 0.1% para impressões (com mínimo de 10) para evitar travar por desvios de fuso horário
+      const impressionTolerance = Math.round(audit.metaImpressions * 0.001);
+      if (audit.discrepancySpend <= 0.05 && audit.discrepancyImpressions <= Math.max(10, impressionTolerance)) {
         audit.verified = true;
       }
     }
@@ -791,8 +792,22 @@ export async function POST(request) {
         isPartial = true;
         return;
       }
-      const camp = localCampMap.get(String(item.campaign_id));
-      if (!camp) return;
+      let camp = localCampMap.get(String(item.campaign_id));
+      if (!camp) {
+        // Upsert dinâmico para garantir o salvamento de campanhas inativas/deletadas
+        camp = await prisma.campanha.upsert({
+          where: { meta_id: String(item.campaign_id) },
+          update: { nome_gerado: item.campaign_name },
+          create: {
+            meta_id: String(item.campaign_id),
+            nome_gerado: item.campaign_name,
+            cliente_id: targetCliente.id,
+            objetivo: 'UNKNOWN',
+            tipo_orcamento: 'UNKNOWN'
+          }
+        });
+        localCampMap.set(camp.meta_id, camp);
+      }
 
       const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
       const linkClicks = parseInt(item.inline_link_clicks) || 0;
@@ -849,8 +864,23 @@ export async function POST(request) {
           isPartial = true;
           return;
         }
-        const camp = localCampMap.get(String(row.campaign_id));
-        if (!camp) return;
+        let camp = localCampMap.get(String(row.campaign_id));
+        if (!camp) {
+          let dbCamp = await prisma.campanha.findUnique({ where: { meta_id: String(row.campaign_id) } });
+          if (!dbCamp) {
+            dbCamp = await prisma.campanha.create({
+              data: {
+                meta_id: String(row.campaign_id),
+                nome_gerado: `Campanha #${row.campaign_id}`,
+                cliente_id: targetCliente.id,
+                objetivo: 'UNKNOWN',
+                tipo_orcamento: 'UNKNOWN'
+              }
+            });
+          }
+          localCampMap.set(dbCamp.meta_id, dbCamp);
+          camp = dbCamp;
+        }
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
         const highResImage = imageHashMap.get(adMeta.image_hash) || storyMetaMap.get(adMeta.effective_object_story_id) || adMeta.image_url || adMeta.thumbnail_url;

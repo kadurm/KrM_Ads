@@ -367,8 +367,22 @@ async function syncClient(dbCliente, daysToSync = 7, pagesList = []) {
   console.log(`💾 Persistindo métricas diárias de campanhas...`);
   let countCampaignMetrics = 0;
   await batchProcess(campaignData, 15, async (item) => {
-    const camp = localCampMap.get(String(item.campaign_id));
-    if (!camp) return;
+    let camp = localCampMap.get(String(item.campaign_id));
+    if (!camp) {
+      // Upsert dinâmico para garantir o salvamento de campanhas inativas/deletadas
+      camp = await prisma.campanha.upsert({
+        where: { meta_id: String(item.campaign_id) },
+        update: { nome_gerado: item.campaign_name },
+        create: {
+          meta_id: String(item.campaign_id),
+          nome_gerado: item.campaign_name,
+          cliente_id: dbCliente.id,
+          objetivo: 'UNKNOWN',
+          tipo_orcamento: 'UNKNOWN'
+        }
+      });
+      localCampMap.set(camp.meta_id, camp);
+    }
     const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
     const linkClicks = parseInt(item.inline_link_clicks) || 0;
     const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
@@ -424,8 +438,23 @@ async function syncClient(dbCliente, daysToSync = 7, pagesList = []) {
 
     let countAdMetrics = 0;
     await batchProcess(adInsightData, 15, async (row) => {
-      const camp = localCampMap.get(String(row.campaign_id));
-      if (!camp) return;
+      let camp = localCampMap.get(String(row.campaign_id));
+      if (!camp) {
+        let dbCamp = await prisma.campanha.findUnique({ where: { meta_id: String(row.campaign_id) } });
+        if (!dbCamp) {
+          dbCamp = await prisma.campanha.create({
+            data: {
+              meta_id: String(row.campaign_id),
+              nome_gerado: `Campanha #${row.campaign_id}`,
+              cliente_id: dbCliente.id,
+              objetivo: 'UNKNOWN',
+              tipo_orcamento: 'UNKNOWN'
+            }
+          });
+        }
+        localCampMap.set(dbCamp.meta_id, dbCamp);
+        camp = dbCamp;
+      }
       const creativeId = adToCreativeMap.get(String(row.ad_id));
       const adMeta = creativeMetaMap.get(String(creativeId)) || {};
       const highResImage = imageHashMap.get(adMeta.image_hash) || storyMetaMap.get(adMeta.effective_object_story_id) || adMeta.image_url || adMeta.thumbnail_url;
