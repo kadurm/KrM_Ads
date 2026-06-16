@@ -375,7 +375,8 @@ export async function GET(request) {
         count: acc.count + 1
       }), { impressoes: 0, alcance: 0, cliques: 0, valor_investido: 0, leads: 0, compras: 0, totalCtr: 0, count: 0, reacoes_sociais: 0 });    
 
-      if (stats.impressoes === 0 && stats.valor_investido === 0) continue;
+      // Não exibe criativos que quase não tiveram veiculação no período selecionado (gasto irrisório e pouquíssimas impressões/leads)
+      if ((stats.valor_investido < 0.05 && stats.impressoes < 10) && stats.leads === 0) continue;
 
       let liveAlcance = stats.alcance;
       if (c.meta_ad_id && metaAdReachMap.has(String(c.meta_ad_id))) {
