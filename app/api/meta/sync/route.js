@@ -536,7 +536,44 @@ export async function GET(request) {
       }
     }
 
-    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach, lastSyncDate, audit });
+    // --- CÁLCULO DE SEGUIDORES GANHOS NO PERÍODO ---
+    let followersDelta = 0;
+    try {
+      const rangeMetrics = await prisma.metricaContaDiaria.findMany({
+        where: {
+          cliente_id: cliente.id,
+          data: {
+            gte: dateSince,
+            lte: dateUntil
+          }
+        },
+        orderBy: { data: 'asc' }
+      });
+
+      if (rangeMetrics.length >= 2) {
+        const oldestInRange = rangeMetrics[0].followers_count;
+        const newestInRange = rangeMetrics[rangeMetrics.length - 1].followers_count;
+        followersDelta = newestInRange - oldestInRange;
+      } else if (rangeMetrics.length === 1) {
+        const previousMetric = await prisma.metricaContaDiaria.findFirst({
+          where: {
+            cliente_id: cliente.id,
+            data: {
+              lt: dateSince
+            }
+          },
+          orderBy: { data: 'desc' },
+          select: { followers_count: true }
+        });
+        if (previousMetric) {
+          followersDelta = rangeMetrics[0].followers_count - previousMetric.followers_count;
+        }
+      }
+    } catch (e) {
+      console.error("Erro ao calcular delta de seguidores no sync:", e);
+    }
+
+    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach, lastSyncDate, audit, followersDelta });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

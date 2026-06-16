@@ -111,6 +111,7 @@ export default function App() {
   const [totalCompras, setTotalCompras] = useState(0);
   const [vendasReais, setVendasReais] = useState(0);
   const [totalReachReal, setTotalReachReal] = useState(0);
+  const [seguidoresGanhos, setSeguidoresGanhos] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [mensagemPainel, setMensagemPainel] = useState(null);
   const [auditResult, setAuditResult] = useState(null);
@@ -677,6 +678,7 @@ export default function App() {
       if (data.criativos) setCriativosDados(data.criativos);
       if (data.dailyMetrics) setDailyData(data.dailyMetrics);
       setAuditResult(data.audit || null);
+      setSeguidoresGanhos(data.followersDelta || 0);
 
     } catch (e) {
       setMensagemPainel({ tipo: 'erro', texto: 'Falha ao carregar métricas.' });
@@ -1223,7 +1225,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
                   <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
                   <div className="text-xl font-black mt-1 text-slate-100">R$ {investimento}</div>
@@ -1247,6 +1249,10 @@ export default function App() {
                 <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
                   <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
                   <div className="text-2xl font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
+                </div>
+                <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-pink-500 shadow-xl">
+                  <span className="text-[10px] font-bold text-pink-500 uppercase flex items-center gap-2 tracking-wider"><Instagram size={12}/> Seguidores Ganhos</span>
+                  <div className="text-xl font-black mt-1 text-slate-100">{seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString()}</div>
                 </div>
               </div>
 
