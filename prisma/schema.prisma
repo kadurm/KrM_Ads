@@ -237,3 +237,24 @@ model MetricaContaDiaria {
   @@unique([cliente_id, data])
   @@index([data(sort: Desc)])
 }
+
+model LeadSolution {
+  id                String    @id @default(uuid())
+  telefone          String
+  data              DateTime?
+  nome_cliente      String?
+  origem            String?
+  primeira_mensagem String?
+  tipo_servico      String?
+  veiculo           String?
+  comercial         String?
+  conversao         String?
+  status            String?
+  valor_faturado    Decimal?  @default(0.0)
+  criado_em         DateTime  @default(now())
+  atualizado_em     DateTime  @updatedAt
+
+  @@unique([telefone])
+}
+
+
