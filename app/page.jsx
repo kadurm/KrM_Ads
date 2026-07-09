@@ -954,7 +954,8 @@ export default function App() {
       leadsAtivos,
       topProcurados,
       topVendidos,
-      topAssistencias
+      topAssistencias,
+      totalClosed: closedLeads.length
     };
   }, [leadsList]);
 
@@ -1339,8 +1340,8 @@ export default function App() {
                   <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
                   <div className="text-base font-black mt-1">
                     {clienteSelecionado === 'Solution Place'
-                      ? (crmStats.topVendidos.reduce((acc, curr) => acc + curr.count, 0) + crmStats.topAssistencias.reduce((acc, curr) => acc + curr.count, 0) > 0
-                          ? `R$ ${(parseFloat(investimento) / (crmStats.topVendidos.reduce((acc, curr) => acc + curr.count, 0) + crmStats.topAssistencias.reduce((acc, curr) => acc + curr.count, 0))).toFixed(2)}`
+                      ? (crmStats.totalClosed > 0
+                          ? `R$ ${(parseFloat(investimento) / crmStats.totalClosed).toFixed(2)}`
                           : '-'
                         )
                       : (vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-')

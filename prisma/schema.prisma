@@ -42,18 +42,23 @@ model HistoricoContexto {
 }
 
 model Lead {
-  id          String   @id @default(uuid())
-  cliente_id  String
-  cliente     Cliente  @relation(fields: [cliente_id], references: [id])
-  nome        String
-  contato     String?
-  status      String   @default("NOVO") // NOVO, CONTATO, NEGOCIACAO, FECHADO, PERDIDO
-  valor       Decimal  @default(0.0)
-  origem      String?
-  notas       Nota[]
-  agendamentos Agendamento[]
-  data        DateTime @default(now())
-  criado_em   DateTime @default(now())
+  id                String   @id @default(uuid())
+  cliente_id        String
+  cliente           Cliente  @relation(fields: [cliente_id], references: [id])
+  nome              String
+  contato           String?
+  status            String   @default("NOVO") // NOVO, CONTATO, NEGOCIACAO, FECHADO, PERDIDO
+  valor             Decimal  @default(0.0)
+  origem            String?
+  primeira_mensagem String?
+  tipo_servico      String?
+  veiculo           String?
+  comercial         String?
+  conversao         String?
+  notas             Nota[]
+  agendamentos      Agendamento[]
+  data              DateTime @default(now())
+  criado_em         DateTime @default(now())
 }
 
 model Nota {
