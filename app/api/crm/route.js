@@ -61,16 +61,27 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const cliente = searchParams.get('cliente');
+    const since = searchParams.get('since');
+    const until = searchParams.get('until');
 
     if (!cliente) return NextResponse.json({ success: false, error: 'Cliente não especificado' }, { status: 400 });
 
+    const where = {
+      OR: [
+        { cliente: { slug: cliente } },
+        { cliente: { nome: cliente } }
+      ]
+    };
+
+    if (since || until) {
+      const dateFilter = {};
+      if (since) dateFilter.gte = new Date(since + 'T00:00:00Z');
+      if (until) dateFilter.lte = new Date(until + 'T23:59:59Z');
+      where.data = dateFilter;
+    }
+
     const leads = await prisma.lead.findMany({
-      where: {
-        OR: [
-          { cliente: { slug: cliente } },
-          { cliente: { nome: cliente } }
-        ]
-      },
+      where,
       include: {
         notas: { orderBy: { criado_em: 'desc' } },
         agendamentos: { orderBy: { data_hora: 'asc' } }
@@ -87,7 +98,20 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    const { cliente, nome, contato, status, valor, origem, data } = await request.json();
+    const { 
+      cliente, 
+      nome, 
+      contato, 
+      status, 
+      valor, 
+      origem, 
+      data,
+      primeira_mensagem,
+      tipo_servico,
+      veiculo,
+      comercial,
+      conversao
+    } = await request.json();
 
     if (!cliente || !nome) return NextResponse.json({ success: false, error: 'Dados incompletos' }, { status: 400 });
 
@@ -109,7 +133,12 @@ export async function POST(request) {
         status: status || 'NOVO',
         valor: parseFloat(valor || 0),
         origem,
-        data: data ? new Date(data) : new Date()
+        data: data ? new Date(data) : new Date(),
+        primeira_mensagem,
+        tipo_servico,
+        veiculo,
+        comercial,
+        conversao
       }
     });
 
@@ -137,7 +166,18 @@ export async function POST(request) {
 
 export async function PATCH(request) {
   try {
-    const { id, status, valor, nome, contato } = await request.json();
+    const { 
+      id, 
+      status, 
+      valor, 
+      nome, 
+      contato,
+      primeira_mensagem,
+      tipo_servico,
+      veiculo,
+      comercial,
+      conversao
+    } = await request.json();
 
     // Busca estado anterior para saber se o status mudou
     const oldLead = await prisma.lead.findUnique({ 
@@ -151,7 +191,12 @@ export async function PATCH(request) {
         status,
         valor: valor !== undefined ? parseFloat(valor) : undefined,
         nome,
-        contato
+        contato,
+        primeira_mensagem,
+        tipo_servico,
+        veiculo,
+        comercial,
+        conversao
       }
     });
 

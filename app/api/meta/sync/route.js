@@ -171,15 +171,19 @@ function getMetric(actions, type, isValue = false) {
   return matches.reduce((acc, a) => acc + (isValue ? parseFloat(a.value || 0) : parseInt(a.value || 0, 10)), 0);
 }
 
-function getTrueLeads(actions) {
+function getTrueLeads(actions, campaignName = '') {
   if (!Array.isArray(actions)) return 0;
   const msgReply = getMetric(actions, 'onsite_conversion.messaging_first_reply');
   const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
   const fbContact = getMetric(actions, 'contact');
-  // Leads = Conversas Iniciadas OU Leads de Formulario OU Contatos
-  // Math.max garante que não contemos 2x se a Meta reportar messaging_first_reply e conversation_started
+  
+  const name = String(campaignName || '').toLowerCase();
+  if (name.includes('message')) {
+    return Math.max(msgReply, msgStarted);
+  }
+  
   return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact;
 }
 
@@ -833,7 +837,7 @@ export async function POST(request) {
         totalVisitas = linkClicks;
       }
 
-      const leadsVal = getTrueLeads(item.actions);
+      const leadsVal = getTrueLeads(item.actions, item.campaign_name);
 
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
@@ -892,7 +896,7 @@ export async function POST(request) {
         });
 
         const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
-        const leadsVal = getTrueLeads(row.actions);
+        const leadsVal = getTrueLeads(row.actions, camp?.nome_gerado || '');
 
         return prisma.metricaCriativo.upsert({
           where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },

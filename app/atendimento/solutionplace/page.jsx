@@ -39,6 +39,56 @@ export default function AtendimentoPage() {
   const clienteUrl = pathname.split('/').pop() || 'solutionplace';
   
   const [leads, setLeads] = useState([]);
+  
+  // Helper de Formatação de Data
+  const formatDateLocal = (d) => {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  };
+
+  // Estados de Datas (Padrão: Últimos 30 Dias)
+  const [startDate, setStartDate] = useState(() => {
+    const trintaDiasAtras = new Date();
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+    return formatDateLocal(trintaDiasAtras);
+  });
+  const [endDate, setEndDate] = useState(() => formatDateLocal(new Date()));
+  const [activeShortcut, setActiveShortcut] = useState(null);
+
+  const handleShortcut = (shortcut) => {
+    const hojeObj = new Date();
+    setActiveShortcut(shortcut);
+    if (shortcut === 'hoje') {
+      const d = formatDateLocal(hojeObj);
+      setStartDate(d); setEndDate(d);
+    } else if (shortcut === 'ontem') {
+      const ontem = new Date(hojeObj);
+      ontem.setDate(hojeObj.getDate() - 1);
+      const d = formatDateLocal(ontem);
+      setStartDate(d); setEndDate(d);
+    } else if (shortcut === '7d') {
+      const past = new Date(hojeObj);
+      past.setDate(hojeObj.getDate() - 7);
+      setStartDate(formatDateLocal(past));
+      setEndDate(formatDateLocal(hojeObj));
+    } else if (shortcut === 'este_mes') {
+      const pri = new Date(hojeObj.getFullYear(), hojeObj.getMonth(), 1);
+      setStartDate(formatDateLocal(pri));
+      setEndDate(formatDateLocal(hojeObj));
+    } else if (shortcut === 'mes_passado') {
+      const pri = new Date(hojeObj.getFullYear(), hojeObj.getMonth() - 1, 1);
+      const ult = new Date(hojeObj.getFullYear(), hojeObj.getMonth(), 0);
+      setStartDate(formatDateLocal(pri));
+      setEndDate(formatDateLocal(ult));
+    }
+  };
+
+  const getShortcutClass = (id) => {
+    const base = "px-3 py-1.5 text-[10px] font-bold rounded transition-all";
+    return activeShortcut === id 
+      ? `${base} bg-red-700 text-white shadow-md border border-red-600/20` 
+      : `${base} text-slate-400 hover:bg-[#1b1c24] hover:text-white`;
+  };
+
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLead, setSelectedLead] = useState(null);
@@ -133,7 +183,7 @@ export default function AtendimentoPage() {
     setLoading(true);
     try {
       const [leadsRes, agendamentosRes] = await Promise.all([
-        fetch(`/api/crm?cliente=${encodeURIComponent(clienteUrl)}`),
+        fetch(`/api/crm?cliente=${encodeURIComponent(clienteUrl)}&since=${startDate}&until=${endDate}`),
         fetch(`/api/crm/agendamentos?cliente=${encodeURIComponent(clienteUrl)}`)
       ]);
       const leadsData = await leadsRes.json();
@@ -149,7 +199,7 @@ export default function AtendimentoPage() {
     } finally {
       setLoading(false);
     }
-  }, [clienteUrl, isAuthenticated]);
+  }, [clienteUrl, isAuthenticated, startDate, endDate]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -676,37 +726,76 @@ export default function AtendimentoPage() {
           </button>
         </div>
 
-        {/* Abas Principais do CRM */}
-        <div className="flex flex-wrap gap-2 bg-[#11131a]/80 p-1.5 rounded-3xl border border-[#1b1c24] w-fit shadow-md">
-          <button 
-            onClick={() => setActiveView('TABELA')} 
-            className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeView === 'TABELA' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
-          >
-            <Table size={14} />
-            Planilha
-          </button>
-          <button 
-            onClick={() => setActiveView('KANBAN')} 
-            className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeView === 'KANBAN' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
-          >
-            <Kanban size={14} />
-            Kanban
-          </button>
-          <button 
-            onClick={() => setActiveView('DASHBOARD')} 
-            className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeView === 'DASHBOARD' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
-          >
-            <LayoutDashboard size={14} />
-            Dashboard
-          </button>
+        {/* Abas e Filtro de Datas */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          {/* Abas Principais do CRM */}
+          <div className="flex flex-wrap gap-2 bg-[#11131a]/80 p-1.5 rounded-3xl border border-[#1b1c24] w-fit shadow-md">
+            <button 
+              onClick={() => setActiveView('TABELA')} 
+              className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeView === 'TABELA' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <Table size={14} />
+              Planilha
+            </button>
+            <button 
+              onClick={() => setActiveView('KANBAN')} 
+              className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeView === 'KANBAN' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <Kanban size={14} />
+              Kanban
+            </button>
+            <button 
+              onClick={() => setActiveView('DASHBOARD')} 
+              className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeView === 'DASHBOARD' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <LayoutDashboard size={14} />
+              Dashboard
+            </button>
 
-          <button 
-            onClick={() => setActiveView('AGENDAMENTOS')} 
-            className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeView === 'AGENDAMENTOS' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
-          >
-            <Calendar size={14} />
-            Agenda / Visitas
-          </button>
+            <button 
+              onClick={() => setActiveView('AGENDAMENTOS')} 
+              className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeView === 'AGENDAMENTOS' ? 'bg-red-700 text-white shadow-lg shadow-red-950/35 border border-red-600/20' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <Calendar size={14} />
+              Agenda / Visitas
+            </button>
+          </div>
+
+          {/* Filtro de Datas (Estilo Solution) */}
+          <div className="flex items-center gap-3 bg-[#11131a]/80 p-2 rounded-3xl border border-[#1b1c24] shadow-md flex-wrap lg:flex-nowrap">
+            <div className="flex gap-1 bg-slate-950/50 p-1 rounded-2xl">
+              {[
+                { id: 'hoje', label: 'Hoje' },
+                { id: 'ontem', label: 'Ontem' },
+                { id: '7d', label: '7 Dias' },
+                { id: 'este_mes', label: 'Este Mês' },
+                { id: 'mes_passado', label: 'Mês Passado' },
+              ].map(s => (
+                <button 
+                  key={s.id} 
+                  onClick={() => handleShortcut(s.id)} 
+                  className={getShortcutClass(s.id)}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 px-2">
+              <input 
+                type="date" 
+                value={startDate} 
+                onChange={e => { setStartDate(e.target.value); setActiveShortcut(null); }} 
+                className="bg-slate-950/60 text-[10px] font-black text-slate-300 p-2.5 rounded-2xl border border-red-950/20 outline-none focus:border-red-700/40 transition-all text-center uppercase" 
+              />
+              <span className="text-red-900/50 text-xs">→</span>
+              <input 
+                type="date" 
+                value={endDate} 
+                onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} 
+                className="bg-slate-950/60 text-[10px] font-black text-slate-300 p-2.5 rounded-2xl border border-red-950/20 outline-none focus:border-red-700/40 transition-all text-center uppercase" 
+              />
+            </div>
+          </div>
         </div>
 
         {/* CONTAINER DE CONTEÚDO PRINCIPAL */}
@@ -990,85 +1079,49 @@ export default function AtendimentoPage() {
           ) : (
              /* --- MODO DASHBOARD --- */
              <div className="space-y-6">
-               {/* 4 Cards Principais */}
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
-                   <div>
-                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Total de Leads</p>
-                     <p className="text-3xl font-black text-white mt-2">{dashboardStats.totalLeads}</p>
-                   </div>
-                   <div className="w-12 h-12 rounded-2xl bg-red-950/20 border border-red-900/20 text-red-500 flex items-center justify-center">
-                     <Users size={20} />
-                   </div>
-                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Total de Leads</p>
+                      <p className="text-3xl font-black text-white mt-2">{dashboardStats.totalLeads}</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-red-950/20 border border-red-900/20 text-red-500 flex items-center justify-center">
+                      <Users size={20} />
+                    </div>
+                  </div>
 
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
-                   <div>
-                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Leads Ativos</p>
-                     <p className="text-3xl font-black text-amber-500 mt-2">{dashboardStats.leadsAtivos}</p>
-                   </div>
-                   <div className="w-12 h-12 rounded-2xl bg-amber-950/20 border border-amber-900/20 text-amber-500 flex items-center justify-center">
-                     <Clock size={20} />
-                   </div>
-                 </div>
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Leads Ativos</p>
+                      <p className="text-3xl font-black text-amber-500 mt-2">{dashboardStats.leadsAtivos}</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-amber-950/20 border border-amber-900/20 text-amber-500 flex items-center justify-center">
+                      <Clock size={20} />
+                    </div>
+                  </div>
 
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
-                   <div>
-                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Faturamento Real</p>
-                     <p className="text-2xl font-black text-emerald-400 mt-2">
-                       R$ {dashboardStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                     </p>
-                   </div>
-                   <div className="w-12 h-12 rounded-2xl bg-emerald-950/20 border border-emerald-900/20 text-emerald-500 flex items-center justify-center">
-                     <DollarSign size={20} />
-                   </div>
-                 </div>
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Faturamento Real</p>
+                      <p className="text-2xl font-black text-emerald-400 mt-2">
+                        R$ {dashboardStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-950/20 border border-emerald-900/20 text-emerald-500 flex items-center justify-center">
+                      <DollarSign size={20} />
+                    </div>
+                  </div>
 
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
-                   <div>
-                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Taxa de Conversão</p>
-                     <p className="text-3xl font-black text-white mt-2">{dashboardStats.taxaConversao}%</p>
-                   </div>
-                   <div className="w-12 h-12 rounded-2xl bg-red-950/20 border border-red-900/20 text-red-500 flex items-center justify-center">
-                     <TrendingUp size={20} />
-                   </div>
-                   <div className="w-12 h-12 rounded-2xl bg-red-950/20 border border-red-900/20 text-red-500 flex items-center justify-center">
-                     <Users size={20} />
-                   </div>
-                 </div>
-
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
-                   <div>
-                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Leads Ativos</p>
-                     <p className="text-3xl font-black text-amber-500 mt-2">{dashboardStats.leadsAtivos}</p>
-                   </div>
-                   <div className="w-12 h-12 rounded-2xl bg-amber-950/20 border border-amber-900/20 text-amber-500 flex items-center justify-center">
-                     <Clock size={20} />
-                   </div>
-                 </div>
-
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
-                   <div>
-                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Faturamento Real</p>
-                     <p className="text-2xl font-black text-emerald-400 mt-2">
-                       R$ {dashboardStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                     </p>
-                   </div>
-                   <div className="w-12 h-12 rounded-2xl bg-emerald-950/20 border border-emerald-900/20 text-emerald-500 flex items-center justify-center">
-                     <DollarSign size={20} />
-                   </div>
-                 </div>
-
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
-                   <div>
-                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Taxa de Conversão</p>
-                     <p className="text-3xl font-black text-white mt-2">{dashboardStats.taxaConversao}%</p>
-                   </div>
-                   <div className="w-12 h-12 rounded-2xl bg-red-950/20 border border-red-900/20 text-red-500 flex items-center justify-center">
-                     <TrendingUp size={20} />
-                   </div>
-                 </div>
-               </div>
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Taxa de Conversão</p>
+                      <p className="text-3xl font-black text-white mt-2">{dashboardStats.taxaConversao}%</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-blue-950/20 border border-blue-900/20 text-blue-500 flex items-center justify-center">
+                      <TrendingUp size={20} />
+                    </div>
+                  </div>
+                </div>
 
                {/* Gráficos de Veículos (Mais Procurados vs Vendidos vs Assistência) */}
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -531,7 +531,7 @@ export default function App() {
     if (!clienteSelecionado) return;
     setLeadsLoading(true);
     try {
-      const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteSelecionado)}`);
+      const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteSelecionado)}&since=${startDate}&until=${endDate}`);
       const data = await res.json();
       if (data.success) setLeadsList(data.leads);
       else setMensagemPainel({ tipo: 'erro', texto: data.error });
@@ -882,7 +882,8 @@ export default function App() {
   const roas = investimento > 0 ? (faturamento / investimento).toFixed(2) : 0;
 
   const crmStats = useMemo(() => {
-    const leadsNormais = leadsList.filter(l => l.origem !== 'Seguidor Instagram');
+    const list = Array.isArray(leadsList) ? leadsList : [];
+    const leadsNormais = list.filter(l => l && l.origem !== 'Seguidor Instagram');
     const totalLeads = leadsNormais.length;
     
     // Considera closedLeads tanto as vendas fechadas quanto as assistências que geraram faturamento
