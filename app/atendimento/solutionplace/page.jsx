@@ -183,7 +183,7 @@ export default function AtendimentoPage() {
     setLoading(true);
     try {
       const [leadsRes, agendamentosRes] = await Promise.all([
-        fetch(`/api/crm?cliente=${encodeURIComponent(clienteUrl)}&since=${startDate}&until=${endDate}`),
+        fetch(`/api/crm?cliente=${encodeURIComponent(clienteUrl)}`),
         fetch(`/api/crm/agendamentos?cliente=${encodeURIComponent(clienteUrl)}`)
       ]);
       const leadsData = await leadsRes.json();
@@ -199,7 +199,7 @@ export default function AtendimentoPage() {
     } finally {
       setLoading(false);
     }
-  }, [clienteUrl, isAuthenticated, startDate, endDate]);
+  }, [clienteUrl, isAuthenticated]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -468,17 +468,21 @@ export default function AtendimentoPage() {
     }
   };
 
-  // Filtra os leads normais (ocultando seguidores do Instagram)
+  // Filtra os leads normais (ocultando seguidores do Instagram) e aplica filtro de datas
   const leadsFiltrados = useMemo(() => {
+    const startMs = startDate ? new Date(startDate + 'T00:00:00').getTime() : 0;
+    const endMs = endDate ? new Date(endDate + 'T23:59:59').getTime() : Infinity;
     return leads.filter(l => {
       const matchesSearch = l.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             l.contato?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             l.veiculo?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const isSeguidor = l.origem === 'Seguidor Instagram';
-      return matchesSearch && !isSeguidor;
+      const leadDate = new Date(l.data).getTime();
+      const inRange = leadDate >= startMs && leadDate <= endMs;
+      return matchesSearch && !isSeguidor && inRange;
     });
-  }, [leads, searchTerm]);
+  }, [leads, searchTerm, startDate, endDate]);
 
   // Lista de vendedores/comerciais dinâmicos baseada nos leads do banco de dados
   const vendedoresDisponiveis = useMemo(() => {

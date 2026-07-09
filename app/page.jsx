@@ -531,7 +531,7 @@ export default function App() {
     if (!clienteSelecionado) return;
     setLeadsLoading(true);
     try {
-      const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteSelecionado)}&since=${startDate}&until=${endDate}`);
+      const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteSelecionado)}`);
       const data = await res.json();
       if (data.success) setLeadsList(data.leads);
       else setMensagemPainel({ tipo: 'erro', texto: data.error });
