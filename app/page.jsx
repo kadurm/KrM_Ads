@@ -2,7 +2,7 @@
 "use client";
 // Force rebuild: 2026-04-24T06:54:00
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import {
@@ -715,6 +715,7 @@ export default function App() {
     const autoSync = async () => {
       // 1. Carrega imediatamente os dados cacheados do banco de dados para evitar tela vazia ou dados anteriores
       await loadMetrics();
+      await loadLeads();
       
       // 2. Se já estiver em andamento um sync, não dispara outra chamada de sync
       if (isSyncing) return;
@@ -737,7 +738,10 @@ export default function App() {
       }
       
       // 3. Atualiza os dados com a sincronização mais recente da Meta
-      if (!cancelled) await loadMetrics();
+      if (!cancelled) {
+        await loadMetrics();
+        await loadLeads();
+      }
     };
     autoSync();
     return () => { cancelled = true; };
@@ -876,6 +880,82 @@ export default function App() {
   };
 
   const roas = investimento > 0 ? (faturamento / investimento).toFixed(2) : 0;
+
+  const crmStats = useMemo(() => {
+    const leadsNormais = leadsList.filter(l => l.origem !== 'Seguidor Instagram');
+    const totalLeads = leadsNormais.length;
+    
+    // Considera closedLeads tanto as vendas fechadas quanto as assistências que geraram faturamento
+    const closedLeads = leadsNormais.filter(l => l.status === 'FECHADO' || (l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0));
+    const faturamentoTotal = closedLeads.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const faturamentoAssistencia = leadsNormais
+      .filter(l => l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0)
+      .reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+      
+    const taxaConversao = totalLeads > 0 ? ((closedLeads.length / totalLeads) * 100).toFixed(1) : '0';
+    const leadsAtivos = leadsNormais.filter(l => 
+      l.status !== 'FECHADO' && 
+      !(l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) && 
+      l.status !== 'PERDIDO'
+    ).length;
+
+    // Veículos Procurados (Ativos)
+    const procuradosMap = {};
+    leadsNormais.forEach(l => {
+      if (
+        l.veiculo && 
+        l.veiculo !== 'X' && 
+        l.veiculo !== 'NÃO IDENTIFICADO' && 
+        l.status !== 'FECHADO' && 
+        !(l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) &&
+        l.status !== 'PERDIDO'
+      ) {
+        const cleanName = l.veiculo.trim().toUpperCase();
+        procuradosMap[cleanName] = (procuradosMap[cleanName] || 0) + 1;
+      }
+    });
+    const topProcurados = Object.entries(procuradosMap)
+      .map(([nome, count]) => ({ nome, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // Veículos Vendidos (Fechados)
+    const vendidosMap = {};
+    leadsNormais.forEach(l => {
+      if (l.veiculo && l.veiculo !== 'X' && l.status === 'FECHADO' && l.tipo_servico !== 'ASSISTÊNCIA') {
+        const cleanName = l.veiculo.trim().toUpperCase();
+        vendidosMap[cleanName] = (vendidosMap[cleanName] || 0) + 1;
+      }
+    });
+    const topVendidos = Object.entries(vendidosMap)
+      .map(([nome, count]) => ({ nome, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // Veículos de Assistência Técnica (Ganhos)
+    const assistenciasMap = {};
+    leadsNormais.forEach(l => {
+      if (l.veiculo && l.veiculo !== 'X' && l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) {
+        const cleanName = l.veiculo.trim().toUpperCase();
+        assistenciasMap[cleanName] = (assistenciasMap[cleanName] || 0) + 1;
+      }
+    });
+    const topAssistencias = Object.entries(assistenciasMap)
+      .map(([nome, count]) => ({ nome, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    return {
+      totalLeads,
+      faturamentoTotal,
+      faturamentoAssistencia,
+      taxaConversao,
+      leadsAtivos,
+      topProcurados,
+      topVendidos,
+      topAssistencias
+    };
+  }, [leadsList]);
 
   if (!isMounted) {
     return (
@@ -1233,14 +1313,22 @@ export default function App() {
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
                   <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento real</span>
                   <div className="flex items-center gap-1 mt-1">
-
-
-                    <span className="text-base font-black text-slate-100">{faturamento > 0 ? `R$ ${faturamento}` : '-'}</span>
+                    <span className="text-base font-black text-slate-100">
+                      {clienteSelecionado === 'Solution Place'
+                        ? (crmStats.faturamentoTotal > 0 ? `R$ ${crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-')
+                        : (faturamento > 0 ? `R$ ${faturamento}` : '-')
+                      }
+                    </span>
                   </div>
                 </div>
                 <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
                   <span className="text-[10px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
-                  <div className="text-base font-black mt-1">{roas}x</div>
+                  <div className="text-base font-black mt-1">
+                    {clienteSelecionado === 'Solution Place'
+                      ? (parseFloat(investimento) > 0 ? `${(crmStats.faturamentoTotal / parseFloat(investimento)).toFixed(2)}x` : '0.00x')
+                      : `${roas}x`
+                    }
+                  </div>
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
                   <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
@@ -1248,7 +1336,15 @@ export default function App() {
                 </div>
                 <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
                   <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
-                  <div className="text-base font-black mt-1">{vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-'}</div>
+                  <div className="text-base font-black mt-1">
+                    {clienteSelecionado === 'Solution Place'
+                      ? (crmStats.topVendidos.reduce((acc, curr) => acc + curr.count, 0) + crmStats.topAssistencias.reduce((acc, curr) => acc + curr.count, 0) > 0
+                          ? `R$ ${(parseFloat(investimento) / (crmStats.topVendidos.reduce((acc, curr) => acc + curr.count, 0) + crmStats.topAssistencias.reduce((acc, curr) => acc + curr.count, 0))).toFixed(2)}`
+                          : '-'
+                        )
+                      : (vendasReais > 0 ? `R$ ${(investimento / vendasReais).toFixed(2)}` : '-')
+                    }
+                  </div>
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-pink-500 shadow-xl">
                   <span className="text-[10px] font-bold text-pink-500 uppercase flex items-center gap-2 tracking-wider"><Instagram size={12}/> Seguidores</span>
@@ -1352,6 +1448,133 @@ export default function App() {
 
                     </LineChart>
                   </ResponsiveContainer>
+                </div>
+              )}
+
+              {/* Seção CRM para Auditoria */}
+              {clienteSelecionado === 'Solution Place' && leadsList.length > 0 && (
+                <div className="bg-slate-900/60 p-8 rounded-3xl border border-slate-800 space-y-6">
+                  <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                    <Database className="text-blue-500" size={20} />
+                    <div>
+                      <h3 className="text-base font-black text-slate-100 uppercase tracking-tight">Auditoria de CRM & Vendas Reais</h3>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Métricas de conversão comercial offline</p>
+                    </div>
+                  </div>
+
+                  {/* KPIs de CRM */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Leads Totais (CRM)</span>
+                      <p className="text-xl font-black text-white mt-1.5">{crmStats.totalLeads}</p>
+                    </div>
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Leads Ativos (CRM)</span>
+                      <p className="text-xl font-black text-amber-500 mt-1.5">{crmStats.leadsAtivos}</p>
+                    </div>
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Faturamento Real</span>
+                      <p className="text-xl font-black text-emerald-400 mt-1.5">
+                        R$ {crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </p>
+                    </div>
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Taxa de Conversão</span>
+                      <p className="text-xl font-black text-white mt-1.5">{crmStats.taxaConversao}%</p>
+                    </div>
+                  </div>
+
+                  {/* Cards de Detalhamento por Veículos */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                    {/* Mais Procurados */}
+                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
+                        <Car className="text-amber-500" size={14} /> Carros Mais Procurados
+                      </h4>
+                      <div className="space-y-3">
+                        {crmStats.topProcurados.length === 0 ? (
+                          <p className="text-[10px] text-slate-600 italic">Nenhum veículo ativo.</p>
+                        ) : (
+                          crmStats.topProcurados.map((item, idx) => {
+                            const max = Math.max(...crmStats.topProcurados.map(i => i.count));
+                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
+                                  <span>{item.nome}</span>
+                                  <span className="text-amber-500 font-bold">{item.count} leads</span>
+                                </div>
+                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                                  <div className="bg-amber-600 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Vendidos */}
+                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
+                        <Shield className="text-emerald-500" size={14} /> Carros Vendidos (Ganhos)
+                      </h4>
+                      <div className="space-y-3">
+                        {crmStats.topVendidos.length === 0 ? (
+                          <p className="text-[10px] text-slate-600 italic">Nenhum veículo vendido.</p>
+                        ) : (
+                          crmStats.topVendidos.map((item, idx) => {
+                            const max = Math.max(...crmStats.topVendidos.map(i => i.count));
+                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
+                                  <span>{item.nome}</span>
+                                  <span className="text-emerald-400 font-bold">{item.count} fechados</span>
+                                </div>
+                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Assistência Técnica */}
+                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                      <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                        <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                          <Briefcase className="text-blue-400" size={14} /> Assistência Técnica
+                        </h4>
+                        <span className="text-[10px] font-black text-emerald-400">
+                          R$ {crmStats.faturamentoAssistencia.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        {crmStats.topAssistencias.length === 0 ? (
+                          <p className="text-[10px] text-slate-600 italic">Nenhum veículo concluído.</p>
+                        ) : (
+                          crmStats.topAssistencias.map((item, idx) => {
+                            const max = Math.max(...crmStats.topAssistencias.map(i => i.count));
+                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
+                                  <span>{item.nome}</span>
+                                  <span className="text-blue-400 font-bold">{item.count} concluídos</span>
+                                </div>
+                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                                  <div className="bg-blue-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
