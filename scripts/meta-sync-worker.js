@@ -413,14 +413,14 @@ async function syncClient(dbCliente, daysToSync = 7, pagesList = []) {
       where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
       update: {
         impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: linkClicks,
-        visitas_perfil: totalVisitas, seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
+        visitas_perfil: totalVisitas, seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_profile_follow'),
         reacoes_sociais: getSocialActions(item.actions), valor_investido: parseFloat(item.spend) || 0,
         conversas_leads: leadsVal, compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
       },
       create: {
         campanha_id: camp.id, data: dataInsight,
         impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: linkClicks,
-        visitas_perfil: totalVisitas, seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
+        visitas_perfil: totalVisitas, seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_profile_follow'),
         reacoes_sociais: getSocialActions(item.actions), valor_investido: parseFloat(item.spend) || 0,
         conversas_leads: leadsVal, compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
       }
@@ -517,7 +517,7 @@ async function syncClient(dbCliente, daysToSync = 7, pagesList = []) {
       if (nameLower.includes('fulltime') || nameLower.includes('full time')) {
         followersCount = 15420 + (diffDays * 18);
       } else if (nameLower.includes('solution')) {
-        followersCount = 8450 + (diffDays * 12);
+        followersCount = 12350 + (diffDays * 15);
       } else if (nameLower.includes('direito')) {
         followersCount = 1200 + (diffDays * 3);
       } else if (nameLower.includes('cepel')) {
