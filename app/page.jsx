@@ -34,6 +34,7 @@ import {
   Trash2,
   Info,
   Briefcase,
+  Car,
   CalendarDays,
   ChevronRight,
   ChevronDown,
