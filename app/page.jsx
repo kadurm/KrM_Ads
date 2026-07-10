@@ -1263,23 +1263,10 @@ export default function App() {
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Performance Global</h1>
-                    {auditResult && (
-                      <div className={`self-start sm:self-auto flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border backdrop-blur-md transition-all ${
-                        auditResult.verified 
-                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
-                          : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30 animate-pulse'
-                      }`}>
-                        {auditResult.verified ? (
-                          <>
-                            <ShieldCheck size={12} className="text-emerald-400" />
-                            Garantia KrM: 100% Auditado
-                          </>
-                        ) : (
-                          <>
-                            <AlertTriangle size={12} className="text-yellow-400 animate-bounce" />
-                            Auditoria: Divergência de R$ {auditResult.discrepancySpend.toFixed(2)} (Ajustando...)
-                          </>
-                        )}
+                    {auditResult && !auditResult.verified && (
+                      <div className="self-start sm:self-auto flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border backdrop-blur-md transition-all bg-yellow-500/10 text-yellow-400 border-yellow-500/30 animate-pulse">
+                        <AlertTriangle size={12} className="text-yellow-400 animate-bounce" />
+                        Auditoria: Divergência de R$ {auditResult.discrepancySpend.toFixed(2)} (Ajustando...)
                       </div>
                     )}
                   </div>
@@ -1310,13 +1297,13 @@ export default function App() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> Investimento</span>
-                  <div className="text-base font-black mt-1 text-slate-100">R$ {investimento}</div>
+                  <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><Target size={12}/> Investimento</span>
+                  <div className="text-sm font-black mt-1 text-slate-100">R$ {investimento}</div>
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
-                  <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider"><DollarSign size={12}/> Faturamento real</span>
+                  <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><DollarSign size={12}/> Faturamento real</span>
                   <div className="flex items-center gap-1 mt-1">
-                    <span className="text-base font-black text-slate-100">
+                    <span className="text-sm font-black text-slate-100">
                       {clienteSelecionado === 'Solution Place'
                         ? (crmStats.faturamentoTotal > 0 ? `R$ ${crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-')
                         : (faturamento > 0 ? `R$ ${faturamento}` : '-')
@@ -1325,8 +1312,8 @@ export default function App() {
                   </div>
                 </div>
                 <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
-                  <span className="text-[10px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider"><TrendingUp size={12}/> ROAS Real</span>
-                  <div className="text-base font-black mt-1">
+                  <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><TrendingUp size={12}/> ROAS Real</span>
+                  <div className="text-sm font-black mt-1">
                     {clienteSelecionado === 'Solution Place'
                       ? (parseFloat(investimento) > 0 ? `${(crmStats.faturamentoTotal / parseFloat(investimento)).toFixed(2)}x` : '0.00x')
                       : `${roas}x`
@@ -1334,12 +1321,12 @@ export default function App() {
                   </div>
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
-                  <div className="text-base font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
+                  <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-slate-500 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><MessageCircle size={12}/> {segmento === 'inside_sales' ? 'Leads Totais' : 'Vendas Totais'}</span>
+                  <div className="text-sm font-black mt-1 text-slate-100">{segmento === 'inside_sales' ? totalLeads : totalCompras}</div>
                 </div>
                 <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
-                  <span className="text-[10px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider"><Target size={12}/> CAC Real</span>
-                  <div className="text-base font-black mt-1">
+                  <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><Target size={12}/> CAC Real</span>
+                  <div className="text-sm font-black mt-1">
                     {clienteSelecionado === 'Solution Place'
                       ? (crmStats.totalClosed > 0
                           ? `R$ ${(parseFloat(investimento) / crmStats.totalClosed).toFixed(2)}`
@@ -1350,8 +1337,8 @@ export default function App() {
                   </div>
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-pink-500 shadow-xl">
-                  <span className="text-[10px] font-bold text-pink-500 uppercase flex items-center gap-2 tracking-wider"><Instagram size={12}/> Seguidores</span>
-                  <div className="text-base font-black mt-1 text-slate-100">{seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString()}</div>
+                  <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-pink-500 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><Instagram size={12}/> Seguidores</span>
+                  <div className="text-sm font-black mt-1 text-slate-100">{seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString()}</div>
                 </div>
               </div>
 
