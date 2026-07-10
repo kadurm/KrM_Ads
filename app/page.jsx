@@ -926,11 +926,15 @@ export default function App() {
     leadsNormais.forEach(l => {
       if (l.veiculo && l.veiculo !== 'X' && l.status === 'FECHADO' && l.tipo_servico !== 'ASSISTÊNCIA') {
         const cleanName = l.veiculo.trim().toUpperCase();
-        vendidosMap[cleanName] = (vendidosMap[cleanName] || 0) + 1;
+        if (!vendidosMap[cleanName]) {
+          vendidosMap[cleanName] = { count: 0, valor: 0 };
+        }
+        vendidosMap[cleanName].count += 1;
+        vendidosMap[cleanName].valor += Number(l.valor || 0);
       }
     });
     const topVendidos = Object.entries(vendidosMap)
-      .map(([nome, count]) => ({ nome, count }))
+      .map(([nome, data]) => ({ nome, count: data.count, valor: data.valor }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -1520,7 +1524,10 @@ export default function App() {
                               <div key={idx} className="space-y-1">
                                 <div className="flex justify-between text-[11px] font-semibold text-slate-300">
                                   <span>{item.nome}</span>
-                                  <span className="text-emerald-400 font-bold">{item.count} fechados</span>
+                                  <span className="text-emerald-400 font-bold">
+                                    {item.count} {item.count === 1 ? 'fechado' : 'fechados'}
+                                    {item.valor > 0 && ` • R$ ${item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                                  </span>
                                 </div>
                                 <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
                                   <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
@@ -1569,28 +1576,29 @@ export default function App() {
               )}
 
               <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-slate-100"><ImageIcon className="text-blue-500" /> Ranking de Criativos</h3>
-              <p className="text-slate-500 text-xs mb-4">Ordenado pelo menor custo por resultado.</p>
+              <p className="text-slate-500 text-xs mb-4">Ordenado pelo número de leads gerados.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[...criativosDados]
+                  .filter(c => c && c.nome_anuncio && c.nome_anuncio.trim().toUpperCase() !== 'AD[31/01/26]')
                   .map(c => ({ ...c, _cpa: segmento === 'inside_sales' ? (c.leads > 0 ? c.valor_investido / c.leads : Infinity) : (c.compras > 0 ? c.valor_investido / c.compras : Infinity) }))
-                  .sort((a, b) => a._cpa - b._cpa)
+                  .sort((a, b) => segmento === 'inside_sales' ? (b.leads - a.leads) : (b.compras - a.compras))
                   .slice(0, 12)
                   .map((c, idx) => {
                    const cpa = c._cpa === Infinity ? 0 : c._cpa;
                    
                    // Estilo moderno para medalhas
                    const getRankBadge = (rank) => {
-                     if (rank === 0 && cpa > 0) return (
+                     if (rank === 0) return (
                        <div className="absolute top-3 left-3 bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 p-2 rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.4)] border border-yellow-200/50 z-10 flex items-center justify-center animate-pulse">
                          <Trophy size={18} className="text-white drop-shadow-md" />
                        </div>
                      );
-                     if (rank === 1 && cpa > 0) return (
+                     if (rank === 1) return (
                        <div className="absolute top-3 left-3 bg-gradient-to-br from-slate-200 via-slate-400 to-slate-500 p-2 rounded-xl shadow-[0_0_20px_rgba(148,163,184,0.3)] border border-slate-100/50 z-10 flex items-center justify-center">
                          <Medal size={18} className="text-white drop-shadow-md" />
                        </div>
                      );
-                     if (rank === 2 && cpa > 0) return (
+                     if (rank === 2) return (
                        <div className="absolute top-3 left-3 bg-gradient-to-br from-orange-300 via-orange-500 to-orange-700 p-2 rounded-xl shadow-[0_0_20px_rgba(249,115,22,0.3)] border border-orange-200/50 z-10 flex items-center justify-center">
                          <Medal size={18} className="text-white drop-shadow-md" />
                        </div>
@@ -1598,7 +1606,7 @@ export default function App() {
                      return null;
                    };
 
-                   const borderHighlight = idx === 0 && cpa > 0 ? 'border-yellow-500/40 shadow-yellow-900/10' : idx === 1 && cpa > 0 ? 'border-slate-400/30' : idx === 2 && cpa > 0 ? 'border-orange-500/30' : 'border-slate-800';
+                   const borderHighlight = idx === 0 ? 'border-yellow-500/40 shadow-yellow-900/10' : idx === 1 ? 'border-slate-400/30' : idx === 2 ? 'border-orange-500/30' : 'border-slate-800';
                    
                    return (
                      <div key={c.id} className={`bg-slate-900 rounded-3xl border ${borderHighlight} overflow-hidden group hover:border-blue-500/50 transition-all flex flex-col h-full shadow-2xl relative`}>

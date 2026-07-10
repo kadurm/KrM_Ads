@@ -542,11 +542,15 @@ export default function AtendimentoPage() {
     leadsNormais.forEach(l => {
       if (l.veiculo && l.veiculo !== 'X' && l.status === 'FECHADO' && l.tipo_servico !== 'ASSISTÊNCIA') {
         const cleanName = l.veiculo.trim().toUpperCase();
-        vendidosMap[cleanName] = (vendidosMap[cleanName] || 0) + 1;
+        if (!vendidosMap[cleanName]) {
+          vendidosMap[cleanName] = { count: 0, valor: 0 };
+        }
+        vendidosMap[cleanName].count += 1;
+        vendidosMap[cleanName].valor += Number(l.valor || 0);
       }
     });
     const topVendidos = Object.entries(vendidosMap)
-      .map(([nome, count]) => ({ nome, count }))
+      .map(([nome, data]) => ({ nome, count: data.count, valor: data.valor }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -1175,7 +1179,10 @@ export default function AtendimentoPage() {
                            <div key={idx} className="space-y-1.5">
                              <div className="flex justify-between text-xs font-bold text-slate-300">
                                <span>{item.nome}</span>
-                               <span className="text-emerald-400 font-black">{item.count} fechados</span>
+                               <span className="text-emerald-400 font-black">
+                                 {item.count} {item.count === 1 ? 'fechado' : 'fechados'}
+                                 {item.valor > 0 && ` • R$ ${item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                               </span>
                              </div>
                              <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-900">
                                <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
