@@ -579,7 +579,24 @@ export async function GET(request) {
       console.error("Erro ao calcular delta de seguidores no sync:", e);
     }
 
-    return NextResponse.json({ success: true, metrics, criativos, dailyMetrics, totalReach, lastSyncDate, audit, followersDelta });
+    return NextResponse.json({ 
+      success: true, 
+      metrics, 
+      criativos, 
+      dailyMetrics, 
+      totalReach, 
+      lastSyncDate, 
+      audit, 
+      followersDelta,
+      debug: {
+        rangeMetricsCount: rangeMetrics.length,
+        oldestInRange: rangeMetrics[0] || null,
+        newestInRange: rangeMetrics[rangeMetrics.length - 1] || null,
+        dateSince: dateSince.toISOString(),
+        dateUntil: dateUntil.toISOString(),
+        clienteId: cliente?.id
+      }
+    });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
