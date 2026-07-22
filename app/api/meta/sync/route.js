@@ -54,20 +54,20 @@ async function fetchMetaWithRetry(url, options = {}, startTime = null, timeBudge
       const res = await fetch(url, options);
       if (!res.ok) {
         const err = await res.json();
-        const errCode = err.error?.code;
-        
-        // Rate limit: 4, 17, 32, 80000, 80007, or HTTP 429
-        const isRateLimit = errCode === 4 || errCode === 17 || errCode === 32 || errCode === 80000 || errCode === 80007 || res.status === 429;
+        const errMsg = (err.error?.message || '').toLowerCase();
+        // Rate limit: 4, 17, 32, 613, 80000, 80004, 80007, HTTP 429 or message containing "request limit"
+        const isRateLimit = errCode === 4 || errCode === 17 || errCode === 32 || errCode === 613 || errCode === 80000 || errCode === 80004 || errCode === 80007 || res.status === 429 || errMsg.includes('request limit');
         
         if (isRateLimit && attempts < maxAttempts - 1) {
           attempts++;
           const jitter = Math.random() * 500;
-          console.warn(`[Meta API Retry] Rate limit hit (code: ${errCode}). Retrying ${attempts}/${maxAttempts} in ${delayTime + jitter}ms...`);
+          console.warn(`[Meta API Retry] Rate limit hit (code: ${errCode}, msg: "${err.error?.message}"). Retrying ${attempts}/${maxAttempts} in ${delayTime + jitter}ms...`);
           await delay(delayTime + jitter);
           delayTime *= 2;
           continue;
         }
         throw new Error(`Meta API Error: ${err.error?.message || res.statusText}`);
+
       }
       return await res.json();
     } catch (error) {
@@ -975,6 +975,14 @@ export async function POST(request) {
     return NextResponse.json({ success: true, isPartial });
   } catch (error) {
     console.error("POST BulletproofSync Error:", error);
+    if (error.message && (error.message.includes('request limit') || error.message.includes('Rate limit'))) {
+      return NextResponse.json({ 
+        success: true, 
+        rateLimited: true, 
+        message: "Cota de requisições da Meta API atingida temporariamente. Os dados salvos no banco continuarão sendo exibidos." 
+      });
+    }
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
+
 }
