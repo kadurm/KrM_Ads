@@ -888,11 +888,14 @@ export async function POST(request) {
       const seguidoresVal = (() => {
         const apiFollowers = getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like') + getMetric(item.actions, 'onsite_conversion.instagram_profile_follow');
         if (apiFollowers > 0) return apiFollowers;
-        if (String(item.campaign_id) === '120237338823250488') {
-          return Math.round(linkClicks * 0.018);
+        const isTrafficCamp = (item.campaign_name || '').toUpperCase().includes('TRAFFIC') || (item.objective || '').toUpperCase().includes('TRAFFIC');
+        if (isTrafficCamp && linkClicks > 0) {
+          const calRatio = campaignCalibrationMap[String(item.campaign_id)] || 0.028619;
+          return Math.round(linkClicks * calRatio);
         }
         return 0;
       })();
+
 
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },

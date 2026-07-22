@@ -1351,11 +1351,13 @@ export default function App() {
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-pink-500 shadow-xl">
                   <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-pink-500 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><Instagram size={12}/> Seguidores</span>
                   <div className="text-sm font-black mt-1 text-slate-100">
-                    {clienteAtivoObj?.has_crm
-                      ? `+${relatorioDados.reduce((acc, curr) => acc + curr.rawSeguidores, 0).toLocaleString()}`
-                      : (seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString())
-                    }
+                    {(() => {
+                      const sumMetaSeguidores = relatorioDados.reduce((acc, curr) => acc + (curr.rawSeguidores || 0), 0);
+                      if (sumMetaSeguidores > 0) return `+${sumMetaSeguidores.toLocaleString()}`;
+                      return seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString();
+                    })()}
                   </div>
+
                 </div>
               </div>
 
