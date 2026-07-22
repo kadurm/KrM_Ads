@@ -54,9 +54,11 @@ async function fetchMetaWithRetry(url, options = {}, startTime = null, timeBudge
       const res = await fetch(url, options);
       if (!res.ok) {
         const err = await res.json();
+        const errCode = err.error?.code;
         const errMsg = (err.error?.message || '').toLowerCase();
         // Rate limit: 4, 17, 32, 613, 80000, 80004, 80007, HTTP 429 or message containing "request limit"
         const isRateLimit = errCode === 4 || errCode === 17 || errCode === 32 || errCode === 613 || errCode === 80000 || errCode === 80004 || errCode === 80007 || res.status === 429 || errMsg.includes('request limit');
+
         
         if (isRateLimit && attempts < maxAttempts - 1) {
           attempts++;
