@@ -307,6 +307,15 @@ export async function GET(request) {
         total.alcance = metaCampReachMap.get(String(camp.meta_id));
       }
 
+      if (total.seguidores === 0 && total.cliques > 0) {
+        const isTraffic = (camp.nome_gerado || '').toUpperCase().includes('TRAFFIC') || (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
+        if (isTraffic) {
+          const calRatio = campaignCalibrationMap[String(camp.meta_id)] || 0.028619;
+          total.seguidores = Math.round(total.cliques * calRatio);
+        }
+      }
+
+
       let finalVal = 0;
       let finalLabel = 'Resultados';
       let isCPM = false;
