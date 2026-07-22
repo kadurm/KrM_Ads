@@ -438,7 +438,12 @@ async function runSeeding() {
             status: mappedStatus,
             valor: item.valor,
             origem: item.origem,
-            data: dataObj
+            data: dataObj,
+            primeira_mensagem: cleanOperationalMark(item.mensagem),
+            tipo_servico: cleanOperationalMark(item.servico),
+            veiculo: cleanOperationalMark(item.veiculo),
+            comercial: cleanOperationalMark(item.comercial),
+            conversao: cleanOperationalMark(item.status)
           }
         });
       } else {
@@ -450,7 +455,12 @@ async function runSeeding() {
             status: mappedStatus,
             valor: item.valor,
             origem: item.origem,
-            data: dataObj
+            data: dataObj,
+            primeira_mensagem: cleanOperationalMark(item.mensagem),
+            tipo_servico: cleanOperationalMark(item.servico),
+            veiculo: cleanOperationalMark(item.veiculo),
+            comercial: cleanOperationalMark(item.comercial),
+            conversao: cleanOperationalMark(item.status)
           }
         });
       }

@@ -58,7 +58,20 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    const { nome, meta_ads_account_id, meta_access_token, meta_pixel_id } = await request.json();
+    const { 
+      nome, 
+      meta_ads_account_id, 
+      meta_access_token, 
+      meta_pixel_id,
+      has_crm,
+      label_procurados,
+      label_vendidos,
+      label_assistencia,
+      status_fechado,
+      tipo_servico_assistencia,
+      baseline_seguidores,
+      crescimento_diario
+    } = await request.json();
     
     if (!nome || !meta_ads_account_id) {
       return NextResponse.json({ success: false, error: "Nome e ID da conta são obrigatórios" }, { status: 400 });
@@ -84,7 +97,15 @@ export async function POST(request) {
         meta_ads_account_id,
         meta_access_token,
         meta_pixel_id,
-        insights: agentTemplate
+        insights: agentTemplate,
+        has_crm: has_crm !== undefined ? Boolean(has_crm) : undefined,
+        label_procurados,
+        label_vendidos,
+        label_assistencia,
+        status_fechado,
+        tipo_servico_assistencia,
+        baseline_seguidores: baseline_seguidores !== undefined ? parseInt(baseline_seguidores) : undefined,
+        crescimento_diario: crescimento_diario !== undefined ? parseInt(crescimento_diario) : undefined
       }
     });
 
@@ -100,13 +121,42 @@ export async function POST(request) {
 
 export async function PATCH(request) {
   try {
-    const { id, nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights } = await request.json();
+    const { 
+      id, 
+      nome, 
+      meta_ads_account_id, 
+      meta_access_token, 
+      meta_pixel_id, 
+      insights,
+      has_crm,
+      label_procurados,
+      label_vendidos,
+      label_assistencia,
+      status_fechado,
+      tipo_servico_assistencia,
+      baseline_seguidores,
+      crescimento_diario
+    } = await request.json();
     if (!id) return NextResponse.json({ success: false, error: "ID do cliente é obrigatório" }, { status: 400 });
 
     // 1. Atualiza o Cliente
     const cliente = await prisma.cliente.update({
       where: { id },
-      data: { nome, meta_ads_account_id, meta_access_token, meta_pixel_id, insights }
+      data: { 
+        nome, 
+        meta_ads_account_id, 
+        meta_access_token, 
+        meta_pixel_id, 
+        insights,
+        has_crm: has_crm !== undefined ? Boolean(has_crm) : undefined,
+        label_procurados,
+        label_vendidos,
+        label_assistencia,
+        status_fechado,
+        tipo_servico_assistencia,
+        baseline_seguidores: baseline_seguidores !== undefined && baseline_seguidores !== null ? parseInt(baseline_seguidores) : null,
+        crescimento_diario: crescimento_diario !== undefined && crescimento_diario !== null ? parseInt(crescimento_diario) : null
+      }
     });
 
     // 2. Se houver insights (agent.md), cria Save Point no Banco e no FS

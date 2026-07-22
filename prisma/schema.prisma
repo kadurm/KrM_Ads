@@ -22,6 +22,14 @@ model Cliente {
   whatsapp_instance_url   String? @default("")
   whatsapp_instance_name  String? @default("")
   whatsapp_instance_token String? @default("")
+  has_crm                 Boolean     @default(false)
+  label_procurados        String?     @default("Procurados")
+  label_vendidos          String?     @default("Vendidos")
+  label_assistencia       String?     @default("Assistência")
+  status_fechado          String?     @default("FECHADO")
+  tipo_servico_assistencia String?     @default("ASSISTÊNCIA")
+  baseline_seguidores     Int?        @default(1000)
+  crescimento_diario      Int?        @default(2)
   campanhas           Campanha[]
   relatorios          Relatorio[]
   leads               Lead[]

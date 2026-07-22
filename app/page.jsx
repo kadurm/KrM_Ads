@@ -882,34 +882,41 @@ export default function App() {
 
   const roas = investimento > 0 ? (faturamento / investimento).toFixed(2) : 0;
 
+  const clienteAtivoObj = useMemo(() => {
+    return clientesDisponiveis.find(c => c.nome === clienteSelecionado) || null;
+  }, [clientesDisponiveis, clienteSelecionado]);
+
   const crmStats = useMemo(() => {
     const list = Array.isArray(leadsList) ? leadsList : [];
     const leadsNormais = list.filter(l => l && l.origem !== 'Seguidor Instagram');
     const totalLeads = leadsNormais.length;
     
+    const statusFechado = clienteAtivoObj?.status_fechado || 'FECHADO';
+    const tipoServicoAssistencia = clienteAtivoObj?.tipo_servico_assistencia || 'ASSISTÊNCIA';
+
     // Considera closedLeads tanto as vendas fechadas quanto as assistências que geraram faturamento
-    const closedLeads = leadsNormais.filter(l => l.status === 'FECHADO' || (l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0));
+    const closedLeads = leadsNormais.filter(l => l.status === statusFechado || (l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0));
     const faturamentoTotal = closedLeads.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
     const faturamentoAssistencia = leadsNormais
-      .filter(l => l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0)
+      .filter(l => l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0)
       .reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
       
     const taxaConversao = totalLeads > 0 ? ((closedLeads.length / totalLeads) * 100).toFixed(1) : '0';
     const leadsAtivos = leadsNormais.filter(l => 
-      l.status !== 'FECHADO' && 
-      !(l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) && 
+      l.status !== statusFechado && 
+      !(l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0) && 
       l.status !== 'PERDIDO'
     ).length;
 
-    // Veículos Procurados (Ativos)
+    // Veículos/Produtos Procurados (Ativos)
     const procuradosMap = {};
     leadsNormais.forEach(l => {
       if (
         l.veiculo && 
         l.veiculo !== 'X' && 
         l.veiculo !== 'NÃO IDENTIFICADO' && 
-        l.status !== 'FECHADO' && 
-        !(l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) &&
+        l.status !== statusFechado && 
+        !(l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0) &&
         l.status !== 'PERDIDO'
       ) {
         const cleanName = l.veiculo.trim().toUpperCase();
@@ -921,10 +928,10 @@ export default function App() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Veículos Vendidos (Fechados)
+    // Veículos/Produtos Vendidos (Fechados)
     const vendidosMap = {};
     leadsNormais.forEach(l => {
-      if (l.veiculo && l.veiculo !== 'X' && l.status === 'FECHADO' && l.tipo_servico !== 'ASSISTÊNCIA') {
+      if (l.veiculo && l.veiculo !== 'X' && l.status === statusFechado && l.tipo_servico !== tipoServicoAssistencia) {
         const cleanName = l.veiculo.trim().toUpperCase();
         if (!vendidosMap[cleanName]) {
           vendidosMap[cleanName] = { count: 0, valor: 0 };
@@ -938,10 +945,10 @@ export default function App() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Veículos de Assistência Técnica (Ganhos)
+    // Serviços de Assistência Técnica/Outros (Ganhos)
     const assistenciasMap = {};
     leadsNormais.forEach(l => {
-      if (l.veiculo && l.veiculo !== 'X' && l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) {
+      if (l.veiculo && l.veiculo !== 'X' && l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0) {
         const cleanName = l.veiculo.trim().toUpperCase();
         assistenciasMap[cleanName] = (assistenciasMap[cleanName] || 0) + 1;
       }
@@ -960,9 +967,10 @@ export default function App() {
       topProcurados,
       topVendidos,
       topAssistencias,
-      totalClosed: closedLeads.length
+      totalClosed: closedLeads.length,
+      orcamentosEnviados: leadsNormais.filter(l => l.conversao && l.conversao.toUpperCase().includes('ORÇAMENTO')).length
     };
-  }, [leadsList]);
+  }, [leadsList, clienteAtivoObj]);
 
   if (!isMounted) {
     return (
@@ -1308,7 +1316,7 @@ export default function App() {
                   <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><DollarSign size={12}/> Faturamento real</span>
                   <div className="flex items-center gap-1 mt-1">
                     <span className="text-sm font-black text-slate-100">
-                      {clienteSelecionado === 'Solution Place'
+                      {clienteAtivoObj?.has_crm
                         ? (crmStats.faturamentoTotal > 0 ? `R$ ${crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-')
                         : (faturamento > 0 ? `R$ ${faturamento}` : '-')
                       }
@@ -1318,7 +1326,7 @@ export default function App() {
                 <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
                   <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-blue-100 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><TrendingUp size={12}/> ROAS Real</span>
                   <div className="text-sm font-black mt-1">
-                    {clienteSelecionado === 'Solution Place'
+                    {clienteAtivoObj?.has_crm
                       ? (parseFloat(investimento) > 0 ? `${(crmStats.faturamentoTotal / parseFloat(investimento)).toFixed(2)}x` : '0.00x')
                       : `${roas}x`
                     }
@@ -1331,7 +1339,7 @@ export default function App() {
                 <div className="bg-emerald-600 p-6 rounded-2xl shadow-xl shadow-emerald-900/40 text-white border-l-4 border-l-white/20">
                   <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-emerald-100 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><Target size={12}/> CAC Real</span>
                   <div className="text-sm font-black mt-1">
-                    {clienteSelecionado === 'Solution Place'
+                    {clienteAtivoObj?.has_crm
                       ? (crmStats.totalClosed > 0
                           ? `R$ ${(parseFloat(investimento) / crmStats.totalClosed).toFixed(2)}`
                           : '-'
@@ -1342,7 +1350,12 @@ export default function App() {
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-pink-500 shadow-xl">
                   <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-pink-500 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><Instagram size={12}/> Seguidores</span>
-                  <div className="text-sm font-black mt-1 text-slate-100">{seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString()}</div>
+                  <div className="text-sm font-black mt-1 text-slate-100">
+                    {clienteAtivoObj?.has_crm
+                      ? `+${relatorioDados.reduce((acc, curr) => acc + curr.rawSeguidores, 0).toLocaleString()}`
+                      : (seguidoresGanhos > 0 ? `+${seguidoresGanhos.toLocaleString()}` : seguidoresGanhos.toLocaleString())
+                    }
+                  </div>
                 </div>
               </div>
 
@@ -1350,13 +1363,21 @@ export default function App() {
                 <div className="lg:col-span-3 bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl">
                   <h3 className="text-sm font-bold uppercase text-slate-500 mb-10 flex items-center gap-2"><TrendingUp size={16} className="text-blue-500"/> Funil de Jornada do Cliente</h3>
                   <div className="flex flex-col items-center space-y-4">
-                    {[
-                      { label: 'Impressões (Topo)', val: relatorioDados.reduce((a,c)=>a+c.rawImpressoes,0), color: 'bg-blue-600', icon: <Eye size={14}/> },
-                      { label: 'Alcance', val: totalReachReal, color: 'bg-sky-500', icon: <Target size={14}/> },
-                      { label: 'Engajamento (Meio)', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas+c.rawReacoes,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
-                      { label: 'Interesse (Leads)', val: relatorioDados.reduce((a,c)=>a+c.leads,0), color: 'bg-purple-500', icon: <Plus size={14}/> },
-                      { label: 'Conversão (Fundo)', val: relatorioDados.reduce((a,c)=>a+c.compras,0), color: 'bg-emerald-500', icon: <ShoppingCart size={14}/> }
-                    ].map((s, i, arr) => {
+                    {(clienteSelecionado === 'Solution Place'
+                      ? [
+                          { label: 'Impressões', val: relatorioDados.reduce((a,c)=>a+c.rawImpressoes,0), color: 'bg-blue-600', icon: <Eye size={14}/> },
+                          { label: 'Alcance', val: totalReachReal, color: 'bg-sky-500', icon: <Target size={14}/> },
+                          { label: 'Engajamento', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas+c.rawReacoes,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
+                          { label: 'Interesse (Leads)', val: relatorioDados.reduce((a,c)=>a+c.leads,0), color: 'bg-purple-500', icon: <Plus size={14}/> }
+                        ]
+                      : [
+                          { label: 'Impressões (Topo)', val: relatorioDados.reduce((a,c)=>a+c.rawImpressoes,0), color: 'bg-blue-600', icon: <Eye size={14}/> },
+                          { label: 'Alcance', val: totalReachReal, color: 'bg-sky-500', icon: <Target size={14}/> },
+                          { label: 'Engajamento (Meio)', val: relatorioDados.reduce((a,c)=>a+c.rawCliques+c.rawVisitas+c.rawReacoes,0), color: 'bg-indigo-500', icon: <MousePointerClick size={14}/> },
+                          { label: 'Interesse (Leads)', val: relatorioDados.reduce((a,c)=>a+c.leads,0), color: 'bg-purple-500', icon: <Plus size={14}/> },
+                          { label: 'Conversão (Fundo)', val: clienteAtivoObj?.has_crm ? crmStats.totalClosed : relatorioDados.reduce((a,c)=>a+c.compras,0), color: 'bg-emerald-500', icon: <ShoppingCart size={14}/> }
+                        ]
+                    ).map((s, i, arr) => {
                       const max = arr[0].val || 1;
                       const funnelWidth = (100 - (i * 12)); 
                       return (
@@ -1399,6 +1420,140 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Seção CRM para Auditoria */}
+              {clienteAtivoObj?.has_crm && leadsList.length > 0 && (
+                <div className="bg-slate-900/60 p-8 rounded-3xl border border-slate-800 space-y-6">
+                  <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                    <Database className="text-blue-500" size={20} />
+                    <div>
+                      <h3 className="text-base font-black text-slate-100 uppercase tracking-tight">Auditoria de CRM & Vendas Reais</h3>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Métricas de conversão comercial offline</p>
+                    </div>
+                  </div>
+
+                  {/* KPIs de CRM */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Leads Validados (CRM)</span>
+                      <p className="text-xl font-black text-white mt-1.5">{crmStats.totalLeads}</p>
+                    </div>
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Leads Ativos (CRM)</span>
+                      <p className="text-xl font-black text-amber-500 mt-1.5">{crmStats.leadsAtivos}</p>
+                    </div>
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Orçamentos Enviados</span>
+                      <p className="text-xl font-black text-blue-400 mt-1.5">
+                        {crmStats.orcamentosEnviados}
+                      </p>
+                    </div>
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Conversões</span>
+                      <p className="text-xl font-black text-emerald-400 mt-1.5">{crmStats.totalClosed}</p>
+                    </div>
+                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
+                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Conversão Comercial</span>
+                      <p className="text-xl font-black text-white mt-1.5">{crmStats.taxaConversao}%</p>
+                    </div>
+                  </div>
+
+                  {/* Cards de Detalhamento por Veículos */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                    {/* Mais Procurados */}
+                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
+                        <Car className="text-amber-500" size={14} /> {clienteAtivoObj?.label_procurados || 'Mais Procurados'}
+                      </h4>
+                      <div className="space-y-3">
+                        {crmStats.topProcurados.length === 0 ? (
+                          <p className="text-[10px] text-slate-600 italic">Nenhum registro ativo.</p>
+                        ) : (
+                          crmStats.topProcurados.map((item, idx) => {
+                            const max = Math.max(...crmStats.topProcurados.map(i => i.count));
+                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
+                                  <span>{item.nome}</span>
+                                  <span className="text-amber-500 font-bold">{item.count} leads</span>
+                                </div>
+                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                                  <div className="bg-amber-600 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Vendidos */}
+                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
+                        <Shield className="text-emerald-500" size={14} /> {clienteAtivoObj?.label_vendidos || 'Fechados (Ganhos)'}
+                      </h4>
+                      <div className="space-y-3">
+                        {crmStats.topVendidos.length === 0 ? (
+                          <p className="text-[10px] text-slate-600 italic">Nenhum registro fechado.</p>
+                        ) : (
+                          crmStats.topVendidos.map((item, idx) => {
+                            const max = Math.max(...crmStats.topVendidos.map(i => i.count));
+                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
+                                  <span>{item.nome}</span>
+                                  <span className="text-emerald-400 font-bold">
+                                    {item.count} {item.count === 1 ? 'fechado' : 'fechados'}
+                                    {item.valor > 0 && ` • R$ ${item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                                  </span>
+                                </div>
+                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Assistência Técnica */}
+                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                      <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                        <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                          <Briefcase className="text-blue-400" size={14} /> {clienteAtivoObj?.label_assistencia || 'Assistência/Outros'}
+                        </h4>
+                        <span className="text-[10px] font-black text-emerald-400">
+                          R$ {crmStats.faturamentoAssistencia.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        {crmStats.topAssistencias.length === 0 ? (
+                          <p className="text-[10px] text-slate-600 italic">Nenhum registro concluído.</p>
+                        ) : (
+                          crmStats.topAssistencias.map((item, idx) => {
+                            const max = Math.max(...crmStats.topAssistencias.map(i => i.count));
+                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
+                                  <span>{item.nome}</span>
+                                  <span className="text-blue-400 font-bold">{item.count} concluídos</span>
+                                </div>
+                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                                  <div className="bg-blue-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
                 <div className="p-6 border-b border-slate-800 flex justify-between items-center"><h3 className="font-bold uppercase text-xs tracking-widest text-slate-400">Detalhamento por Objetivo</h3></div>
                 <div className="overflow-x-auto">
@@ -1427,7 +1582,7 @@ export default function App() {
 
               {dailyData.length > 0 && (
                 <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-2xl">
-                  <h3 className="font-bold uppercase text-xs tracking-widest text-slate-400 mb-6">Evolução Diária do Período</h3>
+                  <h3 className="font-bold uppercase text-xs tracking-widest text-slate-400 mb-6">Desenvolvimento Diário - Campanhas de Mensagens</h3>
                   <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={dailyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -1445,135 +1600,7 @@ export default function App() {
                 </div>
               )}
 
-              {/* Seção CRM para Auditoria */}
-              {clienteSelecionado === 'Solution Place' && leadsList.length > 0 && (
-                <div className="bg-slate-900/60 p-8 rounded-3xl border border-slate-800 space-y-6">
-                  <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                    <Database className="text-blue-500" size={20} />
-                    <div>
-                      <h3 className="text-base font-black text-slate-100 uppercase tracking-tight">Auditoria de CRM & Vendas Reais</h3>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Métricas de conversão comercial offline</p>
-                    </div>
-                  </div>
 
-                  {/* KPIs de CRM */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
-                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Leads Totais (CRM)</span>
-                      <p className="text-xl font-black text-white mt-1.5">{crmStats.totalLeads}</p>
-                    </div>
-                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
-                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Leads Ativos (CRM)</span>
-                      <p className="text-xl font-black text-amber-500 mt-1.5">{crmStats.leadsAtivos}</p>
-                    </div>
-                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
-                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Faturamento Real</span>
-                      <p className="text-xl font-black text-emerald-400 mt-1.5">
-                        R$ {crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </p>
-                    </div>
-                    <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
-                      <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Taxa de Conversão</span>
-                      <p className="text-xl font-black text-white mt-1.5">{crmStats.taxaConversao}%</p>
-                    </div>
-                  </div>
-
-                  {/* Cards de Detalhamento por Veículos */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                    {/* Mais Procurados */}
-                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
-                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
-                        <Car className="text-amber-500" size={14} /> Carros Mais Procurados
-                      </h4>
-                      <div className="space-y-3">
-                        {crmStats.topProcurados.length === 0 ? (
-                          <p className="text-[10px] text-slate-600 italic">Nenhum veículo ativo.</p>
-                        ) : (
-                          crmStats.topProcurados.map((item, idx) => {
-                            const max = Math.max(...crmStats.topProcurados.map(i => i.count));
-                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
-                            return (
-                              <div key={idx} className="space-y-1">
-                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
-                                  <span>{item.nome}</span>
-                                  <span className="text-amber-500 font-bold">{item.count} leads</span>
-                                </div>
-                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
-                                  <div className="bg-amber-600 h-full rounded-full" style={{ width: `${percentage}%` }} />
-                                </div>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Vendidos */}
-                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
-                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
-                        <Shield className="text-emerald-500" size={14} /> Carros Vendidos (Ganhos)
-                      </h4>
-                      <div className="space-y-3">
-                        {crmStats.topVendidos.length === 0 ? (
-                          <p className="text-[10px] text-slate-600 italic">Nenhum veículo vendido.</p>
-                        ) : (
-                          crmStats.topVendidos.map((item, idx) => {
-                            const max = Math.max(...crmStats.topVendidos.map(i => i.count));
-                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
-                            return (
-                              <div key={idx} className="space-y-1">
-                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
-                                  <span>{item.nome}</span>
-                                  <span className="text-emerald-400 font-bold">
-                                    {item.count} {item.count === 1 ? 'fechado' : 'fechados'}
-                                    {item.valor > 0 && ` • R$ ${item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
-                                  </span>
-                                </div>
-                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
-                                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
-                                </div>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Assistência Técnica */}
-                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
-                      <div className="flex justify-between items-center border-b border-slate-900 pb-2">
-                        <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-                          <Briefcase className="text-blue-400" size={14} /> Assistência Técnica
-                        </h4>
-                        <span className="text-[10px] font-black text-emerald-400">
-                          R$ {crmStats.faturamentoAssistencia.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                        </span>
-                      </div>
-                      <div className="space-y-3">
-                        {crmStats.topAssistencias.length === 0 ? (
-                          <p className="text-[10px] text-slate-600 italic">Nenhum veículo concluído.</p>
-                        ) : (
-                          crmStats.topAssistencias.map((item, idx) => {
-                            const max = Math.max(...crmStats.topAssistencias.map(i => i.count));
-                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
-                            return (
-                              <div key={idx} className="space-y-1">
-                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
-                                  <span>{item.nome}</span>
-                                  <span className="text-blue-400 font-bold">{item.count} concluídos</span>
-                                </div>
-                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
-                                  <div className="bg-blue-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
-                                </div>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               <h3 className="text-xl font-bold flex items-center gap-2 mt-8 text-slate-100"><ImageIcon className="text-blue-500" /> Ranking de Criativos</h3>
               <p className="text-slate-500 text-xs mb-4">Ordenado pelo número de leads gerados.</p>
@@ -1907,7 +1934,7 @@ export default function App() {
                       <h3 className="font-black text-lg uppercase tracking-tight">Editar Dados</h3>
                       <button onClick={() => setEditingCliente(null)} className="p-2 hover:bg-slate-800 rounded-xl transition-all"><X size={20}/></button>
                     </div>
-                    <div className="p-8 space-y-6">
+                    <div className="p-8 space-y-6 max-h-[65vh] overflow-y-auto">
                       <div>
                         <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Nome da Empresa</label>
                         <input type="text" value={editingCliente.nome} onChange={e => setEditingCliente({...editingCliente, nome: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" />
@@ -1922,9 +1949,53 @@ export default function App() {
                       </div>
                       <div>
                         <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Meta Pixel / Dataset ID</label>
-                        <input type="text" value={editingCliente.meta_pixel_id || ''} onChange={e => setEditingCliente({...editingCliente, meta_pixel_id: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner" placeholder="123456789..." />
+                        <input type="text" value={editingCliente.meta_pixel_id || ''} onChange={e => setEditingCliente({...editingCliente, meta_pixel_id: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner text-white" placeholder="123456789..." />
                       </div>
-                      <button onClick={() => handleUpdateCliente(editingCliente)} className="w-full bg-blue-600 p-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20">Salvar Alterações</button>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Baseline Seg.</label>
+                          <input type="number" value={editingCliente.baseline_seguidores || 1000} onChange={e => setEditingCliente({...editingCliente, baseline_seguidores: parseInt(e.target.value) || 0})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner text-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Cresc. Diário</label>
+                          <input type="number" value={editingCliente.crescimento_diario || 2} onChange={e => setEditingCliente({...editingCliente, crescimento_diario: parseInt(e.target.value) || 0})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none focus:border-blue-500 shadow-inner text-white" />
+                        </div>
+                      </div>
+
+                      <div className="border-t border-slate-800 pt-4 flex items-center gap-3">
+                        <input type="checkbox" id="edit_has_crm" checked={editingCliente.has_crm || false} onChange={e => setEditingCliente({...editingCliente, has_crm: e.target.checked})} className="w-4 h-4 rounded border-slate-800 bg-slate-950 text-blue-500 focus:ring-0 cursor-pointer" />
+                        <label htmlFor="edit_has_crm" className="text-[10px] font-black text-slate-300 uppercase tracking-widest cursor-pointer select-none">Ativar Auditoria de CRM</label>
+                      </div>
+
+                      {editingCliente.has_crm && (
+                        <div className="space-y-4 border-l-2 border-blue-500/20 pl-4 animate-in fade-in slide-in-from-left-4 duration-200">
+                          <div>
+                            <label className="block text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Rótulo: Procurados</label>
+                            <input type="text" value={editingCliente.label_procurados || ''} onChange={e => setEditingCliente({...editingCliente, label_procurados: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs outline-none focus:border-blue-500 shadow-inner text-white" placeholder="Ex: Carros Mais Procurados" />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Rótulo: Vendidos</label>
+                            <input type="text" value={editingCliente.label_vendidos || ''} onChange={e => setEditingCliente({...editingCliente, label_vendidos: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs outline-none focus:border-blue-500 shadow-inner text-white" placeholder="Ex: Carros Vendidos (Ganhos)" />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Rótulo: Assistência/Suporte</label>
+                            <input type="text" value={editingCliente.label_assistencia || ''} onChange={e => setEditingCliente({...editingCliente, label_assistencia: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs outline-none focus:border-blue-500 shadow-inner text-white" placeholder="Ex: Assistência Técnica" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Status Fechado</label>
+                              <input type="text" value={editingCliente.status_fechado || 'FECHADO'} onChange={e => setEditingCliente({...editingCliente, status_fechado: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs outline-none focus:border-blue-500 shadow-inner text-white text-center" />
+                            </div>
+                            <div>
+                              <label className="block text-[9px] font-black text-slate-500 uppercase mb-2 tracking-widest">Serviço Assistência</label>
+                              <input type="text" value={editingCliente.tipo_servico_assistencia || 'ASSISTÊNCIA'} onChange={e => setEditingCliente({...editingCliente, tipo_servico_assistencia: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs outline-none focus:border-blue-500 shadow-inner text-white text-center" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <button onClick={() => handleUpdateCliente(editingCliente)} className="w-full bg-blue-600 p-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/20 text-white">Salvar Alterações</button>
                     </div>
                   </div>
                 </div>

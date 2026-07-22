@@ -40,7 +40,7 @@ O sistema opera sob o **Padrão Ouro de Extração**, garantindo fidelidade de 1
 
 ## Protocolo de Desenvolvimento
 - **Pesquisa e Planejamento:** Antes de qualquer alteração no código, é obrigatório realizar uma investigação detalhada da estrutura atual e elaborar um plano de execução claro, documentando-o se necessário.
-- **Ciclo de Vida e Autonomia:** Ao finalizar uma atualização e publicar (GitHub/Vercel), o agente DEVE realizar uma inspeção técnica para verificar se a funcionalidade opera como esperado. Caso detecte falhas, o agente tem autonomia e obrigação de buscar alternativas e aplicar correções automaticamente até que o objetivo seja atingido, evitando turnos de retrabalho por parte do usuário.
+- **Ciclo de Vida e Autonomia:** Ao finalizar qualquer alteração no código, o agente DEVE realizar o deploy de produção para a Vercel (`npx vercel --prod --yes`) para que o usuário possa visualizar as atualizações imediatamente, seguido de uma inspeção técnica para verificar se a funcionalidade opera como esperado. Caso detecte falhas, o agente tem autonomia e obrigação de buscar alternativas e aplicar correções automaticamente até que o objetivo seja atingido, evitando turnos de retrabalho por parte do usuário.
 - **Regra de Ouro (Copywriting):** Todo texto gerado pela IA ou sistema para anúncios/relatórios deve terminar obrigatoriamente com uma **pergunta estratégica**.
 - **Gestão de Tokens:** Multi-Tenant via Banco de Dados (Tabela `Cliente`). Gerenciado dinamicamente pelo painel de administração.
 - **Segurança:** Legacy peer dependencies habilitado no `.npmrc` para compatibilidade com React 19.
