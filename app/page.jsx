@@ -540,20 +540,23 @@ export default function App() {
     else setSelectedIds(campaignsList.map(item => item.id));
   };
 
-  const loadLeads = async () => {
+  const loadLeads = useCallback(async (start = startDate, end = endDate) => {
     if (!clienteSelecionado) return;
     setLeadsLoading(true);
     try {
-      const res = await fetch(`/api/crm?cliente=${encodeURIComponent(clienteSelecionado)}`);
+      const params = new URLSearchParams({ cliente: clienteSelecionado });
+      if (start) params.set('since', start);
+      if (end) params.set('until', end);
+      const res = await fetch(`/api/crm?${params.toString()}`);
       const data = await res.json();
-      if (data.success) setLeadsList(data.leads);
+      if (data.success) setLeadsList(data.leads || []);
       else setMensagemPainel({ tipo: 'erro', texto: data.error });
     } catch (e) {
       setMensagemPainel({ tipo: 'erro', texto: 'Erro ao carregar leads.' });
     } finally {
       setLeadsLoading(false);
     }
-  };
+  }, [clienteSelecionado, startDate, endDate]);
 
   const handleSaveLead = async (e) => {
     e.preventDefault();
@@ -767,7 +770,8 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cliente: clienteSelecionado,
-          rows: parsedReportData.rows
+          rows: parsedReportData.rows,
+          summary: parsedReportData.summary
         })
       });
       const data = await res.json();
@@ -797,7 +801,7 @@ export default function App() {
     const autoSync = async () => {
       // 1. Carrega imediatamente os dados cacheados do banco de dados para evitar tela vazia ou dados anteriores
       await loadMetrics();
-      await loadLeads();
+      await loadLeads(startDate, endDate);
       
       // 2. Se já estiver em andamento um sync, não dispara outra chamada de sync
       if (isSyncing) return;
@@ -822,7 +826,7 @@ export default function App() {
       // 3. Atualiza os dados com a sincronização mais recente da Meta
       if (!cancelled) {
         await loadMetrics();
-        await loadLeads();
+        await loadLeads(startDate, endDate);
       }
     };
     autoSync();
@@ -1175,7 +1179,7 @@ export default function App() {
               <button onClick={() => { setActiveTab('campanhas'); loadCampaigns(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'campanhas' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Megaphone size={16} /> Campanhas (Meta)
               </button>
-              <button onClick={() => { setActiveTab('crm'); loadLeads(); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'crm' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+              <button onClick={() => { setActiveTab('crm'); loadLeads(startDate, endDate); }} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'crm' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                 <Database size={16} /> CRM / Extrato
               </button>
               <button onClick={() => setActiveTab('pagamentos')} className={`w-full flex items-center gap-3 p-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'pagamentos' ? 'bg-slate-800 text-blue-400 border border-blue-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>

@@ -262,8 +262,12 @@ export default function AtendimentoPage() {
     if (!clienteUrl || !isAuthenticated) return;
     setLoading(true);
     try {
+      const queryParams = new URLSearchParams({ cliente: clienteUrl });
+      if (startDate) queryParams.set('since', startDate);
+      if (endDate) queryParams.set('until', endDate);
+
       const [leadsRes, agendamentosRes] = await Promise.all([
-        fetch(`/api/crm?cliente=${encodeURIComponent(clienteUrl)}`),
+        fetch(`/api/crm?${queryParams.toString()}`),
         fetch(`/api/crm/agendamentos?cliente=${encodeURIComponent(clienteUrl)}`)
       ]);
       const leadsData = await leadsRes.json();
@@ -279,7 +283,7 @@ export default function AtendimentoPage() {
     } finally {
       setLoading(false);
     }
-  }, [clienteUrl, isAuthenticated]);
+  }, [clienteUrl, isAuthenticated, startDate, endDate]);
 
   useEffect(() => {
     if (isAuthenticated) {

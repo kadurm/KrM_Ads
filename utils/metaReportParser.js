@@ -96,6 +96,12 @@ export function parseMetaReportCSV(rawContent) {
     ['inicio dos relatorio', 'inicio do relatorio', 'reporting start', 'dia', 'data']
   );
 
+  // Detecção de término do relatório (período agregado)
+  const idxEndDate = findExactOrIncludes(
+    ['termino dos relatorios', 'termino do relatorio', 'reporting ends', 'data de termino', 'fim'],
+    ['termino dos relatorio', 'termino do relatorio', 'reporting end', 'termino', 'fim']
+  );
+
   // INVESTIMENTO / VALOR USADO:
   // Prioriza termos explícitos de total gasto e descarta categoricamente qualquer métrica de custo unitário (custo por...)
   let idxSpend = headers.findIndex(h => {
@@ -149,6 +155,9 @@ export function parseMetaReportCSV(rawContent) {
 
     const rawDate = idxDate !== -1 ? cols[idxDate] : null;
     const parsedDate = parseDateString(rawDate);
+
+    const rawEndDate = idxEndDate !== -1 ? cols[idxEndDate] : null;
+    const parsedEndDate = parseDateString(rawEndDate);
 
     const spend = idxSpend !== -1 ? parseNumberBR(cols[idxSpend]) : 0;
     const impressions = idxImpressions !== -1 ? Math.round(parseNumberBR(cols[idxImpressions])) : 0;
@@ -204,6 +213,7 @@ export function parseMetaReportCSV(rawContent) {
     rows.push({
       campaignName,
       date: parsedDate,
+      endDate: parsedEndDate,
       spend,
       impressions,
       reach,
@@ -214,10 +224,25 @@ export function parseMetaReportCSV(rawContent) {
     });
   }
 
+  // Identificar período de cobertura
+  const validDates = rows.map(r => r.date).filter(Boolean);
+  const validEndDates = rows.map(r => r.endDate).filter(Boolean);
+  const allDates = [...validDates, ...validEndDates].sort();
+  const periodSince = allDates.length > 0 ? allDates[0] : null;
+  const periodUntil = allDates.length > 0 ? allDates[allDates.length - 1] : null;
+
+  // Se o início e fim forem diferentes ou se todas as linhas forem de um mesmo intervalo agregado
+  const isPeriodConsolidated = Boolean(
+    periodSince && periodUntil && (periodSince !== periodUntil || validEndDates.length > 0)
+  );
+
   return {
     rows,
     summary: {
       totalRows: rows.length,
+      periodSince,
+      periodUntil,
+      isPeriodConsolidated,
       totalSpend: parseFloat(totalSpend.toFixed(2)),
       totalImpressions,
       totalReach,

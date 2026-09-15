@@ -66,17 +66,19 @@ export async function GET(request) {
 
     if (!cliente) return NextResponse.json({ success: false, error: 'Cliente não especificado' }, { status: 400 });
 
+    const slug = cliente.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
     const where = {
       OR: [
-        { cliente: { slug: cliente } },
-        { cliente: { nome: cliente } }
+        { cliente: { slug: { equals: slug, mode: 'insensitive' } } },
+        { cliente: { slug: { equals: cliente, mode: 'insensitive' } } },
+        { cliente: { nome: { equals: cliente, mode: 'insensitive' } } }
       ]
     };
 
     if (since || until) {
       const dateFilter = {};
-      if (since) dateFilter.gte = new Date(since + 'T00:00:00Z');
-      if (until) dateFilter.lte = new Date(until + 'T23:59:59Z');
+      if (since) dateFilter.gte = new Date(since + 'T00:00:00.000Z');
+      if (until) dateFilter.lte = new Date(until + 'T23:59:59.999Z');
       where.data = dateFilter;
     }
 

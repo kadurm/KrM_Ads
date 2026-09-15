@@ -38,6 +38,7 @@ model Cliente {
   transacoes          Transacao[]
   notas_fiscais       NotaFiscal[]
   metricas_conta      MetricaContaDiaria[]
+  relatorios_consolidados RelatorioConsolidado[]
   criado_em           DateTime    @default(now())
 }
 
@@ -269,6 +270,24 @@ model LeadSolution {
   atualizado_em     DateTime  @updatedAt
 
   @@unique([telefone])
+}
+
+model RelatorioConsolidado {
+  id               String   @id @default(uuid())
+  cliente_id       String
+  cliente          Cliente  @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
+  periodo_inicio   DateTime
+  periodo_fim      DateTime
+  total_spend      Decimal  @default(0.0)
+  total_leads      Int      @default(0)
+  total_visitas    Int      @default(0)
+  total_impressoes BigInt   @default(0)
+  total_alcance    BigInt   @default(0)
+  metadados_json   String?  @db.Text
+  origem           String   @default("IMPORT_META_ADS")
+  criado_em        DateTime @default(now())
+
+  @@index([cliente_id, periodo_inicio, periodo_fim])
 }
 
 

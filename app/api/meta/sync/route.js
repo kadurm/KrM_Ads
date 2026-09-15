@@ -612,7 +612,24 @@ export async function GET(request) {
         cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
       }));
 
-    const totalReach = metaAccountTotals ? parseInt(metaAccountTotals.reach) : metrics.reduce((a,c)=>a+c.alcance, 0);
+    // Verifica se há RelatorioConsolidado de apoio para o período
+    let relatorioConsolidadoGet = null;
+    try {
+      relatorioConsolidadoGet = await prisma.relatorioConsolidado.findFirst({
+        where: {
+          cliente_id: cliente.id,
+          periodo_inicio: { lte: dateUntil },
+          periodo_fim: { gte: dateSince }
+        },
+        orderBy: { criado_em: 'desc' }
+      });
+    } catch (e) {}
+
+    const totalReach = metaAccountTotals 
+      ? parseInt(metaAccountTotals.reach) 
+      : (relatorioConsolidadoGet && Number(relatorioConsolidadoGet.total_alcance) > 0 
+          ? Number(relatorioConsolidadoGet.total_alcance) 
+          : metrics.reduce((a,c)=>a+c.alcance, 0));
 
     // --- AUDITORIA DE GARANTIA E CONFORMIDADE DE DADOS ---
     const dbTotalSpend = metrics.reduce((acc, m) => acc + (parseFloat(m.valor_investido) || 0), 0);
@@ -926,6 +943,21 @@ export async function POST(request) {
     }
 
     // --- 5. Persistência de Dados no Banco de Dados via Prisma (Idempotência) ---
+    // Consulta se há Relatório Consolidado para apoiar e padronizar o Sync
+    let relatorioConsolidado = null;
+    try {
+      relatorioConsolidado = await prisma.relatorioConsolidado.findFirst({
+        where: {
+          cliente_id: targetCliente.id,
+          periodo_inicio: { lte: new Date(finalUntil + 'T23:59:59.999Z') },
+          periodo_fim: { gte: new Date(finalSince + 'T00:00:00.000Z') }
+        },
+        orderBy: { criado_em: 'desc' }
+      });
+    } catch (rcErr) {
+      console.warn('[Sync] Aviso ao consultar RelatorioConsolidado:', rcErr.message);
+    }
+
     const localCampMap = new Map();
     const uniqueCampaigns = [...new Map(campaignData.map(item => [item.campaign_id, item])).values()];
     for (const item of uniqueCampaigns) {
@@ -939,6 +971,29 @@ export async function POST(request) {
         create: { meta_id: String(item.campaign_id), nome_gerado: item.campaign_name, cliente_id: targetCliente.id, objetivo: objectiveMap.get(item.campaign_id) || 'UNKNOWN', tipo_orcamento: 'UNKNOWN' }
       });
       localCampMap.set(camp.meta_id, camp);
+    }
+
+    // Padronização e vinculação de IDs de campanhas importadas usando o relatório consolidado como apoio
+    if (relatorioConsolidado && relatorioConsolidado.metadados_json) {
+      try {
+        const metaInfo = JSON.parse(relatorioConsolidado.metadados_json);
+        if (Array.isArray(metaInfo.campaigns)) {
+          for (const repCamp of metaInfo.campaigns) {
+            const matchedMetaCamp = uniqueCampaigns.find(uc => 
+              uc.campaign_name && repCamp.nome && 
+              uc.campaign_name.trim().toLowerCase() === repCamp.nome.trim().toLowerCase()
+            );
+            if (matchedMetaCamp && repCamp.meta_id && repCamp.meta_id.startsWith('imported_')) {
+              await prisma.campanha.update({
+                where: { id: repCamp.id },
+                data: { meta_id: String(matchedMetaCamp.campaign_id) }
+              }).catch(() => {});
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('[Sync] Falha ao padronizar campanhas com relatório consolidado:', e.message);
+      }
     }
 
     // Processamento de métricas diárias de campanhas
