@@ -980,9 +980,29 @@ export default function App() {
     const totalLeads = leadsNormais.length;
     
     const statusFechado = clienteAtivoObj?.status_fechado || 'FECHADO';
-    const tipoServicoAssistencia = clienteAtivoObj?.tipo_servico_assistencia || 'ASSISTÊNCIA';
 
-    // Heurística de classificação comercial blindada
+    // Heurística de distinção robusta: Assistência Técnica vs Blindagem Veicular Completa
+    const isAssistenciaFn = (l) => {
+      if (!l) return false;
+      const servico = String(l.tipo_servico || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+      const veiculo = String(l.veiculo || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+      const detalhe = String(l.status_detalhe || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+      
+      if (servico.includes('ASSIST') || servico.includes('MANUTEN') || servico.includes('REVIS') || servico.includes('REPARO')) {
+        return true;
+      }
+      
+      const servicosKeywords = ['DELAMIN', 'FUNILAR', 'INSPEC', 'BALISTICA', 'VIDRO', 'REVISAO', 'HIGIENIZ', 'POLIMENTO', 'MAQUINA DE VIDRO', 'TRAVA', 'AMORTECEDOR', 'PINTURA'];
+      if (servicosKeywords.some(kw => veiculo.includes(kw) || detalhe.includes(kw))) {
+        return true;
+      }
+      
+      return false;
+    };
+
+    const isBlindagemFn = (l) => !isAssistenciaFn(l);
+
+    // Heurística de classificação de status comercial
     const isPerdidoFn = (l) => {
       const st = String(l.status || '').toUpperCase().trim();
       const conv = String(l.conversao || '').toUpperCase().trim();
@@ -1000,25 +1020,74 @@ export default function App() {
       if (isPerdidoFn(l) || isAguardandoFn(l)) return false;
       const st = String(l.status || '').toUpperCase().trim();
       const conv = String(l.conversao || '').toUpperCase().trim();
-      return st === statusFechado || conv === 'POSITIVO' || (l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0);
+      return st === statusFechado || conv === 'POSITIVO' || (isAssistenciaFn(l) && Number(l.valor || 0) > 0 && conv !== 'AGUARDANDO' && !isPerdidoFn(l));
+    };
+
+    // Heurística abrangente de detecção de Orçamentos Enviados
+    const isOrcamentoEnviadoFn = (l) => {
+      if (!l) return false;
+      const val = Number(l.valor || 0);
+      if (val > 0) return true;
+      
+      const text = `${l.status || ''} | ${l.conversao || ''} | ${l.status_detalhe || ''} | ${l.veiculo || ''}`
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+        
+      return text.includes('ORCAMENTO') || 
+             text.includes('ORCOU') || 
+             text.includes('PROPOSTA') || 
+             text.includes('COTACAO') || 
+             text.includes('COTOU') ||
+             text.includes('TABELA');
     };
 
     // 1. Vendas Fechadas e Faturamento Real Consolidado (Ganhos)
     const closedLeads = leadsNormais.filter(isFechadoFn);
     const faturamentoTotal = closedLeads.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
-    const faturamentoAssistencia = closedLeads
-      .filter(l => l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0)
-      .reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    
+    // Segregação Blindagem vs Assistência (Real Fechado)
+    const closedBlindagem = closedLeads.filter(isBlindagemFn);
+    const faturamentoBlindagemReal = closedBlindagem.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const closedBlindagemCount = closedBlindagem.length;
+
+    const closedAssistencia = closedLeads.filter(isAssistenciaFn);
+    const faturamentoAssistenciaReal = closedAssistencia.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const closedAssistenciaCount = closedAssistencia.length;
 
     // 2. Faturamento Aguardando (Negociações em Aberto / Pipeline Ativo)
     const leadsAguardando = leadsNormais.filter(isAguardandoFn);
     const faturamentoAguardando = leadsAguardando.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
     const leadsAguardandoComValor = leadsAguardando.filter(l => Number(l.valor || 0) > 0).length;
 
+    // Segregação Blindagem vs Assistência (Aguardando)
+    const leadsBlindagemAguardando = leadsAguardando.filter(isBlindagemFn);
+    const faturamentoBlindagemAguardando = leadsBlindagemAguardando.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsBlindagemAguardandoCount = leadsBlindagemAguardando.length;
+
+    const leadsAssistenciaAguardando = leadsAguardando.filter(isAssistenciaFn);
+    const faturamentoAssistenciaAguardando = leadsAssistenciaAguardando.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsAssistenciaAguardandoCount = leadsAssistenciaAguardando.length;
+
     // 3. Faturamento Perdido (Desistências / Negativo / Cancelados)
     const leadsPerdidos = leadsNormais.filter(isPerdidoFn);
     const faturamentoPerdido = leadsPerdidos.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
     const leadsPerdidosComValor = leadsPerdidos.filter(l => Number(l.valor || 0) > 0).length;
+
+    // Segregação Blindagem vs Assistência (Perdido)
+    const leadsBlindagemPerdidos = leadsPerdidos.filter(isBlindagemFn);
+    const faturamentoBlindagemPerdido = leadsBlindagemPerdidos.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsBlindagemPerdidosCount = leadsBlindagemPerdidos.length;
+
+    const leadsAssistenciaPerdidos = leadsPerdidos.filter(isAssistenciaFn);
+    const faturamentoAssistenciaPerdido = leadsAssistenciaPerdidos.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsAssistenciaPerdidosCount = leadsAssistenciaPerdidos.length;
+
+    // Orçamentos Enviados
+    const leadsOrcamento = leadsNormais.filter(isOrcamentoEnviadoFn);
+    const orcamentosEnviadosTotal = leadsOrcamento.length;
+    const orcamentosBlindagem = leadsOrcamento.filter(isBlindagemFn).length;
+    const orcamentosAssistencia = leadsOrcamento.filter(isAssistenciaFn).length;
 
     // Métricas Financeiras Consolidadas do Pipeline Comercial
     const faturamentoPipelineGeral = faturamentoTotal + faturamentoAguardando + faturamentoPerdido;
@@ -1029,11 +1098,12 @@ export default function App() {
     const taxaConversao = totalLeads > 0 ? ((closedLeads.length / totalLeads) * 100).toFixed(1) : '0';
     const leadsAtivos = leadsAguardando.length;
 
-    // Veículos/Produtos Procurados (Ativos em Negociação)
+    // Veículos/Produtos Procurados (Ativos em Negociação - Blindagem & Carros)
     const procuradosMap = {};
     leadsNormais.forEach(l => {
       if (
         isAguardandoFn(l) &&
+        isBlindagemFn(l) &&
         l.veiculo && 
         l.veiculo !== 'X' && 
         l.veiculo !== 'null' && 
@@ -1048,10 +1118,10 @@ export default function App() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Veículos/Produtos Vendidos (Fechados)
+    // Veículos Vendidos / Blindados (Blindagem Completa - Ticket ~R$ 100 mil)
     const vendidosMap = {};
     leadsNormais.forEach(l => {
-      if (isFechadoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.tipo_servico !== tipoServicoAssistencia) {
+      if (isFechadoFn(l) && isBlindagemFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null') {
         const cleanName = l.veiculo.trim().toUpperCase();
         if (!vendidosMap[cleanName]) {
           vendidosMap[cleanName] = { count: 0, valor: 0 };
@@ -1065,23 +1135,27 @@ export default function App() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Serviços de Assistência Técnica/Outros (Ganhos)
+    // Serviços de Assistência Técnica / Pós-Venda (Reparos, Funilaria, Vidros, Revisão)
     const assistenciasMap = {};
     leadsNormais.forEach(l => {
-      if (isFechadoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0) {
+      if (isAssistenciaFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null') {
         const cleanName = l.veiculo.trim().toUpperCase();
-        assistenciasMap[cleanName] = (assistenciasMap[cleanName] || 0) + 1;
+        if (!assistenciasMap[cleanName]) {
+          assistenciasMap[cleanName] = { count: 0, valor: 0, status: l.status };
+        }
+        assistenciasMap[cleanName].count += 1;
+        assistenciasMap[cleanName].valor += Number(l.valor || 0);
       }
     });
     const topAssistencias = Object.entries(assistenciasMap)
-      .map(([nome, count]) => ({ nome, count }))
+      .map(([nome, count]) => ({ nome, count: count.count, valor: count.valor }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Veículos/Oportunidades Perdidas (Desistências / Negativos)
+    // Veículos/Blindagens Perdidas (Desistências em Negociação de Blindagem)
     const perdidosMap = {};
     leadsNormais.forEach(l => {
-      if (isPerdidoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.veiculo !== 'NÃO IDENTIFICADO') {
+      if (isPerdidoFn(l) && isBlindagemFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.veiculo !== 'NÃO IDENTIFICADO') {
         const cleanName = l.veiculo.trim().toUpperCase();
         if (!perdidosMap[cleanName]) {
           perdidosMap[cleanName] = { count: 0, valor: 0 };
@@ -1098,10 +1172,21 @@ export default function App() {
     return {
       totalLeads,
       faturamentoTotal,
-      faturamentoAssistencia,
+      faturamentoBlindagemReal,
+      closedBlindagemCount,
+      faturamentoAssistenciaReal,
+      closedAssistenciaCount,
       faturamentoAguardando,
+      faturamentoBlindagemAguardando,
+      leadsBlindagemAguardandoCount,
+      faturamentoAssistenciaAguardando,
+      leadsAssistenciaAguardandoCount,
       leadsAguardandoComValor,
       faturamentoPerdido,
+      faturamentoBlindagemPerdido,
+      leadsBlindagemPerdidosCount,
+      faturamentoAssistenciaPerdido,
+      leadsAssistenciaPerdidosCount,
       leadsPerdidosComValor,
       faturamentoPipelineGeral,
       taxaAproveitamentoFinanceiro,
@@ -1113,7 +1198,10 @@ export default function App() {
       topAssistencias,
       topPerdidos,
       totalClosed: closedLeads.length,
-      orcamentosEnviados: leadsNormais.filter(l => l.conversao && l.conversao.toUpperCase().includes('ORÇAMENTO')).length
+      orcamentosEnviados: orcamentosEnviadosTotal,
+      orcamentosEnviadosTotal,
+      orcamentosBlindagem,
+      orcamentosAssistencia
     };
   }, [leadsList, clienteAtivoObj]);
 
@@ -1457,13 +1545,19 @@ export default function App() {
                 </div>
                 <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 border-l-4 border-l-emerald-500 shadow-xl">
                   <span className="text-[9px] xl:text-[8px] 2xl:text-[9px] font-bold text-emerald-500 uppercase flex items-center gap-2 tracking-wider whitespace-nowrap"><DollarSign size={12}/> Faturamento real</span>
-                  <div className="flex items-center gap-1 mt-1">
+                  <div className="flex flex-col mt-1">
                     <span className="text-sm font-black text-slate-100">
                       {clienteAtivoObj?.has_crm
                         ? (crmStats.faturamentoTotal > 0 ? `R$ ${crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-')
                         : (faturamento > 0 ? `R$ ${faturamento}` : '-')
                       }
                     </span>
+                    {clienteAtivoObj?.has_crm && crmStats.faturamentoTotal > 0 && (
+                      <span className="text-[8px] font-bold text-slate-400 mt-0.5 tracking-tight truncate">
+                        🛡️ R$ {crmStats.faturamentoBlindagemReal.toLocaleString('pt-BR', { minimumFractionDigits: 0 })} Blindagem
+                        {crmStats.faturamentoAssistenciaReal > 0 && ` • 🔧 R$ ${crmStats.faturamentoAssistenciaReal.toLocaleString('pt-BR', { minimumFractionDigits: 0 })} Assist.`}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="bg-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-900/40 text-white">
@@ -1588,57 +1682,114 @@ export default function App() {
                   {/* Painel Financeiro Comercial: Real Consolidado vs Aguardando vs Perdido */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* 1. Faturamento Real Fechado (Ganhos Consolidado) */}
-                    <div className="bg-gradient-to-br from-emerald-950/40 via-slate-950 to-slate-950 p-5 rounded-2xl border border-emerald-500/30 shadow-lg relative overflow-hidden">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
-                          <ShieldCheck size={14} className="text-emerald-400" /> Faturamento Real Fechado
-                        </span>
-                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                          Confirmado
-                        </span>
+                    <div className="bg-gradient-to-br from-emerald-950/40 via-slate-950 to-slate-950 p-5 rounded-2xl border border-emerald-500/30 shadow-lg relative overflow-hidden flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
+                            <ShieldCheck size={14} className="text-emerald-400" /> Faturamento Real Fechado
+                          </span>
+                          <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                            Confirmado
+                          </span>
+                        </div>
+                        <p className="text-2xl font-black text-white mt-2 tracking-tight">
+                          R$ {crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                        {/* Discriminação Blindagem vs Assistência */}
+                        <div className="mt-3 space-y-1 bg-slate-950/60 p-2.5 rounded-xl border border-emerald-500/20 text-[10px]">
+                          <div className="flex justify-between items-center text-slate-300">
+                            <span className="font-semibold flex items-center gap-1">🛡️ Blindagem Completa:</span>
+                            <span className="font-black text-white">
+                              R$ {crmStats.faturamentoBlindagemReal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              <span className="text-slate-500 font-normal ml-1">({crmStats.closedBlindagemCount} {crmStats.closedBlindagemCount === 1 ? 'veículo' : 'veículos'})</span>
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-slate-400">
+                            <span className="font-semibold flex items-center gap-1">🔧 Assistência Técnica:</span>
+                            <span className="font-bold text-slate-300">
+                              R$ {crmStats.faturamentoAssistenciaReal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              <span className="text-slate-500 font-normal ml-1">({crmStats.closedAssistenciaCount} {crmStats.closedAssistenciaCount === 1 ? 'serviço' : 'serviços'})</span>
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-2xl font-black text-white mt-2 tracking-tight">
-                        R$ {crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </p>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-900">
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-3 pt-2 border-t border-slate-900">
                         <span>{crmStats.totalClosed} {crmStats.totalClosed === 1 ? 'venda confirmada' : 'vendas confirmadas'}</span>
                         <span className="text-emerald-400/80 font-bold">Base do ROAS Mestre</span>
                       </div>
                     </div>
 
                     {/* 2. Faturamento Aguardando (Pipeline / Em Aberto) */}
-                    <div className="bg-gradient-to-br from-amber-950/30 via-slate-950 to-slate-950 p-5 rounded-2xl border border-amber-500/30 shadow-lg relative overflow-hidden">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
-                          <Clock size={14} className="text-amber-400" /> Faturamento em Aberto (Aguardando)
-                        </span>
-                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                          Pipeline Ativo
-                        </span>
+                    <div className="bg-gradient-to-br from-amber-950/30 via-slate-950 to-slate-950 p-5 rounded-2xl border border-amber-500/30 shadow-lg relative overflow-hidden flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                            <Clock size={14} className="text-amber-400" /> Faturamento em Aberto (Aguardando)
+                          </span>
+                          <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                            Pipeline Ativo
+                          </span>
+                        </div>
+                        <p className="text-2xl font-black text-amber-400 mt-2 tracking-tight">
+                          R$ {crmStats.faturamentoAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                        {/* Discriminação Blindagem vs Assistência */}
+                        <div className="mt-3 space-y-1 bg-slate-950/60 p-2.5 rounded-xl border border-amber-500/20 text-[10px]">
+                          <div className="flex justify-between items-center text-slate-300">
+                            <span className="font-semibold flex items-center gap-1">🛡️ Blindagem Completa:</span>
+                            <span className="font-black text-white">
+                              R$ {crmStats.faturamentoBlindagemAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              <span className="text-slate-500 font-normal ml-1">({crmStats.leadsBlindagemAguardandoCount} em negoc.)</span>
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-slate-400">
+                            <span className="font-semibold flex items-center gap-1">🔧 Assistência Técnica:</span>
+                            <span className="font-bold text-amber-400">
+                              R$ {crmStats.faturamentoAssistenciaAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              <span className="text-slate-500 font-normal ml-1">({crmStats.leadsAssistenciaAguardandoCount} {crmStats.leadsAssistenciaAguardandoCount === 1 ? 'cotação' : 'cotações'})</span>
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-2xl font-black text-amber-400 mt-2 tracking-tight">
-                        R$ {crmStats.faturamentoAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </p>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-900">
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-3 pt-2 border-t border-slate-900">
                         <span>{crmStats.leadsAtivos} leads em negociação</span>
                         <span className="text-amber-400/80 font-bold">{crmStats.leadsAguardandoComValor} com cotação</span>
                       </div>
                     </div>
 
                     {/* 3. Faturamento Perdido (Negativo / Desistências) */}
-                    <div className="bg-gradient-to-br from-rose-950/30 via-slate-950 to-slate-950 p-5 rounded-2xl border border-rose-500/30 shadow-lg relative overflow-hidden">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black uppercase text-rose-400 tracking-wider flex items-center gap-1.5">
-                          <XCircle size={14} className="text-rose-400" /> Faturamento Perdido
-                        </span>
-                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">
-                          Desistência / Recusado
-                        </span>
+                    <div className="bg-gradient-to-br from-rose-950/30 via-slate-950 to-slate-950 p-5 rounded-2xl border border-rose-500/30 shadow-lg relative overflow-hidden flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black uppercase text-rose-400 tracking-wider flex items-center gap-1.5">
+                            <XCircle size={14} className="text-rose-400" /> Faturamento Perdido
+                          </span>
+                          <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                            Desistência / Recusado
+                          </span>
+                        </div>
+                        <p className="text-2xl font-black text-rose-400 mt-2 tracking-tight">
+                          R$ {crmStats.faturamentoPerdido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                        {/* Discriminação Blindagem vs Assistência */}
+                        <div className="mt-3 space-y-1 bg-slate-950/60 p-2.5 rounded-xl border border-rose-500/20 text-[10px]">
+                          <div className="flex justify-between items-center text-slate-300">
+                            <span className="font-semibold flex items-center gap-1">🛡️ Blindagem Completa:</span>
+                            <span className="font-black text-white">
+                              R$ {crmStats.faturamentoBlindagemPerdido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              <span className="text-slate-500 font-normal ml-1">({crmStats.leadsBlindagemPerdidosCount} desqualif.)</span>
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-slate-400">
+                            <span className="font-semibold flex items-center gap-1">🔧 Assistência Técnica:</span>
+                            <span className="font-bold text-rose-400">
+                              R$ {crmStats.faturamentoAssistenciaPerdido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              <span className="text-slate-500 font-normal ml-1">({crmStats.leadsAssistenciaPerdidosCount} {crmStats.leadsAssistenciaPerdidosCount === 1 ? 'recusado' : 'recusados'})</span>
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-2xl font-black text-rose-400 mt-2 tracking-tight">
-                        R$ {crmStats.faturamentoPerdido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </p>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-900">
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-3 pt-2 border-t border-slate-900">
                         <span>{crmStats.totalPerdidos} desqualificados/recusados</span>
                         <span className="text-rose-400/80 font-bold">Isolado do Faturamento Real</span>
                       </div>
@@ -1689,7 +1840,10 @@ export default function App() {
                     <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
                       <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Orçamentos Enviados</span>
                       <p className="text-xl font-black text-blue-400 mt-1.5">
-                        {crmStats.orcamentosEnviados}
+                        {crmStats.orcamentosEnviadosTotal}
+                      </p>
+                      <p className="text-[9px] text-slate-500 font-bold mt-1 truncate">
+                        {crmStats.orcamentosBlindagem} blindagens • {crmStats.orcamentosAssistencia} assistências
                       </p>
                     </div>
                     <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
@@ -1704,14 +1858,19 @@ export default function App() {
 
                   {/* Cards de Detalhamento por Veículos / Produtos (Grid de 4 colunas) */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-                    {/* Mais Procurados */}
+                    {/* Mais Procurados (Blindagem & Veículos em Negociação) */}
                     <div className="bg-slate-950/40 p-5 rounded-2xl border border-slate-900/50 space-y-4">
-                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
-                        <Car className="text-amber-500" size={14} /> {clienteAtivoObj?.label_procurados || 'Mais Procurados'}
-                      </h4>
+                      <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                        <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                          <Car className="text-amber-500" size={14} /> Blindagem (Mais Procurados)
+                        </h4>
+                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                          Em Negociação
+                        </span>
+                      </div>
                       <div className="space-y-3">
                         {crmStats.topProcurados.length === 0 ? (
-                          <p className="text-[10px] text-slate-600 italic">Nenhum registro ativo.</p>
+                          <p className="text-[10px] text-slate-600 italic">Nenhum veículo em negociação.</p>
                         ) : (
                           crmStats.topProcurados.map((item, idx) => {
                             const max = Math.max(...crmStats.topProcurados.map(i => i.count));
@@ -1732,14 +1891,19 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Vendidos */}
+                    {/* Vendidos (Blindagem Veicular Completa - Ticket Médio ~R$ 100 mil) */}
                     <div className="bg-slate-950/40 p-5 rounded-2xl border border-slate-900/50 space-y-4">
-                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
-                        <Shield className="text-emerald-500" size={14} /> {clienteAtivoObj?.label_vendidos || 'Fechados (Ganhos)'}
-                      </h4>
+                      <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                        <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                          <Shield className="text-emerald-500" size={14} /> Blindagem Veicular (Fechados)
+                        </h4>
+                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          ~R$ 100 mil
+                        </span>
+                      </div>
                       <div className="space-y-3">
                         {crmStats.topVendidos.length === 0 ? (
-                          <p className="text-[10px] text-slate-600 italic">Nenhum registro fechado.</p>
+                          <p className="text-[10px] text-slate-600 italic">Nenhuma blindagem fechada no período.</p>
                         ) : (
                           crmStats.topVendidos.map((item, idx) => {
                             const max = Math.max(...crmStats.topVendidos.map(i => i.count));
@@ -1767,19 +1931,19 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Assistência Técnica */}
+                    {/* Assistência Técnica & Reparos (Pós-Venda) */}
                     <div className="bg-slate-950/40 p-5 rounded-2xl border border-slate-900/50 space-y-4">
                       <div className="flex justify-between items-center border-b border-slate-900 pb-2">
                         <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-                          <Briefcase className="text-blue-400" size={14} /> {clienteAtivoObj?.label_assistencia || 'Assistência/Outros'}
+                          <Briefcase className="text-blue-400" size={14} /> Assistência Técnica & Reparos
                         </h4>
-                        <span className="text-[10px] font-black text-emerald-400">
-                          R$ {crmStats.faturamentoAssistencia.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                          Pós-Venda
                         </span>
                       </div>
                       <div className="space-y-3">
                         {crmStats.topAssistencias.length === 0 ? (
-                          <p className="text-[10px] text-slate-600 italic">Nenhum registro concluído.</p>
+                          <p className="text-[10px] text-slate-600 italic">Nenhum registro de assistência.</p>
                         ) : (
                           crmStats.topAssistencias.map((item, idx) => {
                             const max = Math.max(...crmStats.topAssistencias.map(i => i.count));
@@ -1788,8 +1952,13 @@ export default function App() {
                               <div key={idx} className="space-y-1">
                                 <div className="flex justify-between text-[11px] font-semibold text-slate-300">
                                   <span className="truncate pr-2">{item.nome}</span>
-                                  <span className="text-blue-400 font-bold shrink-0">{item.count} concluídos</span>
+                                  <span className="text-blue-400 font-bold shrink-0">{item.count} atendimentos</span>
                                 </div>
+                                {item.valor > 0 && (
+                                  <p className="text-[10px] text-blue-400/90 font-bold">
+                                    R$ {item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                  </p>
+                                )}
                                 <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
                                   <div className="bg-blue-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
                                 </div>
@@ -1800,19 +1969,19 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Perdidos / Desistências */}
+                    {/* Desistências / Perdidos (Blindagem) */}
                     <div className="bg-slate-950/40 p-5 rounded-2xl border border-slate-900/50 space-y-4">
                       <div className="flex justify-between items-center border-b border-slate-900 pb-2">
                         <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-                          <XCircle className="text-rose-400" size={14} /> Desistências / Perdidos
+                          <XCircle className="text-rose-400" size={14} /> Desistências (Blindagem)
                         </h4>
-                        <span className="text-[10px] font-black text-rose-400">
-                          {crmStats.totalPerdidos} leads
+                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                          {crmStats.leadsBlindagemPerdidosCount} veículos
                         </span>
                       </div>
                       <div className="space-y-3">
                         {crmStats.topPerdidos.length === 0 ? (
-                          <p className="text-[10px] text-slate-600 italic">Nenhum registro perdido.</p>
+                          <p className="text-[10px] text-slate-600 italic">Nenhum registro de blindagem perdido.</p>
                         ) : (
                           crmStats.topPerdidos.map((item, idx) => {
                             const max = Math.max(...crmStats.topPerdidos.map(i => i.count));

@@ -589,6 +589,27 @@ export default function AtendimentoPage() {
     const leadsNormais = leads.filter(l => l.origem !== 'Seguidor Instagram');
     const totalLeads = leadsNormais.length;
     
+    // Heurística de distinção robusta: Assistência Técnica vs Blindagem Veicular Completa
+    const isAssistenciaFn = (l) => {
+      if (!l) return false;
+      const servico = String(l.tipo_servico || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+      const veiculo = String(l.veiculo || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+      const detalhe = String(l.status_detalhe || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+      
+      if (servico.includes('ASSIST') || servico.includes('MANUTEN') || servico.includes('REVIS') || servico.includes('REPARO')) {
+        return true;
+      }
+      
+      const servicosKeywords = ['DELAMIN', 'FUNILAR', 'INSPEC', 'BALISTICA', 'VIDRO', 'REVISAO', 'HIGIENIZ', 'POLIMENTO', 'MAQUINA DE VIDRO', 'TRAVA', 'AMORTECEDOR', 'PINTURA'];
+      if (servicosKeywords.some(kw => veiculo.includes(kw) || detalhe.includes(kw))) {
+        return true;
+      }
+      
+      return false;
+    };
+
+    const isBlindagemFn = (l) => !isAssistenciaFn(l);
+
     // Heurística de classificação comercial blindada
     const isPerdidoFn = (l) => {
       const st = String(l.status || '').toUpperCase().trim();
@@ -607,25 +628,74 @@ export default function AtendimentoPage() {
       if (isPerdidoFn(l) || isAguardandoFn(l)) return false;
       const st = String(l.status || '').toUpperCase().trim();
       const conv = String(l.conversao || '').toUpperCase().trim();
-      return st === 'FECHADO' || conv === 'POSITIVO' || (l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0);
+      return st === 'FECHADO' || conv === 'POSITIVO' || (isAssistenciaFn(l) && Number(l.valor || 0) > 0 && conv !== 'AGUARDANDO' && !isPerdidoFn(l));
+    };
+
+    // Heurística abrangente de detecção de Orçamentos Enviados
+    const isOrcamentoEnviadoFn = (l) => {
+      if (!l) return false;
+      const val = Number(l.valor || 0);
+      if (val > 0) return true;
+      
+      const text = `${l.status || ''} | ${l.conversao || ''} | ${l.status_detalhe || ''} | ${l.veiculo || ''}`
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+        
+      return text.includes('ORCAMENTO') || 
+             text.includes('ORCOU') || 
+             text.includes('PROPOSTA') || 
+             text.includes('COTACAO') || 
+             text.includes('COTOU') ||
+             text.includes('TABELA');
     };
 
     // 1. Vendas Fechadas e Faturamento Real Consolidado (Ganhos)
     const closedLeads = leadsNormais.filter(isFechadoFn);
     const faturamentoTotal = closedLeads.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
-    const faturamentoAssistencia = closedLeads
-      .filter(l => l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0)
-      .reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    
+    // Segregação Blindagem vs Assistência (Real Fechado)
+    const closedBlindagem = closedLeads.filter(isBlindagemFn);
+    const faturamentoBlindagemReal = closedBlindagem.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const closedBlindagemCount = closedBlindagem.length;
+
+    const closedAssistencia = closedLeads.filter(isAssistenciaFn);
+    const faturamentoAssistenciaReal = closedAssistencia.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const closedAssistenciaCount = closedAssistencia.length;
 
     // 2. Faturamento Aguardando (Negociações em Aberto / Pipeline Ativo)
     const leadsAguardando = leadsNormais.filter(isAguardandoFn);
     const faturamentoAguardando = leadsAguardando.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
     const leadsAguardandoComValor = leadsAguardando.filter(l => Number(l.valor || 0) > 0).length;
 
+    // Segregação Blindagem vs Assistência (Aguardando)
+    const leadsBlindagemAguardando = leadsAguardando.filter(isBlindagemFn);
+    const faturamentoBlindagemAguardando = leadsBlindagemAguardando.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsBlindagemAguardandoCount = leadsBlindagemAguardando.length;
+
+    const leadsAssistenciaAguardando = leadsAguardando.filter(isAssistenciaFn);
+    const faturamentoAssistenciaAguardando = leadsAssistenciaAguardando.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsAssistenciaAguardandoCount = leadsAssistenciaAguardando.length;
+
     // 3. Faturamento Perdido (Desistências / Negativo / Cancelados)
     const leadsPerdidos = leadsNormais.filter(isPerdidoFn);
     const faturamentoPerdido = leadsPerdidos.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
     const leadsPerdidosComValor = leadsPerdidos.filter(l => Number(l.valor || 0) > 0).length;
+
+    // Segregação Blindagem vs Assistência (Perdido)
+    const leadsBlindagemPerdidos = leadsPerdidos.filter(isBlindagemFn);
+    const faturamentoBlindagemPerdido = leadsBlindagemPerdidos.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsBlindagemPerdidosCount = leadsBlindagemPerdidos.length;
+
+    const leadsAssistenciaPerdidos = leadsPerdidos.filter(isAssistenciaFn);
+    const faturamentoAssistenciaPerdido = leadsAssistenciaPerdidos.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsAssistenciaPerdidosCount = leadsAssistenciaPerdidos.length;
+
+    // Orçamentos Enviados
+    const leadsOrcamento = leadsNormais.filter(isOrcamentoEnviadoFn);
+    const orcamentosEnviadosTotal = leadsOrcamento.length;
+    const orcamentosBlindagem = leadsOrcamento.filter(isBlindagemFn).length;
+    const orcamentosAssistencia = leadsOrcamento.filter(isAssistenciaFn).length;
 
     // Métricas Financeiras Consolidadas do Pipeline Comercial
     const faturamentoPipelineGeral = faturamentoTotal + faturamentoAguardando + faturamentoPerdido;
@@ -636,11 +706,12 @@ export default function AtendimentoPage() {
     const taxaConversao = totalLeads > 0 ? ((closedLeads.length / totalLeads) * 100).toFixed(1) : '0';
     const leadsAtivos = leadsAguardando.length;
 
-    // Veículos Procurados (Ativos em Negociação)
+    // Veículos Procurados (Ativos em Negociação - Blindagem)
     const procuradosMap = {};
     leadsNormais.forEach(l => {
       if (
         isAguardandoFn(l) &&
+        isBlindagemFn(l) &&
         l.veiculo && 
         l.veiculo !== 'X' && 
         l.veiculo !== 'null' && 
@@ -655,10 +726,10 @@ export default function AtendimentoPage() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Veículos Vendidos (Fechados)
+    // Veículos Vendidos (Blindagem Completa - Fechados)
     const vendidosMap = {};
     leadsNormais.forEach(l => {
-      if (isFechadoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.tipo_servico !== 'ASSISTÊNCIA') {
+      if (isFechadoFn(l) && isBlindagemFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null') {
         const cleanName = l.veiculo.trim().toUpperCase();
         if (!vendidosMap[cleanName]) {
           vendidosMap[cleanName] = { count: 0, valor: 0 };
@@ -672,23 +743,27 @@ export default function AtendimentoPage() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Veículos de Assistência Técnica (Ganhos)
+    // Veículos de Assistência Técnica (Reparos, Funilaria, Vidros, Revisão)
     const assistenciasMap = {};
     leadsNormais.forEach(l => {
-      if (isFechadoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) {
+      if (isAssistenciaFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null') {
         const cleanName = l.veiculo.trim().toUpperCase();
-        assistenciasMap[cleanName] = (assistenciasMap[cleanName] || 0) + 1;
+        if (!assistenciasMap[cleanName]) {
+          assistenciasMap[cleanName] = { count: 0, valor: 0 };
+        }
+        assistenciasMap[cleanName].count += 1;
+        assistenciasMap[cleanName].valor += Number(l.valor || 0);
       }
     });
     const topAssistencias = Object.entries(assistenciasMap)
-      .map(([nome, count]) => ({ nome, count }))
+      .map(([nome, count]) => ({ nome, count: count.count, valor: count.valor }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    // Veículos/Oportunidades Perdidas
+    // Veículos/Oportunidades Perdidas (Blindagem)
     const perdidosMap = {};
     leadsNormais.forEach(l => {
-      if (isPerdidoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.veiculo !== 'NÃO IDENTIFICADO') {
+      if (isPerdidoFn(l) && isBlindagemFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.veiculo !== 'NÃO IDENTIFICADO') {
         const cleanName = l.veiculo.trim().toUpperCase();
         if (!perdidosMap[cleanName]) {
           perdidosMap[cleanName] = { count: 0, valor: 0 };
@@ -715,16 +790,32 @@ export default function AtendimentoPage() {
     return {
       totalLeads,
       faturamentoTotal,
-      faturamentoAssistencia,
+      faturamentoBlindagemReal,
+      closedBlindagemCount,
+      faturamentoAssistenciaReal,
+      closedAssistenciaCount,
+      faturamentoAssistencia: faturamentoAssistenciaReal,
       faturamentoAguardando,
+      faturamentoBlindagemAguardando,
+      leadsBlindagemAguardandoCount,
+      faturamentoAssistenciaAguardando,
+      leadsAssistenciaAguardandoCount,
       leadsAguardandoComValor,
       faturamentoPerdido,
+      faturamentoBlindagemPerdido,
+      leadsBlindagemPerdidosCount,
+      faturamentoAssistenciaPerdido,
+      leadsAssistenciaPerdidosCount,
       leadsPerdidosComValor,
+      orcamentosEnviadosTotal,
+      orcamentosBlindagem,
+      orcamentosAssistencia,
       faturamentoPipelineGeral,
       taxaAproveitamentoFinanceiro,
       taxaConversao,
       leadsAtivos,
       totalPerdidos: leadsPerdidos.length,
+      totalClosed: closedLeads.length,
       topProcurados,
       topVendidos,
       topAssistencias,
@@ -1261,8 +1352,8 @@ export default function AtendimentoPage() {
           ) : (
              /* --- MODO DASHBOARD --- */
              <div className="space-y-6">
-                {/* Cards Superiores com Faturamento Segregado */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {/* Cards Superiores com Faturamento Segregado e Orçamentos */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                   <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Total de Leads</p>
@@ -1283,40 +1374,70 @@ export default function AtendimentoPage() {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-emerald-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-emerald-500/30 p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Faturamento Real</p>
-                      <p className="text-xl font-black text-emerald-400 mt-1.5">
-                        R$ {dashboardStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </p>
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-blue-400">Orçamentos Enviados</p>
+                        <p className="text-2xl font-black text-blue-400 mt-1.5">{dashboardStats.orcamentosEnviadosTotal}</p>
+                      </div>
+                      <div className="w-10 h-10 rounded-2xl bg-blue-950/20 border border-blue-900/20 text-blue-400 flex items-center justify-center">
+                        <FileSpreadsheet size={18} />
+                      </div>
                     </div>
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-                      <ShieldCheck size={18} />
-                    </div>
+                    <p className="text-[9px] text-slate-500 font-bold mt-2 truncate">
+                      {dashboardStats.orcamentosBlindagem} blindagens • {dashboardStats.orcamentosAssistencia} assistências
+                    </p>
                   </div>
 
-                  <div className="bg-gradient-to-br from-amber-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-amber-500/30 p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-amber-400">Aguardando (Pipeline)</p>
-                      <p className="text-xl font-black text-amber-400 mt-1.5">
-                        R$ {dashboardStats.faturamentoAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </p>
+                  <div className="bg-gradient-to-br from-emerald-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-emerald-500/30 p-5 rounded-[2rem] shadow-xl flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Faturamento Real</p>
+                        <p className="text-xl font-black text-emerald-400 mt-1.5">
+                          R$ {dashboardStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </p>
+                      </div>
+                      <div className="w-10 h-10 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                        <ShieldCheck size={18} />
+                      </div>
                     </div>
-                    <div className="w-10 h-10 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-amber-400 flex items-center justify-center">
-                      <DollarSign size={18} />
-                    </div>
+                    <p className="text-[9px] text-slate-400 font-bold mt-2 truncate">
+                      🛡️ R$ {dashboardStats.faturamentoBlindagemReal.toLocaleString('pt-BR')} ({dashboardStats.closedBlindagemCount}) • 🔧 R$ {dashboardStats.faturamentoAssistenciaReal.toLocaleString('pt-BR')}
+                    </p>
                   </div>
 
-                  <div className="bg-gradient-to-br from-rose-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-rose-500/30 p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-rose-400">Faturamento Perdido</p>
-                      <p className="text-xl font-black text-rose-400 mt-1.5">
-                        R$ {dashboardStats.faturamentoPerdido.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </p>
+                  <div className="bg-gradient-to-br from-amber-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-amber-500/30 p-5 rounded-[2rem] shadow-xl flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-amber-400">Aguardando (Pipeline)</p>
+                        <p className="text-xl font-black text-amber-400 mt-1.5">
+                          R$ {dashboardStats.faturamentoAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </p>
+                      </div>
+                      <div className="w-10 h-10 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+                        <DollarSign size={18} />
+                      </div>
                     </div>
-                    <div className="w-10 h-10 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-400 flex items-center justify-center">
-                      <XCircle size={18} />
+                    <p className="text-[9px] text-slate-400 font-bold mt-2 truncate">
+                      🛡️ R$ {dashboardStats.faturamentoBlindagemAguardando.toLocaleString('pt-BR')} • 🔧 R$ {dashboardStats.faturamentoAssistenciaAguardando.toLocaleString('pt-BR')}
+                    </p>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-rose-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-rose-500/30 p-5 rounded-[2rem] shadow-xl flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-rose-400">Faturamento Perdido</p>
+                        <p className="text-xl font-black text-rose-400 mt-1.5">
+                          R$ {dashboardStats.faturamentoPerdido.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </p>
+                      </div>
+                      <div className="w-10 h-10 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-400 flex items-center justify-center">
+                        <XCircle size={18} />
+                      </div>
                     </div>
+                    <p className="text-[9px] text-slate-400 font-bold mt-2 truncate">
+                      🛡️ R$ {dashboardStats.faturamentoBlindagemPerdido.toLocaleString('pt-BR')} • 🔧 R$ {dashboardStats.faturamentoAssistenciaPerdido.toLocaleString('pt-BR')}
+                    </p>
                   </div>
                 </div>
 
@@ -1358,9 +1479,14 @@ export default function AtendimentoPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {/* Veículos Procurados (Active) */}
                   <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl space-y-4">
-                    <div className="flex items-center gap-2 border-b border-[#1b1c24] pb-3">
-                      <Car className="text-amber-500" size={16} />
-                      <h3 className="text-xs font-black uppercase tracking-widest text-white">Carros Mais Procurados</h3>
+                    <div className="flex items-center justify-between border-b border-[#1b1c24] pb-3">
+                      <div className="flex items-center gap-2">
+                        <Car className="text-amber-500" size={16} />
+                        <h3 className="text-xs font-black uppercase tracking-widest text-white">Blindagem (Mais Procurados)</h3>
+                      </div>
+                      <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        Em Negociação
+                      </span>
                     </div>
                     <div className="space-y-3">
                       {dashboardStats.topProcurados.length === 0 ? (
@@ -1387,9 +1513,14 @@ export default function AtendimentoPage() {
 
                   {/* Veículos Vendidos */}
                   <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl space-y-4">
-                    <div className="flex items-center gap-2 border-b border-[#1b1c24] pb-3">
-                      <Shield className="text-emerald-500" size={16} />
-                      <h3 className="text-xs font-black uppercase tracking-widest text-white">Carros Vendidos (Ganhos)</h3>
+                    <div className="flex items-center justify-between border-b border-[#1b1c24] pb-3">
+                      <div className="flex items-center gap-2">
+                        <Shield className="text-emerald-500" size={16} />
+                        <h3 className="text-xs font-black uppercase tracking-widest text-white">Blindagem Veicular (Fechados)</h3>
+                      </div>
+                      <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        ~R$ 100 mil
+                      </span>
                     </div>
                     <div className="space-y-3">
                       {dashboardStats.topVendidos.length === 0 ? (
@@ -1426,10 +1557,10 @@ export default function AtendimentoPage() {
                     <div className="flex items-center justify-between border-b border-[#1b1c24] pb-3">
                       <div className="flex items-center gap-2">
                         <Briefcase className="text-blue-400" size={16} />
-                        <h3 className="text-xs font-black uppercase tracking-widest text-white">Assistência Técnica</h3>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-white">Assistência & Reparos</h3>
                       </div>
-                      <span className="text-[10px] font-black text-emerald-400">
-                        R$ {dashboardStats.faturamentoAssistencia.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        Pós-Venda
                       </span>
                     </div>
                     <div className="space-y-3">
@@ -1460,7 +1591,7 @@ export default function AtendimentoPage() {
                     <div className="flex items-center justify-between border-b border-[#1b1c24] pb-3">
                       <div className="flex items-center gap-2">
                         <XCircle className="text-rose-400" size={16} />
-                        <h3 className="text-xs font-black uppercase tracking-widest text-white">Desistências / Perdidos</h3>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-white">Desistências (Blindagem)</h3>
                       </div>
                       <span className="text-[10px] font-black text-rose-400">
                         {dashboardStats.totalPerdidos} leads
