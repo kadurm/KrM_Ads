@@ -73,16 +73,19 @@ function getMetric(actions, type, isValue = false) {
   return matches.reduce((acc, a) => acc + (isValue ? parseFloat(a.value || 0) : parseInt(a.value || 0, 10)), 0);
 }
 
-function getTrueLeads(actions) {
+function getTrueLeads(actions, campaignName = '') {
   if (!Array.isArray(actions)) return 0;
   const msgReply = getMetric(actions, 'onsite_conversion.messaging_first_reply');
   const msgStarted = getMetric(actions, 'onsite_conversion.messaging_conversation_started_7d');
   const standardLead = getMetric(actions, 'lead');
   const leadGen = getMetric(actions, 'onsite_conversion.lead_grouped');
   const fbContact = getMetric(actions, 'contact');
-  const customPixel = getMetric(actions, 'offsite_conversion.fb_pixel_custom');
   
-  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact + customPixel;
+  if (campaignName.toLowerCase().includes('message')) {
+    return Math.max(msgReply, msgStarted);
+  }
+  
+  return Math.max(msgReply, msgStarted) + Math.max(standardLead, leadGen) + fbContact;
 }
 
 function getSocialActions(actions) {
@@ -221,7 +224,8 @@ async function syncClient(clienteName, daysToSync = 30) {
   await batchProcess(campaignData, 15, async (item) => {
     const camp = localCampMap.get(String(item.campaign_id));
     if (!camp) return;
-    const dataInsight = new Date(item.date_start + 'T00:00:00');
+    const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
+
     const linkClicks = parseInt(item.inline_link_clicks) || 0;
     const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
     const nativeVisits = getMetric(item.actions, 'onsite_conversion.instagram_profile_visit');
@@ -245,7 +249,7 @@ async function syncClient(clienteName, daysToSync = 30) {
         seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
         reacoes_sociais: getSocialActions(item.actions),
         valor_investido: parseFloat(item.spend) || 0,
-        conversas_leads: getTrueLeads(item.actions),
+        conversas_leads: getTrueLeads(item.actions, item.campaign_name),
         compras: getMetric(item.actions, 'purchase'),
         valor_compras: getMetric(item.action_values, 'purchase', true)    
       },
@@ -259,7 +263,7 @@ async function syncClient(clienteName, daysToSync = 30) {
         seguidores: getMetric(item.actions, 'onsite_conversion.follow') + getMetric(item.actions, 'page_like'),
         reacoes_sociais: getSocialActions(item.actions),
         valor_investido: parseFloat(item.spend) || 0,
-        conversas_leads: getTrueLeads(item.actions),
+        conversas_leads: getTrueLeads(item.actions, item.campaign_name),
         compras: getMetric(item.actions, 'purchase'),
         valor_compras: getMetric(item.action_values, 'purchase', true)    
       }
@@ -312,7 +316,7 @@ async function syncClient(clienteName, daysToSync = 30) {
           cliques: parseInt(row.inline_link_clicks) || 0,
           ctr: parseFloat(row.inline_link_click_ctr) || 0,
           valor_investido: parseFloat(row.spend) || 0,
-          leads: getTrueLeads(row.actions),
+          leads: getTrueLeads(row.actions, camp?.nome_gerado || ''),
           compras: getMetric(row.actions, 'purchase'),
           reacoes_sociais: getSocialActions(row.actions)
         },
@@ -324,7 +328,7 @@ async function syncClient(clienteName, daysToSync = 30) {
           cliques: parseInt(row.inline_link_clicks) || 0,
           ctr: parseFloat(row.inline_link_click_ctr) || 0,
           valor_investido: parseFloat(row.spend) || 0,
-          leads: getTrueLeads(row.actions),
+          leads: getTrueLeads(row.actions, camp?.nome_gerado || ''),
           compras: getMetric(row.actions, 'purchase'),
           reacoes_sociais: getSocialActions(row.actions)
         }

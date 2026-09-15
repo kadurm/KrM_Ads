@@ -63,6 +63,7 @@ model Lead {
   veiculo           String?
   comercial         String?
   conversao         String?
+  status_detalhe    String?
   notas             Nota[]
   agendamentos      Agendamento[]
   data              DateTime @default(now())

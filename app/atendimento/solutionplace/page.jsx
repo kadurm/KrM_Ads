@@ -31,8 +31,12 @@ import {
   Briefcase,
   Layers,
   MapPin,
-  ChevronLeft
+  ChevronLeft,
+  FileCode,
+  UploadCloud,
+  FileSpreadsheet
 } from 'lucide-react';
+import { parseXmlLeads } from '../../../utils/xmlParser';
 
 export default function AtendimentoPage() {
   const pathname = usePathname();
@@ -57,7 +61,10 @@ export default function AtendimentoPage() {
   const handleShortcut = (shortcut) => {
     const hojeObj = new Date();
     setActiveShortcut(shortcut);
-    if (shortcut === 'hoje') {
+    if (shortcut === 'todos') {
+      setStartDate('');
+      setEndDate('');
+    } else if (shortcut === 'hoje') {
       const d = formatDateLocal(hojeObj);
       setStartDate(d); setEndDate(d);
     } else if (shortcut === 'ontem') {
@@ -108,7 +115,8 @@ export default function AtendimentoPage() {
     tipo_servico: 'BLINDAGEM',
     veiculo: '',
     comercial: 'X',
-    conversao: '',
+    conversao: 'POSITIVO',
+    status_detalhe: '',
     status: 'NOVO',
     valor: '0',
     data: new Date().toISOString().split('T')[0]
@@ -127,6 +135,78 @@ export default function AtendimentoPage() {
   const [showAddAgendamento, setShowAddAgendamento] = useState(false);
   const [newAgendamento, setNewAgendamento] = useState({ tipo: 'PRONTA_ENTREGA', data_hora: '', observacao: '' });
   const [submittingAgendamento, setSubmittingAgendamento] = useState(false);
+
+  // Importação de XML / Planilhas
+  const [showImportXmlModal, setShowImportXmlModal] = useState(false);
+  const [parsedLeadsPreview, setParsedLeadsPreview] = useState([]);
+  const [xmlFileName, setXmlFileName] = useState('');
+  const [importingXml, setImportingXml] = useState(false);
+  const [xmlImportError, setXmlImportError] = useState('');
+  const [xmlImportSuccess, setXmlImportSuccess] = useState('');
+
+  const handleXmlFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setXmlImportError('');
+    setXmlImportSuccess('');
+    setXmlFileName(file.name);
+    setShowImportXmlModal(true);
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const content = evt.target?.result;
+        const parsed = parseXmlLeads(content);
+        if (!parsed || parsed.length === 0) {
+          setXmlImportError('Nenhum registro válido de lead foi encontrado no arquivo selecionado.');
+          setParsedLeadsPreview([]);
+        } else {
+          setParsedLeadsPreview(parsed);
+        }
+      } catch (err) {
+        setXmlImportError(err.message || 'Erro ao processar o arquivo selecionado.');
+        setParsedLeadsPreview([]);
+      }
+    };
+    reader.onerror = () => {
+      setXmlImportError('Erro ao ler o arquivo selecionado.');
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleConfirmXmlImport = async () => {
+    if (parsedLeadsPreview.length === 0) return;
+    setImportingXml(true);
+    setXmlImportError('');
+    try {
+      const res = await fetch('/api/crm/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cliente: clienteUrl,
+          leads: parsedLeadsPreview
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setXmlImportSuccess(data.message || `${data.count} leads importados com sucesso!`);
+        loadLeads();
+        setTimeout(() => {
+          setShowImportXmlModal(false);
+          setParsedLeadsPreview([]);
+          setXmlImportSuccess('');
+        }, 1800);
+      } else {
+        setXmlImportError(data.error || 'Falha ao importar dados no banco.');
+      }
+    } catch (err) {
+      setXmlImportError('Erro de conexão com o servidor.');
+    } finally {
+      setImportingXml(false);
+    }
+  };
 
   // Authentication States
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -263,7 +343,8 @@ export default function AtendimentoPage() {
         tipo_servico: newLead.tipo_servico || null,
         veiculo: newLead.veiculo || null,
         comercial: finalComercial || null,
-        conversao: newLead.conversao || null,
+        conversao: newLead.conversao || 'X',
+        status_detalhe: newLead.status_detalhe || null,
         status: newLead.status,
         valor: parseFloat(newLead.valor || 0),
         data: newLead.data ? new Date(newLead.data).toISOString() : new Date().toISOString()
@@ -286,7 +367,8 @@ export default function AtendimentoPage() {
           tipo_servico: 'BLINDAGEM',
           veiculo: '',
           comercial: 'X',
-          conversao: '',
+          conversao: 'POSITIVO',
+          status_detalhe: '',
           status: 'NOVO',
           valor: '0',
           data: new Date().toISOString().split('T')[0]
@@ -316,7 +398,8 @@ export default function AtendimentoPage() {
           tipo_servico: editedLead.tipo_servico,
           veiculo: editedLead.veiculo,
           comercial: editedLead.comercial,
-          conversao: editedLead.conversao
+          conversao: editedLead.conversao,
+          status_detalhe: editedLead.status_detalhe
         })
       });
       const data = await res.json();
@@ -500,8 +583,13 @@ export default function AtendimentoPage() {
     const leadsNormais = leads.filter(l => l.origem !== 'Seguidor Instagram');
     const totalLeads = leadsNormais.length;
     
-    // Considera closedLeads tanto as vendas fechadas quanto as assistências que geraram faturamento
-    const closedLeads = leadsNormais.filter(l => l.status === 'FECHADO' || (l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0));
+    // Considera closedLeads tanto as vendas fechadas quanto conversões positivas e assistências que geraram faturamento
+    const closedLeads = leadsNormais.filter(l => 
+      l.status === 'FECHADO' || 
+      (l.conversao && String(l.conversao).toUpperCase().includes('POSITIV')) ||
+      (l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) ||
+      Number(l.valor || 0) > 0
+    );
     
     const faturamentoTotal = closedLeads.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
     const faturamentoAssistencia = leadsNormais
@@ -724,6 +812,22 @@ export default function AtendimentoPage() {
               className="w-full bg-[#11131a] border border-[#1b1c24] rounded-[2rem] py-5 pl-16 pr-6 text-base text-white outline-none focus:border-red-800/40 focus:ring-4 ring-red-950/10 transition-all shadow-xl shadow-black/30"
             />
           </div>
+          <label 
+            htmlFor="xml-file-input"
+            className="h-16 px-6 bg-[#11131a] hover:bg-[#1b1c24] text-slate-200 hover:text-white rounded-[1.5rem] flex items-center justify-center gap-3 shadow-xl cursor-pointer active:scale-95 transition-all border border-[#1b1c24] hover:border-red-800/40 shrink-0 font-black text-xs uppercase tracking-widest"
+            title="Importar Planilha (XML / CSV)"
+          >
+            <FileCode size={22} className="text-red-500" />
+            <span className="hidden sm:inline">Importar XML / CSV</span>
+          </label>
+          <input 
+            id="xml-file-input"
+            type="file"
+            accept=".xml,.jsf,.html,.csv,.txt"
+            onChange={handleXmlFileSelect}
+            className="hidden"
+          />
+
           <button 
             id="btn-add-lead"
             onClick={() => setShowAddLead(true)}
@@ -773,6 +877,7 @@ export default function AtendimentoPage() {
           <div className="flex items-center gap-3 bg-[#11131a]/80 p-2 rounded-3xl border border-[#1b1c24] shadow-md flex-wrap lg:flex-nowrap">
             <div className="flex gap-1 bg-slate-950/50 p-1 rounded-2xl">
               {[
+                { id: 'todos', label: 'Todas as Datas' },
                 { id: 'hoje', label: 'Hoje' },
                 { id: 'ontem', label: 'Ontem' },
                 { id: '7d', label: '7 Dias' },
@@ -929,11 +1034,12 @@ export default function AtendimentoPage() {
                    <tbody className="divide-y divide-[#1b1c24]/50 text-sm text-slate-300">
                      {leadsFiltrados.map(lead => {
                        const formattedDate = new Date(lead.data).toLocaleDateString('pt-BR');
-                       const rowColorClass = 
-                          lead.status === 'PERDIDO' ? 'bg-red-950/15 hover:bg-red-900/25 text-red-200' :
-                          lead.status === 'FECHADO' ? 'bg-emerald-950/15 hover:bg-emerald-900/25 text-emerald-200' :
-                          lead.status === 'NOVO' ? 'bg-blue-950/15 hover:bg-blue-900/25 text-blue-200' :
-                          'bg-amber-950/10 hover:bg-amber-900/20 text-amber-200';
+                        const rowColorClass = 
+                           lead.status === 'FECHADO' ? 'bg-emerald-950/20 hover:bg-emerald-900/30 text-emerald-200 border-l-4 border-l-emerald-500' :
+                           lead.status === 'PERDIDO' ? 'bg-rose-950/20 hover:bg-rose-900/30 text-rose-200 border-l-4 border-l-rose-500' :
+                           lead.status === 'NEGOCIACAO' ? 'bg-amber-950/20 hover:bg-amber-900/30 text-amber-200 border-l-4 border-l-amber-500' :
+                           lead.status === 'CONTATO' ? 'bg-blue-950/20 hover:bg-blue-900/30 text-blue-200 border-l-4 border-l-blue-500' :
+                           'bg-slate-900/40 hover:bg-slate-800/50 text-slate-300 border-l-4 border-l-slate-700';
 
                        return (
                          <tr 
@@ -955,26 +1061,39 @@ export default function AtendimentoPage() {
                            <td className="py-4 px-6 text-xs font-semibold">{lead.tipo_servico || '-'}</td>
                            <td className="py-4 px-6 text-xs font-black text-slate-200">{lead.veiculo || '-'}</td>
                            <td className="py-4 px-6 text-xs font-semibold">{lead.comercial || '-'}</td>
-                           <td className="py-4 px-6">
-                             <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
-                               lead.status === 'FECHADO' ? 'bg-emerald-950/20 text-emerald-400 border-emerald-900/20' :
-                               lead.status === 'PERDIDO' ? 'bg-rose-950/20 text-rose-400 border-rose-900/20' :
-                               lead.status === 'NEGOCIACAO' ? 'bg-amber-950/20 text-amber-400 border-amber-900/20' :
-                               lead.status === 'CONTATO' ? 'bg-blue-950/20 text-blue-400 border-blue-900/20' :
-                               'bg-slate-900 text-slate-500 border-slate-800'
-                             }`}>
-                               {lead.status}
-                             </span>
-                           </td>
-                           <td className="py-4 px-6 text-xs font-medium text-slate-400 max-w-[200px] truncate" title={lead.conversao || ''}>
-                              {lead.conversao || '-'}
+                           
+                            {/* Coluna 9: Conversão Macro (POSITIVO, NEGATIVO, AGUARDANDO, DESQUALIFICADO, X) */}
+                            <td className="py-4 px-6">
+                              {lead.conversao && lead.conversao !== 'X' && lead.conversao !== '-' ? (
+                                <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border shadow-sm ${
+                                  String(lead.conversao).toUpperCase().includes('POSITIV') ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/40 shadow-emerald-950/30' :
+                                  String(lead.conversao).toUpperCase().includes('NEGATIV') ? 'bg-rose-950/40 text-rose-400 border-rose-800/40 shadow-rose-950/30' :
+                                  String(lead.conversao).toUpperCase().includes('AGUARD') ? 'bg-amber-950/40 text-amber-400 border-amber-800/40 shadow-amber-950/30' :
+                                  String(lead.conversao).toUpperCase().includes('DESQUALIFICAD') ? 'bg-slate-900 text-slate-400 border-slate-800' :
+                                  'bg-slate-900 text-slate-300 border-slate-800'
+                                }`}>
+                                  {lead.conversao}
+                                </span>
+                              ) : (
+                                <span className="text-slate-600 text-xs">-</span>
+                              )}
                             </td>
-                           <td className="py-4 px-6 text-right font-black text-xs text-white">
-                             {lead.valor && Number(lead.valor) > 0 
-                               ? `R$ ${Number(lead.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` 
-                               : '-'
-                             }
-                           </td>
+
+                            {/* Coluna 10: Status do Atendimento (Detalhamento operacional da planilha) */}
+                            <td className="py-4 px-6 text-xs font-semibold text-slate-300 max-w-[240px] truncate" title={lead.status_detalhe || lead.conversao || ''}>
+                              {lead.status_detalhe || (lead.conversao !== 'POSITIVO' && lead.conversao !== 'NEGATIVO' && lead.conversao !== 'AGUARDANDO' && lead.conversao !== 'DESQUALIFICADO' && lead.conversao !== 'X' ? lead.conversao : null) || '-'}
+                            </td>
+
+                            {/* Coluna 11: Faturado */}
+                            <td className="py-4 px-6 text-right font-black text-xs">
+                              {lead.valor && Number(lead.valor) > 0 ? (
+                                <span className="text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-lg">
+                                  R$ {Number(lead.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                              ) : (
+                                <span className="text-slate-500">-</span>
+                              )}
+                            </td>
                          </tr>
                        );
                      })}
@@ -1282,7 +1401,7 @@ export default function AtendimentoPage() {
                        if (isEditing) {
                          setIsEditing(false);
                        } else {
-                         setIsEditing(true);
+                         startEditing(selectedLead);
                        }
                      }}
                      className="px-5 py-2.5 rounded-xl bg-red-950/20 hover:bg-red-900/10 border border-red-900/30 text-red-500 hover:text-red-400 text-xs font-black uppercase tracking-widest transition-all"
@@ -1339,14 +1458,30 @@ export default function AtendimentoPage() {
                          />
                        </div>
                        <div className="space-y-1.5">
-                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Status (Detalhamento/Observação)</label>
-                         <input 
-                           type="text" 
-                           value={editedLead.conversao || ''} 
+                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Conversão (Macro)</label>
+                         <select 
+                           value={editedLead.conversao || 'X'} 
                            onChange={e => setEditedLead({...editedLead, conversao: e.target.value})}
-                           className="w-full bg-slate-950 border border-slate-900 rounded-xl p-3.5 text-sm text-white outline-none focus:border-red-800/40 transition-all"
-                         />
+                           className="w-full bg-slate-950 border border-slate-900 rounded-xl p-3.5 text-sm text-white outline-none focus:border-red-800/40 transition-all font-bold"
+                         >
+                           <option value="POSITIVO">POSITIVO</option>
+                           <option value="NEGATIVO">NEGATIVO</option>
+                           <option value="AGUARDANDO">AGUARDANDO</option>
+                           <option value="DESQUALIFICADO">DESQUALIFICADO</option>
+                           <option value="X">X (INDEFINIDO)</option>
+                         </select>
                        </div>
+                     </div>
+
+                     <div className="space-y-1.5">
+                       <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Status do Atendimento (Detalhamento)</label>
+                       <input 
+                         type="text" 
+                         value={editedLead.status_detalhe || ''} 
+                         onChange={e => setEditedLead({...editedLead, status_detalhe: e.target.value})}
+                         placeholder="Ex: ORÇAMENTO ENVIADO / NÃO RESPONDEU"
+                         className="w-full bg-slate-950 border border-slate-900 rounded-xl p-3.5 text-sm text-white outline-none focus:border-red-800/40 transition-all"
+                       />
                      </div>
 
                      <div className="grid grid-cols-2 gap-4">
@@ -1458,8 +1593,12 @@ export default function AtendimentoPage() {
                            <p className="font-bold text-slate-200 mt-0.5">{selectedLead.tipo_servico || 'X'}</p>
                          </div>
                          <div>
-                           <span className="text-[9px] font-bold text-slate-500 uppercase">Status</span>
+                           <span className="text-[9px] font-bold text-slate-500 uppercase">Conversão (Macro)</span>
                            <p className="font-bold text-slate-200 mt-0.5">{selectedLead.conversao || 'X'}</p>
+                         </div>
+                         <div className="col-span-2">
+                           <span className="text-[9px] font-bold text-slate-500 uppercase">Status do Atendimento</span>
+                           <p className="font-bold text-slate-200 mt-0.5">{selectedLead.status_detalhe || selectedLead.conversao || 'X'}</p>
                          </div>
                          <div>
                            <span className="text-[9px] font-bold text-slate-500 uppercase">Faturamento</span>
@@ -1796,7 +1935,25 @@ export default function AtendimentoPage() {
                        )}
                     </div>
                     <div className="space-y-1.5">
-                       <label htmlFor="new-lead-status" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Conversão (Fase Inicial)</label>
+                       <label htmlFor="new-lead-conversao" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Conversão (Macro)</label>
+                       <select id="new-lead-conversao" value={newLead.conversao || 'POSITIVO'} onChange={e => setNewLead({...newLead, conversao: e.target.value})} className="w-full bg-slate-950 border border-slate-900 rounded-xl p-4 text-sm text-white outline-none focus:border-red-800/40 transition-all font-bold">
+                         <option value="POSITIVO">POSITIVO</option>
+                         <option value="NEGATIVO">NEGATIVO</option>
+                         <option value="AGUARDANDO">AGUARDANDO</option>
+                         <option value="DESQUALIFICADO">DESQUALIFICADO</option>
+                         <option value="X">X (INDEFINIDO)</option>
+                       </select>
+                    </div>
+                  </div>
+
+                  {/* Linha 6: Status (Detalhamento) e Fase Inicial CRM */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                       <label htmlFor="new-lead-status-detalhe" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Status do Atendimento (Detalhamento)</label>
+                       <input id="new-lead-status-detalhe" type="text" value={newLead.status_detalhe || ''} onChange={e => setNewLead({...newLead, status_detalhe: e.target.value})} className="w-full bg-slate-950 border border-slate-900 rounded-xl p-4 text-sm text-white outline-none focus:border-red-800/40 transition-all" placeholder="Ex: ORÇAMENTO ENVIADO / NÃO RESPONDEU" />
+                    </div>
+                    <div className="space-y-1.5">
+                       <label htmlFor="new-lead-status" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Fase Inicial (Funil CRM)</label>
                        <select id="new-lead-status" value={newLead.status} onChange={e => setNewLead({...newLead, status: e.target.value})} className="w-full bg-slate-950 border border-slate-900 rounded-xl p-4 text-sm text-white outline-none focus:border-red-800/40 transition-all">
                          <option value="NOVO">NOVO</option>
                          <option value="CONTATO">CONTATO</option>
@@ -1807,16 +1964,10 @@ export default function AtendimentoPage() {
                     </div>
                   </div>
 
-                  {/* Linha 6: Status (Detalhamento) e Valor Faturado */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                       <label htmlFor="new-lead-conversion" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Status (Detalhamento/Observação)</label>
-                       <input id="new-lead-conversion" type="text" value={newLead.conversao} onChange={e => setNewLead({...newLead, conversao: e.target.value})} className="w-full bg-slate-950 border border-slate-900 rounded-xl p-4 text-sm text-white outline-none focus:border-red-800/40 transition-all" placeholder="Ex: Contrato em andamento / Rayane" />
-                    </div>
-                    <div className="space-y-1.5">
-                       <label htmlFor="new-lead-value" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Valor Faturado (R$)</label>
-                       <input id="new-lead-value" value={newLead.valor} onChange={e => setNewLead({...newLead, valor: e.target.value})} type="number" step="any" className="w-full bg-slate-950 border border-slate-900 rounded-xl p-4 text-sm text-white outline-none focus:border-red-800/40 transition-all" placeholder="0.00" />
-                    </div>
+                  {/* Linha 7: Valor Faturado */}
+                  <div className="space-y-1.5">
+                     <label htmlFor="new-lead-value" className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Valor Faturado (R$)</label>
+                     <input id="new-lead-value" value={newLead.valor} onChange={e => setNewLead({...newLead, valor: e.target.value})} type="number" step="any" className="w-full bg-slate-950 border border-slate-900 rounded-xl p-4 text-sm text-white outline-none focus:border-red-800/40 transition-all" placeholder="0.00" />
                   </div>
 
                  <button id="btn-register-lead" type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-red-950/40 mt-6 active:scale-95 transition-all border border-red-600/30">
@@ -1824,6 +1975,142 @@ export default function AtendimentoPage() {
                  </button>
               </form>
            </div>
+        </div>
+      )}
+
+      {/* Modal Importação de XML */}
+      {showImportXmlModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-[#11131a] border border-[#1b1c24] rounded-[2.5rem] p-8 max-w-4xl w-full max-h-[85vh] overflow-y-auto space-y-6 shadow-2xl relative">
+            <button 
+              onClick={() => { setShowImportXmlModal(false); setParsedLeadsPreview([]); }} 
+              className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="flex items-center gap-4 border-b border-[#1b1c24] pb-6">
+              <div className="w-14 h-14 bg-red-950/30 rounded-2xl flex items-center justify-center text-red-500 border border-red-900/30 shrink-0">
+                <FileCode size={30} />
+              </div>
+              <div>
+                <h2 className="text-xl font-black tracking-tight text-white uppercase">Importação de Leads (XML / CSV)</h2>
+                <p className="text-xs text-slate-400 font-medium mt-1">
+                  Arquivo: <span className="text-red-400 font-bold">{xmlFileName}</span> — {parsedLeadsPreview.length} registro(s) detectado(s)
+                </p>
+              </div>
+            </div>
+
+            {xmlImportError && (
+              <div className="bg-red-950/30 border border-red-900/40 rounded-2xl p-4 flex items-center gap-3 text-red-400 text-xs font-semibold">
+                <AlertCircle size={20} className="shrink-0" />
+                <span>{xmlImportError}</span>
+              </div>
+            )}
+
+            {xmlImportSuccess && (
+              <div className="bg-emerald-950/30 border border-emerald-900/40 rounded-2xl p-4 flex items-center gap-3 text-emerald-400 text-xs font-semibold">
+                <Check size={20} className="shrink-0" />
+                <span>{xmlImportSuccess}</span>
+              </div>
+            )}
+
+            {/* Pré-visualização da Tabela de Leads Parseados */}
+            {parsedLeadsPreview.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Pré-visualização dos Dados Parseados</h3>
+                  <span className="text-[10px] text-slate-500">Exibindo até 10 primeiros itens</span>
+                </div>
+
+                <div className="border border-[#1b1c24] rounded-2xl overflow-hidden bg-slate-950/50">
+                  <div className="overflow-x-auto max-h-60">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#161822] text-slate-400 uppercase tracking-wider text-[10px] font-black sticky top-0">
+                        <tr>
+                          <th className="p-3">#</th>
+                          <th className="p-3">Data</th>
+                          <th className="p-3">Nome</th>
+                          <th className="p-3">Telefone</th>
+                          <th className="p-3">Origem</th>
+                          <th className="p-3">Serviço</th>
+                          <th className="p-3">Veículo</th>
+                          <th className="p-3">Comercial</th>
+                          <th className="p-3">Conversão</th>
+                          <th className="p-3">Status (Atendimento)</th>
+                          <th className="p-3">Faturado</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#1b1c24] text-slate-300 text-xs">
+                        {parsedLeadsPreview.slice(0, 10).map((row, idx) => (
+                          <tr key={idx} className="hover:bg-slate-900/40 transition-colors">
+                            <td className="p-3 text-slate-500 font-mono">{idx + 1}</td>
+                            <td className="p-3 font-mono text-slate-400">{row.data || '—'}</td>
+                            <td className="p-3 font-semibold text-white">{row.nome || '—'}</td>
+                            <td className="p-3 font-mono text-slate-300">{row.contato || '—'}</td>
+                            <td className="p-3 uppercase text-[10px] text-slate-400">{row.origem || '—'}</td>
+                            <td className="p-3">{row.tipo_servico || '—'}</td>
+                            <td className="p-3 font-semibold text-slate-200">{row.veiculo || '—'}</td>
+                            <td className="p-3">{row.comercial || '—'}</td>
+                            <td className="p-3">
+                              <span className={`px-2 py-0.5 rounded text-[9px] font-black ${
+                                String(row.conversao).toUpperCase().includes('POSITIV') ? 'bg-emerald-950/40 text-emerald-400' :
+                                String(row.conversao).toUpperCase().includes('NEGATIV') ? 'bg-rose-950/40 text-rose-400' :
+                                String(row.conversao).toUpperCase().includes('AGUARD') ? 'bg-amber-950/40 text-amber-400' :
+                                'bg-slate-900 text-slate-400'
+                              }`}>
+                                {row.conversao || '—'}
+                              </span>
+                            </td>
+                            <td className="p-3 max-w-[200px] truncate text-slate-300" title={row.status_detalhe || ''}>
+                              {row.status_detalhe || '—'}
+                            </td>
+                            <td className="p-3 font-mono font-bold text-white">
+                              {row.valor && Number(row.valor) > 0 ? `R$ ${Number(row.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 0,00'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {parsedLeadsPreview.length > 10 && (
+                  <p className="text-[11px] text-slate-500 italic text-right">
+                    ... e mais {parsedLeadsPreview.length - 10} linha(s) compilada(s) no lote.
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1b1c24]">
+              <button 
+                type="button" 
+                onClick={() => { setShowImportXmlModal(false); setParsedLeadsPreview([]); }} 
+                className="px-6 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-black uppercase tracking-widest transition-all"
+              >
+                Cancelar
+              </button>
+              <button 
+                type="button" 
+                disabled={importingXml || parsedLeadsPreview.length === 0}
+                onClick={handleConfirmXmlImport} 
+                className="px-8 py-4 rounded-2xl bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white text-xs font-black uppercase tracking-widest shadow-xl shadow-red-950/40 flex items-center gap-2 active:scale-95 transition-all border border-red-600/30"
+              >
+                {importingXml ? (
+                  <>
+                    <Loader2 className="animate-spin" size={16} />
+                    <span>Compilando e Salvando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check size={16} />
+                    <span>Confirmar Importação de {parsedLeadsPreview.length} Leads</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

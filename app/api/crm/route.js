@@ -110,7 +110,8 @@ export async function POST(request) {
       tipo_servico,
       veiculo,
       comercial,
-      conversao
+      conversao,
+      status_detalhe
     } = await request.json();
 
     if (!cliente || !nome) return NextResponse.json({ success: false, error: 'Dados incompletos' }, { status: 400 });
@@ -138,7 +139,8 @@ export async function POST(request) {
         tipo_servico,
         veiculo,
         comercial,
-        conversao
+        conversao,
+        status_detalhe
       }
     });
 
@@ -176,7 +178,8 @@ export async function PATCH(request) {
       tipo_servico,
       veiculo,
       comercial,
-      conversao
+      conversao,
+      status_detalhe
     } = await request.json();
 
     // Busca estado anterior para saber se o status mudou
@@ -196,7 +199,8 @@ export async function PATCH(request) {
         tipo_servico,
         veiculo,
         comercial,
-        conversao
+        conversao,
+        status_detalhe
       }
     });
 

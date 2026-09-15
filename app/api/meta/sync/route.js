@@ -4,8 +4,10 @@ import fs from 'fs';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const prisma = new PrismaClient();
+
 
 let campaignCalibrationMap = {};
 try {
@@ -37,10 +39,43 @@ class TimeoutApproachingError extends Error {
   }
 }
 
+function splitDateRangeIntoChunks(sinceStr, untilStr, maxChunkDays = 14) {
+  if (!sinceStr || !untilStr) {
+    return [{ since: sinceStr, until: untilStr }];
+  }
+
+  const chunks = [];
+  const start = new Date(sinceStr + 'T00:00:00Z');
+  const end = new Date(untilStr + 'T00:00:00Z');
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
+    return [{ since: sinceStr, until: untilStr }];
+  }
+
+  let currentStart = new Date(start);
+  while (currentStart <= end) {
+    let currentEnd = new Date(currentStart);
+    currentEnd.setUTCDate(currentEnd.getUTCDate() + maxChunkDays - 1);
+    if (currentEnd > end) {
+      currentEnd = new Date(end);
+    }
+
+    chunks.push({
+      since: currentStart.toISOString().split('T')[0],
+      until: currentEnd.toISOString().split('T')[0]
+    });
+
+    currentStart = new Date(currentEnd);
+    currentStart.setUTCDate(currentStart.getUTCDate() + 1);
+  }
+  return chunks;
+}
+
 async function fetchMetaWithRetry(url, options = {}, startTime = null, timeBudgetMs = null) {
   let attempts = 0;
   const maxAttempts = 5;
   let delayTime = 1000;
+  let currentUrl = url;
 
   while (attempts < maxAttempts) {
     if (startTime && timeBudgetMs) {
@@ -51,15 +86,39 @@ async function fetchMetaWithRetry(url, options = {}, startTime = null, timeBudge
     }
 
     try {
-      const res = await fetch(url, options);
+      const res = await fetch(currentUrl, options);
       if (!res.ok) {
         const err = await res.json();
         const errCode = err.error?.code;
         const errMsg = (err.error?.message || '').toLowerCase();
+
+        // 1. Tratamento específico para "Please reduce the amount of data you're asking for, then retry your request"
+        const isDataVolumeError = errMsg.includes('reduce the amount of data') || 
+                                  errMsg.includes('too much data') || 
+                                  errMsg.includes('reduce data') ||
+                                  (errCode === 1 && (errMsg.includes('reduce') || errMsg.includes('amount of data')));
+
+        if (isDataVolumeError && attempts < maxAttempts - 1) {
+          attempts++;
+          try {
+            const parsedUrl = new URL(currentUrl);
+            const currentLimit = parseInt(parsedUrl.searchParams.get('limit') || '100', 10);
+            if (currentLimit > 25) {
+              const newLimit = Math.max(25, Math.floor(currentLimit / 2));
+              parsedUrl.searchParams.set('limit', String(newLimit));
+              currentUrl = parsedUrl.toString();
+              console.warn(`[Meta API Retry] Volume de dados excessivo detectado pela Meta API. Reduzindo limit de ${currentLimit} para ${newLimit} e retentando...`);
+              await delay(500);
+              continue;
+            }
+          } catch (urlErr) {
+            console.error('[Meta API Retry] Falha ao ajustar limit na URL:', urlErr);
+          }
+        }
+
         // Rate limit: 4, 17, 32, 613, 80000, 80004, 80007, HTTP 429 or message containing "request limit"
         const isRateLimit = errCode === 4 || errCode === 17 || errCode === 32 || errCode === 613 || errCode === 80000 || errCode === 80004 || errCode === 80007 || res.status === 429 || errMsg.includes('request limit');
 
-        
         if (isRateLimit && attempts < maxAttempts - 1) {
           attempts++;
           const jitter = Math.random() * 500;
@@ -256,10 +315,11 @@ export async function GET(request) {
       if (ACCESS_TOKEN && AD_ACCOUNT_ID) {
         const tr = JSON.stringify({ since, until });
         const [accData, campData, adData] = await Promise.all([
-          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'reach,spend,impressions,actions,action_values', level: 'account' })),
-          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'campaign_id,reach', level: 'campaign', limit: '100' })),
-          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'ad_id,reach', level: 'ad', limit: '500' }))
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'reach,spend,impressions,actions,action_values', level: 'account' })).catch(err => { console.warn('[GET Meta] Falha ao buscar account totals:', err.message); return []; }),
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'campaign_id,reach', level: 'campaign', limit: '250' })).catch(err => { console.warn('[GET Meta] Falha ao buscar campaign reach:', err.message); return []; }),
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_ID}/insights`, { access_token: ACCESS_TOKEN, time_range: tr, fields: 'ad_id,reach', level: 'ad', limit: '500' })).catch(err => { console.warn('[GET Meta] Falha ao buscar ad reach:', err.message); return []; })
         ]);
+
         if (accData && accData[0]) metaAccountTotals = accData[0];
         
         if (campData) {
@@ -434,9 +494,12 @@ export async function GET(request) {
       };
     });
 
-    // --- REFRESH IMAGE URLs FROM META ---
-    try {
-      const ACCESS_TOKEN_REFRESH = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
+    // --- REFRESH IMAGE URLs FROM META (somente sob demanda para evitar 504 timeout no GET) ---
+    const shouldRefreshImages = searchParams.get('refreshImages') === 'true';
+    if (shouldRefreshImages) {
+      try {
+        const ACCESS_TOKEN_REFRESH = process.env[`META_ACCESS_TOKEN_${slug.toUpperCase()}`] || 
+
                                    process.env[`META_ACCESS_TOKEN_${slug}`] ||
                                    process.env[`META_ACCESS_TOKEN_GLOBAL`] || 
                                    cliente?.meta_access_token;
@@ -510,6 +573,8 @@ export async function GET(request) {
         Promise.all([...freshUrlMap.entries()].map(([adId, url]) => prisma.criativo.updateMany({ where: { meta_ad_id: adId }, data: { url_midia: url } }).catch(() => {}))).catch(() => {});
       }
     } catch (e) { console.error('Refresh creative URLs failed:', e); }
+  }
+
 
     const dailyMap = new Map();
     for (const camp of campanhas) {
@@ -741,15 +806,44 @@ export async function POST(request) {
       const adsetsUrl = graphUrl(`${AD_ACCOUNT_ID}/adsets`, { access_token: ACCESS_TOKEN, fields: 'campaign_id,destination_type,optimization_goal', limit: '250' });
       adsetsList = await fetchMetaPaginated(adsetsUrl, startTime, timeBudgetMs);
 
-      // 3.3 campaign insights
+      // 3.3 e 3.4 insights com busca rápida direta e fallback defensivo particionado se a Meta exigir
       const insightFields = 'campaign_id,campaign_name,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
-      const campaignDataUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: insightFields, level: 'campaign', time_increment: '1' });
-      campaignData = await fetchMetaPaginated(campaignDataUrl, startTime, timeBudgetMs);
-
-      // 3.4 ad insights
       const adInsightFields = 'ad_id,ad_name,campaign_id,spend,impressions,reach,inline_link_click_ctr,clicks,inline_link_clicks,outbound_clicks,actions,action_values';
-      const adInsightDataUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, fields: adInsightFields, level: 'ad', time_increment: '1' });
-      adInsightData = await fetchMetaPaginated(adInsightDataUrl, startTime, timeBudgetMs);
+
+      try {
+        const campaignDataUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, limit: '500', fields: insightFields, level: 'campaign', time_increment: '1' });
+        campaignData = await fetchMetaPaginated(campaignDataUrl, startTime, timeBudgetMs);
+
+        const adInsightDataUrl = graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...commonQuery, limit: '500', fields: adInsightFields, level: 'ad', time_increment: '1' });
+        adInsightData = await fetchMetaPaginated(adInsightDataUrl, startTime, timeBudgetMs);
+      } catch (volumeErr) {
+        const errMsg = (volumeErr?.message || '').toLowerCase();
+        if (errMsg.includes('reduce the amount of data') || errMsg.includes('too much data') || errMsg.includes('reduce data')) {
+          console.warn('[BulletproofSync] Meta API solicitou redução de volume. Ativando particionamento seguro...');
+          campaignData = [];
+          adInsightData = [];
+          const dateChunks = splitDateRangeIntoChunks(finalSince, finalUntil, 14);
+          for (const chunk of dateChunks) {
+            if (startTime && timeBudgetMs && (performance.now() - startTime > timeBudgetMs - 3000)) {
+              isPartial = true;
+              break;
+            }
+            const chunkQuery = {
+              access_token: ACCESS_TOKEN,
+              limit: '100',
+              time_range: JSON.stringify({ since: chunk.since, until: chunk.until })
+            };
+            const chunkCampData = await fetchMetaPaginated(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...chunkQuery, fields: insightFields, level: 'campaign', time_increment: '1' }), startTime, timeBudgetMs);
+            if (Array.isArray(chunkCampData)) campaignData.push(...chunkCampData);
+
+            const chunkAdData = await fetchMetaPaginated(graphUrl(`${AD_ACCOUNT_ID}/insights`, { ...chunkQuery, fields: adInsightFields, level: 'ad', time_increment: '1' }), startTime, timeBudgetMs);
+            if (Array.isArray(chunkAdData)) adInsightData.push(...chunkAdData);
+          }
+        } else {
+          throw volumeErr;
+        }
+      }
+
 
       // 3.5 ad creatives list
       const adsMetaUrl = graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { 
@@ -872,7 +966,10 @@ export async function POST(request) {
 
       const dataInsight = new Date(item.date_start + 'T00:00:00.000Z');
       const linkClicks = parseInt(item.inline_link_clicks) || 0;
+      const rawClicks = parseInt(item.clicks) || 0;
+      const effectiveClicks = linkClicks > 0 ? linkClicks : rawClicks;
       const outboundClicks = Array.isArray(item.outbound_clicks) ? item.outbound_clicks.reduce((acc, c) => acc + (parseInt(c.value) || 0), 0) : 0;
+
       const nativeVisits = getMetric(item.actions, 'onsite_conversion.instagram_profile_visit');
       
       const isInstagramProfileCampaign = (campaignDestinationMap.get(String(item.campaign_id)) || []).some(
@@ -911,19 +1008,20 @@ export async function POST(request) {
       return prisma.metricaCampanha.upsert({
         where: { campanha_id_data: { campanha_id: camp.id, data: dataInsight } },
         update: {
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: linkClicks,
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: effectiveClicks,
           visitas_perfil: totalVisitas, seguidores: seguidoresVal,
           reacoes_sociais: getSocialActions(item.actions), valor_investido: parseFloat(item.spend) || 0,
           conversas_leads: leadsVal, compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         },
         create: {
           campanha_id: camp.id, data: dataInsight,
-          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: linkClicks,
+          impressoes: parseInt(item.impressions) || 0, alcance: parseInt(item.reach) || 0, cliques: effectiveClicks,
           visitas_perfil: totalVisitas, seguidores: seguidoresVal,
           reacoes_sociais: getSocialActions(item.actions), valor_investido: parseFloat(item.spend) || 0,
           conversas_leads: leadsVal, compras: getMetric(item.actions, 'purchase'), valor_compras: getMetric(item.action_values, 'purchase', true)    
         }
       });
+
     });
 
     // Processamento de criativos e métricas de anúncios
@@ -967,19 +1065,22 @@ export async function POST(request) {
         const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
         const leadsVal = getTrueLeads(row.actions, camp?.nome_gerado || '');
 
+        const adEffectiveClicks = parseInt(row.inline_link_clicks) || parseInt(row.clicks) || 0;
+
         return prisma.metricaCriativo.upsert({
           where: { criativo_id_data: { criativo_id: criativo.id, data: dataInsight } },
           update: {
-            impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: parseInt(row.inline_link_clicks) || 0,
+            impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0, cliques: adEffectiveClicks,
             ctr: parseFloat(row.inline_link_click_ctr) || 0, valor_investido: parseFloat(row.spend) || 0,
             leads: leadsVal, compras: getMetric(row.actions, 'purchase'), reacoes_sociais: getSocialActions(row.actions)
           },
           create: {
             criativo_id: criativo.id, data: dataInsight, impressoes: parseInt(row.impressions) || 0, alcance: parseInt(row.reach) || 0,
-            cliques: parseInt(row.inline_link_clicks) || 0, ctr: parseFloat(row.inline_link_click_ctr) || 0,
+            cliques: adEffectiveClicks, ctr: parseFloat(row.inline_link_click_ctr) || 0,
             valor_investido: parseFloat(row.spend) || 0, leads: leadsVal, compras: getMetric(row.actions, 'purchase'), reacoes_sociais: getSocialActions(row.actions)
           }
         });
+
       });
     }
 
@@ -991,6 +1092,14 @@ export async function POST(request) {
         success: true, 
         rateLimited: true, 
         message: "Cota de requisições da Meta API atingida temporariamente. Os dados salvos no banco continuarão sendo exibidos." 
+      });
+    }
+    if (error.message && (error.message.includes('reduce the amount of data') || error.message.includes('too much data'))) {
+      return NextResponse.json({ 
+        success: true, 
+        rateLimited: false, 
+        isPartial: true,
+        message: "A Meta API exigiu um período menor de consulta para esta conta. Os dados salvos no banco continuarão sendo exibidos." 
       });
     }
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
