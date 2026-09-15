@@ -1382,9 +1382,8 @@ export default function App() {
                     <span className="text-slate-600 text-xs">→</span>
                     <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[11px] font-bold text-slate-300 p-1.5 rounded-lg border border-slate-700 outline-none" />
                   </div>
-                  <button onClick={handleSync} disabled={isSyncing} title={isSyncing ? 'Sincronizando...' : 'Sincronizar Dados via Meta API'} className="p-2 px-3 bg-blue-600/20 text-blue-400 rounded-lg font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all flex items-center gap-1.5 text-xs">
+                  <button onClick={handleSync} disabled={isSyncing} title={isSyncing ? 'Sincronizando...' : 'Sincronizar Dados'} className="p-2 px-3 bg-blue-600/20 text-blue-400 rounded-lg font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all">
                     <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
-                    <span className="hidden sm:inline">Sync API</span>
                   </button>
                   <button onClick={() => { setShowImportModal(true); setImportError(null); setImportSuccess(null); }} title="Importar Relatório Oficial do Gerenciador de Anúncios Meta" className="p-2 px-3 bg-emerald-600/20 text-emerald-400 rounded-lg font-bold border border-emerald-500/20 hover:bg-emerald-600/30 transition-all flex items-center gap-1.5 text-xs">
                     <FileSpreadsheet size={14} />
