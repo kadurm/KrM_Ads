@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
@@ -45,13 +45,8 @@ export async function POST(request) {
       campMap.set(c.meta_id, c);
     });
 
-    let upsertedCount = 0;
     let campaignsCreated = 0;
-    let totalSpend = 0;
-    let totalImpressions = 0;
-    let totalClicks = 0;
-    let totalVisits = 0;
-    let totalLeads = 0;
+    const aggregatedMetrics = new Map();
 
     for (const row of rows) {
       const campName = (row.campaignName || 'Campanha Importada').trim();
@@ -74,8 +69,6 @@ export async function POST(request) {
       }
 
       const dateStr = row.date || new Date().toISOString().split('T')[0];
-      const dataInsight = new Date(`${dateStr}T00:00:00.000Z`);
-
       const spend = parseFloat(row.spend) || 0;
       const impressions = parseInt(row.impressions) || 0;
       const reach = parseInt(row.reach) || 0;
@@ -83,47 +76,80 @@ export async function POST(request) {
       const visits = parseInt(row.profileVisits) || 0;
       const leads = parseInt(row.leads) || 0;
 
-      totalSpend += spend;
-      totalImpressions += impressions;
-      totalClicks += clicks;
-      totalVisits += visits;
-      totalLeads += leads;
+      const aggKey = `${camp.id}_${dateStr}`;
+      if (!aggregatedMetrics.has(aggKey)) {
+        aggregatedMetrics.set(aggKey, {
+          campId: camp.id,
+          dateStr,
+          dataInsight: new Date(`${dateStr}T00:00:00.000Z`),
+          spend: 0,
+          impressions: 0,
+          reach: 0,
+          clicks: 0,
+          visits: 0,
+          leads: 0
+        });
+      }
 
+      const item = aggregatedMetrics.get(aggKey);
+      item.spend += spend;
+      item.impressions += impressions;
+      item.reach += reach;
+      item.clicks += clicks;
+      item.visits += visits;
+      item.leads += leads;
+    }
+
+    let upsertedCount = 0;
+    let totalSpend = 0;
+    let totalImpressions = 0;
+    let totalClicks = 0;
+    let totalVisits = 0;
+    let totalLeads = 0;
+
+    for (const item of aggregatedMetrics.values()) {
+      const finalSpend = parseFloat(item.spend.toFixed(2));
       await prisma.metricaCampanha.upsert({
         where: {
           campanha_id_data: {
-            campanha_id: camp.id,
-            data: dataInsight
+            campanha_id: item.campId,
+            data: item.dataInsight
           }
         },
         update: {
-          impressoes: impressions,
-          alcance: reach,
-          cliques: clicks,
-          visitas_perfil: visits,
-          conversas_leads: leads,
-          valor_investido: spend
+          impressoes: item.impressions,
+          alcance: item.reach,
+          cliques: item.clicks,
+          visitas_perfil: item.visits,
+          conversas_leads: item.leads,
+          valor_investido: finalSpend
         },
         create: {
-          campanha_id: camp.id,
-          data: dataInsight,
-          impressoes: impressions,
-          alcance: reach,
-          cliques: clicks,
-          visitas_perfil: visits,
-          conversas_leads: leads,
-          valor_investido: spend
+          campanha_id: item.campId,
+          data: item.dataInsight,
+          impressoes: item.impressions,
+          alcance: item.reach,
+          cliques: item.clicks,
+          visitas_perfil: item.visits,
+          conversas_leads: item.leads,
+          valor_investido: finalSpend
         }
       });
 
       upsertedCount++;
+      totalSpend += item.spend;
+      totalImpressions += item.impressions;
+      totalClicks += item.clicks;
+      totalVisits += item.visits;
+      totalLeads += item.leads;
     }
 
     return NextResponse.json({
       success: true,
-      message: `${upsertedCount} registros importados com fidelidade 100% para ${dbCliente.nome}!`,
+      message: `${upsertedCount} registros consolidados e sincronizados com fidelidade 100% para ${dbCliente.nome}!`,
       summary: {
-        totalRows: upsertedCount,
+        totalRows: rows.length,
+        consolidatedRecords: upsertedCount,
         campaignsCreated,
         totalSpend: parseFloat(totalSpend.toFixed(2)),
         totalImpressions,

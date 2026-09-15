@@ -1,7 +1,7 @@
-﻿/**
+/**
  * Utilitário de análise inteligente para relatórios exportados do Gerenciador de Anúncios da Meta.
  * Suporta separadores por vírgula (,), ponto-e-vírgula (;) ou tabulações (\t).
- * Detecta cabeçalhos em português e inglês.
+ * Detecta cabeçalhos em português e inglês e blinda contra confusão entre 'Valor Usado' e 'Custo por Resultado'.
  */
 
 export function parseNumberBR(val) {
@@ -82,20 +82,48 @@ export function parseMetaReportCSV(rawContent) {
 
   const headers = splitLine(firstLine).map(h => h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
 
-  const findIndex = (possibleNames) => {
-    return headers.findIndex(h => possibleNames.some(p => h.includes(p)));
+  const findExactOrIncludes = (exactList, includesList = []) => {
+    let idx = headers.findIndex(h => exactList.some(e => h === e));
+    if (idx !== -1) return idx;
+    return headers.findIndex(h => includesList.some(p => h.includes(p)));
   };
 
-  const idxCampaignName = findIndex(['nome da campanha', 'campaign name', 'campanha']);
-  const idxDate = findIndex(['dia', 'data', 'day', 'reporting starts', 'inicio do relatorio']);
-  const idxSpend = findIndex(['valor usado', 'amount spent', 'gasto', 'custo', 'investimento']);
-  const idxImpressions = findIndex(['impressoes', 'impressions']);
-  const idxReach = findIndex(['alcance', 'reach']);
-  const idxClicks = findIndex(['cliques (todos)', 'clicks (all)', 'cliques']);
-  const idxLinkClicks = findIndex(['cliques no link', 'inline link clicks', 'link clicks']);
-  const idxVisits = findIndex(['visitas ao perfil', 'instagram profile visits', 'visitas ao perfil do instagram', 'profile visits']);
-  const idxMessagingStarted = findIndex(['conversas por mensagem iniciadas', 'messaging conversations started', 'conversas iniciadas']);
-  const idxLeads = findIndex(['cadastros', 'leads', 'resultados', 'results']);
+  const idxCampaignName = findExactOrIncludes(['nome da campanha', 'campaign name'], ['campanha', 'campaign']);
+  
+  // Detecção de data (início do relatório ou dia)
+  const idxDate = findExactOrIncludes(
+    ['inicio dos relatorios', 'inicio do relatorio', 'reporting starts', 'data de inicio', 'dia', 'data', 'day', 'date'],
+    ['inicio dos relatorio', 'inicio do relatorio', 'reporting start', 'dia', 'data']
+  );
+
+  // INVESTIMENTO / VALOR USADO:
+  // Prioriza termos explícitos de total gasto e descarta categoricamente qualquer métrica de custo unitário (custo por...)
+  let idxSpend = headers.findIndex(h => {
+    return h.includes('valor usado') || 
+           h.includes('amount spent') || 
+           h.includes('total gasto') || 
+           h.includes('gasto total') || 
+           h.includes('investimento') ||
+           h === 'spend';
+  });
+
+  if (idxSpend === -1) {
+    idxSpend = headers.findIndex(h => 
+      (h.includes('gasto') || h.includes('custo') || h.includes('cost')) &&
+      !h.includes('por') && !h.includes('per') && !h.includes('/') && 
+      !h.includes('resultado') && !h.includes('clique') && !h.includes('lead') && 
+      !h.includes('mil') && !h.includes('cpm') && !h.includes('cpc') && !h.includes('cpl')
+    );
+  }
+
+  const idxImpressions = findExactOrIncludes(['impressoes', 'impressions'], ['impresso']);
+  const idxReach = findExactOrIncludes(['alcance', 'reach'], ['alcance', 'reach']);
+  const idxClicks = findExactOrIncludes(['cliques (todos)', 'clicks (all)'], ['cliques (todos)', 'clicks (all)', 'cliques']);
+  const idxLinkClicks = findExactOrIncludes(['cliques no link', 'inline link clicks', 'link clicks'], ['cliques no link', 'link clicks']);
+  const idxVisits = findExactOrIncludes(['visitas ao perfil do instagram', 'visitas ao perfil', 'instagram profile visits', 'profile visits'], ['visitas ao perfil']);
+  const idxMessagingStarted = findExactOrIncludes(['conversas por mensagem iniciadas', 'messaging conversations started', 'conversas iniciadas'], ['conversas por mensagem', 'conversas iniciadas']);
+  const idxResults = findExactOrIncludes(['resultados', 'results'], ['resultado', 'result']);
+  const idxResultType = headers.findIndex(h => h.includes('indicador de resultado') || h.includes('tipo de resultado') || h.includes('result type'));
 
   const rows = [];
   let totalSpend = 0;
@@ -127,23 +155,50 @@ export function parseMetaReportCSV(rawContent) {
     const reach = idxReach !== -1 ? Math.round(parseNumberBR(cols[idxReach])) : 0;
     const clicks = idxClicks !== -1 ? Math.round(parseNumberBR(cols[idxClicks])) : 0;
     const linkClicks = idxLinkClicks !== -1 ? Math.round(parseNumberBR(cols[idxLinkClicks])) : 0;
-    const profileVisits = idxVisits !== -1 ? Math.round(parseNumberBR(cols[idxVisits])) : 0;
+    
+    // Visitas ao perfil
+    let profileVisits = idxVisits !== -1 ? Math.round(parseNumberBR(cols[idxVisits])) : 0;
+    
+    // Leads / Conversas iniciadas
+    let leads = idxMessagingStarted !== -1 ? Math.round(parseNumberBR(cols[idxMessagingStarted])) : 0;
 
-    let leads = 0;
-    if (idxMessagingStarted !== -1) {
-      leads = Math.round(parseNumberBR(cols[idxMessagingStarted]));
-    } else if (idxLeads !== -1) {
-      leads = Math.round(parseNumberBR(cols[idxLeads]));
+    // Detecção dinâmica de Tipo de Resultado presente na linha (ex: exportação oficial do Gerenciador de Anúncios)
+    const resultTypeStr = idxResultType !== -1 ? String(cols[idxResultType] || '').toLowerCase() : '';
+    
+    // Se visitas ao perfil for 0, checa se a linha tem indicação de visita ao perfil
+    if (profileVisits === 0) {
+      if (resultTypeStr.includes('visitas ao perfil') || cols.some(c => typeof c === 'string' && c.toLowerCase().includes('visitas ao perfil'))) {
+        const num = idxResults !== -1 && parseNumberBR(cols[idxResults]) > 0 
+          ? parseNumberBR(cols[idxResults]) 
+          : (idxResultType !== -1 && cols[idxResultType + 1] ? parseNumberBR(cols[idxResultType + 1]) : 0);
+        profileVisits = Math.round(num);
+      }
     }
 
-    const finalVisits = profileVisits > 0 ? profileVisits : 0;
+    // Se conversas/leads for 0, checa se a linha tem indicação de conversa ou cadastro
+    if (leads === 0) {
+      if (
+        resultTypeStr.includes('conversa') || 
+        resultTypeStr.includes('mensagem') || 
+        resultTypeStr.includes('cadastro') || 
+        resultTypeStr.includes('lead') ||
+        cols.some(c => typeof c === 'string' && (c.toLowerCase().includes('conversas por mensagem') || c.toLowerCase().includes('conversas iniciadas')))
+      ) {
+        const num = idxResults !== -1 && parseNumberBR(cols[idxResults]) > 0 
+          ? parseNumberBR(cols[idxResults]) 
+          : (idxResultType !== -1 && cols[idxResultType + 1] ? parseNumberBR(cols[idxResultType + 1]) : 0);
+        leads = Math.round(num);
+      } else if (idxMessagingStarted === -1 && idxResults !== -1 && campaignName.toUpperCase().includes('MESSAGE')) {
+        leads = Math.round(parseNumberBR(cols[idxResults]));
+      }
+    }
 
     totalSpend += spend;
     totalImpressions += impressions;
     totalReach += reach;
     totalClicks += clicks;
     totalLinkClicks += linkClicks;
-    totalVisits += finalVisits;
+    totalVisits += profileVisits;
     totalLeads += leads;
 
     rows.push({
@@ -154,7 +209,7 @@ export function parseMetaReportCSV(rawContent) {
       reach,
       clicks: clicks > 0 ? clicks : linkClicks,
       linkClicks,
-      profileVisits: finalVisits,
+      profileVisits,
       leads
     });
   }
