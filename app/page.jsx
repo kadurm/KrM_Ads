@@ -52,7 +52,11 @@ import {
   Instagram,
   ShieldCheck,
   Menu,
-  } from 'lucide-react';
+  UploadCloud,
+  FileSpreadsheet,
+  FileUp,
+} from 'lucide-react';
+import { parseMetaReportCSV } from '@/utils/metaReportParser';
 import { CampaignsBoard } from '@/views/CampaignsBoard';
 import { PaymentsView } from '@/views/PaymentsView';
 import { GlobalFinancialView } from '@/views/GlobalFinancialView';
@@ -133,6 +137,14 @@ export default function App() {
   const [leadsLoading, setLeadsLoading] = useState(false);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
+
+  // Estados de Importação Fiel do Relatório Meta Ads
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importReportText, setImportReportText] = useState('');
+  const [parsedReportData, setParsedReportData] = useState(null);
+  const [isImportingReport, setIsImportingReport] = useState(false);
+  const [importError, setImportError] = useState(null);
+  const [importSuccess, setImportSuccess] = useState(null);
 
   // Creative Lab States
   const [creativeBriefings, setCreativeBriefings] = useState(null);
@@ -706,6 +718,75 @@ export default function App() {
       setMensagemPainel({ tipo: 'erro', texto: 'Erro na sincronização.' });
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const handleReportTextChange = (text) => {
+    setImportReportText(text);
+    setImportError(null);
+    if (!text || text.trim().length === 0) {
+      setParsedReportData(null);
+      return;
+    }
+    try {
+      const parsed = parseMetaReportCSV(text);
+      if (parsed.rows.length === 0) {
+        setImportError('Não foi possível identificar colunas válidas no texto colado.');
+        setParsedReportData(null);
+      } else {
+        setParsedReportData(parsed);
+      }
+    } catch (err) {
+      setImportError('Erro ao interpretar relatório: ' + err.message);
+      setParsedReportData(null);
+    }
+  };
+
+  const handleReportFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result;
+      if (typeof text === 'string') {
+        handleReportTextChange(text);
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+  };
+
+  const handleExecuteImportReport = async () => {
+    if (!parsedReportData || parsedReportData.rows.length === 0 || !clienteSelecionado) return;
+    setIsImportingReport(true);
+    setImportError(null);
+    setImportSuccess(null);
+
+    try {
+      const res = await fetch('/api/meta/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cliente: clienteSelecionado,
+          rows: parsedReportData.rows
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setImportSuccess(data.message);
+        setTimeout(async () => {
+          setShowImportModal(false);
+          setImportReportText('');
+          setParsedReportData(null);
+          setImportSuccess(null);
+          await loadMetrics();
+        }, 1500);
+      } else {
+        setImportError(data.error || 'Falha ao importar dados para o sistema.');
+      }
+    } catch (err) {
+      setImportError('Erro na requisição: ' + err.message);
+    } finally {
+      setIsImportingReport(false);
     }
   };
 
@@ -1301,8 +1382,13 @@ export default function App() {
                     <span className="text-slate-600 text-xs">→</span>
                     <input type="date" value={endDate} onChange={e => { setEndDate(e.target.value); setActiveShortcut(null); }} className="bg-slate-800 text-[11px] font-bold text-slate-300 p-1.5 rounded-lg border border-slate-700 outline-none" />
                   </div>
-                  <button onClick={handleSync} disabled={isSyncing} title={isSyncing ? 'Sincronizando...' : 'Sincronizar Dados'} className="p-2 px-3 bg-blue-600/20 text-blue-400 rounded-lg font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all">
+                  <button onClick={handleSync} disabled={isSyncing} title={isSyncing ? 'Sincronizando...' : 'Sincronizar Dados via Meta API'} className="p-2 px-3 bg-blue-600/20 text-blue-400 rounded-lg font-bold border border-blue-500/20 hover:bg-blue-600/30 transition-all flex items-center gap-1.5 text-xs">
                     <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
+                    <span className="hidden sm:inline">Sync API</span>
+                  </button>
+                  <button onClick={() => { setShowImportModal(true); setImportError(null); setImportSuccess(null); }} title="Importar Relatório Oficial do Gerenciador de Anúncios Meta" className="p-2 px-3 bg-emerald-600/20 text-emerald-400 rounded-lg font-bold border border-emerald-500/20 hover:bg-emerald-600/30 transition-all flex items-center gap-1.5 text-xs">
+                    <FileSpreadsheet size={14} />
+                    <span className="hidden sm:inline">Importar Relatório</span>
                   </button>
                 </div>
               </div>
@@ -2460,6 +2546,152 @@ export default function App() {
           {activeTab === 'tracking' && (
             <div className="max-w-[1400px] mx-auto py-10 px-8">     
               <TrackingView cliente={clientesDisponiveis.find(c => c.nome === clienteSelecionado)} />
+            </div>
+          )}
+
+          {/* MODAL DE IMPORTAÇÃO FIEL DE RELATÓRIO META ADS */}
+          {showImportModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+              <div className="bg-slate-900 border border-slate-800 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                {/* Header */}
+                <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                      <FileSpreadsheet size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-white uppercase tracking-wider">Importação Fiel de Relatório Meta</h3>
+                      <p className="text-xs text-slate-400">Extração direta do Gerenciador de Anúncios • {clienteSelecionado}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setShowImportModal(false)} className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all">
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Body */}
+                <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+                  <div className="bg-blue-600/10 border border-blue-500/20 rounded-2xl p-4 text-blue-300 space-y-1">
+                    <p className="font-bold flex items-center gap-1.5"><Info size={14} /> Como funciona:</p>
+                    <p className="text-slate-300">
+                      Exporte o relatório no <strong>Gerenciador de Anúncios da Meta</strong> (nível de Campanha com divisão por Dia) em formato CSV ou Excel. Selecione o arquivo ou cole o conteúdo abaixo. O sistema identificará automaticamente as colunas de Investimento, Impressões, Alcance, Cliques, Visitas ao Perfil e Conversas.
+                    </p>
+                  </div>
+
+                  {/* Upload File Box */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">1. Selecionar Arquivo CSV / TXT</label>
+                    <div className="border-2 border-dashed border-slate-800 hover:border-emerald-500/40 rounded-2xl p-6 text-center transition-all bg-slate-950/40 cursor-pointer relative">
+                      <input 
+                        type="file" 
+                        accept=".csv,.txt,.tsv" 
+                        onChange={handleReportFileUpload} 
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" 
+                      />
+                      <div className="flex flex-col items-center justify-center gap-2 pointer-events-none">
+                        <UploadCloud size={32} className="text-slate-500" />
+                        <span className="text-sm font-bold text-slate-200">Clique para escolher o arquivo exportado ou arraste aqui</span>
+                        <span className="text-[10px] text-slate-500">Formatos aceitos: CSV delimitado por vírgula, ponto-e-vírgula ou tabulação</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paste Box */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">2. Ou Cole os Dados Aqui</label>
+                    <textarea
+                      rows={5}
+                      value={importReportText}
+                      onChange={(e) => handleReportTextChange(e.target.value)}
+                      placeholder="Cole aqui as linhas exportadas do relatório da Meta..."
+                      className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 font-mono text-[11px] text-slate-200 outline-none focus:border-emerald-500/50 resize-none transition-all"
+                    />
+                  </div>
+
+                  {/* Error / Success Messages */}
+                  {importError && (
+                    <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl flex items-center gap-2 font-bold">
+                      <AlertTriangle size={16} />
+                      <span>{importError}</span>
+                    </div>
+                  )}
+                  {importSuccess && (
+                    <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-center gap-2 font-bold">
+                      <Check size={16} />
+                      <span>{importSuccess}</span>
+                    </div>
+                  )}
+
+                  {/* Summary Preview */}
+                  {parsedReportData?.summary && (
+                    <div className="bg-slate-950 border border-emerald-500/30 rounded-2xl p-5 space-y-4 animate-in fade-in duration-300">
+                      <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                          <Check size={14} /> Prévia da Interpretação dos Dados
+                        </span>
+                        <span className="text-slate-400 text-[11px] font-bold">
+                          {parsedReportData.summary.totalRows} registros identificados
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                        <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/60">
+                          <span className="text-[9px] text-slate-500 uppercase font-black tracking-wider block">Investimento</span>
+                          <span className="text-sm font-black text-white">R$ {parsedReportData.summary.totalSpend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/60">
+                          <span className="text-[9px] text-slate-500 uppercase font-black tracking-wider block">Impressões</span>
+                          <span className="text-sm font-black text-white">{parsedReportData.summary.totalImpressions.toLocaleString()}</span>
+                        </div>
+                        <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/60">
+                          <span className="text-[9px] text-slate-500 uppercase font-black tracking-wider block">Alcance (Soma)</span>
+                          <span className="text-sm font-black text-white">{parsedReportData.summary.totalReach.toLocaleString()}</span>
+                        </div>
+                        <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/60">
+                          <span className="text-[9px] text-slate-500 uppercase font-black tracking-wider block">Cliques</span>
+                          <span className="text-sm font-black text-white">{parsedReportData.summary.totalClicks.toLocaleString()}</span>
+                        </div>
+                        <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/60">
+                          <span className="text-[9px] text-pink-400 uppercase font-black tracking-wider block">Visitas Perfil</span>
+                          <span className="text-sm font-black text-white">{parsedReportData.summary.totalVisits.toLocaleString()}</span>
+                        </div>
+                        <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/60">
+                          <span className="text-[9px] text-purple-400 uppercase font-black tracking-wider block">Conversas</span>
+                          <span className="text-sm font-black text-white">{parsedReportData.summary.totalLeads.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="p-6 border-t border-slate-800 flex items-center justify-end gap-3 bg-slate-950/50">
+                  <button 
+                    onClick={() => setShowImportModal(false)}
+                    disabled={isImportingReport}
+                    className="px-5 py-2.5 rounded-xl border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 font-bold transition-all text-xs"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleExecuteImportReport}
+                    disabled={!parsedReportData || parsedReportData.rows.length === 0 || isImportingReport}
+                    className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold transition-all flex items-center gap-2 text-xs shadow-lg shadow-emerald-900/30"
+                  >
+                    {isImportingReport ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin" />
+                        <span>Processando e Gravando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check size={14} />
+                        <span>Confirmar e Inserir no Sistema</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
