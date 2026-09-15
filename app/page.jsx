@@ -55,6 +55,9 @@ import {
   UploadCloud,
   FileSpreadsheet,
   FileUp,
+  Clock,
+  XCircle,
+  TrendingDown,
 } from 'lucide-react';
 import { parseMetaReportCSV } from '@/utils/metaReportParser';
 import { CampaignsBoard } from '@/views/CampaignsBoard';
@@ -979,30 +982,62 @@ export default function App() {
     const statusFechado = clienteAtivoObj?.status_fechado || 'FECHADO';
     const tipoServicoAssistencia = clienteAtivoObj?.tipo_servico_assistencia || 'ASSISTÊNCIA';
 
-    // Considera closedLeads tanto as vendas fechadas quanto as assistências que geraram faturamento
-    const closedLeads = leadsNormais.filter(l => l.status === statusFechado || (l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0));
+    // Heurística de classificação comercial blindada
+    const isPerdidoFn = (l) => {
+      const st = String(l.status || '').toUpperCase().trim();
+      const conv = String(l.conversao || '').toUpperCase().trim();
+      return st === 'PERDIDO' || ['NEGATIVO', 'NEGATVO', 'CANCELADO', 'DESQUALIFICADO'].includes(conv);
+    };
+
+    const isAguardandoFn = (l) => {
+      if (isPerdidoFn(l)) return false;
+      const st = String(l.status || '').toUpperCase().trim();
+      const conv = String(l.conversao || '').toUpperCase().trim();
+      return conv === 'AGUARDANDO' || ['NEGOCIACAO', 'NOVO', 'CONTATO'].includes(st);
+    };
+
+    const isFechadoFn = (l) => {
+      if (isPerdidoFn(l) || isAguardandoFn(l)) return false;
+      const st = String(l.status || '').toUpperCase().trim();
+      const conv = String(l.conversao || '').toUpperCase().trim();
+      return st === statusFechado || conv === 'POSITIVO' || (l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0);
+    };
+
+    // 1. Vendas Fechadas e Faturamento Real Consolidado (Ganhos)
+    const closedLeads = leadsNormais.filter(isFechadoFn);
     const faturamentoTotal = closedLeads.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
-    const faturamentoAssistencia = leadsNormais
+    const faturamentoAssistencia = closedLeads
       .filter(l => l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0)
       .reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
-      
-    const taxaConversao = totalLeads > 0 ? ((closedLeads.length / totalLeads) * 100).toFixed(1) : '0';
-    const leadsAtivos = leadsNormais.filter(l => 
-      l.status !== statusFechado && 
-      !(l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0) && 
-      l.status !== 'PERDIDO'
-    ).length;
 
-    // Veículos/Produtos Procurados (Ativos)
+    // 2. Faturamento Aguardando (Negociações em Aberto / Pipeline Ativo)
+    const leadsAguardando = leadsNormais.filter(isAguardandoFn);
+    const faturamentoAguardando = leadsAguardando.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsAguardandoComValor = leadsAguardando.filter(l => Number(l.valor || 0) > 0).length;
+
+    // 3. Faturamento Perdido (Desistências / Negativo / Cancelados)
+    const leadsPerdidos = leadsNormais.filter(isPerdidoFn);
+    const faturamentoPerdido = leadsPerdidos.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsPerdidosComValor = leadsPerdidos.filter(l => Number(l.valor || 0) > 0).length;
+
+    // Métricas Financeiras Consolidadas do Pipeline Comercial
+    const faturamentoPipelineGeral = faturamentoTotal + faturamentoAguardando + faturamentoPerdido;
+    const taxaAproveitamentoFinanceiro = faturamentoPipelineGeral > 0 
+      ? ((faturamentoTotal / faturamentoPipelineGeral) * 100).toFixed(1) 
+      : '0.0';
+
+    const taxaConversao = totalLeads > 0 ? ((closedLeads.length / totalLeads) * 100).toFixed(1) : '0';
+    const leadsAtivos = leadsAguardando.length;
+
+    // Veículos/Produtos Procurados (Ativos em Negociação)
     const procuradosMap = {};
     leadsNormais.forEach(l => {
       if (
+        isAguardandoFn(l) &&
         l.veiculo && 
         l.veiculo !== 'X' && 
-        l.veiculo !== 'NÃO IDENTIFICADO' && 
-        l.status !== statusFechado && 
-        !(l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0) &&
-        l.status !== 'PERDIDO'
+        l.veiculo !== 'null' && 
+        l.veiculo !== 'NÃO IDENTIFICADO'
       ) {
         const cleanName = l.veiculo.trim().toUpperCase();
         procuradosMap[cleanName] = (procuradosMap[cleanName] || 0) + 1;
@@ -1016,7 +1051,7 @@ export default function App() {
     // Veículos/Produtos Vendidos (Fechados)
     const vendidosMap = {};
     leadsNormais.forEach(l => {
-      if (l.veiculo && l.veiculo !== 'X' && l.status === statusFechado && l.tipo_servico !== tipoServicoAssistencia) {
+      if (isFechadoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.tipo_servico !== tipoServicoAssistencia) {
         const cleanName = l.veiculo.trim().toUpperCase();
         if (!vendidosMap[cleanName]) {
           vendidosMap[cleanName] = { count: 0, valor: 0 };
@@ -1033,7 +1068,7 @@ export default function App() {
     // Serviços de Assistência Técnica/Outros (Ganhos)
     const assistenciasMap = {};
     leadsNormais.forEach(l => {
-      if (l.veiculo && l.veiculo !== 'X' && l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0) {
+      if (isFechadoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.tipo_servico === tipoServicoAssistencia && Number(l.valor || 0) > 0) {
         const cleanName = l.veiculo.trim().toUpperCase();
         assistenciasMap[cleanName] = (assistenciasMap[cleanName] || 0) + 1;
       }
@@ -1043,15 +1078,40 @@ export default function App() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
+    // Veículos/Oportunidades Perdidas (Desistências / Negativos)
+    const perdidosMap = {};
+    leadsNormais.forEach(l => {
+      if (isPerdidoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.veiculo !== 'NÃO IDENTIFICADO') {
+        const cleanName = l.veiculo.trim().toUpperCase();
+        if (!perdidosMap[cleanName]) {
+          perdidosMap[cleanName] = { count: 0, valor: 0 };
+        }
+        perdidosMap[cleanName].count += 1;
+        perdidosMap[cleanName].valor += Number(l.valor || 0);
+      }
+    });
+    const topPerdidos = Object.entries(perdidosMap)
+      .map(([nome, data]) => ({ nome, count: data.count, valor: data.valor }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
     return {
       totalLeads,
       faturamentoTotal,
       faturamentoAssistencia,
+      faturamentoAguardando,
+      leadsAguardandoComValor,
+      faturamentoPerdido,
+      leadsPerdidosComValor,
+      faturamentoPipelineGeral,
+      taxaAproveitamentoFinanceiro,
       taxaConversao,
       leadsAtivos,
+      totalPerdidos: leadsPerdidos.length,
       topProcurados,
       topVendidos,
       topAssistencias,
+      topPerdidos,
       totalClosed: closedLeads.length,
       orcamentosEnviados: leadsNormais.filter(l => l.conversao && l.conversao.toUpperCase().includes('ORÇAMENTO')).length
     };
@@ -1505,16 +1565,118 @@ export default function App() {
 
               {/* Seção CRM para Auditoria */}
               {clienteAtivoObj?.has_crm && leadsList.length > 0 && (
-                <div className="bg-slate-900/60 p-8 rounded-3xl border border-slate-800 space-y-6">
-                  <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                    <Database className="text-blue-500" size={20} />
-                    <div>
-                      <h3 className="text-base font-black text-slate-100 uppercase tracking-tight">Auditoria de CRM & Vendas Reais</h3>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Métricas de conversão comercial offline</p>
+                <div className="bg-slate-900/60 p-8 rounded-3xl border border-slate-800 space-y-6 shadow-2xl">
+                  {/* Cabeçalho da Seção */}
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+                        <Database size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-black text-slate-100 uppercase tracking-tight">Auditoria de CRM & Vendas Reais</h3>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">
+                          Métricas de conversão comercial offline sincronizadas ao período selecionado
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800 text-[11px] font-semibold text-slate-400 self-start md:self-auto">
+                      <CalendarDays size={13} className="text-blue-400" />
+                      <span>Filtro temporal ativo no CRM</span>
                     </div>
                   </div>
 
-                  {/* KPIs de CRM */}
+                  {/* Painel Financeiro Comercial: Real Consolidado vs Aguardando vs Perdido */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* 1. Faturamento Real Fechado (Ganhos Consolidado) */}
+                    <div className="bg-gradient-to-br from-emerald-950/40 via-slate-950 to-slate-950 p-5 rounded-2xl border border-emerald-500/30 shadow-lg relative overflow-hidden">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
+                          <ShieldCheck size={14} className="text-emerald-400" /> Faturamento Real Fechado
+                        </span>
+                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                          Confirmado
+                        </span>
+                      </div>
+                      <p className="text-2xl font-black text-white mt-2 tracking-tight">
+                        R$ {crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-900">
+                        <span>{crmStats.totalClosed} {crmStats.totalClosed === 1 ? 'venda confirmada' : 'vendas confirmadas'}</span>
+                        <span className="text-emerald-400/80 font-bold">Base do ROAS Mestre</span>
+                      </div>
+                    </div>
+
+                    {/* 2. Faturamento Aguardando (Pipeline / Em Aberto) */}
+                    <div className="bg-gradient-to-br from-amber-950/30 via-slate-950 to-slate-950 p-5 rounded-2xl border border-amber-500/30 shadow-lg relative overflow-hidden">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                          <Clock size={14} className="text-amber-400" /> Faturamento em Aberto (Aguardando)
+                        </span>
+                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                          Pipeline Ativo
+                        </span>
+                      </div>
+                      <p className="text-2xl font-black text-amber-400 mt-2 tracking-tight">
+                        R$ {crmStats.faturamentoAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-900">
+                        <span>{crmStats.leadsAtivos} leads em negociação</span>
+                        <span className="text-amber-400/80 font-bold">{crmStats.leadsAguardandoComValor} com cotação</span>
+                      </div>
+                    </div>
+
+                    {/* 3. Faturamento Perdido (Negativo / Desistências) */}
+                    <div className="bg-gradient-to-br from-rose-950/30 via-slate-950 to-slate-950 p-5 rounded-2xl border border-rose-500/30 shadow-lg relative overflow-hidden">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase text-rose-400 tracking-wider flex items-center gap-1.5">
+                          <XCircle size={14} className="text-rose-400" /> Faturamento Perdido
+                        </span>
+                        <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                          Desistência / Recusado
+                        </span>
+                      </div>
+                      <p className="text-2xl font-black text-rose-400 mt-2 tracking-tight">
+                        R$ {crmStats.faturamentoPerdido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-900">
+                        <span>{crmStats.totalPerdidos} desqualificados/recusados</span>
+                        <span className="text-rose-400/80 font-bold">Isolado do Faturamento Real</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Resumo do Pipeline Total do Período */}
+                  <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800/80 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
+                      <div className="text-slate-400">
+                        Pipeline Total Movimentado: <span className="text-white font-black">R$ {crmStats.faturamentoPipelineGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                      </div>
+                      <span className="hidden md:inline text-slate-700">•</span>
+                      <div className="text-slate-400">
+                        Aproveitamento Comercial Financeiro: <span className="text-emerald-400 font-black">{crmStats.taxaAproveitamentoFinanceiro}%</span>
+                      </div>
+                    </div>
+                    {/* Barra de Proporção Financeira */}
+                    <div className="w-full md:w-64 bg-slate-900 h-2 rounded-full overflow-hidden flex">
+                      <div 
+                        title={`Real Fechado: R$ ${crmStats.faturamentoTotal}`}
+                        className="bg-emerald-500 h-full" 
+                        style={{ width: `${crmStats.faturamentoPipelineGeral > 0 ? (crmStats.faturamentoTotal / crmStats.faturamentoPipelineGeral) * 100 : 0}%` }} 
+                      />
+                      <div 
+                        title={`Aguardando: R$ ${crmStats.faturamentoAguardando}`}
+                        className="bg-amber-500 h-full" 
+                        style={{ width: `${crmStats.faturamentoPipelineGeral > 0 ? (crmStats.faturamentoAguardando / crmStats.faturamentoPipelineGeral) * 100 : 0}%` }} 
+                      />
+                      <div 
+                        title={`Perdido: R$ ${crmStats.faturamentoPerdido}`}
+                        className="bg-rose-500 h-full" 
+                        style={{ width: `${crmStats.faturamentoPipelineGeral > 0 ? (crmStats.faturamentoPerdido / crmStats.faturamentoPipelineGeral) * 100 : 0}%` }} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* KPIs de Volume de Leads */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div className="bg-slate-950 p-5 rounded-2xl border border-slate-900">
                       <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Leads Validados (CRM)</span>
@@ -1540,10 +1702,10 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Cards de Detalhamento por Veículos */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                  {/* Cards de Detalhamento por Veículos / Produtos (Grid de 4 colunas) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
                     {/* Mais Procurados */}
-                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                    <div className="bg-slate-950/40 p-5 rounded-2xl border border-slate-900/50 space-y-4">
                       <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
                         <Car className="text-amber-500" size={14} /> {clienteAtivoObj?.label_procurados || 'Mais Procurados'}
                       </h4>
@@ -1557,8 +1719,8 @@ export default function App() {
                             return (
                               <div key={idx} className="space-y-1">
                                 <div className="flex justify-between text-[11px] font-semibold text-slate-300">
-                                  <span>{item.nome}</span>
-                                  <span className="text-amber-500 font-bold">{item.count} leads</span>
+                                  <span className="truncate pr-2">{item.nome}</span>
+                                  <span className="text-amber-500 font-bold shrink-0">{item.count} leads</span>
                                 </div>
                                 <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
                                   <div className="bg-amber-600 h-full rounded-full" style={{ width: `${percentage}%` }} />
@@ -1571,7 +1733,7 @@ export default function App() {
                     </div>
 
                     {/* Vendidos */}
-                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                    <div className="bg-slate-950/40 p-5 rounded-2xl border border-slate-900/50 space-y-4">
                       <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-900 pb-2">
                         <Shield className="text-emerald-500" size={14} /> {clienteAtivoObj?.label_vendidos || 'Fechados (Ganhos)'}
                       </h4>
@@ -1585,12 +1747,16 @@ export default function App() {
                             return (
                               <div key={idx} className="space-y-1">
                                 <div className="flex justify-between text-[11px] font-semibold text-slate-300">
-                                  <span>{item.nome}</span>
-                                  <span className="text-emerald-400 font-bold">
+                                  <span className="truncate pr-2">{item.nome}</span>
+                                  <span className="text-emerald-400 font-bold shrink-0">
                                     {item.count} {item.count === 1 ? 'fechado' : 'fechados'}
-                                    {item.valor > 0 && ` • R$ ${item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
                                   </span>
                                 </div>
+                                {item.valor > 0 && (
+                                  <p className="text-[10px] text-emerald-400/90 font-bold">
+                                    R$ {item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                  </p>
+                                )}
                                 <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
                                   <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
                                 </div>
@@ -1602,7 +1768,7 @@ export default function App() {
                     </div>
 
                     {/* Assistência Técnica */}
-                    <div className="bg-slate-950/40 p-6 rounded-2xl border border-slate-900/50 space-y-4">
+                    <div className="bg-slate-950/40 p-5 rounded-2xl border border-slate-900/50 space-y-4">
                       <div className="flex justify-between items-center border-b border-slate-900 pb-2">
                         <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
                           <Briefcase className="text-blue-400" size={14} /> {clienteAtivoObj?.label_assistencia || 'Assistência/Outros'}
@@ -1621,11 +1787,49 @@ export default function App() {
                             return (
                               <div key={idx} className="space-y-1">
                                 <div className="flex justify-between text-[11px] font-semibold text-slate-300">
-                                  <span>{item.nome}</span>
-                                  <span className="text-blue-400 font-bold">{item.count} concluídos</span>
+                                  <span className="truncate pr-2">{item.nome}</span>
+                                  <span className="text-blue-400 font-bold shrink-0">{item.count} concluídos</span>
                                 </div>
                                 <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
                                   <div className="bg-blue-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Perdidos / Desistências */}
+                    <div className="bg-slate-950/40 p-5 rounded-2xl border border-slate-900/50 space-y-4">
+                      <div className="flex justify-between items-center border-b border-slate-900 pb-2">
+                        <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                          <XCircle className="text-rose-400" size={14} /> Desistências / Perdidos
+                        </h4>
+                        <span className="text-[10px] font-black text-rose-400">
+                          {crmStats.totalPerdidos} leads
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        {crmStats.topPerdidos.length === 0 ? (
+                          <p className="text-[10px] text-slate-600 italic">Nenhum registro perdido.</p>
+                        ) : (
+                          crmStats.topPerdidos.map((item, idx) => {
+                            const max = Math.max(...crmStats.topPerdidos.map(i => i.count));
+                            const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                            return (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-semibold text-slate-300">
+                                  <span className="truncate pr-2">{item.nome}</span>
+                                  <span className="text-rose-400 font-bold shrink-0">{item.count} recusados</span>
+                                </div>
+                                {item.valor > 0 && (
+                                  <p className="text-[10px] text-rose-400/90 font-bold">
+                                    R$ {item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                  </p>
+                                )}
+                                <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                                  <div className="bg-rose-600 h-full rounded-full" style={{ width: `${percentage}%` }} />
                                 </div>
                               </div>
                             );

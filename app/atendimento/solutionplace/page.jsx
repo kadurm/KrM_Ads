@@ -34,7 +34,9 @@ import {
   ChevronLeft,
   FileCode,
   UploadCloud,
-  FileSpreadsheet
+  FileSpreadsheet,
+  XCircle,
+  ShieldCheck
 } from 'lucide-react';
 import { parseXmlLeads } from '../../../utils/xmlParser';
 
@@ -587,38 +589,62 @@ export default function AtendimentoPage() {
     const leadsNormais = leads.filter(l => l.origem !== 'Seguidor Instagram');
     const totalLeads = leadsNormais.length;
     
-    // Considera closedLeads tanto as vendas fechadas quanto conversões positivas e assistências que geraram faturamento
-    const closedLeads = leadsNormais.filter(l => 
-      l.status === 'FECHADO' || 
-      (l.conversao && String(l.conversao).toUpperCase().includes('POSITIV')) ||
-      (l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) ||
-      Number(l.valor || 0) > 0
-    );
-    
+    // Heurística de classificação comercial blindada
+    const isPerdidoFn = (l) => {
+      const st = String(l.status || '').toUpperCase().trim();
+      const conv = String(l.conversao || '').toUpperCase().trim();
+      return st === 'PERDIDO' || ['NEGATIVO', 'NEGATVO', 'CANCELADO', 'DESQUALIFICADO'].includes(conv);
+    };
+
+    const isAguardandoFn = (l) => {
+      if (isPerdidoFn(l)) return false;
+      const st = String(l.status || '').toUpperCase().trim();
+      const conv = String(l.conversao || '').toUpperCase().trim();
+      return conv === 'AGUARDANDO' || ['NEGOCIACAO', 'NOVO', 'CONTATO'].includes(st);
+    };
+
+    const isFechadoFn = (l) => {
+      if (isPerdidoFn(l) || isAguardandoFn(l)) return false;
+      const st = String(l.status || '').toUpperCase().trim();
+      const conv = String(l.conversao || '').toUpperCase().trim();
+      return st === 'FECHADO' || conv === 'POSITIVO' || (l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0);
+    };
+
+    // 1. Vendas Fechadas e Faturamento Real Consolidado (Ganhos)
+    const closedLeads = leadsNormais.filter(isFechadoFn);
     const faturamentoTotal = closedLeads.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
-    const faturamentoAssistencia = leadsNormais
+    const faturamentoAssistencia = closedLeads
       .filter(l => l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0)
       .reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
-      
-    const taxaConversao = totalLeads > 0 ? ((closedLeads.length / totalLeads) * 100).toFixed(1) : '0';
-    
-    // Leads ativos excluem perdidos, vendas fechadas e assistências concluídas/pagas
-    const leadsAtivos = leadsNormais.filter(l => 
-      l.status !== 'FECHADO' && 
-      !(l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) && 
-      l.status !== 'PERDIDO'
-    ).length;
 
-    // Veículos Procurados (Ativos)
+    // 2. Faturamento Aguardando (Negociações em Aberto / Pipeline Ativo)
+    const leadsAguardando = leadsNormais.filter(isAguardandoFn);
+    const faturamentoAguardando = leadsAguardando.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsAguardandoComValor = leadsAguardando.filter(l => Number(l.valor || 0) > 0).length;
+
+    // 3. Faturamento Perdido (Desistências / Negativo / Cancelados)
+    const leadsPerdidos = leadsNormais.filter(isPerdidoFn);
+    const faturamentoPerdido = leadsPerdidos.reduce((acc, curr) => acc + Number(curr.valor || 0), 0);
+    const leadsPerdidosComValor = leadsPerdidos.filter(l => Number(l.valor || 0) > 0).length;
+
+    // Métricas Financeiras Consolidadas do Pipeline Comercial
+    const faturamentoPipelineGeral = faturamentoTotal + faturamentoAguardando + faturamentoPerdido;
+    const taxaAproveitamentoFinanceiro = faturamentoPipelineGeral > 0 
+      ? ((faturamentoTotal / faturamentoPipelineGeral) * 100).toFixed(1) 
+      : '0.0';
+
+    const taxaConversao = totalLeads > 0 ? ((closedLeads.length / totalLeads) * 100).toFixed(1) : '0';
+    const leadsAtivos = leadsAguardando.length;
+
+    // Veículos Procurados (Ativos em Negociação)
     const procuradosMap = {};
     leadsNormais.forEach(l => {
       if (
+        isAguardandoFn(l) &&
         l.veiculo && 
         l.veiculo !== 'X' && 
-        l.veiculo !== 'NÃO IDENTIFICADO' && 
-        l.status !== 'FECHADO' && 
-        !(l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) &&
-        l.status !== 'PERDIDO'
+        l.veiculo !== 'null' && 
+        l.veiculo !== 'NÃO IDENTIFICADO'
       ) {
         const cleanName = l.veiculo.trim().toUpperCase();
         procuradosMap[cleanName] = (procuradosMap[cleanName] || 0) + 1;
@@ -632,7 +658,7 @@ export default function AtendimentoPage() {
     // Veículos Vendidos (Fechados)
     const vendidosMap = {};
     leadsNormais.forEach(l => {
-      if (l.veiculo && l.veiculo !== 'X' && l.status === 'FECHADO' && l.tipo_servico !== 'ASSISTÊNCIA') {
+      if (isFechadoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.tipo_servico !== 'ASSISTÊNCIA') {
         const cleanName = l.veiculo.trim().toUpperCase();
         if (!vendidosMap[cleanName]) {
           vendidosMap[cleanName] = { count: 0, valor: 0 };
@@ -649,13 +675,30 @@ export default function AtendimentoPage() {
     // Veículos de Assistência Técnica (Ganhos)
     const assistenciasMap = {};
     leadsNormais.forEach(l => {
-      if (l.veiculo && l.veiculo !== 'X' && l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) {
+      if (isFechadoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.tipo_servico === 'ASSISTÊNCIA' && Number(l.valor || 0) > 0) {
         const cleanName = l.veiculo.trim().toUpperCase();
         assistenciasMap[cleanName] = (assistenciasMap[cleanName] || 0) + 1;
       }
     });
     const topAssistencias = Object.entries(assistenciasMap)
       .map(([nome, count]) => ({ nome, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // Veículos/Oportunidades Perdidas
+    const perdidosMap = {};
+    leadsNormais.forEach(l => {
+      if (isPerdidoFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.veiculo !== 'NÃO IDENTIFICADO') {
+        const cleanName = l.veiculo.trim().toUpperCase();
+        if (!perdidosMap[cleanName]) {
+          perdidosMap[cleanName] = { count: 0, valor: 0 };
+        }
+        perdidosMap[cleanName].count += 1;
+        perdidosMap[cleanName].valor += Number(l.valor || 0);
+      }
+    });
+    const topPerdidos = Object.entries(perdidosMap)
+      .map(([nome, data]) => ({ nome, count: data.count, valor: data.valor }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -673,11 +716,19 @@ export default function AtendimentoPage() {
       totalLeads,
       faturamentoTotal,
       faturamentoAssistencia,
+      faturamentoAguardando,
+      leadsAguardandoComValor,
+      faturamentoPerdido,
+      leadsPerdidosComValor,
+      faturamentoPipelineGeral,
+      taxaAproveitamentoFinanceiro,
       taxaConversao,
       leadsAtivos,
+      totalPerdidos: leadsPerdidos.length,
       topProcurados,
       topVendidos,
       topAssistencias,
+      topPerdidos,
       topOrigens
     };
   }, [leads]);
@@ -1210,147 +1261,239 @@ export default function AtendimentoPage() {
           ) : (
              /* --- MODO DASHBOARD --- */
              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
+                {/* Cards Superiores com Faturamento Segregado */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Total de Leads</p>
-                      <p className="text-3xl font-black text-white mt-2">{dashboardStats.totalLeads}</p>
+                      <p className="text-2xl font-black text-white mt-1.5">{dashboardStats.totalLeads}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-red-950/20 border border-red-900/20 text-red-500 flex items-center justify-center">
-                      <Users size={20} />
+                    <div className="w-10 h-10 rounded-2xl bg-red-950/20 border border-red-900/20 text-red-500 flex items-center justify-center">
+                      <Users size={18} />
                     </div>
                   </div>
 
-                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Leads Ativos</p>
-                      <p className="text-3xl font-black text-amber-500 mt-2">{dashboardStats.leadsAtivos}</p>
+                      <p className="text-2xl font-black text-amber-500 mt-1.5">{dashboardStats.leadsAtivos}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-amber-950/20 border border-amber-900/20 text-amber-500 flex items-center justify-center">
-                      <Clock size={20} />
+                    <div className="w-10 h-10 rounded-2xl bg-amber-950/20 border border-amber-900/20 text-amber-500 flex items-center justify-center">
+                      <Clock size={18} />
                     </div>
                   </div>
 
-                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
+                  <div className="bg-gradient-to-br from-emerald-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-emerald-500/30 p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Faturamento Real</p>
-                      <p className="text-2xl font-black text-emerald-400 mt-2">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Faturamento Real</p>
+                      <p className="text-xl font-black text-emerald-400 mt-1.5">
                         R$ {dashboardStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </p>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-950/20 border border-emerald-900/20 text-emerald-500 flex items-center justify-center">
-                      <DollarSign size={20} />
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                      <ShieldCheck size={18} />
                     </div>
                   </div>
 
-                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2rem] shadow-xl flex items-center justify-between">
+                  <div className="bg-gradient-to-br from-amber-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-amber-500/30 p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Taxa de Conversão</p>
-                      <p className="text-3xl font-black text-white mt-2">{dashboardStats.taxaConversao}%</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-amber-400">Aguardando (Pipeline)</p>
+                      <p className="text-xl font-black text-amber-400 mt-1.5">
+                        R$ {dashboardStats.faturamentoAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </p>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-blue-950/20 border border-blue-900/20 text-blue-500 flex items-center justify-center">
-                      <TrendingUp size={20} />
+                    <div className="w-10 h-10 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+                      <DollarSign size={18} />
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-rose-950/30 via-[#11131a]/60 to-[#11131a]/60 border border-rose-500/30 p-5 rounded-[2rem] shadow-xl flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-rose-400">Faturamento Perdido</p>
+                      <p className="text-xl font-black text-rose-400 mt-1.5">
+                        R$ {dashboardStats.faturamentoPerdido.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </p>
+                    </div>
+                    <div className="w-10 h-10 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-400 flex items-center justify-center">
+                      <XCircle size={18} />
                     </div>
                   </div>
                 </div>
 
-               {/* Gráficos de Veículos (Mais Procurados vs Vendidos vs Assistência) */}
-               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                 {/* Veículos Procurados (Active) */}
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2.5rem] shadow-xl space-y-4">
-                   <div className="flex items-center gap-2.5 border-b border-[#1b1c24] pb-3">
-                     <Car className="text-amber-500" size={18} />
-                     <h3 className="text-sm font-black uppercase tracking-widest text-white">Carros Mais Procurados</h3>
-                   </div>
-                   <div className="space-y-4">
-                     {dashboardStats.topProcurados.length === 0 ? (
-                       <p className="text-xs text-slate-500 italic">Sem registros suficientes de veículos ativos.</p>
-                     ) : (
-                       dashboardStats.topProcurados.map((item, idx) => {
-                         const max = Math.max(...dashboardStats.topProcurados.map(i => i.count));
-                         const percentage = max > 0 ? (item.count / max) * 100 : 0;
-                         return (
-                           <div key={idx} className="space-y-1.5">
-                             <div className="flex justify-between text-xs font-bold text-slate-300">
-                               <span>{item.nome}</span>
-                               <span className="text-amber-500 font-black">{item.count} leads</span>
-                             </div>
-                             <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-900">
-                               <div className="bg-amber-600 h-full rounded-full" style={{ width: `${percentage}%` }} />
-                             </div>
-                           </div>
-                         );
-                       })
-                     )}
-                   </div>
-                 </div>
+                {/* Resumo do Pipeline */}
+                <div className="bg-[#11131a]/60 border border-[#1b1c24] p-4 rounded-[2rem] shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
+                    <div className="text-slate-400">
+                      Pipeline Total Movimentado: <span className="text-white font-black">R$ {dashboardStats.faturamentoPipelineGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <span className="hidden md:inline text-slate-700">•</span>
+                    <div className="text-slate-400">
+                      Aproveitamento Financeiro: <span className="text-emerald-400 font-black">{dashboardStats.taxaAproveitamentoFinanceiro}%</span>
+                    </div>
+                    <span className="hidden md:inline text-slate-700">•</span>
+                    <div className="text-slate-400">
+                      Taxa de Conversão de Leads: <span className="text-white font-black">{dashboardStats.taxaConversao}%</span>
+                    </div>
+                  </div>
+                  <div className="w-full md:w-64 bg-slate-950 h-2 rounded-full overflow-hidden flex border border-slate-900">
+                    <div 
+                      title={`Real Fechado: R$ ${dashboardStats.faturamentoTotal}`}
+                      className="bg-emerald-500 h-full" 
+                      style={{ width: `${dashboardStats.faturamentoPipelineGeral > 0 ? (dashboardStats.faturamentoTotal / dashboardStats.faturamentoPipelineGeral) * 100 : 0}%` }} 
+                    />
+                    <div 
+                      title={`Aguardando: R$ ${dashboardStats.faturamentoAguardando}`}
+                      className="bg-amber-500 h-full" 
+                      style={{ width: `${dashboardStats.faturamentoPipelineGeral > 0 ? (dashboardStats.faturamentoAguardando / dashboardStats.faturamentoPipelineGeral) * 100 : 0}%` }} 
+                    />
+                    <div 
+                      title={`Perdido: R$ ${dashboardStats.faturamentoPerdido}`}
+                      className="bg-rose-500 h-full" 
+                      style={{ width: `${dashboardStats.faturamentoPipelineGeral > 0 ? (dashboardStats.faturamentoPerdido / dashboardStats.faturamentoPipelineGeral) * 100 : 0}%` }} 
+                    />
+                  </div>
+                </div>
 
-                 {/* Veículos Vendidos */}
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2.5rem] shadow-xl space-y-4">
-                   <div className="flex items-center gap-2.5 border-b border-[#1b1c24] pb-3">
-                     <Shield className="text-emerald-500" size={18} />
-                     <h3 className="text-sm font-black uppercase tracking-widest text-white">Carros Vendidos (Ganhos)</h3>
-                   </div>
-                   <div className="space-y-4">
-                     {dashboardStats.topVendidos.length === 0 ? (
-                       <p className="text-xs text-slate-500 italic">Nenhum veículo vendido ainda.</p>
-                     ) : (
-                       dashboardStats.topVendidos.map((item, idx) => {
-                         const max = Math.max(...dashboardStats.topVendidos.map(i => i.count));
-                         const percentage = max > 0 ? (item.count / max) * 100 : 0;
-                         return (
-                           <div key={idx} className="space-y-1.5">
-                             <div className="flex justify-between text-xs font-bold text-slate-300">
-                               <span>{item.nome}</span>
-                               <span className="text-emerald-400 font-black">
-                                 {item.count} {item.count === 1 ? 'fechado' : 'fechados'}
-                                 {item.valor > 0 && ` • R$ ${item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
-                               </span>
-                             </div>
-                             <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-900">
-                               <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
-                             </div>
-                           </div>
-                         );
-                       })
-                     )}
-                   </div>
-                 </div>
+                {/* Gráficos de Veículos (Mais Procurados vs Vendidos vs Assistência vs Perdidos) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Veículos Procurados (Active) */}
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl space-y-4">
+                    <div className="flex items-center gap-2 border-b border-[#1b1c24] pb-3">
+                      <Car className="text-amber-500" size={16} />
+                      <h3 className="text-xs font-black uppercase tracking-widest text-white">Carros Mais Procurados</h3>
+                    </div>
+                    <div className="space-y-3">
+                      {dashboardStats.topProcurados.length === 0 ? (
+                        <p className="text-[10px] text-slate-500 italic">Sem registros de veículos ativos.</p>
+                      ) : (
+                        dashboardStats.topProcurados.map((item, idx) => {
+                          const max = Math.max(...dashboardStats.topProcurados.map(i => i.count));
+                          const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                          return (
+                            <div key={idx} className="space-y-1">
+                              <div className="flex justify-between text-[11px] font-bold text-slate-300">
+                                <span className="truncate pr-2">{item.nome}</span>
+                                <span className="text-amber-500 font-black shrink-0">{item.count} leads</span>
+                              </div>
+                              <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-900">
+                                <div className="bg-amber-600 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
 
-                 {/* Assistência Técnica (Ganhos) */}
-                 <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2.5rem] shadow-xl space-y-4">
-                   <div className="flex items-center justify-between border-b border-[#1b1c24] pb-3">
-                     <div className="flex items-center gap-2.5">
-                       <Briefcase className="text-blue-400" size={18} />
-                       <h3 className="text-sm font-black uppercase tracking-widest text-white">Assistência Técnica</h3>
-                     </div>
-                     <span className="text-xs font-black text-emerald-400">
-                       R$ {dashboardStats.faturamentoAssistencia.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                     </span>
-                   </div>
-                   <div className="space-y-4">
-                     {dashboardStats.topAssistencias.length === 0 ? (
-                       <p className="text-xs text-slate-500 italic">Nenhum veículo em assistência ainda.</p>
-                     ) : (
-                       dashboardStats.topAssistencias.map((item, idx) => {
-                         const max = Math.max(...dashboardStats.topAssistencias.map(i => i.count));
-                         const percentage = max > 0 ? (item.count / max) * 100 : 0;
-                         return (
-                           <div key={idx} className="space-y-1.5">
-                             <div className="flex justify-between text-xs font-bold text-slate-300">
-                               <span>{item.nome}</span>
-                               <span className="text-blue-400 font-black">{item.count} concluídos</span>
-                             </div>
-                             <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-900">
-                               <div className="bg-blue-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
-                             </div>
-                           </div>
-                         );
-                       })
-                     )}
-                   </div>
-                 </div>
-               </div>
+                  {/* Veículos Vendidos */}
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl space-y-4">
+                    <div className="flex items-center gap-2 border-b border-[#1b1c24] pb-3">
+                      <Shield className="text-emerald-500" size={16} />
+                      <h3 className="text-xs font-black uppercase tracking-widest text-white">Carros Vendidos (Ganhos)</h3>
+                    </div>
+                    <div className="space-y-3">
+                      {dashboardStats.topVendidos.length === 0 ? (
+                        <p className="text-[10px] text-slate-500 italic">Nenhum veículo vendido ainda.</p>
+                      ) : (
+                        dashboardStats.topVendidos.map((item, idx) => {
+                          const max = Math.max(...dashboardStats.topVendidos.map(i => i.count));
+                          const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                          return (
+                            <div key={idx} className="space-y-1">
+                              <div className="flex justify-between text-[11px] font-bold text-slate-300">
+                                <span className="truncate pr-2">{item.nome}</span>
+                                <span className="text-emerald-400 font-black shrink-0">
+                                  {item.count} {item.count === 1 ? 'fechado' : 'fechados'}
+                                </span>
+                              </div>
+                              {item.valor > 0 && (
+                                <p className="text-[10px] text-emerald-400/90 font-bold">
+                                  R$ {item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                </p>
+                              )}
+                              <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-900">
+                                <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Assistência Técnica (Ganhos) */}
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl space-y-4">
+                    <div className="flex items-center justify-between border-b border-[#1b1c24] pb-3">
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="text-blue-400" size={16} />
+                        <h3 className="text-xs font-black uppercase tracking-widest text-white">Assistência Técnica</h3>
+                      </div>
+                      <span className="text-[10px] font-black text-emerald-400">
+                        R$ {dashboardStats.faturamentoAssistencia.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </span>
+                    </div>
+                    <div className="space-y-3">
+                      {dashboardStats.topAssistencias.length === 0 ? (
+                        <p className="text-[10px] text-slate-500 italic">Nenhum veículo em assistência.</p>
+                      ) : (
+                        dashboardStats.topAssistencias.map((item, idx) => {
+                          const max = Math.max(...dashboardStats.topAssistencias.map(i => i.count));
+                          const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                          return (
+                            <div key={idx} className="space-y-1">
+                              <div className="flex justify-between text-[11px] font-bold text-slate-300">
+                                <span className="truncate pr-2">{item.nome}</span>
+                                <span className="text-blue-400 font-black shrink-0">{item.count} concluídos</span>
+                              </div>
+                              <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-900">
+                                <div className="bg-blue-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Desistências / Perdidos */}
+                  <div className="bg-[#11131a]/60 border border-[#1b1c24] p-5 rounded-[2rem] shadow-xl space-y-4">
+                    <div className="flex items-center justify-between border-b border-[#1b1c24] pb-3">
+                      <div className="flex items-center gap-2">
+                        <XCircle className="text-rose-400" size={16} />
+                        <h3 className="text-xs font-black uppercase tracking-widest text-white">Desistências / Perdidos</h3>
+                      </div>
+                      <span className="text-[10px] font-black text-rose-400">
+                        {dashboardStats.totalPerdidos} leads
+                      </span>
+                    </div>
+                    <div className="space-y-3">
+                      {dashboardStats.topPerdidos.length === 0 ? (
+                        <p className="text-[10px] text-slate-600 italic">Nenhum registro perdido.</p>
+                      ) : (
+                        dashboardStats.topPerdidos.map((item, idx) => {
+                          const max = Math.max(...dashboardStats.topPerdidos.map(i => i.count));
+                          const percentage = max > 0 ? (item.count / max) * 100 : 0;
+                          return (
+                            <div key={idx} className="space-y-1">
+                              <div className="flex justify-between text-[11px] font-bold text-slate-300">
+                                <span className="truncate pr-2">{item.nome}</span>
+                                <span className="text-rose-400 font-black shrink-0">{item.count} recusados</span>
+                              </div>
+                              {item.valor > 0 && (
+                                <p className="text-[10px] text-rose-400/90 font-bold">
+                                  R$ {item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                </p>
+                              )}
+                              <div className="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-900">
+                                <div className="bg-rose-600 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                </div>
 
                {/* Origem de Canais */}
                <div className="bg-[#11131a]/60 border border-[#1b1c24] p-6 rounded-[2.5rem] shadow-xl space-y-4 max-w-2xl">
