@@ -1356,12 +1356,6 @@ export default function App() {
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <h1 className="text-3xl font-bold text-slate-100 tracking-tight">Performance Global</h1>
-                    {auditResult && !auditResult.verified && (
-                      <div className="self-start sm:self-auto flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border backdrop-blur-md transition-all bg-yellow-500/10 text-yellow-400 border-yellow-500/30 animate-pulse">
-                        <AlertTriangle size={12} className="text-yellow-400 animate-bounce" />
-                        Auditoria: Divergência de R$ {auditResult.discrepancySpend.toFixed(2)} (Ajustando...)
-                      </div>
-                    )}
                   </div>
                   <p className="text-slate-500 text-sm mt-1">Dados auditados: <strong>{clienteSelecionado}</strong></p>
                 </div>
