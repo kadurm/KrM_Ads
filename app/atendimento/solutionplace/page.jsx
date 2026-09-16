@@ -38,7 +38,7 @@ import {
   XCircle,
   ShieldCheck
 } from 'lucide-react';
-import { parseXmlLeads } from '../../../utils/xmlParser';
+import { parseXmlLeads, cleanVehicleAndServiceText } from '../../../utils/xmlParser';
 
 export default function AtendimentoPage() {
   const pathname = usePathname();
@@ -612,23 +612,24 @@ export default function AtendimentoPage() {
 
     // Heurística de classificação comercial blindada
     const isPerdidoFn = (l) => {
+      if (!l) return false;
       const st = String(l.status || '').toUpperCase().trim();
       const conv = String(l.conversao || '').toUpperCase().trim();
       return st === 'PERDIDO' || ['NEGATIVO', 'NEGATVO', 'CANCELADO', 'DESQUALIFICADO'].includes(conv);
     };
 
+    const isFechadoFn = (l) => {
+      if (!l || isPerdidoFn(l)) return false;
+      const st = String(l.status || '').toUpperCase().trim();
+      const conv = String(l.conversao || '').toUpperCase().trim();
+      return st === 'FECHADO' || st === 'CONCLUIDO' || conv === 'POSITIVO' || (isAssistenciaFn(l) && Number(l.valor || 0) > 0 && st === 'FECHADO');
+    };
+
     const isAguardandoFn = (l) => {
-      if (isPerdidoFn(l)) return false;
+      if (!l || isPerdidoFn(l) || isFechadoFn(l)) return false;
       const st = String(l.status || '').toUpperCase().trim();
       const conv = String(l.conversao || '').toUpperCase().trim();
       return conv === 'AGUARDANDO' || ['NEGOCIACAO', 'NOVO', 'CONTATO'].includes(st);
-    };
-
-    const isFechadoFn = (l) => {
-      if (isPerdidoFn(l) || isAguardandoFn(l)) return false;
-      const st = String(l.status || '').toUpperCase().trim();
-      const conv = String(l.conversao || '').toUpperCase().trim();
-      return st === 'FECHADO' || conv === 'POSITIVO' || (isAssistenciaFn(l) && Number(l.valor || 0) > 0 && conv !== 'AGUARDANDO' && !isPerdidoFn(l));
     };
 
     // Heurística abrangente de detecção de Orçamentos Enviados
@@ -717,7 +718,7 @@ export default function AtendimentoPage() {
         l.veiculo !== 'null' && 
         l.veiculo !== 'NÃO IDENTIFICADO'
       ) {
-        const cleanName = l.veiculo.trim().toUpperCase();
+        const cleanName = cleanVehicleAndServiceText(l.veiculo).toUpperCase();
         procuradosMap[cleanName] = (procuradosMap[cleanName] || 0) + 1;
       }
     });
@@ -730,7 +731,7 @@ export default function AtendimentoPage() {
     const vendidosMap = {};
     leadsNormais.forEach(l => {
       if (isFechadoFn(l) && isBlindagemFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null') {
-        const cleanName = l.veiculo.trim().toUpperCase();
+        const cleanName = cleanVehicleAndServiceText(l.veiculo).toUpperCase();
         if (!vendidosMap[cleanName]) {
           vendidosMap[cleanName] = { count: 0, valor: 0 };
         }
@@ -747,7 +748,7 @@ export default function AtendimentoPage() {
     const assistenciasMap = {};
     leadsNormais.forEach(l => {
       if (isAssistenciaFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null') {
-        const cleanName = l.veiculo.trim().toUpperCase();
+        const cleanName = cleanVehicleAndServiceText(l.veiculo).toUpperCase();
         if (!assistenciasMap[cleanName]) {
           assistenciasMap[cleanName] = { count: 0, valor: 0 };
         }
@@ -764,7 +765,7 @@ export default function AtendimentoPage() {
     const perdidosMap = {};
     leadsNormais.forEach(l => {
       if (isPerdidoFn(l) && isBlindagemFn(l) && l.veiculo && l.veiculo !== 'X' && l.veiculo !== 'null' && l.veiculo !== 'NÃO IDENTIFICADO') {
-        const cleanName = l.veiculo.trim().toUpperCase();
+        const cleanName = cleanVehicleAndServiceText(l.veiculo).toUpperCase();
         if (!perdidosMap[cleanName]) {
           perdidosMap[cleanName] = { count: 0, valor: 0 };
         }

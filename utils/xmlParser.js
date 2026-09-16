@@ -643,3 +643,30 @@ export function normalizeHeaderKey(headerStr) {
 
   return clean;
 }
+
+export function cleanVehicleAndServiceText(str) {
+  if (!str) return '';
+  let text = String(str);
+
+  text = text
+    .replace(/INSPE[\uFFFD\?O]+(?:\s*BAL[\uFFFD\?S]+TICA)?/gi, 'INSPEÇÃO BALÍSTICA')
+    .replace(/BAL[\uFFFD\?S]+TICA/gi, 'BALÍSTICA')
+    .replace(/REVIS[\uFFFD\?O]+/gi, 'REVISÃO')
+    .replace(/DELAMINAD[OA]|DELAMINA[\uFFFD\?O]+/gi, 'DELAMINAÇÃO')
+    .replace(/OR[\uFFFD\?C]+AMENT[OA]/gi, 'ORÇAMENTO')
+    .replace(/FUNILARI[A]+/gi, 'FUNILARIA')
+    .replace(/ASSIST[\uFFFD\?N]+CIA/gi, 'ASSISTÊNCIA')
+    .replace(/VE[\uFFFD\?I]+CUL[OA]/gi, 'VEÍCULO')
+    .replace(/M[\uFFFD\?A]+RIO/gi, 'MÁRIO')
+    .replace(/MOIS[\uFFFD\?E]+S/gi, 'MOISÉS')
+    .replace(/MENDON[\uFFFD\?C]+A/gi, 'MENDONÇA')
+    .replace(/GON[\uFFFD\?C]+ALVES/gi, 'GONÇALVES')
+    .replace(/PRE[\uFFFD\?C]+O/gi, 'PREÇO')
+    .replace(/EXPOSI[\uFFFD\?C]+[\uFFFD\?O]+/gi, 'EXPOSIÇÃO')
+    .replace(/SERVI[\uFFFD\?C]+O/gi, 'SERVIÇO')
+    .replace(/EST[\uFFFD\?A]+/gi, 'ESTÁ')
+    .replace(/\uFFFD/g, '');
+
+  return text.trim();
+}
+
