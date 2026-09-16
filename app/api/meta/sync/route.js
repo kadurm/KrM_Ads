@@ -394,12 +394,12 @@ export async function GET(request) {
       const campKey = (camp.nome_gerado || '').trim().toLowerCase();
       const conf = consolidatedCampaignsMap.get(campKey) || consolidatedCampaignsMap.get(String(camp.meta_id));
       if (conf) {
-        total.valor_investido = Math.max(total.valor_investido, Number(conf.spend || 0));
-        total.conversas_leads = Math.max(total.conversas_leads, Number(conf.leads || 0));
-        total.visitas_perfil = Math.max(total.visitas_perfil, Number(conf.visitas || 0));
-        total.impressoes = Math.max(total.impressoes, Number(conf.impressoes || 0));
-        total.alcance = Math.max(total.alcance, Number(conf.alcance || 0));
-        total.cliques = Math.max(total.cliques, Number(conf.cliques || 0));
+        total.valor_investido = Number(conf.spend ?? total.valor_investido);
+        total.conversas_leads = Number(conf.leads ?? total.conversas_leads);
+        total.visitas_perfil = Number(conf.visitas ?? total.visitas_perfil);
+        total.impressoes = Number(conf.impressoes ?? total.impressoes);
+        total.alcance = Number(conf.alcance ?? total.alcance);
+        total.cliques = Number(conf.cliques ?? total.cliques);
       }
 
       if (metaCampReachMap.has(String(camp.meta_id))) {
@@ -1168,40 +1168,55 @@ export async function POST(request) {
             const targetCliques = Number(repCamp.cliques || 0);
             const targetAlcance = Number(repCamp.alcance || 0);
 
-            if (targetSpend > currentSpend || targetLeads > currentLeads || targetVisitas > currentVisitas || targetImp > currentImp) {
-              const anchorDate = new Date(finalUntil + 'T00:00:00.000Z');
-              const diffSpend = Math.max(0, targetSpend - currentSpend);
-              const diffLeads = Math.max(0, targetLeads - currentLeads);
-              const diffVisitas = Math.max(0, targetVisitas - currentVisitas);
-              const diffImp = Math.max(0, targetImp - currentImp);
-              const diffCliques = Math.max(0, targetCliques - currentCliques);
+            const diffSpend = parseFloat((targetSpend - currentSpend).toFixed(2));
+            const diffLeads = targetLeads - currentLeads;
+            const diffVisitas = targetVisitas - currentVisitas;
+            const diffImp = targetImp - currentImp;
+            const diffCliques = targetCliques - currentCliques;
 
-              await prisma.metricaCampanha.upsert({
+            if (Math.abs(diffSpend) > 0.01 || diffLeads !== 0 || diffVisitas !== 0 || diffImp !== 0 || diffCliques !== 0) {
+              const anchorDate = new Date(finalUntil + 'T00:00:00.000Z');
+              const existingAnchor = await prisma.metricaCampanha.findUnique({
                 where: {
                   campanha_id_data: {
                     campanha_id: dbCamp.id,
                     data: anchorDate
                   }
-                },
-                update: {
-                  valor_investido: { increment: diffSpend },
-                  conversas_leads: { increment: diffLeads },
-                  visitas_perfil: { increment: diffVisitas },
-                  impressoes: { increment: diffImp },
-                  cliques: { increment: diffCliques },
-                  alcance: targetAlcance
-                },
-                create: {
-                  campanha_id: dbCamp.id,
-                  data: anchorDate,
-                  valor_investido: diffSpend,
-                  conversas_leads: diffLeads,
-                  visitas_perfil: diffVisitas,
-                  impressoes: diffImp,
-                  cliques: diffCliques,
-                  alcance: targetAlcance
                 }
               });
+
+              if (existingAnchor) {
+                const newSpend = Math.max(0, parseFloat((Number(existingAnchor.valor_investido || 0) + diffSpend).toFixed(2)));
+                const newLeads = Math.max(0, Number(existingAnchor.conversas_leads || 0) + diffLeads);
+                const newVisitas = Math.max(0, Number(existingAnchor.visitas_perfil || 0) + diffVisitas);
+                const newImp = Math.max(0, Number(existingAnchor.impressoes || 0) + diffImp);
+                const newCliques = Math.max(0, Number(existingAnchor.cliques || 0) + diffCliques);
+
+                await prisma.metricaCampanha.update({
+                  where: { id: existingAnchor.id },
+                  data: {
+                    valor_investido: newSpend,
+                    conversas_leads: newLeads,
+                    visitas_perfil: newVisitas,
+                    impressoes: newImp,
+                    cliques: newCliques,
+                    alcance: targetAlcance
+                  }
+                });
+              } else if (diffSpend > 0 || diffImp > 0 || diffLeads > 0) {
+                await prisma.metricaCampanha.create({
+                  data: {
+                    campanha_id: dbCamp.id,
+                    data: anchorDate,
+                    valor_investido: Math.max(0, diffSpend),
+                    conversas_leads: Math.max(0, diffLeads),
+                    visitas_perfil: Math.max(0, diffVisitas),
+                    impressoes: Math.max(0, diffImp),
+                    cliques: Math.max(0, diffCliques),
+                    alcance: targetAlcance
+                  }
+                });
+              }
             }
           }
         }

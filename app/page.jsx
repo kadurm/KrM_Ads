@@ -1675,10 +1675,6 @@ export default function App() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800 text-[11px] font-semibold text-slate-400 self-start md:self-auto">
-                      <CalendarDays size={13} className="text-blue-400" />
-                      <span>Filtro temporal ativo no CRM</span>
-                    </div>
                   </div>
 
                   {/* Painel Financeiro Comercial: Real Consolidado vs Aguardando vs Perdido */}
