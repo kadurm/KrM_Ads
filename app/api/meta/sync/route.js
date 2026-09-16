@@ -647,8 +647,8 @@ export async function GET(request) {
       .map(d => ({
         ...d,
         investimento: parseFloat(d.investimentoConversao.toFixed(2)),
-        cpl: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
-        cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : 0,
+        cpl: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : null,
+        cpa: d.mensagens > 0 ? parseFloat((d.investimentoConversao / d.mensagens).toFixed(2)) : null,
       }));
 
     const totalReach = (relatorioConsolidadoGet && Number(relatorioConsolidadoGet.total_alcance) > 0)

@@ -2043,11 +2043,19 @@ export default function App() {
                       <XAxis dataKey="data" tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={v => { const [,m,d] = v.split('-'); return `${d}/${m}`; }} />
                       <YAxis yAxisId="left" tick={{ fontSize: 10, fill: '#64748b' }} />
                       <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: '#64748b' }} />
-                      <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }} labelFormatter={v => { const [y,m,d] = v.split('-'); return `${d}/${m}/${y}`; }} formatter={(value, name) => { if (name === 'Investimento' || name === 'CPL') return [`R$ ${value.toFixed(2)}`, name]; return [value, name]; }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }} 
+                        labelFormatter={v => { const [y,m,d] = v.split('-'); return `${d}/${m}/${y}`; }} 
+                        formatter={(value, name) => { 
+                          if (value === null || value === undefined) return ['Sem conversão', name];
+                          if (name === 'Investimento' || name === 'CPL') return [`R$ ${Number(value).toFixed(2)}`, name]; 
+                          return [value, name]; 
+                        }} 
+                      />
                       <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
                       <Line yAxisId="left" type="monotone" dataKey="mensagens" name="Leads" stroke="#8b5cf6" strokeWidth={2.5} dot={{ r: 3, fill: '#8b5cf6' }} activeDot={{ r: 5 }} />
                       <Line yAxisId="right" type="monotone" dataKey="investimento" name="Investimento" stroke="#3b82f6" strokeWidth={2.5} dot={{ r: 3, fill: '#3b82f6' }} activeDot={{ r: 5 }} />
-                      <Line yAxisId="right" type="monotone" dataKey="cpl" name="CPL" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
+                      <Line yAxisId="right" type="monotone" dataKey="cpl" name="CPL" stroke="#10b981" strokeWidth={2.5} connectNulls={true} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 5 }} />
 
                     </LineChart>
                   </ResponsiveContainer>
@@ -2098,10 +2106,18 @@ export default function App() {
                               alt={c.nome_anuncio}
                               referrerPolicy="no-referrer"
                               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                if (e.currentTarget.nextElementSibling) {
+                                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                                }
+                              }}
                             />
-                         ) : (
-                            <ImageIcon className="text-slate-800" size={48} />
-                         )}
+                         ) : null}
+                         <div className={`h-full w-full items-center justify-center bg-slate-950 flex-col gap-2 ${c.url_midia ? 'hidden' : 'flex'}`}>
+                            <ImageIcon className="text-slate-700" size={48} />
+                            <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">{c.nome_anuncio}</span>
+                         </div>
                          {getRankBadge(idx)}
                          <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-black text-white uppercase border border-white/10 tracking-widest">CTR: {parseFloat(c.ctr || 0).toFixed(2)}%</div>
                        </div>
