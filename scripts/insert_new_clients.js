@@ -7,7 +7,8 @@ const clients = [
   { nome: 'Mind Gestão Empresarial', accountId: '2373100163138748' },
   { nome: 'Oratória Delio Pinheiro', accountId: '1524565725442134' },
   { nome: 'Cepel Arte Decore', accountId: '1226357518994525' },
-  { nome: 'Fulltime', accountId: '617379752402924' }
+  { nome: 'Fulltime', accountId: '617379752402924' },
+  { nome: 'Marilza Autopeças', accountId: '1054241640968773' }
 ];
 
 async function main() {
