@@ -98,6 +98,8 @@ export default function App() {
   const [perfilCliente, setPerfilCliente] = useState(null);
   const [historicoContexto, setHistoricoContexto] = useState([]);
   const [portfolioData, setPortfolioData] = useState(null);
+  const [relatoriosOficiais, setRelatoriosOficiais] = useState({ consolidados: [], arquivosFisicos: [] });
+  const [loadingOficiais, setLoadingOficiais] = useState(false);
   const [portfolioLoading, setPortfolioLoading] = useState(false);
   
   const [analiseIA, setAnaliseIA] = useState('');
@@ -798,6 +800,25 @@ export default function App() {
     }
   };
 
+  const loadRelatoriosOficiais = useCallback(async (cliente = clienteSelecionado) => {
+    if (!cliente) return;
+    setLoadingOficiais(true);
+    try {
+      const res = await fetch(`/api/relatorios/oficiais?cliente=${encodeURIComponent(cliente)}`);
+      const data = await res.json();
+      if (data.success) {
+        setRelatoriosOficiais({
+          consolidados: data.consolidados || [],
+          arquivosFisicos: data.arquivosFisicos || []
+        });
+      }
+    } catch (e) {
+      console.warn('Erro ao carregar relatórios oficiais:', e);
+    } finally {
+      setLoadingOficiais(false);
+    }
+  }, [clienteSelecionado]);
+
   useEffect(() => { loadClientes(); }, []);
   useEffect(() => {
     if (!clienteSelecionado) return;
@@ -806,6 +827,7 @@ export default function App() {
       // 1. Carrega imediatamente os dados cacheados do banco de dados para evitar tela vazia ou dados anteriores
       await loadMetrics();
       await loadLeads(startDate, endDate);
+      await loadRelatoriosOficiais(clienteSelecionado);
       
       // 2. Se já estiver em andamento um sync, não dispara outra chamada de sync
       if (isSyncing) return;
@@ -831,11 +853,12 @@ export default function App() {
       if (!cancelled) {
         await loadMetrics();
         await loadLeads(startDate, endDate);
+        await loadRelatoriosOficiais(clienteSelecionado);
       }
     };
     autoSync();
     return () => { cancelled = true; };
-  }, [startDate, endDate, clienteSelecionado]);
+  }, [startDate, endDate, clienteSelecionado, loadRelatoriosOficiais]);
 
   const handleShortcut = (shortcut) => {
     const hojeObj = new Date();
@@ -2151,6 +2174,185 @@ export default function App() {
               <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mt-8 shadow-2xl DiagnosticHeader">
                 <div className="p-6 border-b border-slate-800 flex justify-between items-center"><h3 className="font-bold flex items-center gap-2"><Sparkles className="text-purple-400" size={18} /> Diagnóstico de Campanhas</h3><button onClick={handleGerarIA} disabled={isGenerating} className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold p-2 px-6 rounded-lg transition-all shadow-lg shadow-purple-900/20">{isGenerating ? 'Analisando...' : 'Gerar Diagnóstico'}</button></div>
                 <div className="p-6 DiagnosticContent"><textarea className="w-full h-64 bg-slate-950 border-none rounded-xl p-4 text-sm text-slate-300 resize-none outline-none focus:ring-1 focus:ring-purple-500" readOnly value={analiseIA} placeholder="A análise estratégica baseada nos dados auditados aparecerá aqui..."></textarea></div>
+              </div>
+
+              {/* RELATÓRIOS OFICIAIS & CERTIFICAÇÃO DE PERÍODOS */}
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mt-8 shadow-2xl">
+                <div className="p-6 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-950/40">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                      <FileSpreadsheet size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-100 flex items-center gap-2 text-base">
+                        Relatórios Oficiais & Períodos Certificados
+                        {((relatoriosOficiais.consolidados?.length || 0) + (relatoriosOficiais.arquivosFisicos?.length || 0)) > 0 && (
+                          <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black px-2 py-0.5 rounded-full">
+                            {(relatoriosOficiais.consolidados?.length || 0) + (relatoriosOficiais.arquivosFisicos?.length || 0)} Disponíveis
+                          </span>
+                        )}
+                      </h3>
+                      <p className="text-slate-500 text-xs mt-0.5">
+                        Arquivos e consolidações oficiais importados da Meta para certificação histórica deste cliente.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => loadRelatoriosOficiais(clienteSelecionado)}
+                      disabled={loadingOficiais}
+                      title="Recarregar relatórios"
+                      className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-all border border-slate-700 text-xs"
+                    >
+                      <RefreshCw size={14} className={loadingOficiais ? 'animate-spin' : ''} />
+                    </button>
+                    <button
+                      onClick={() => { setShowImportModal(true); setImportError(null); setImportSuccess(null); }}
+                      className="p-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all flex items-center gap-2 text-xs shadow-lg shadow-emerald-900/20"
+                    >
+                      <UploadCloud size={14} />
+                      <span>Nova Certificação (Meta)</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  {/* 1. PERÍODOS CERTIFICADOS NO BANCO */}
+                  {relatoriosOficiais.consolidados && relatoriosOficiais.consolidados.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                        <CheckCircle size={14} className="text-emerald-400" />
+                        <span>Bases Oficiais Certificadas no Sistema (Soberanas)</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {relatoriosOficiais.consolidados.map(c => {
+                          const isCurrentActive = startDate === c.periodo_inicio && endDate === c.periodo_fim;
+                          return (
+                            <div
+                              key={c.id}
+                              className={`p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${
+                                isCurrentActive
+                                  ? 'bg-emerald-950/20 border-emerald-500/40 shadow-lg shadow-emerald-950/30'
+                                  : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-black text-white">
+                                      {c.periodo_inicio} → {c.periodo_fim}
+                                    </span>
+                                    {isCurrentActive && (
+                                      <span className="bg-emerald-500 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded">
+                                        ATIVO NO PAINEL
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="text-[10px] text-slate-500 block mt-0.5">
+                                    Certificado em {new Date(c.criado_em).toLocaleDateString('pt-BR')} • Origem: {c.origem}
+                                  </span>
+                                </div>
+                                <span className="text-[9px] font-black px-2 py-1 rounded bg-slate-800 text-emerald-400 border border-emerald-500/20">
+                                  100% FIEL
+                                </span>
+                              </div>
+
+                              <div className="grid grid-cols-3 gap-2 py-2 border-t border-b border-slate-800/60 text-center">
+                                <div>
+                                  <span className="text-[8px] text-slate-500 uppercase font-bold block">Investimento</span>
+                                  <span className="text-xs font-black text-slate-200">
+                                    R$ {c.total_spend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-[8px] text-slate-500 uppercase font-bold block">Leads / Conv.</span>
+                                  <span className="text-xs font-black text-purple-400">{c.total_leads}</span>
+                                </div>
+                                <div>
+                                  <span className="text-[8px] text-slate-500 uppercase font-bold block">Impressões</span>
+                                  <span className="text-xs font-black text-slate-300">
+                                    {c.total_impressoes?.toLocaleString()}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-end">
+                                <button
+                                  onClick={() => {
+                                    setStartDate(c.periodo_inicio);
+                                    setEndDate(c.periodo_fim);
+                                    setActiveShortcut(null);
+                                  }}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                                    isCurrentActive
+                                      ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 cursor-default'
+                                      : 'bg-blue-600 hover:bg-blue-500 text-white'
+                                  }`}
+                                >
+                                  <Check size={12} />
+                                  <span>{isCurrentActive ? 'Período Aplicado' : 'Carregar Este Período'}</span>
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 2. ARQUIVOS FÍSICOS (PDFs ENVIADOS / AUDITORIAS) */}
+                  {relatoriosOficiais.arquivosFisicos && relatoriosOficiais.arquivosFisicos.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                        <FileText size={14} className="text-blue-400" />
+                        <span>PDFs de Auditorias e Relatórios Arquivados</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {relatoriosOficiais.arquivosFisicos.map(file => (
+                          <div
+                            key={file.caminho}
+                            className="bg-slate-950/50 border border-slate-800 hover:border-blue-500/40 p-4 rounded-xl flex items-center justify-between gap-3 transition-all group"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 flex-shrink-0">
+                                <FileText size={16} />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-xs font-bold text-slate-200 block truncate group-hover:text-blue-400 transition-colors" title={file.nome}>
+                                  {file.nome}
+                                </span>
+                                <span className="text-[10px] text-slate-500 block">
+                                  {(file.tamanhoBytes / 1024).toFixed(0)} KB • {new Date(file.modificadoEm).toLocaleDateString('pt-BR')}
+                                </span>
+                              </div>
+                            </div>
+                            <a
+                              href={file.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-300 rounded-lg transition-all flex-shrink-0"
+                              title="Visualizar / Baixar PDF"
+                            >
+                              <Download size={14} />
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ESTADO VAZIO */}
+                  {(!relatoriosOficiais.consolidados || relatoriosOficiais.consolidados.length === 0) &&
+                   (!relatoriosOficiais.arquivosFisicos || relatoriosOficiais.arquivosFisicos.length === 0) && (
+                    <div className="text-center py-8 bg-slate-950/30 rounded-xl border border-dashed border-slate-800">
+                      <FileSpreadsheet size={32} className="mx-auto text-slate-700 mb-2" />
+                      <p className="text-xs font-bold text-slate-400">Nenhum relatório oficial importado para este cliente ainda</p>
+                      <p className="text-[11px] text-slate-500 mt-1 max-w-md mx-auto">
+                        Clique em "Nova Certificação (Meta)" para importar o arquivo CSV/Excel exportado do Gerenciador de Anúncios e gravar os números oficiais.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-end gap-4 pb-12">
