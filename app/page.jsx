@@ -58,6 +58,7 @@ import {
   Clock,
   XCircle,
   TrendingDown,
+  CheckCircle,
 } from 'lucide-react';
 import { parseMetaReportCSV } from '@/utils/metaReportParser';
 import { cleanVehicleAndServiceText } from '@/utils/xmlParser';
