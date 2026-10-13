@@ -9,13 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-cloud/storage": "^8.4.0",
     "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^5.22.0",
     "@supabase/supabase-js": "^2.105.3",
+    "@types/pg": "^8.23.1",
+    "firebase": "^13.0.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "lucide-react": "^0.460.0",
     "next": "^15.5.15",
+    "pg": "^8.23.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-is": "^19.2.5",

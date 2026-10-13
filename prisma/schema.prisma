@@ -39,6 +39,7 @@ model Cliente {
   notas_fiscais       NotaFiscal[]
   metricas_conta      MetricaContaDiaria[]
   relatorios_consolidados RelatorioConsolidado[]
+  importacoes         ImportacaoPlanilha[]
   criado_em           DateTime    @default(now())
 }
 
@@ -65,10 +66,29 @@ model Lead {
   comercial         String?
   conversao         String?
   status_detalhe    String?
+  importacao_id     String?
+  importacao        ImportacaoPlanilha? @relation(fields: [importacao_id], references: [id])
   notas             Nota[]
   agendamentos      Agendamento[]
   data              DateTime @default(now())
   criado_em         DateTime @default(now())
+}
+
+model ImportacaoPlanilha {
+  id                String    @id @default(uuid())
+  cliente_id        String
+  cliente           Cliente   @relation(fields: [cliente_id], references: [id])
+  nome_arquivo      String
+  formato           String?   @default("XML")
+  total_linhas      Int       @default(0)
+  periodo_inicio    DateTime?
+  periodo_fim       DateTime?
+  faturamento_total Decimal   @default(0.0)
+  resumo_status     String?
+  versao            Int       @default(1)
+  is_ativa          Boolean   @default(true)
+  leads             Lead[]
+  criado_em         DateTime  @default(now())
 }
 
 model Nota {
