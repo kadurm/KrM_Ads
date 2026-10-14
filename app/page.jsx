@@ -2065,8 +2065,8 @@ export default function App() {
                     <LineChart data={dailyData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                       <XAxis dataKey="data" tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={v => { const [,m,d] = v.split('-'); return `${d}/${m}`; }} />
-                      <YAxis yAxisId="left" tick={{ fontSize: 10, fill: '#64748b' }} />
-                      <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: '#64748b' }} />
+                      <YAxis yAxisId="left" tick={{ fontSize: 10, fill: '#8b5cf6' }} label={{ value: 'Leads', angle: -90, position: 'insideLeft', fill: '#8b5cf6', fontSize: 10 }} />
+                      <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: '#3b82f6' }} tickFormatter={v => `R$${v}`} />
                       <Tooltip 
                         contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', fontSize: '12px' }} 
                         labelFormatter={v => { const [y,m,d] = v.split('-'); return `${d}/${m}/${y}`; }} 
