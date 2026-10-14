@@ -428,7 +428,7 @@ export default function App() {
       });
 
       // Remove botões e elementos indesejados
-      const toRemove = ['button', 'textarea', '.DiagnosticHeader', '.DiagnosticContent'];
+      const toRemove = ['button', 'textarea', '.DiagnosticHeader', '.DiagnosticContent', '.RelatoriosOficiaisSection', '[data-pdf-exclude="true"]'];
       toRemove.forEach(sel => element.querySelectorAll(sel).forEach(el => el.remove()));
 
       document.body.appendChild(element);
@@ -2178,7 +2178,7 @@ export default function App() {
               </div>
 
               {/* RELATÓRIOS OFICIAIS & CERTIFICAÇÃO DE PERÍODOS */}
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mt-8 shadow-2xl">
+              <div data-pdf-exclude="true" className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mt-8 shadow-2xl RelatoriosOficiaisSection">
                 <div className="p-6 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-950/40">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
