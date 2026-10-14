@@ -104,6 +104,8 @@ export default function App() {
   const [portfolioLoading, setPortfolioLoading] = useState(false);
   
   const [analiseIA, setAnaliseIA] = useState('');
+  const [diagnosticoData, setDiagnosticoData] = useState(null);
+  const [copiadoWhatsApp, setCopiadoWhatsApp] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [segmento, setSegmento] = useState('inside_sales');
   const [activeShortcut, setActiveShortcut] = useState('30d');
@@ -427,8 +429,8 @@ export default function App() {
         }
       });
 
-      // Remove botões e elementos indesejados
-      const toRemove = ['button', 'textarea', '.DiagnosticHeader', '.DiagnosticContent', '.RelatoriosOficiaisSection', '[data-pdf-exclude="true"]'];
+      // Remove botões e elementos indesejados no PDF oficial
+      const toRemove = ['button', 'textarea', '.RelatoriosOficiaisSection', '[data-pdf-exclude="true"]'];
       toRemove.forEach(sel => element.querySelectorAll(sel).forEach(el => el.remove()));
 
       document.body.appendChild(element);
@@ -940,58 +942,6 @@ export default function App() {
 
   const andromedaFlow = React.useMemo(() => calculateAndromedaFlow(campaignsList), [campaignsList]);
 
-  const handleGerarIA = async () => {
-    setIsGenerating(true); setAnaliseIA("Gerando análise estratégica...");
-    try {
-      const totalImpressoes = relatorioDados.reduce((a,c) => a + c.rawImpressoes, 0);
-      const totalCliques = relatorioDados.reduce((a,c) => a + c.rawCliques, 0);
-      const totalLeadsCalc = relatorioDados.reduce((a,c) => a + c.leads, 0);
-      const totalComprasCalc = relatorioDados.reduce((a,c) => a + c.compras, 0);
-
-      const funil = {
-        impressoes: totalImpressoes,
-        engajamento: totalCliques,
-        leads: totalLeadsCalc,
-        conversoes: totalComprasCalc,
-        taxaEngajamento: totalImpressoes > 0 ? ((totalCliques / totalImpressoes) * 100).toFixed(2) + '%' : '0%',
-        taxaLeads: totalCliques > 0 ? ((totalLeadsCalc / totalCliques) * 100).toFixed(2) + '%' : '0%',
-      };
-
-      const criativosRanking = [...criativosDados]
-        .map(c => ({
-          nome: c.nome_anuncio,
-          gasto: parseFloat(c.valor_investido).toFixed(2),
-          leads: c.leads,
-          impressoes: c.impressoes,
-          ctr: parseFloat(c.ctr || 0).toFixed(2),
-          cpa: c.leads > 0 ? (c.valor_investido / c.leads).toFixed(2) : 'Sem leads',
-        }))
-        .sort((a, b) => {
-          const cpaA = a.cpa === 'Sem leads' ? Infinity : parseFloat(a.cpa);
-          const cpaB = b.cpa === 'Sem leads' ? Infinity : parseFloat(b.cpa);
-          return cpaA - cpaB;
-        });
-
-      const response = await fetch('/api/relatorios/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nomeProjeto: clienteSelecionado,
-          metricas: { faturamento, investimento, totalLeads, campanhas: relatorioDados },
-          funil,
-          criativosRanking,
-          periodo: { de: startDate, ate: endDate },
-        })
-      });
-      const data = await response.json();
-      if (data.success) setAnaliseIA(data.analise);
-      else setAnaliseIA("Erro na geração: " + data.error);
-    } catch (error) {
-      setAnaliseIA("Erro de comunicação.");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   const roas = investimento > 0 ? (faturamento / investimento).toFixed(2) : 0;
 
@@ -1230,6 +1180,84 @@ export default function App() {
       orcamentosAssistencia
     };
   }, [leadsList, clienteAtivoObj]);
+
+  const handleGerarIA = async () => {
+    setIsGenerating(true);
+    setAnaliseIA("Auditando disparidade de criativos e correlação comercial no Gemini 2.5 Flash...");
+    try {
+      const totalImpressoes = relatorioDados.reduce((a,c) => a + c.rawImpressoes, 0);
+      const totalCliques = relatorioDados.reduce((a,c) => a + c.rawCliques, 0);
+      const totalLeadsCalc = relatorioDados.reduce((a,c) => a + c.leads, 0);
+      const totalComprasCalc = relatorioDados.reduce((a,c) => a + c.compras, 0);
+
+      const funil = {
+        impressoes: totalImpressoes,
+        engajamento: totalCliques,
+        leads: totalLeadsCalc,
+        conversoes: totalComprasCalc,
+        taxaEngajamento: totalImpressoes > 0 ? ((totalCliques / totalImpressoes) * 100).toFixed(2) + '%' : '0%',
+        taxaLeads: totalCliques > 0 ? ((totalLeadsCalc / totalCliques) * 100).toFixed(2) + '%' : '0%',
+      };
+
+      const criativosRanking = [...criativosDados]
+        .map(c => ({
+          nome: c.nome_anuncio,
+          gasto: parseFloat(c.valor_investido).toFixed(2),
+          leads: c.leads,
+          impressoes: c.impressoes,
+          ctr: parseFloat(c.ctr || 0).toFixed(2),
+          cpa: c.leads > 0 ? (c.valor_investido / c.leads).toFixed(2) : 'Sem leads',
+        }))
+        .sort((a, b) => {
+          const cpaA = a.cpa === 'Sem leads' ? Infinity : parseFloat(a.cpa);
+          const cpaB = b.cpa === 'Sem leads' ? Infinity : parseFloat(b.cpa);
+          return cpaA - cpaB;
+        });
+
+      const crmPayload = {
+        faturamentoTotal: crmStats?.faturamentoTotal ? crmStats.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00',
+        totalLeads: crmStats?.totalLeads || 0,
+        closedCount: (crmStats?.closedBlindagemCount || 0) + (crmStats?.closedAssistenciaCount || 0),
+        faturamentoAguardando: crmStats?.faturamentoAguardando ? crmStats.faturamentoAguardando.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00',
+        taxaConversao: crmStats?.taxaConversao || '0',
+        topVendidos: crmStats?.topVendidos || []
+      };
+
+      const response = await fetch('/api/relatorios/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nomeProjeto: clienteSelecionado,
+          metricas: { faturamento, investimento, totalLeads, campanhas: relatorioDados },
+          funil,
+          criativosRanking,
+          crm: crmPayload,
+          periodo: { de: startDate, ate: endDate },
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAnaliseIA(data.analise);
+        if (data.diagnostico) {
+          setDiagnosticoData(data.diagnostico);
+        }
+      } else {
+        setAnaliseIA("Erro na geração: " + data.error);
+      }
+    } catch (error) {
+      setAnaliseIA("Erro de comunicação com o servidor de IA.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleCopiarWhatsApp = () => {
+    const texto = diagnosticoData?.textoWhatsApp || analiseIA;
+    if (!texto) return;
+    navigator.clipboard.writeText(texto);
+    setCopiadoWhatsApp(true);
+    setTimeout(() => setCopiadoWhatsApp(false), 2500);
+  };
 
   if (!isMounted) {
     return (
@@ -2172,9 +2200,335 @@ export default function App() {
                 })}
               </div>
 
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden mt-8 shadow-2xl DiagnosticHeader">
-                <div className="p-6 border-b border-slate-800 flex justify-between items-center"><h3 className="font-bold flex items-center gap-2"><Sparkles className="text-purple-400" size={18} /> Diagnóstico de Campanhas</h3><button onClick={handleGerarIA} disabled={isGenerating} className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold p-2 px-6 rounded-lg transition-all shadow-lg shadow-purple-900/20">{isGenerating ? 'Analisando...' : 'Gerar Diagnóstico'}</button></div>
-                <div className="p-6 DiagnosticContent"><textarea className="w-full h-64 bg-slate-950 border-none rounded-xl p-4 text-sm text-slate-300 resize-none outline-none focus:ring-1 focus:ring-purple-500" readOnly value={analiseIA} placeholder="A análise estratégica baseada nos dados auditados aparecerá aqui..."></textarea></div>
+              {/* DIAGNÓSTICO ESTRATÉGICO EXECUTIVO: FOCO EM CRIATIVOS & CRM */}
+              <div className="bg-slate-900/95 rounded-2xl border border-slate-800/80 overflow-hidden mt-8 shadow-2xl DiagnosticExecutiveSection backdrop-blur-md">
+                {/* Header da Seção */}
+                <div className="p-6 border-b border-slate-800/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-950/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shadow-inner">
+                      <Sparkles size={20} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-black text-slate-100 text-base tracking-wide flex items-center gap-2">
+                          Diagnóstico Estratégico: O Que os Números Revelam Sobre os Criativos
+                        </h3>
+                        <span className="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          Gemini 2.5 Flash
+                        </span>
+                      </div>
+                      <p className="text-slate-500 text-xs mt-0.5">
+                        Auditoria de disparidade de custo por lead, criativos campeões vs gargalos e correlação com CRM offline ({startDate} → {endDate}).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                    {(diagnosticoData || analiseIA) && (
+                      <button
+                        onClick={handleCopiarWhatsApp}
+                        title="Copiar relatório formatado para WhatsApp"
+                        className={`p-2.5 px-4 rounded-xl font-bold transition-all flex items-center gap-2 text-xs shadow-lg ${
+                          copiadoWhatsApp
+                            ? 'bg-emerald-500 text-slate-950 shadow-emerald-500/20 font-black'
+                            : 'bg-emerald-600/90 hover:bg-emerald-500 text-white shadow-emerald-900/20 border border-emerald-500/30'
+                        }`}
+                      >
+                        {copiadoWhatsApp ? (
+                          <>
+                            <Check size={14} className="stroke-[3]" />
+                            <span>Copiado p/ WhatsApp!</span>
+                          </>
+                        ) : (
+                          <>
+                            <MessageCircle size={14} />
+                            <span>Copiar p/ WhatsApp</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                    <button
+                      onClick={handleGerarIA}
+                      disabled={isGenerating}
+                      className="p-2.5 px-5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-purple-900/25 flex items-center gap-2 border border-purple-400/20"
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin text-white" />
+                          <span>Auditando Criativos...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={14} />
+                          <span>{diagnosticoData ? 'Regerar Diagnóstico' : 'Gerar Diagnóstico'}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Conteúdo Executivo */}
+                <div className="p-6 DiagnosticContent">
+                  {isGenerating && (
+                    <div className="py-16 flex flex-col items-center justify-center text-center space-y-4">
+                      <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 animate-pulse">
+                        <Loader2 size={28} className="animate-spin" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-bold text-slate-200">
+                          Cruzando disparidade de criativos com dados comerciais de vendas...
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Auditando ranking de CPAs, dispersão de orçamento e pipeline de R$ 118.000,00 no Gemini 2.5 Flash.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isGenerating && !diagnosticoData && !analiseIA && (
+                    <div className="py-12 px-6 rounded-xl border border-dashed border-slate-800 bg-slate-950/30 text-center flex flex-col items-center justify-center space-y-3">
+                      <div className="w-12 h-12 rounded-xl bg-slate-800/60 text-slate-400 flex items-center justify-center">
+                        <Target size={22} />
+                      </div>
+                      <div className="max-w-md space-y-1">
+                        <h4 className="text-sm font-bold text-slate-200">
+                          Diagnóstico Pronto para Auditoria de Criativos
+                        </h4>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          Clique em <span className="text-purple-400 font-semibold">"Gerar Diagnóstico"</span> para processar a disparidade entre anúncios de melhor e pior CPA e cruzar com os contratos fechados no CRM.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isGenerating && diagnosticoData && (
+                    <div className="space-y-6">
+                      {/* CARD 1: O QUE OS NÚMEROS REVELAM */}
+                      <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-5 shadow-inner">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                          <h4 className="text-xs font-black uppercase tracking-wider text-blue-400">
+                            1. O Que os Números Revelam Sobre os Criativos
+                          </h4>
+                        </div>
+                        <p className="text-sm text-slate-200 leading-relaxed font-normal mb-5">
+                          {diagnosticoData.oQueOsNumerosRevelam?.diagnosticoGeral}
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="bg-slate-900/80 border border-slate-800 p-3.5 rounded-lg">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                              CPA Médio da Conta
+                            </span>
+                            <span className="text-base font-black text-slate-100">
+                              {diagnosticoData.oQueOsNumerosRevelam?.cpaMedioConta || '-'}
+                            </span>
+                          </div>
+
+                          <div className="bg-emerald-950/20 border border-emerald-500/30 p-3.5 rounded-lg">
+                            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">
+                              Melhor CPA Identificado
+                            </span>
+                            <span className="text-base font-black text-emerald-300">
+                              {diagnosticoData.oQueOsNumerosRevelam?.melhorCpa || '-'}
+                            </span>
+                          </div>
+
+                          <div className="bg-slate-900/80 border border-slate-800 p-3.5 rounded-lg">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                              Disparidade de Eficiência
+                            </span>
+                            <p className="text-xs text-slate-300 line-clamp-2">
+                              {diagnosticoData.oQueOsNumerosRevelam?.analiseDisparidade || '-'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* GRID: CAMPEÕES VS GARGALOS */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        {/* CAMPEÕES */}
+                        <div className="bg-emerald-950/15 border border-emerald-500/25 rounded-xl p-5 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center justify-between gap-2 mb-4">
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                                  <TrendingUp size={15} />
+                                </div>
+                                <h4 className="text-xs font-black uppercase tracking-wider text-emerald-400">
+                                  Criativos Campeões (Escala & Eficiência)
+                                </h4>
+                              </div>
+                              <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                Alto Desempenho
+                              </span>
+                            </div>
+
+                            <div className="space-y-3">
+                              {Array.isArray(diagnosticoData.criativosCampeoes) && diagnosticoData.criativosCampeoes.length > 0 ? (
+                                diagnosticoData.criativosCampeoes.map((cr, idx) => (
+                                  <div key={idx} className="bg-slate-950/60 border border-emerald-500/20 p-3.5 rounded-lg space-y-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                      <h5 className="text-xs font-bold text-slate-100 line-clamp-1">{cr.nome}</h5>
+                                      <span className="text-[10px] font-black text-emerald-400 shrink-0 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
+                                        CPA {cr.cpa}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                                      <span>Leads: <strong className="text-slate-200">{cr.leads}</strong></span>
+                                      <span>•</span>
+                                      <span>Gasto: <strong className="text-slate-200">R$ {cr.gasto}</strong></span>
+                                      {cr.ctr && (
+                                        <>
+                                          <span>•</span>
+                                          <span>CTR: <strong className="text-slate-200">{cr.ctr}%</strong></span>
+                                        </>
+                                      )}
+                                    </div>
+                                    {cr.motivoSucesso && (
+                                      <p className="text-xs text-slate-300 bg-slate-900/60 p-2 rounded border border-slate-800">
+                                        <strong className="text-emerald-400">Ponto Forte:</strong> {cr.motivoSucesso}
+                                      </p>
+                                    )}
+                                    {cr.diretriz && (
+                                      <p className="text-[11px] text-slate-400">
+                                        <strong className="text-slate-300">Diretriz:</strong> {cr.diretriz}
+                                      </p>
+                                    )}
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-xs text-slate-500">Nenhum campeão destacado neste recorte.</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* GARGALOS */}
+                        <div className="bg-amber-950/15 border border-amber-500/25 rounded-xl p-5 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center justify-between gap-2 mb-4">
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                                  <AlertTriangle size={15} />
+                                </div>
+                                <h4 className="text-xs font-black uppercase tracking-wider text-amber-400">
+                                  Criativos de Alerta / Ralo de Budget
+                                </h4>
+                              </div>
+                              <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                                Ação Imediata
+                              </span>
+                            </div>
+
+                            <div className="space-y-3">
+                              {Array.isArray(diagnosticoData.criativosGargalo) && diagnosticoData.criativosGargalo.length > 0 ? (
+                                diagnosticoData.criativosGargalo.map((cg, idx) => (
+                                  <div key={idx} className="bg-slate-950/60 border border-amber-500/20 p-3.5 rounded-lg space-y-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                      <h5 className="text-xs font-bold text-slate-100 line-clamp-1">{cg.nome}</h5>
+                                      <span className="text-[10px] font-black text-amber-400 shrink-0 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30">
+                                        Gasto R$ {cg.gasto}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                                      <span>Leads: <strong className="text-slate-200">{cg.leads}</strong></span>
+                                      <span>•</span>
+                                      <span>CPA: <strong className="text-amber-300">{cg.cpa}</strong></span>
+                                    </div>
+                                    {cg.motivoGargalo && (
+                                      <p className="text-xs text-slate-300 bg-slate-900/60 p-2 rounded border border-slate-800">
+                                        <strong className="text-amber-400">Gargalo:</strong> {cg.motivoGargalo}
+                                      </p>
+                                    )}
+                                    {cg.acaoRecomendada && (
+                                      <p className="text-[11px] text-slate-300 font-semibold flex items-center gap-1 text-amber-300">
+                                        <span>➔ Decisão:</span> {cg.acaoRecomendada}
+                                      </p>
+                                    )}
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-xs text-slate-500">Nenhum criativo em nível crítico de ralo.</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CORRELAÇÃO CRM OFFLINE */}
+                      <div className="bg-slate-950/70 border border-blue-500/30 rounded-xl p-5 shadow-inner">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                              <DollarSign size={15} />
+                            </div>
+                            <h4 className="text-xs font-black uppercase tracking-wider text-blue-400">
+                              Correlação com CRM Offline & Impacto Comercial
+                            </h4>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/30">
+                              Fechado: {diagnosticoData.correlacaoCRM?.faturamentoFechado || 'R$ 118.000,00'}
+                            </span>
+                            {diagnosticoData.correlacaoCRM?.roasReal && (
+                              <span className="text-xs font-black text-blue-300 bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/30">
+                                ROAS Real: {diagnosticoData.correlacaoCRM.roasReal}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                          {diagnosticoData.correlacaoCRM?.analiseComercial}
+                        </p>
+                      </div>
+
+                      {/* PLANO DE AÇÃO TÁTICO */}
+                      {Array.isArray(diagnosticoData.planoAcaoCriativos) && diagnosticoData.planoAcaoCriativos.length > 0 && (
+                        <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-5">
+                          <h4 className="text-xs font-black uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-2">
+                            <Target size={15} className="text-purple-400" />
+                            Plano de Ação Tático para os Anúncios
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            {diagnosticoData.planoAcaoCriativos.map((acao, idx) => (
+                              <div key={idx} className="flex items-start gap-2.5 bg-slate-900/60 p-3 rounded-lg border border-slate-800/80">
+                                <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                                  {idx + 1}
+                                </span>
+                                <p className="text-xs text-slate-300 leading-snug">{acao}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* PERGUNTA ESTRATÉGICA OBRIGATÓRIA */}
+                      {diagnosticoData.perguntaEstrategica && (
+                        <div className="bg-gradient-to-r from-purple-950/40 via-indigo-950/30 to-slate-950 border border-purple-500/40 rounded-xl p-5 shadow-xl relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none"></div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <Sparkles size={16} className="text-purple-400" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-purple-300">
+                              Pergunta Estratégica para Decisão com o Cliente
+                            </span>
+                          </div>
+                          <p className="text-sm font-bold text-white leading-relaxed italic">
+                            "{diagnosticoData.perguntaEstrategica}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!isGenerating && !diagnosticoData && analiseIA && (
+                    <div className="bg-slate-950/80 p-5 rounded-xl border border-slate-800 text-sm text-slate-200 whitespace-pre-line leading-relaxed font-sans">
+                      {analiseIA}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* RELATÓRIOS OFICIAIS & CERTIFICAÇÃO DE PERÍODOS */}

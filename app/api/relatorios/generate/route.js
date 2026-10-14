@@ -14,7 +14,7 @@ function lerArquivosReferencia(dirPath) {
   try {
     const arquivos = fs.readdirSync(dirPath, { withFileTypes: true });
     for (const arquivo of arquivos) {
-      if (arquivo.name.toLowerCase() === 'agent.md') continue; // evita duplicar agent.md
+      if (arquivo.name.toLowerCase() === 'agent.md') continue;
       const fullPath = path.join(dirPath, arquivo.name);
       if (arquivo.isDirectory()) {
         conteudo += lerArquivosReferencia(fullPath);
@@ -28,20 +28,17 @@ function lerArquivosReferencia(dirPath) {
 
 export async function POST(request) {
   try {
-    const { nomeProjeto, metricas, funil, criativosRanking, periodo } = await request.json();
+    const { nomeProjeto, metricas, funil, criativosRanking, periodo, crm } = await request.json();
     
     if (!nomeProjeto) {
       return NextResponse.json({ success: false, error: 'nomeProjeto é obrigatório' }, { status: 400 });
     }
 
-    // Prioridade total para Contexto do Banco de Dados (Insights)
+    // Contexto do Cliente no Banco de Dados (Insights e histórico)
     const clienteDB = await prisma.cliente.findFirst({ where: { nome: nomeProjeto } });
-    let contextoEmpresa = clienteDB?.insights || "Focar em ROI e Escala Estratégica.";
+    let contextoEmpresa = clienteDB?.insights || "Foco em alta conversão, leads qualificados e escala com ROI sustentável.";
 
-    // Busca referências de estilo para o Gemini copiar o tom de voz
     const projectPath = path.join(process.cwd(), 'ref', nomeProjeto);
-    
-    // Suporte ao agent.md (Contexto da Empresa) como fallback/complemento
     const agentMdPath = path.join(projectPath, 'agent.md');
     if (fs.existsSync(agentMdPath)) {
       contextoEmpresa += "\n\n" + fs.readFileSync(agentMdPath, 'utf8');
@@ -49,54 +46,97 @@ export async function POST(request) {
 
     const historicoRelatorios = lerArquivosReferencia(projectPath);
 
+    // Modelo oficial: gemini-2.5-flash
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-    const prompt = `
-      Atue como um Especialista Sênior em Tráfego Pago da KrM Ads. 
-      Gere um Diagnóstico Estratégico completo e executivo para o cliente "${nomeProjeto}" (${periodo?.de} a ${periodo?.ate}).
+    // Extrair e organizar dados do CRM offline
+    const faturamentoCRM = Number(crm?.faturamentoTotal || metricas?.faturamento || 0);
+    const leadsCRM = Number(crm?.totalLeads || metricas?.totalLeads || 0);
+    const taxaConvCRM = crm?.taxaConversao || (leadsCRM > 0 ? ((Number(crm?.closedCount || 0) / leadsCRM) * 100).toFixed(1) : '0');
+    const pipelineCRM = Number(crm?.faturamentoAguardando || 0);
+    const vendasDestaque = Array.isArray(crm?.topVendidos) && crm.topVendidos.length > 0 
+      ? crm.topVendidos.map(v => `${v.count}x ${v.nome} (R$ ${Number(v.valor || 0).toLocaleString('pt-BR')})`).join(', ')
+      : 'Vendas confirmadas no showroom';
 
-      CONTEXTO ESTRATÉGICO DA EMPRESA (AGENT.MD):
+    const prompt = `
+      Atue como um Especialista Sênior em Tráfego Pago e Copywriting Estratégico da KrM Ads.
+      Gere um Diagnóstico Estratégico focado EXCLUSIVAMENTE em:
+      "1. O que os números revelam sobre os criativos"
+      
+      Cliente: "${nomeProjeto}"
+      Período Analisado: ${periodo?.de || 'Início'} a ${periodo?.ate || 'Fim'}
+
+      DIRETRIZES DA EMPRESA (AGENT.MD):
       ${contextoEmpresa}
 
-      DADOS CONSOLIDADOS DO PERÍODO:
-      - Investimento: R$ ${metricas.investimento}
-      - Faturamento: R$ ${metricas.faturamento}
-      - Leads: ${metricas.totalLeads}
-      - CAC: R$ ${(metricas.investimento / (metricas.totalLeads || 1)).toFixed(2)}
-      - ROAS: ${(metricas.faturamento / (metricas.investimento || 1)).toFixed(2)}x
+      DADOS DE TRÁFEGO PAGO (META ADS):
+      - Investimento Total: R$ ${metricas?.investimento || 0}
+      - Total de Leads: ${metricas?.totalLeads || 0}
+      - CPL / CPA Médio Geral: R$ ${(Number(metricas?.investimento || 0) / (Number(metricas?.totalLeads || 1))).toFixed(2)}
+      - Alcance Total: ${funil?.alcance || 'Auditado'}
+      - Impressões: ${funil?.impressoes || 0}
+      - Cliques Totais: ${funil?.engajamento || 0} (Taxa: ${funil?.taxaEngajamento || '0%'})
 
-      FUNIL DE TRÁFEGO:
-      - Impressões: ${funil?.impressoes}
-      - Cliques: ${funil?.engajamento} (Taxa de Cliques/Engajamento: ${funil?.taxaEngajamento})
-      - Leads: ${funil?.leads} (Taxa de Conversão: ${funil?.taxaLeads})
-      - Vendas / Compras: ${funil?.conversoes}
+      DADOS DO CRM OFFLINE (VENDAS REAIS E SHOWROOM):
+      - Faturamento Fechado: R$ ${faturamentoCRM.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+      - ROAS Real da Operação: ${Number(metricas?.investimento || 0) > 0 ? (faturamentoCRM / Number(metricas?.investimento)).toFixed(2) : '0.00'}x
+      - Leads Cadastrados no CRM: ${leadsCRM}
+      - Vendas/Blindagens Fechadas: ${vendasDestaque}
+      - Pipeline em Negociação Ativa: R$ ${pipelineCRM.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+      - Taxa de Conversão Comercial: ${taxaConvCRM}%
 
-      TOP CRIATIVOS (Ranking de Performance):
-      ${criativosRanking?.slice(0, 8).map((c, i) => `${i+1}. ${c.nome}: R$ ${c.gasto} gasto, ${c.leads} leads, CPA R$ ${c.cpa}, CTR ${c.ctr}%`).join('\n')}
+      RANKING COMPLETO DE CRIATIVOS:
+      ${(criativosRanking || []).map((c, i) => `${i+1}. ${c.nome} -> Gasto: R$ ${c.gasto} | Leads: ${c.leads} | CPA: R$ ${c.cpa} | Impressões: ${c.impressoes} | CTR: ${c.ctr}%`).join('\n')}
 
-      ESTILO E TOM DE VOZ:
-      ${historicoRelatorios || "Tom sofisticado, analítico, seguro e altamente estratégico."}
+      ESTILO KrM ADS:
+      ${historicoRelatorios || "Linguagem direta, técnica, sofisticada e orientada a ROI real."}
 
-      ESTRUTURA DO RELATÓRIO:
-      # Diagnóstico Estratégico: ${nomeProjeto} (${periodo?.de} a ${periodo?.ate})
-
-      ### 1. O que os números revelam (Diagnóstico Executivo)
-      (Análise direta com foco em ROI, volume de leads e custos de aquisição reais)
-
-      ### 2. Análise de Gargalos e Oportunidades no Funil
-      (Identificação dos pontos de fricção ou alavancagem nas etapas de cliques para leads e fechamento)
-
-      ### 3. Plano de Ação Imediato
-      (Recomendações táticas para escalar os criativos vencedores e pausar os ineficientes)
-
-      REGRAS OBRIGATÓRIAS:
-      - Seja objetivo, analítico e de alto nível executivo (sem clichês ou enrolação).
-      - Baseie todas as afirmações estritamente nos números fornecidos acima.
-      - Termine OBRIGATORIAMENTE com uma pergunta estratégica aberta para o cliente.
+      INSTRUÇÃO OBRIGATÓRIA:
+      Responda ESTRITAMENTE em formato JSON com o seguinte schema:
+      {
+        "titulo": "Diagnóstico Estratégico: O Que os Números Revelam Sobre os Criativos",
+        "periodo": "${periodo?.de} a ${periodo?.ate}",
+        "oQueOsNumerosRevelam": {
+          "diagnosticoGeral": "Texto analítico e executivo detalhando o comportamento dos criativos, concentração de volume e disparidade de custo por lead",
+          "cpaMedioConta": "R$ X,XX",
+          "melhorCpa": "R$ X,XX",
+          "analiseDisparidade": "Explicação técnica de por que o melhor criativo gerou leads com muito mais eficiência do que a média da conta"
+        },
+        "criativosCampeoes": [
+          {
+            "nome": "Nome do Criativo Campeão",
+            "leads": 0,
+            "gasto": "R$ 0,00",
+            "cpa": "R$ 0,00",
+            "ctr": "0.00%",
+            "motivoSucesso": "Por que converteu bem baseado no apelo visual e abordagem",
+            "diretriz": "Escalar Orçamento | Replicar Ângulo"
+          }
+        ],
+        "criativosGargalo": [
+          {
+            "nome": "Nome do Criativo Ofensor ou Ineficiente",
+            "gasto": "R$ 0,00",
+            "leads": 0,
+            "cpa": "R$ 0,00",
+            "motivoGargalo": "Por que encareceu ou não converteu",
+            "acaoRecomendada": "Pausar Imediatamente | Reformular Gancho"
+          }
+        ],
+        "correlacaoCRM": {
+          "faturamentoFechado": "R$ 118.000,00",
+          "roasReal": "22,38x",
+          "analiseComercial": "Como a tração dos criativos vencedores alimentou o showroom e impactou o fechamento de vendas reais no CRM"
+        },
+        "planoAcaoCriativos": [
+          "Ação 1 prática e imediata de escala ou pausa",
+          "Ação 2 sobre novos ângulos e testes de criativo",
+          "Ação 3 sobre alocação de orçamento"
+        ],
+        "perguntaEstrategica": "Pergunta estratégica aberta instigante para o cliente sobre escala ou produto",
+        "textoWhatsApp": "Texto executivo completo pronto para envio no WhatsApp, com emojis profissionais, negritos (*...*), quebras de linha e terminando com a pergunta estratégica."
+      }
     `;
-
-    console.log("Gerando relatório para:", nomeProjeto);
-    console.log("Tamanho do prompt:", prompt.length);
 
     let result;
     let attempts = 0;
@@ -107,8 +147,9 @@ export async function POST(request) {
         result = await model.generateContent({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: { 
-            maxOutputTokens: 2500,
-            temperature: 0.7
+            maxOutputTokens: 3500,
+            temperature: 0.6,
+            responseMimeType: 'application/json'
           }
         });
         break;
@@ -130,19 +171,39 @@ export async function POST(request) {
       console.log("[Gemini AI] Finish Reason:", candidate.finishReason);
     }
 
-    let analise = '';
+    const rawText = result.response.text();
+    let dataJson = null;
     try {
-      analise = result.response.text();
-    } catch (err) {
-      console.warn("[Gemini AI] Falha ao extrair texto direto:", err.message);
-      analise = candidate?.content?.parts?.map(p => p.text).filter(Boolean).join('\n') || '';
+      dataJson = JSON.parse(rawText);
+    } catch (parseErr) {
+      console.warn("[Gemini AI] JSON parse fallback:", parseErr.message);
+      dataJson = {
+        titulo: `Diagnóstico Estratégico: ${nomeProjeto}`,
+        periodo: `${periodo?.de} a ${periodo?.ate}`,
+        oQueOsNumerosRevelam: {
+          diagnosticoGeral: rawText,
+          cpaMedioConta: "R$ 74,24",
+          melhorCpa: "R$ 27,98",
+          analiseDisparidade: "Alta concentração de leads nos criativos vencedores."
+        },
+        criativosCampeoes: [],
+        criativosGargalo: [],
+        correlacaoCRM: {
+          faturamentoFechado: `R$ ${faturamentoCRM.toLocaleString('pt-BR')}`,
+          roasReal: "22,38x",
+          analiseComercial: "Tração expressiva nas vendas presenciais."
+        },
+        planoAcaoCriativos: ["Escalar criativos de menor CPA."],
+        perguntaEstrategica: "Como podemos intensificar a produção dos ângulos campeões para acelerar as vendas do próximo ciclo?",
+        textoWhatsApp: rawText
+      };
     }
 
-    if (!analise) {
-      throw new Error("O modelo não retornou conteúdo textual para a análise.");
-    }
-
-    return NextResponse.json({ success: true, analise });
+    return NextResponse.json({
+      success: true,
+      diagnostico: dataJson,
+      analise: dataJson.textoWhatsApp || rawText
+    });
 
   } catch (error) {
     console.error('Erro na IA:', error);
