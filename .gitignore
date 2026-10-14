@@ -7,3 +7,4 @@ node_modules
 scratch/
 backup_supabase_*/
 .env.firebase
+.env*

@@ -477,6 +477,19 @@ export async function GET(request) {
       };
     }).filter(m => m.valor_investido > 0 || m.resultadoBruto > 0);
 
+    const consolidatedCreativesMap = new Map();
+    if (relatorioConsolidadoGet && relatorioConsolidadoGet.metadados_json) {
+      try {
+        const parsedMeta = JSON.parse(relatorioConsolidadoGet.metadados_json);
+        if (Array.isArray(parsedMeta.creatives)) {
+          parsedMeta.creatives.forEach(cr => {
+            const key = (cr.nome || cr.adName || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            if (key) consolidatedCreativesMap.set(key, cr);
+          });
+        }
+      } catch (e) {}
+    }
+
     const criativosRaw = await prisma.criativo.findMany({    
       where: { campanha: { cliente_id: cliente.id } },       
       include: { metricas: { where: { data: { gte: dateSince, lte: dateUntil } } } }
@@ -506,7 +519,15 @@ export async function GET(request) {
         liveAlcance = metaAdReachMap.get(String(c.meta_ad_id));
       }
 
-      const isHighResUrl = (u) => Boolean(u && !u.includes('p64x64') && !u.includes('p128x128'));
+      const isHighResUrl = (u) => Boolean(
+        u && 
+        !u.includes('p64x64') && 
+        !u.includes('p128x128') && 
+        !u.includes('p160x160') && 
+        !u.includes('p240x240') &&
+        !u.includes('s64x64') && 
+        !u.includes('s128x128')
+      );
 
       if (!groupedMap.has(key)) {
         groupedMap.set(key, {
@@ -517,7 +538,7 @@ export async function GET(request) {
       } else {
         const existing = groupedMap.get(key);
         existing.impressoes += stats.impressoes;
-        existing.alcance += liveAlcance;
+        existing.alcance = Math.max(existing.alcance, liveAlcance);
         existing.cliques += stats.cliques;
         existing.valor_investido += stats.valor_investido;   
         existing.leads += stats.leads;
@@ -529,6 +550,39 @@ export async function GET(request) {
         if (!existing.url_midia || (!isHighResUrl(existing.url_midia) && isHighResUrl(c.url_midia))) {
           existing.url_midia = c.url_midia;
         }
+      }
+    }
+
+    // Calibração e Blindagem de Fidelidade Absoluta com o Relatório Consolidado Oficial
+    for (const [key, item] of groupedMap.entries()) {
+      const ratificado = consolidatedCreativesMap.get(key);
+      if (ratificado) {
+        item.valor_investido = Number(ratificado.spend ?? item.valor_investido);
+        item.leads = Number(ratificado.leads ?? item.leads);
+        item.impressoes = Number(ratificado.impressoes ?? item.impressoes);
+        item.alcance = Number(ratificado.alcance ?? item.alcance);
+        item.cliques = Number(ratificado.cliques ?? item.cliques);
+        if (ratificado.ctr) item.totalCtr = Number(ratificado.ctr);
+      }
+    }
+
+    // Incluir criativos oficiais que eventualmente não estejam em criativosRaw
+    for (const [key, ratificado] of consolidatedCreativesMap.entries()) {
+      if (!groupedMap.has(key)) {
+        groupedMap.set(key, {
+          id: `consolidated-${key}`,
+          nome_anuncio: ratificado.nome || ratificado.adName,
+          url_midia: null,
+          valor_investido: Number(ratificado.spend || 0),
+          leads: Number(ratificado.leads || 0),
+          impressoes: Number(ratificado.impressoes || 0),
+          alcance: Number(ratificado.alcance || 0),
+          cliques: Number(ratificado.cliques || 0),
+          compras: 0,
+          reacoes_sociais: 0,
+          totalCtr: Number(ratificado.ctr || 0),
+          count: 1
+        });
       }
     }
 
