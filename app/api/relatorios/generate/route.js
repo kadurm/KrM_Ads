@@ -14,6 +14,7 @@ function lerArquivosReferencia(dirPath) {
   try {
     const arquivos = fs.readdirSync(dirPath, { withFileTypes: true });
     for (const arquivo of arquivos) {
+      if (arquivo.name.toLowerCase() === 'agent.md') continue; // evita duplicar agent.md
       const fullPath = path.join(dirPath, arquivo.name);
       if (arquivo.isDirectory()) {
         conteudo += lerArquivosReferencia(fullPath);
@@ -52,38 +53,46 @@ export async function POST(request) {
 
     const prompt = `
       Atue como um Especialista Sênior em Tráfego Pago da KrM Ads. 
-      Gere um Diagnóstico Estratégico para o cliente "${nomeProjeto}" (${periodo?.de} a ${periodo?.ate}).
+      Gere um Diagnóstico Estratégico completo e executivo para o cliente "${nomeProjeto}" (${periodo?.de} a ${periodo?.ate}).
 
       CONTEXTO ESTRATÉGICO DA EMPRESA (AGENT.MD):
       ${contextoEmpresa}
 
-      DADOS DO PERÍODO:
+      DADOS CONSOLIDADOS DO PERÍODO:
       - Investimento: R$ ${metricas.investimento}
       - Faturamento: R$ ${metricas.faturamento}
       - Leads: ${metricas.totalLeads}
       - CAC: R$ ${(metricas.investimento / (metricas.totalLeads || 1)).toFixed(2)}
       - ROAS: ${(metricas.faturamento / (metricas.investimento || 1)).toFixed(2)}x
 
-      FUNIL:
+      FUNIL DE TRÁFEGO:
       - Impressões: ${funil?.impressoes}
-      - Cliques: ${funil?.engajamento} (Taxa: ${funil?.taxaEngajamento})
-      - Leads: ${funil?.leads} (Taxa: ${funil?.taxaLeads})
-      - Compras: ${funil?.conversoes}
+      - Cliques: ${funil?.engajamento} (Taxa de Cliques/Engajamento: ${funil?.taxaEngajamento})
+      - Leads: ${funil?.leads} (Taxa de Conversão: ${funil?.taxaLeads})
+      - Vendas / Compras: ${funil?.conversoes}
 
-      CRIATIVOS (Ranking por CPA):
-      ${criativosRanking?.map((c, i) => `${i+1}. ${c.nome}: R$ ${c.gasto} gasto, ${c.leads} leads, CPA R$ ${c.cpa}`).join('\n')}
+      TOP CRIATIVOS (Ranking de Performance):
+      ${criativosRanking?.slice(0, 8).map((c, i) => `${i+1}. ${c.nome}: R$ ${c.gasto} gasto, ${c.leads} leads, CPA R$ ${c.cpa}, CTR ${c.ctr}%`).join('\n')}
 
-      ESTILO E HISTÓRICO:
-      ${historicoRelatorios || "Tom profissional, direto e estratégico."}
+      ESTILO E TOM DE VOZ:
+      ${historicoRelatorios || "Tom sofisticado, analítico, seguro e altamente estratégico."}
 
       ESTRUTURA DO RELATÓRIO:
-      1. O QUE ESTÁ ACONTECENDO (Diagnóstico com números reais)
-      2. POR QUE ESTÁ ACONTECENDO (Gargalos do funil)
-      3. PLANO DE AÇÃO (Escalar ou pausar criativos)
+      # Diagnóstico Estratégico: ${nomeProjeto} (${periodo?.de} a ${periodo?.ate})
 
-      REGRAS CRUCIAS:
-      - Tamanho máximo do texto: 1000 caracteres. Seja extremamente conciso.
-      - Termine obrigatoriamente com uma pergunta estratégica.
+      ### 1. O que os números revelam (Diagnóstico Executivo)
+      (Análise direta com foco em ROI, volume de leads e custos de aquisição reais)
+
+      ### 2. Análise de Gargalos e Oportunidades no Funil
+      (Identificação dos pontos de fricção ou alavancagem nas etapas de cliques para leads e fechamento)
+
+      ### 3. Plano de Ação Imediato
+      (Recomendações táticas para escalar os criativos vencedores e pausar os ineficientes)
+
+      REGRAS OBRIGATÓRIAS:
+      - Seja objetivo, analítico e de alto nível executivo (sem clichês ou enrolação).
+      - Baseie todas as afirmações estritamente nos números fornecidos acima.
+      - Termine OBRIGATORIAMENTE com uma pergunta estratégica aberta para o cliente.
     `;
 
     console.log("Gerando relatório para:", nomeProjeto);
@@ -95,10 +104,12 @@ export async function POST(request) {
 
     while (attempts < maxAttempts) {
       try {
-        // Limita a geração no nível da API para garantir concisão
         result = await model.generateContent({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 400 }
+          generationConfig: { 
+            maxOutputTokens: 2500,
+            temperature: 0.7
+          }
         });
         break;
       } catch (e) {
@@ -114,7 +125,22 @@ export async function POST(request) {
       }
     }
 
-    const analise = result.response.text();
+    const candidate = result?.response?.candidates?.[0];
+    if (candidate?.finishReason) {
+      console.log("[Gemini AI] Finish Reason:", candidate.finishReason);
+    }
+
+    let analise = '';
+    try {
+      analise = result.response.text();
+    } catch (err) {
+      console.warn("[Gemini AI] Falha ao extrair texto direto:", err.message);
+      analise = candidate?.content?.parts?.map(p => p.text).filter(Boolean).join('\n') || '';
+    }
+
+    if (!analise) {
+      throw new Error("O modelo não retornou conteúdo textual para a análise.");
+    }
 
     return NextResponse.json({ success: true, analise });
 
