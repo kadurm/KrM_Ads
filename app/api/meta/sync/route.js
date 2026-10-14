@@ -506,6 +506,8 @@ export async function GET(request) {
         liveAlcance = metaAdReachMap.get(String(c.meta_ad_id));
       }
 
+      const isHighResUrl = (u) => Boolean(u && !u.includes('p64x64') && !u.includes('p128x128'));
+
       if (!groupedMap.has(key)) {
         groupedMap.set(key, {
           id: c.id, nome_anuncio: rawName, url_midia: c.url_midia, texto_principal: c.texto_principal,
@@ -522,7 +524,11 @@ export async function GET(request) {
         existing.compras += stats.compras;
         existing.totalCtr += stats.totalCtr;
         existing.count += stats.count;
-        if (!existing.url_midia) existing.url_midia = c.url_midia;
+
+        // Se o registro existente tem URL de baixa qualidade (p64x64) e o atual tem alta resolução, substitui
+        if (!existing.url_midia || (!isHighResUrl(existing.url_midia) && isHighResUrl(c.url_midia))) {
+          existing.url_midia = c.url_midia;
+        }
       }
     }
 
