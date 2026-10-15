@@ -273,6 +273,16 @@ const getLeadLabel = (m) => {
   return 'Resultados';
 };
 
+const isHighResUrl = (u) => Boolean(
+  u && 
+  !u.includes('p64x64') && 
+  !u.includes('p128x128') && 
+  !u.includes('p160x160') && 
+  !u.includes('p240x240') &&
+  !u.includes('s64x64') && 
+  !u.includes('s128x128')
+);
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -518,16 +528,6 @@ export async function GET(request) {
       if (c.meta_ad_id && metaAdReachMap.has(String(c.meta_ad_id))) {
         liveAlcance = metaAdReachMap.get(String(c.meta_ad_id));
       }
-
-      const isHighResUrl = (u) => Boolean(
-        u && 
-        !u.includes('p64x64') && 
-        !u.includes('p128x128') && 
-        !u.includes('p160x160') && 
-        !u.includes('p240x240') &&
-        !u.includes('s64x64') && 
-        !u.includes('s128x128')
-      );
 
       if (!groupedMap.has(key)) {
         groupedMap.set(key, {
