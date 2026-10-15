@@ -2225,9 +2225,6 @@ export default function App() {
                         <h3 className="font-black text-slate-100 text-base tracking-wide flex items-center gap-2">
                           Diagnóstico Estratégico: O Que os Números Revelam Sobre os Criativos
                         </h3>
-                        <span className="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                          Gemini 2.5 Flash
-                        </span>
                       </div>
                       <p className="text-slate-500 text-xs mt-0.5">
                         Auditoria de disparidade de custo por lead, criativos campeões vs gargalos e correlação com CRM offline ({startDate} → {endDate}).
@@ -2579,21 +2576,6 @@ export default function App() {
                         </div>
                       )}
 
-                      {/* CARD 5: PERGUNTA ESTRATÉGICA OBRIGATÓRIA */}
-                      {diagnosticoData.perguntaEstrategica && (
-                        <div className="bg-gradient-to-r from-purple-950/40 via-indigo-950/30 to-slate-950 border border-purple-500/40 rounded-2xl p-5 shadow-xl relative overflow-hidden">
-                          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none"></div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Sparkles size={16} className="text-purple-400" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-purple-300">
-                              Pergunta Estratégica para Decisão com o Cliente
-                            </span>
-                          </div>
-                          <p className="text-sm font-bold text-white leading-relaxed italic">
-                            "{diagnosticoData.perguntaEstrategica}"
-                          </p>
-                        </div>
-                      )}
                     </div>
                   )}
 
