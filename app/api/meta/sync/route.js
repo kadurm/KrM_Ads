@@ -563,6 +563,10 @@ export async function GET(request) {
         item.alcance = Number(ratificado.alcance ?? item.alcance);
         item.cliques = Number(ratificado.cliques ?? item.cliques);
         if (ratificado.ctr) item.totalCtr = Number(ratificado.ctr);
+        const ratUrl = ratificado.url_midia || ratificado.url;
+        if (isHighResUrl(ratUrl) && (!item.url_midia || !isHighResUrl(item.url_midia))) {
+          item.url_midia = ratUrl;
+        }
       }
     }
 
@@ -572,7 +576,7 @@ export async function GET(request) {
         groupedMap.set(key, {
           id: `consolidated-${key}`,
           nome_anuncio: ratificado.nome || ratificado.adName,
-          url_midia: null,
+          url_midia: ratificado.url_midia || ratificado.url || null,
           valor_investido: Number(ratificado.spend || 0),
           leads: Number(ratificado.leads || 0),
           impressoes: Number(ratificado.impressoes || 0),
@@ -610,10 +614,25 @@ export async function GET(request) {
       if (ACCESS_TOKEN_REFRESH && AD_ACCOUNT_REFRESH) {
         const [adsListRefreshData, adCreativesRefreshData] = await Promise.all([
           fetchMetaInsights(graphUrl(`${AD_ACCOUNT_REFRESH}/ads`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,creative{id}', limit: '1000' })),
-          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_REFRESH}/adcreatives`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,image_url,thumbnail_url,image_hash,effective_object_story_id', thumbnail_width: 800, thumbnail_height: 800, limit: '1000' }))
+          fetchMetaInsights(graphUrl(`${AD_ACCOUNT_REFRESH}/adcreatives`, { access_token: ACCESS_TOKEN_REFRESH, fields: 'id,image_url,thumbnail_url,image_hash,effective_object_story_id,video_id', thumbnail_width: 1080, thumbnail_height: 1080, limit: '1000' }))
         ]);
         const adToCreativeRefresh = new Map(adsListRefreshData?.map(a => [a.id, a.creative?.id]) || []);
         const creativeRefreshMap = new Map(adCreativesRefreshData?.map(c => [String(c.id), c]) || []);
+
+        const videoIdsRefresh = [...new Set(adCreativesRefreshData?.map(c => c.video_id).filter(id => !!id) || [])];
+        const videoRefreshMap = new Map();
+        if (videoIdsRefresh.length > 0) {
+          for (const vid of videoIdsRefresh) {
+            try {
+              const vRes = await fetch(graphUrl(`${vid}`, { fields: 'thumbnails{uri,is_preferred,height,width}', access_token: ACCESS_TOKEN_REFRESH }));
+              const vData = await vRes.json();
+              if (vData.thumbnails?.data?.length > 0) {
+                const sorted = [...vData.thumbnails.data].sort((a, b) => (b.width * b.height) - (a.width * a.height));
+                if (sorted[0]?.uri) videoRefreshMap.set(vid, sorted[0].uri);
+              }
+            } catch (e) {}
+          }
+        }
 
         const storyIdsRefresh = adCreativesRefreshData?.map(c => c.effective_object_story_id).filter(id => !!id) || [];
         const storyRefreshMap = new Map();
@@ -646,8 +665,10 @@ export async function GET(request) {
           if (!c.meta_ad_id) continue;
           const creativeId = adToCreativeRefresh.get(String(c.meta_ad_id));
           const creativeMeta = creativeRefreshMap.get(String(creativeId)) || {};
-          const highRes = imageHashRefreshMap.get(creativeMeta.image_hash)
+          const highRes = (creativeMeta.video_id && videoRefreshMap.get(creativeMeta.video_id))
+                       || imageHashRefreshMap.get(creativeMeta.image_hash)
                        || storyRefreshMap.get(creativeMeta.effective_object_story_id)
+                       || (creativeMeta.thumbnail_url && !creativeMeta.thumbnail_url.includes('p64x64') ? creativeMeta.thumbnail_url : null)
                        || creativeMeta.image_url
                        || creativeMeta.thumbnail_url;
           if (highRes) freshUrlMap.set(c.meta_ad_id, highRes);
@@ -955,9 +976,9 @@ export async function POST(request) {
       // 3.5 ad creatives list
       const adsMetaUrl = graphUrl(`${AD_ACCOUNT_ID}/adcreatives`, { 
         access_token: ACCESS_TOKEN, 
-        fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id', 
-        thumbnail_width: 800, 
-        thumbnail_height: 800, 
+        fields: 'id,image_url,thumbnail_url,image_hash,body,effective_object_story_id,video_id', 
+        thumbnail_width: 1080, 
+        thumbnail_height: 1080, 
         limit: '250' 
       });
       adsMetaDataList = await fetchMetaPaginated(adsMetaUrl, startTime, timeBudgetMs);
@@ -1030,6 +1051,26 @@ export async function POST(request) {
            console.error("[BulletproofSync] Erro ao resolver hashes de imagens:", e.message);
          }
        }
+    }
+
+    const videoThumbMap = new Map();
+    const uniqueVideoIds = [...new Set(adsMetaDataList.map(m => m.video_id).filter(v => !!v) || [])];
+    if (uniqueVideoIds.length > 0 && !isPartial) {
+      for (const vid of uniqueVideoIds) {
+        if (performance.now() - startTime > timeBudgetMs - 2000) {
+          isPartial = true;
+          break;
+        }
+        try {
+          const vRes = await fetchMetaWithRetry(graphUrl(`${vid}`, { fields: 'thumbnails{uri,is_preferred,height,width}', access_token: ACCESS_TOKEN }), {}, startTime, timeBudgetMs);
+          if (vRes?.thumbnails?.data?.length > 0) {
+            const sorted = [...vRes.thumbnails.data].sort((a, b) => (b.width * b.height) - (a.width * a.height));
+            if (sorted[0]?.uri) videoThumbMap.set(vid, sorted[0].uri);
+          }
+        } catch (e) {
+          console.error("[BulletproofSync] Erro ao resolver thumbnails de vídeo HD:", e.message);
+        }
+      }
     }
 
     // --- 5. Persistência de Dados no Banco de Dados via Prisma (Idempotência) ---
@@ -1315,12 +1356,28 @@ export async function POST(request) {
         }
         const creativeId = adToCreativeMap.get(String(row.ad_id));
         const adMeta = creativeMetaMap.get(String(creativeId)) || {};
-        const highResImage = imageHashMap.get(adMeta.image_hash) || storyMetaMap.get(adMeta.effective_object_story_id) || adMeta.image_url || adMeta.thumbnail_url;
+        const incomingUrl = (adMeta.video_id && videoThumbMap?.get(adMeta.video_id))
+          || imageHashMap.get(adMeta.image_hash) 
+          || storyMetaMap.get(adMeta.effective_object_story_id) 
+          || (adMeta.thumbnail_url && !adMeta.thumbnail_url.includes('p64x64') ? adMeta.thumbnail_url : null)
+          || adMeta.image_url 
+          || adMeta.thumbnail_url;
+
+        const existingCriativo = await prisma.criativo.findUnique({
+          where: { meta_ad_id: String(row.ad_id) },
+          select: { id: true, url_midia: true }
+        });
+
+        const isLowRes = (u) => !u || u.includes('p64x64') || u.includes('p128x128') || u.includes('p160x160') || u.includes('p240x240') || u.includes('s64x64') || u.includes('s128x128');
+        let finalUrlMidia = incomingUrl;
+        if (existingCriativo?.url_midia && !isLowRes(existingCriativo.url_midia) && isLowRes(incomingUrl)) {
+          finalUrlMidia = existingCriativo.url_midia;
+        }
 
         const criativo = await prisma.criativo.upsert({      
           where: { meta_ad_id: String(row.ad_id) },
-          update: { nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body },
-          create: { meta_ad_id: String(row.ad_id), campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: highResImage, texto_principal: adMeta.body }
+          update: { nome_anuncio: row.ad_name, url_midia: finalUrlMidia, texto_principal: adMeta.body },
+          create: { meta_ad_id: String(row.ad_id), campanha_id: camp.id, nome_anuncio: row.ad_name, url_midia: finalUrlMidia, texto_principal: adMeta.body }
         });
 
         const dataInsight = new Date(row.date_start + 'T00:00:00.000Z');
