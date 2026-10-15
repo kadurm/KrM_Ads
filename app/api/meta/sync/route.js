@@ -563,6 +563,9 @@ export async function GET(request) {
         item.alcance = Number(ratificado.alcance ?? item.alcance);
         item.cliques = Number(ratificado.cliques ?? item.cliques);
         if (ratificado.ctr) item.totalCtr = Number(ratificado.ctr);
+        if (ratificado.url_midia && (!item.url_midia || !item.url_midia.startsWith('/criativos/'))) {
+          item.url_midia = ratificado.url_midia;
+        }
       }
     }
 
@@ -572,7 +575,7 @@ export async function GET(request) {
         groupedMap.set(key, {
           id: `consolidated-${key}`,
           nome_anuncio: ratificado.nome || ratificado.adName,
-          url_midia: null,
+          url_midia: ratificado.url_midia || null,
           valor_investido: Number(ratificado.spend || 0),
           leads: Number(ratificado.leads || 0),
           impressoes: Number(ratificado.impressoes || 0),
