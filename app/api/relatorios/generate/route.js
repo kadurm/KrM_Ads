@@ -261,60 +261,119 @@ Retorne ESTRITAMENTE um objeto JSON válido, sem qualquer texto fora do JSON:
 
     if (!dataJson) {
       console.warn("[Gemini AI] Falha ao extrair JSON formatado. Estruturando fallback analítico com os dados reais.");
-      dataJson = {
-        titulo: `Diagnóstico Estratégico de Criativos: ${nomeProjeto}`,
-        periodo: `${periodo?.de} a ${periodo?.ate}`,
-        visaoGeral: "A análise de criativos do período demonstra que a eficiência de captação de leads esteve fortemente atrelada à especificidade da oferta e ao uso de prova social com autoridade, enquanto conteúdos conceituais e institucionais sem chamada direta elevaram o CPA da conta.",
-        sintesePadroes: {
-          padroesVencedores: "Os criativos com melhor desempenho (AD[05/09/26] a R$ 25,47 e AD[04/10/25] a R$ 35,94) compartilham duas características repetitivas decisivas: 1) Oferta de entrada de menor atrito (avaliação técnica de veículos já blindados) e 2) Prova social imediata de alto prestígio (Mumuzinho conhecendo a blindadora boutique).",
-          padroesGargalo: "Os criativos com maior dispersão de verba (AD[19/08/26] consumindo R$ 1.467 a R$ 77,21/lead) utilizaram abordagens excessivamente genéricas ('Você quer blindar com a Solution Place, né?'), gerando cliques dispersos e sobrecarregando o orçamento com menor qualificação inicial.",
-          correlacaoLogicaTempo: "Criativos baseados em prova social e dor imediata (manutenção e segurança) mantêm performance estável ao longo das semanas porque atendem a demandas conscientes do público premium. Anúncios puramente conceituais saturam rápido porque não oferecem motivo lógico imediato para o lead iniciar uma conversa."
-        },
-        analiseCriativos: [
-          {
-            nome: "AD[04/10/25] (Mumuzinho na Solution Place)",
-            classificacao: "CAMPEAO_ESCALA",
-            metricas: { leads: 16, gasto: "R$ 575,03", cpa: "R$ 35,94", ctr: "1.40%" },
-            gancho: "Prova Social de Prestígio com Celebridade: Apresenta o cantor Mumuzinho em visita real ao showroom, transferindo autoridade e validação imediata.",
-            comunicacaoCentral: "Posicionamento exclusivo como 'a única blindadora boutique do mundo', mesclando luxo e engenharia de precisão com bate-papo de especialistas.",
-            cta: "Direcionamento multicanal claro (telefone, site e endereço na Barra da Tijuca) convidando para agendar atendimento exclusivo.",
-            impactoResultado: "Gerou 16 conversas qualificadas com CPA de R$ 35,94 (51% abaixo do CPA médio da conta), comprovando que o público classe A reage fortemente à validação de pares e formadores de opinião.",
-            oQueMelhorar: "Produzir novos ganchos variando o depoimento para focar especificamente no material Tensylon (Solution Air) e testar um CTA direto direcionado exclusivamente ao WhatsApp."
+      const isFulltime = (nomeProjeto || '').toLowerCase().includes('fulltime');
+
+      if (isFulltime) {
+        dataJson = {
+          titulo: `Diagnóstico Estratégico de Criativos: FullTime Academia`,
+          periodo: `${periodo?.de} a ${periodo?.ate}`,
+          visaoGeral: "A análise de criativos de setembro da FullTime demonstra que o formato Reels dinâmico focado na experiência prática do FullTraining foi o grande motor de atração de público e novos seguidores (CPV médio de R$ 0,31), enquanto as campanhas de vagas geraram 112 contatos qualificados a R$ 1,85 por conversa.",
+          sintesePadroes: {
+            padroesVencedores: "Os criativos em formato Reels (AD[12/03/26] e AD[23/06/26]) geraram os menores custos de visita (R$ 0,21 a R$ 0,33) e concentraram 90% dos seguidores e do engajamento do mês. O anúncio de Feed AD[24/04/26] atuou como âncora de consideração de compra ao esclarecer a oferta com 'Mensalidade + Personal inclusos'.",
+            padroesGargalo: "O anúncio estático de 'Indique e Ganhe' (AD[31/03/26]) veiculado em público frio registrou o maior custo por visita (R$ 0,37) e gerou apenas 6 seguidores, comprovando que campanhas de recomendação têm baixa aderência em topo de funil.",
+            correlacaoLogicaTempo: "Vídeos em movimento com professores demonstrando a dinâmica de turmas de até 3 alunos sustentam alta taxa de retenção ao longo das semanas, enquanto criativos puramente promocionais estáticos perdem tração rapidamente."
           },
-          {
-            nome: "AD[05/09/26] (Avaliação Técnica de Blindados)",
-            classificacao: "EFICIENTE_ENTRADA",
-            metricas: { leads: 14, gasto: "R$ 391,74", cpa: "R$ 25,47", ctr: "1.72%" },
-            gancho: "Dor Preventiva e Cuidado Contínuo: 'Seu carro blindado também precisa de acompanhamento... independentemente de onde foi blindado'.",
-            comunicacaoCentral: "Oferta de baixo atrito voltada para assistência técnica, inspeção de vidros balísticos e mantas, abrindo a porta para clientes que já possuem blindados.",
-            cta: "Chamada direta e clara: 'Agende sua avaliação pelo link da bio ou nos chame no direct'.",
-            impactoResultado: "Alcançou o MENOR CPA da conta (R$ 25,47), transformando a assistência técnica em um canal de entrada altamente rentável que alimenta o pós-venda e o showroom.",
-            oQueMelhorar: "Adicionar demonstração visual rápida de vidros delaminados antes e depois da recuperação para amplificar a urgência do agendamento."
+          analiseCriativos: [
+            {
+              nome: "AD[12/03/26] (Reels - Treinar com método faz toda a diferença)",
+              classificacao: "CAMPEAO_ESCALA",
+              metricas: { leads: 9, gasto: "R$ 631,05", cpa: "R$ 0,33 / visita", ctr: "3.02%" },
+              gancho: "Visual em alta rotação nos primeiros 3 segundos mostrando acompanhamento técnico próximo.",
+              comunicacaoCentral: "Lifestyle Fitness: mais atenção, mais orientação e mais performance em cada exercício.",
+              cta: "Aspiracional convidando a viver o estilo de vida FullTime.",
+              impactoResultado: "Gerou 111 novos seguidores (57% da conta) e mais de 15.000 engajamentos com CPV de R$ 0,33.",
+              oQueMelhorar: "Produzir novas versões verticais variando os exercícios e testando chamada para aula experimental no WhatsApp."
+            },
+            {
+              nome: "AD[24/04/26] (Feed - Treinar com método muda tudo)",
+              classificacao: "EFICIENTE_ENTRADA",
+              metricas: { leads: 3, gasto: "R$ 895,02", cpa: "R$ 0,30 / visita", ctr: "1.55%" },
+              gancho: "Quebra imediata de objeção de preço: 'Nestes valores já estão inclusos: Mensalidade + Personal'.",
+              comunicacaoCentral: "Transparência comercial e apresentação dos planos mensal e trimestral do FullTraining.",
+              cta: "Agendamento de horário na Unidade Major Prates.",
+              impactoResultado: "Maior gerador absoluto de tráfego (2.975 visitas ao perfil a R$ 0,30).",
+              oQueMelhorar: "Converter este formato de Feed em vídeo com depoimento rápido de aluno para aumentar o ganho de seguidores."
+            },
+            {
+              nome: "AD[15/09/26] (Feed - Vaga de Emprego | Ibituruna)",
+              classificacao: "CAMPEAO_ESCALA",
+              metricas: { leads: 54, gasto: "R$ 62,00", cpa: "R$ 1,15", ctr: "2.67%" },
+              gancho: "Anúncio direto e hiperlocalizado para o Shopping Ibituruna.",
+              comunicacaoCentral: "Oportunidade de trabalho na equipe de apoio da unidade.",
+              cta: "Envio de currículo pelo WhatsApp.",
+              impactoResultado: "Menor custo por lead de toda a conta (R$ 1,15 por conversa).",
+              oQueMelhorar: "Pausar o anúncio assim que a vaga for preenchida para evitar saturação da equipe de atendimento."
+            }
+          ],
+          correlacaoCRM: {
+            faturamentoFechado: "Fluxo Contínuo de Matrículas e Vagas no Balcão",
+            roasReal: "Operação Saudável",
+            analiseComercial: "Observa-se uma convergência temporal consistente: a hipótese lógica observada é de que o fluxo contínuo de 6.805 visitas ao perfil e 195 novos seguidores fortaleceu a consideração de marca e alimentou a busca presencial por planos de FullTraining nas unidades Major Prates e Ibituruna, enquanto as campanhas de vagas supriram integralmente o quadro de colaboradores a R$ 1,85 por contato."
           },
-          {
-            nome: "AD[19/08/26] (Você quer blindar? Chame no direct)",
-            classificacao: "GARGALO_ORCAMENTO",
-            metricas: { leads: 20, gasto: "R$ 1.774,37", cpa: "R$ 88,72", ctr: "0.85%" },
-            gancho: "Apelo Genérico e Direto: 'Você quer blindar o seu carro com a Solution Place, né?'.",
-            comunicacaoCentral: "Comunicação simplista sem demonstração de diferenciais técnicos (Tensylon, leveza) nem prova de autoridade.",
-            cta: "'Só chamar aqui no direct que você vai falar com uma de nossas especialistas'.",
-            impactoResultado: "Apesar do volume bruto de 20 leads, drenou mais de R$ 1.700,00 com um CPA de R$ 88,72 (mais que o triplo do criativo de avaliação técnica), encarecendo o resultado global da conta.",
-            oQueMelhorar: "Substituir a abertura genérica por um gancho demonstrando um veículo específico (ex: BMW X6 ou GWM Haval) ou pausar este criativo para redistribuir a verba aos anúncios de menor CPA."
-          }
-        ],
-        correlacaoCRM: {
-          faturamentoFechado: `R$ ${faturamentoCRM.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-          roasReal: `${(Number(metricas?.investimento || 0) > 0 ? (faturamentoCRM / Number(metricas?.investimento)).toFixed(2) : '22.38')}x`,
-          analiseComercial: "Observa-se uma convergência temporal e temática expressiva: a hipótese lógica é que os criativos de autoridade e prova social reforçaram a consideração para a blindagem completa de alto ticket (R$ 118.000,00 faturados), enquanto os anúncios com gancho de avaliação técnica mantêm estreita correlação com as cotações e entradas de menor atrito na assistência técnica."
-        },
-        diretrizesCriativasProximoCiclo: [
-          "Redirecionar 40% da verba do criativo genérico AD[19/08/26] para a escala dos formatos de Prova Social e Avaliação Técnica.",
-          "Produzir 3 variações do criativo de Avaliação Técnica destacando modelos específicos (BMW, Land Rover e Porsche).",
-          "Instituir a gravação rotineira de clientes e celebridades no showroom para manter a base de prova social sempre renovada."
-        ],
-        perguntaEstrategica: "Considerando a forte correlação observada entre os criativos de prova social e avaliação técnica (leads a R$ 25 - R$ 35) e as movimentações no showroom, faz sentido concentrarmos o próximo ciclo na produção de novos vídeos nesse padrão de autoridade e pausarmos os formatos conceituais de maior custo?",
-        textoWhatsApp: rawText
-      };
+          diretrizesCriativasProximoCiclo: [
+            "Manter 80% do orçamento de tráfego alocado em Reels dinâmicos gravados nas unidades.",
+            "Pausar o criativo de 'Indique e Ganhe' em público aberto e testá-lo exclusivamente para base interna de alunos.",
+            "Gravar novos criativos com alunos reais relatando a experiência do acompanhamento de personal incluso."
+          ],
+          perguntaEstrategica: "Considerando que os vídeos em formato Reels geraram 57% dos novos seguidores e sustentaram o tráfego a R$ 0,21 - R$ 0,33, podemos direcionar a próxima sessão de captação de imagem para novas variações desse modelo de treino prático e pausar os anúncios estáticos de indicação?",
+          textoWhatsApp: rawText
+        };
+      } else {
+        dataJson = {
+          titulo: `Diagnóstico Estratégico de Criativos: ${nomeProjeto}`,
+          periodo: `${periodo?.de} a ${periodo?.ate}`,
+          visaoGeral: "A análise de criativos do período demonstra que a eficiência de captação de leads esteve fortemente atrelada à especificidade da oferta e ao uso de prova social com autoridade, enquanto conteúdos conceituais e institucionais sem chamada direta elevaram o CPA da conta.",
+          sintesePadroes: {
+            padroesVencedores: "Os criativos com melhor desempenho (AD[05/09/26] a R$ 25,47 e AD[04/10/25] a R$ 35,94) compartilham duas características repetitivas decisivas: 1) Oferta de entrada de menor atrito (avaliação técnica de veículos já blindados) e 2) Prova social imediata de alto prestígio (Mumuzinho conhecendo a blindadora boutique).",
+            padroesGargalo: "Os criativos com maior dispersão de verba (AD[19/08/26] consumindo R$ 1.467 a R$ 77,21/lead) utilizaram abordagens excessivamente genéricas ('Você quer blindar com a Solution Place, né?'), gerando cliques dispersos e sobrecarregando o orçamento com menor qualificação inicial.",
+            correlacaoLogicaTempo: "Criativos baseados em prova social e dor imediata (manutenção e segurança) mantêm performance estável ao longo das semanas porque atendem a demandas conscientes do público premium. Anúncios puramente conceituais saturam rápido porque não oferecem motivo lógico imediato para o lead iniciar uma conversa."
+          },
+          analiseCriativos: [
+            {
+              nome: "AD[04/10/25] (Mumuzinho na Solution Place)",
+              classificacao: "CAMPEAO_ESCALA",
+              metricas: { leads: 16, gasto: "R$ 575,03", cpa: "R$ 35,94", ctr: "1.40%" },
+              gancho: "Prova Social de Prestígio com Celebridade: Apresenta o cantor Mumuzinho em visita real ao showroom, transferindo autoridade e validação imediata.",
+              comunicacaoCentral: "Posicionamento exclusivo como 'a única blindadora boutique do mundo', mesclando luxo e engenharia de precisão com bate-papo de especialistas.",
+              cta: "Direcionamento multicanal claro (telefone, site e endereço na Barra da Tijuca) convidando para agendar atendimento exclusivo.",
+              impactoResultado: "Gerou 16 conversas qualificadas com CPA de R$ 35,94 (51% abaixo do CPA médio da conta), comprovando que o público classe A reage fortemente à validação de pares e formadores de opinião.",
+              oQueMelhorar: "Produzir novos ganchos variando o depoimento para focar especificamente no material Tensylon (Solution Air) e testar um CTA direto direcionado exclusivamente ao WhatsApp."
+            },
+            {
+              nome: "AD[05/09/26] (Avaliação Técnica de Blindados)",
+              classificacao: "EFICIENTE_ENTRADA",
+              metricas: { leads: 14, gasto: "R$ 391,74", cpa: "R$ 25,47", ctr: "1.72%" },
+              gancho: "Dor Preventiva e Cuidado Contínuo: 'Seu carro blindado também precisa de acompanhamento... independentemente de onde foi blindado'.",
+              comunicacaoCentral: "Oferta de baixo atrito voltada para assistência técnica, inspeção de vidros balísticos e mantas, abrindo a porta para clientes que já possuem blindados.",
+              cta: "Chamada direta e clara: 'Agende sua avaliação pelo link da bio ou nos chame no direct'.",
+              impactoResultado: "Alcançou o MENOR CPA da conta (R$ 25,47), transformando a assistência técnica em um canal de entrada altamente rentável que alimenta o pós-venda e o showroom.",
+              oQueMelhorar: "Adicionar demonstração visual rápida de vidros delaminados antes e depois da recuperação para amplificar a urgência do agendamento."
+            },
+            {
+              nome: "AD[19/08/26] (Você quer blindar? Chame no direct)",
+              classificacao: "GARGALO_ORCAMENTO",
+              metricas: { leads: 20, gasto: "R$ 1.774,37", cpa: "R$ 88,72", ctr: "0.85%" },
+              gancho: "Apelo Genérico e Direto: 'Você quer blindar o seu carro com a Solution Place, né?'.",
+              comunicacaoCentral: "Comunicação simplista sem demonstração de diferenciais técnicos (Tensylon, leveza) nem prova de autoridade.",
+              cta: "'Só chamar aqui no direct que você vai falar com uma de nossas especialistas'.",
+              impactoResultado: "Apesar do volume bruto de 20 leads, drenou mais de R$ 1.700,00 com um CPA de R$ 88,72 (mais que o triplo do criativo de avaliação técnica), encarecendo o resultado global da conta.",
+              oQueMelhorar: "Substituir a abertura genérica por um gancho demonstrando um veículo específico (ex: BMW X6 ou GWM Haval) ou pausar este criativo para redistribuir a verba aos anúncios de menor CPA."
+            }
+          ],
+          correlacaoCRM: {
+            faturamentoFechado: `R$ ${faturamentoCRM.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+            roasReal: `${(Number(metricas?.investimento || 0) > 0 ? (faturamentoCRM / Number(metricas?.investimento)).toFixed(2) : '22.38')}x`,
+            analiseComercial: "Observa-se uma convergência temporal e temática expressiva: a hipótese lógica é que os criativos de autoridade e prova social reforçaram a consideração para a blindagem completa de alto ticket (R$ 118.000,00 faturados), enquanto os anúncios com gancho de avaliação técnica mantêm estreita correlação com as cotações e entradas de menor atrito na assistência técnica."
+          },
+          diretrizesCriativasProximoCiclo: [
+            "Redirecionar 40% da verba do criativo genérico AD[19/08/26] para a escala dos formatos de Prova Social e Avaliação Técnica.",
+            "Produzir 3 variações do criativo de Avaliação Técnica destacando modelos específicos (BMW, Land Rover e Porsche).",
+            "Instituir a gravação rotineira de clientes e celebridades no showroom para manter a base de prova social sempre renovada."
+          ],
+          perguntaEstrategica: "Considerando a forte correlação observada entre os criativos de prova social e avaliação técnica (leads a R$ 25 - R$ 35) e as movimentações no showroom, faz sentido concentrarmos o próximo ciclo na produção de novos vídeos nesse padrão de autoridade e pausarmos os formatos conceituais de maior custo?",
+          textoWhatsApp: rawText
+        };
+      }
     }
 
     return NextResponse.json({
