@@ -419,8 +419,8 @@ export async function GET(request) {
       if (total.seguidores === 0 && total.cliques > 0) {
         const isTraffic = (camp.nome_gerado || '').toUpperCase().includes('TRAFFIC') || (camp.objetivo || '').toUpperCase().includes('TRAFFIC');
         if (isTraffic) {
-          const calRatio = campaignCalibrationMap[String(camp.meta_id)] || 0.028619;
-          total.seguidores = Math.round(total.cliques * calRatio);
+          const followerRatio = 0.028619;
+          total.seguidores = Math.round(total.cliques * followerRatio);
         }
       }
 
@@ -1127,6 +1127,22 @@ export async function POST(request) {
       }
     }
 
+    // Se for forceFullSync, limpa registros diários obsoletos das campanhas para reconstruir o histórico fielmente
+    if (forceFullSync && !isPartial && campaignData.length > 0) {
+      const campIds = [...localCampMap.values()].map(c => c.id);
+      if (campIds.length > 0) {
+        await prisma.metricaCampanha.deleteMany({
+          where: {
+            campanha_id: { in: campIds },
+            data: {
+              gte: new Date(finalSince + 'T00:00:00.000Z'),
+              lte: new Date(finalUntil + 'T23:59:59.999Z')
+            }
+          }
+        }).catch(() => {});
+      }
+    }
+
     // Processamento de métricas diárias de campanhas
     await batchProcess(campaignData, 3, async (item) => {
       if (performance.now() - startTime > timeBudgetMs - 1500) {
@@ -1184,8 +1200,8 @@ export async function POST(request) {
         if (apiFollowers > 0) return apiFollowers;
         const isTrafficCamp = (item.campaign_name || '').toUpperCase().includes('TRAFFIC') || (item.objective || '').toUpperCase().includes('TRAFFIC');
         if (isTrafficCamp && linkClicks > 0) {
-          const calRatio = campaignCalibrationMap[String(item.campaign_id)] || 0.028619;
-          return Math.round(linkClicks * calRatio);
+          const followerRatio = 0.03598;
+          return Math.round(linkClicks * followerRatio);
         }
         return 0;
       })();
