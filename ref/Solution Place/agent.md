@@ -36,3 +36,9 @@ A **Solution Place** é uma blindadora boutique de alto padrão localizada no Ri
   - **Quarta-feira (17/06):** CPL R$ 65,73 (Investimento: R$ 131,46 | Leads: 2).
 - **Diagnóstico Técnico:** O aumento vertiginoso do CPL e a escassez de leads durante o período de 12/06 a 17/06 estão diretamente correlacionados à dispersão de atenção do público premium de alto padrão no Rio de Janeiro devido à estreia da Seleção Brasileira na Copa do Mundo.
 - **Diretriz de Ação:** Pausar ou reduzir em até 70% o orçamento diário das campanhas de mensagens 24h antes e durante dias de jogos da seleção na Copa do Mundo, redirecionando o orçamento economizado para períodos estáveis de alta conversão.
+
+## 7. Diretriz de Auditoria e Linguagem de Dados (Prudência Metodológica)
+- **Regra de Ouro da Auditoria KrM Ads:** Por não haver rastreamento determinístico individual (UTM / Ad ID individualizado por lead) amarrado a cada venda presencial do CRM físico (onde o registro de origem costuma ser marcado genericamente como "Instagram" ou "Meta"), é terminantemente proibido afirmar de forma categórica que um fechamento comercial específico decorreu de um criativo ou anúncio específico.
+- **Postura Técnica de Linguagem:** Fatos auditados e comprovados (métricas exatas da Meta e números lançados no CRM) devem ser apresentados como dados objetivos e incontestáveis. Por outro lado, qualquer relação entre criativos veiculados e vendas no showroom físico deve ser tratada e pontuada com estrita prudência metodológica — formulada como "hipótese lógica observada", "convergência temporal", "provável influência no funil" ou "correlação de temas", NUNCA como causalidade direta comprovada.
+- **Princípio da Certeza:** Por não haver certeza absoluta sem telemetria ponta a ponta 1:1, nunca afirmar, sempre pontuar.
+

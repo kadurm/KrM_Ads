@@ -169,18 +169,21 @@ Texto / Copy Veiculado:
 --------------------------------------------------`).join('\n')}
 
 ESTRUTURA DE ANÁLISE OBRIGATÓRIA:
-1. Para cada criativo relevante (com leads ou gasto significativo), examine:
+1. DIRETRIZ CRÍTICA DE LINGUAGEM E AUDITORIA (PRUDÊNCIA METODOLÓGICA):
+   - "Por não ter certeza absoluta de nada sem rastreamento determinístico 1:1 (UTMs individuais por lead na planilha do CRM), NUNCA afirmar categoricamente causalidade direta, SEMPRE pontuar como hipóteses lógicas observadas, convergência temporal ou correlações temáticas."
+   - Os números auditados (investimento da Meta, total de leads, CPA, faturamento e negócios do CRM) são fatos comprovados. Porém, o impacto de anúncios específicos em vendas presenciais do showroom DEVE ser pontuado como hipótese e correlação lógica, nunca como afirmação definitiva incontestável.
+2. Para cada criativo relevante (com leads ou gasto significativo), examine:
    - Gancho (Hook): Análise dos primeiros 3 segundos / primeira linha. É dor? Prova social? Curiosidade? Quebra de objeção?
    - Comunicação Central: Qual é o ângulo psicológico e a proposta de valor explorada?
    - Chamada para Ação (CTA): Qual foi o direcionamento e o nível de atrito da chamada?
    - Impacto no Resultado: Por que essa construção gerou exatamente esse volume de leads e esse CPA?
    - O Que Podemos Melhorar (Correlação Lógica): Explique a relação de causa e efeito comparando com os outros anúncios da conta. Por que funcionou mais ou menos ao longo do tempo? Qual é a próxima hipótese lógica de teste?
-2. Síntese de Padrões Repetitivos:
+3. Síntese de Padrões Repetitivos:
    - Quais características repetitivas (ex: presença de prova social tangível com celebridades, ganchos de dor na manutenção preventiva, ofertas de baixo atrito) explicam o menor CPA e maior tração comercial?
    - Quais características repetitivas (ex: narrativas abstratas sem CTA, apelos genéricos, segmentação excessiva) geraram gargalo de orçamento?
-3. Correlação Comercial com o CRM:
-   - Como os criativos alimentaram os contratos de blindagem nova e os serviços de assistência técnica que totalizaram R$ ${faturamentoCRM.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} no CRM?
-4. Pergunta Estratégica:
+4. Correlação Comercial com o CRM (Sob Prudência Metodológica):
+   - Como os criativos parecem ter influenciado ou convergido com os contratos de blindagem nova e os serviços de assistência técnica que totalizaram R$ ${faturamentoCRM.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} no CRM? Pontue como correlação e hipótese lógica de demanda.
+5. Pergunta Estratégica:
    - Obrigatoriamente termine com uma pergunta estratégica aberta para alinhamento com o cliente.
 
 FORMATO DA RESPOSTA:
@@ -188,7 +191,7 @@ Retorne ESTRITAMENTE um objeto JSON válido, sem qualquer texto fora do JSON:
 {
   "titulo": "Diagnóstico Estratégico: O Que os Números Revelam Sobre os Criativos",
   "periodo": "${periodo?.de} a ${periodo?.ate}",
-  "visaoGeral": "Diagnóstico executivo conectando a narrativa dos anúncios aos números obtidos",
+  "visaoGeral": "Diagnóstico executivo conectando a narrativa dos anúncios aos números obtidos com prudência analítica",
   "sintesePadroes": {
     "padroesVencedores": "Texto detalhando as características mais repetitivas presentes nos conteúdos que performaram acima da média",
     "padroesGargalo": "Texto detalhando as características mais repetitivas presentes nos conteúdos ineficientes que encareceram o lead",
@@ -214,7 +217,7 @@ Retorne ESTRITAMENTE um objeto JSON válido, sem qualquer texto fora do JSON:
   "correlacaoCRM": {
     "faturamentoFechado": "R$ ${faturamentoCRM.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}",
     "roasReal": "${(Number(metricas?.investimento || 0) > 0 ? (faturamentoCRM / Number(metricas?.investimento)).toFixed(2) : '22.38')}x",
-    "analiseComercial": "Análise da qualidade do lead atraído pelos criativos e seu impacto nas vendas presenciais"
+    "analiseComercial": "Análise prudente pontuando hipóteses lógicas e correlações temporais entre a qualidade do tráfego atraído e as movimentações no showroom, sem afirmar causalidade direta sem UTM individual"
   },
   "diretrizesCriativasProximoCiclo": [
     "Diretriz prática 1 baseada nos padrões vencedores",
@@ -302,14 +305,14 @@ Retorne ESTRITAMENTE um objeto JSON válido, sem qualquer texto fora do JSON:
         correlacaoCRM: {
           faturamentoFechado: `R$ ${faturamentoCRM.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
           roasReal: `${(Number(metricas?.investimento || 0) > 0 ? (faturamentoCRM / Number(metricas?.investimento)).toFixed(2) : '22.38')}x`,
-          analiseComercial: "A estratégia de criativos gerou retorno direto nas vendas presenciais: os criativos de blindagem e prova social alimentaram o fechamento de veículos de alto ticket (R$ 100.000,00), enquanto os criativos de avaliação técnica garantiram tração imediata no fluxo de assistência técnica."
+          analiseComercial: "Observa-se uma convergência temporal e temática expressiva: a hipótese lógica é que os criativos de autoridade e prova social reforçaram a consideração para a blindagem completa de alto ticket (R$ 118.000,00 faturados), enquanto os anúncios com gancho de avaliação técnica mantêm estreita correlação com as cotações e entradas de menor atrito na assistência técnica."
         },
         diretrizesCriativasProximoCiclo: [
           "Redirecionar 40% da verba do criativo genérico AD[19/08/26] para a escala dos formatos de Prova Social e Avaliação Técnica.",
           "Produzir 3 variações do criativo de Avaliação Técnica destacando modelos específicos (BMW, Land Rover e Porsche).",
           "Instituir a gravação rotineira de clientes e celebridades no showroom para manter a base de prova social sempre renovada."
         ],
-        perguntaEstrategica: "Considerando que os criativos de prova social e assistência técnica geraram leads a R$ 25 - R$ 35 e alimentaram as vendas de R$ 118.000,00 no showroom, podemos concentrar o próximo ciclo na produção de novos vídeos nesse mesmo padrão de autoridade e pausar os formatos conceituais?",
+        perguntaEstrategica: "Considerando a forte correlação observada entre os criativos de prova social e avaliação técnica (leads a R$ 25 - R$ 35) e as movimentações no showroom, faz sentido concentrarmos o próximo ciclo na produção de novos vídeos nesse padrão de autoridade e pausarmos os formatos conceituais de maior custo?",
         textoWhatsApp: rawText
       };
     }
